@@ -1,3 +1,7 @@
+version 1.0 - July 15, 2009
+
+Removed beta tag
+
 version 1.0 beta 7 - July 10, 2009
 
 added "/" as a valid word character so we could capture "this/that" as a word for processing (similar to "mother-in-law")
