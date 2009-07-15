@@ -1,0 +1,63 @@
+<?php
+/*
+	Project: PHP Typography
+	Project URI: http://kingdesk.com/projects/php-typography/
+	
+	File modified to place pattern and exceptions in arrays that can be understood in php files.
+	This file is released under the same copyright as the below referenced original file
+	Original unmodified file is available at: http://mirror.unl.edu/ctan/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
+	Original file name: hyph-_______________.tex
+	
+//============================================================================================================
+	ORIGINAL FILE INFO
+
+
+
+//============================================================================================================	
+	
+*/
+
+
+$patgenLanguage = ""; //Common name for language
+
+$patgenExceptions = array(); // list of exceptions in the form of: array('associate'=>'as-so-ciate','associates'=>'as-so-ciates')
+
+$patgenMaxSeg = 3; // maximum segment length in the patterns below (NOTE: Segment Lenght, not sequence length)
+
+$patgen = array('begin'=>array(),'end'=>array(),'all'=>array()); // key/values should be formatted so that the key is the relevant word segment and the value is the related patgen sequence.  For example: array('begin'=>array('ach'=>'0004'),'end'=>array('ab'=>'400'),'all'=>array('aba'=>'0501'))
+
+// Reformatting original TeX/patgen patterns is less than convienent, but it greatly improves PHP preformance.
+// Some additional help in formatting these files for use in the PHP Typography project:
+
+	// They original TEX pattern files have lists of segments formatted like this:
+	//		.ach4
+	//		4ab.
+	//		a5bal
+	// If a segment includes a period, it indicates that it should only be applied at the beginning or end of words (reletive to its position)
+	// If a period appears before the original TeX pattern, it belongs in the 'begin' subarray of the $patgen variable
+	// If a period appears after the original TeX pattern, it belongs in the 'end' subarray of the $patgen variable
+	// If the original TeX pattern does not contain a period, it belongs in the 'all' subarray of the $patgen variable
+	//
+	// The word segement is derived from the original TeX pattern by stripping all numbers and periods.  Thus:
+	//		.ach4 becomes ach
+	//		4ab. becomes ab
+	//		a5ba1 becomes aba
+	//
+	// The patgen sequence is derived from the original TeX pattern by
+	//		1) removing any period
+	//		2) placing a "0" between any adjacent letters and at the beginning or end of the TeX pattern (if there is not already a number)
+	//		3) stripping all letters
+	// Thus:
+	//		.ach4 > ach4 > 0a0c0h4 > 0004
+	//		4ab. > 4ab > 4a0b0 > 400
+	//		a5ba1 > 0a5b0a1 > 0501
+	//
+	// The final sequence should be one character longer in length than the related word segment
+	// 
+	// Lastly, the file name must be the languages "Language Code" formatted according to W3C format for language codes (see http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes)
+	// 
+	// To activate the new language defination, simply save the file to the /php-typography/lang/ directory
+	
+	
+
+?>
