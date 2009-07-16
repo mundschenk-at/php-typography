@@ -1,3 +1,7 @@
+1.0.2 - July 15, 2009
+
+Corrected smart_math to not convert slashes in URLs to division signs
+
 1.0 - July 15, 2009
 
 Added test to phpTypography methods process() and process_feed() to skip processing if $isTitle parameter is TRUE and h1 or h2 is an excluded HTML tag
