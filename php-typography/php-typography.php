@@ -3,7 +3,7 @@
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/tyography-php/
 	File: typography.php
-	Version: 1.0
+	Version: 1.0.2
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -721,29 +721,53 @@ echo "<br />";
 
 	//expecting parsedHTML token of type text
 	function smart_math($parsedHTMLtoken) {
+		
 		if(!$this->settings["smartMath"]) return $parsedHTMLtoken;
 
-		//negative numbers
-		$pattern = "/(?<=\A|\s)-(\d+)\b/";
-		$parsedHTMLtoken["value"] = preg_replace($pattern, $this->chr["minus"].'$1', $parsedHTMLtoken["value"]);
-
-		//equations (assumes no spaces between operators and numbers)
-		// we assume + and = are alright
-		// we need to clean up minus, division and multiplication signs
-		// first minus signs
+		//first, let's find math equations
 		$pattern = "/
-				\b
-				(
-					(\d+\)?)
-					\-
-					(\(?)
-					(?=\d)
-				)
-				\b
-			/x"; 
-		$parsedHTMLtoken["value"] = preg_replace("$pattern", '$2'.$this->chr["minus"].'$3', $parsedHTMLtoken["value"]);
-
- 		// revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50)
+				(?<=\A|\s)										# lookbehind assertion: proceeded by beginning of string or space
+				[\.,\'\"\¿\¡".$this->chr["ellipses"].$this->chr["singleQuoteOpen"].$this->chr["doubleQuoteOpen"].$this->chr["guillemetOpen"].$this->chr["guillemetClose"].$this->chr["singleLow9Quote"].$this->chr["doubleLow9Quote"]."]*
+																# allowed proceeding punctuation
+				[\-\(".$this->chr["minus"]."]*					# optionally proceeded by dash, minus sign or open parenthesis
+				[0-9]+											# must begin with a number 
+				(\.[0-9]+)?										# optionally allow decimal values after first integer
+				(												# followed by a math symbol and a number
+					[\/\*x\-+=\^".$this->chr["minus"].$this->chr["multiplication"].$this->chr["division"]."]
+																# allowed math symbols
+					[\-\(".$this->chr["minus"]."]*				# opptionally preceeded by dash, minus sign or open parenthesis
+					[0-9]+										# must begin with a number 
+					(\.[0-9]+)?									# optionally allow decimal values after first integer
+					[\-\(\)".$this->chr["minus"]."]*			# opptionally preceeded by dash, minus sign or parenthesis
+				)+
+				[\.,;:\'\"\?\!".$this->chr["ellipses"].$this->chr["singleQuoteClose"].$this->chr["doubleQuoteClose"].$this->chr["guillemetOpen"].$this->chr["guillemetClose"]."]*
+																# allowed trailing punctuation
+				(?=\Z|\s)										# lookahead assertion: followed by end of string or space
+			/ux";
+		$parsedHTMLtoken["value"] = preg_replace_callback(
+			$pattern,
+			create_function(
+				// single quotes are essential here,
+				// or alternative escape all $ as \$
+				// because $this can not be passed into create_function in PHP 5, we will pass some extra params
+				'
+					$matches,
+					$minus="'.$this->chr["minus"].'",
+					$multiplication="'.$this->chr["multiplication"].'",
+					$division="'.$this->chr["division"].'"
+				',
+				'
+					$matches[0] = str_replace("-", $minus, $matches[0]);
+					$matches[0] = str_replace("/", $division, $matches[0]);
+					$matches[0] = str_replace("x", $multiplication, $matches[0]);
+					$matches[0] = str_replace("*", $multiplication, $matches[0]);
+					return $matches[0];
+				'
+			),
+			$parsedHTMLtoken["value"]
+		);
+		
+		// revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50)
 		$pattern = "/
 				(
 					(?<=\s|\A|".$this->chr["noBreakSpace"].")
@@ -757,31 +781,6 @@ echo "<br />";
 			/xu";
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2", $parsedHTMLtoken["value"]);
 
-		// then multiplication signs
-		$pattern = "/
-				\b
-				(
-					(\d+\)?)
-					\s?[xX\*]\s?
-					(\)?\d+)
-				)
-				\b
-			/x"; 
-		$parsedHTMLtoken["value"] = preg_replace("$pattern", '$2'.$this->chr["multiplication"].'$3', $parsedHTMLtoken["value"]);
-
-		// then division signs
-		$pattern = "/
-				\b
-				(
-					(\d+\)?)
-					[\/]
-					(\(?\d+)
-					(?:st|nd|rd|th)?
-				)
-				\b
-			/x"; 
-		$parsedHTMLtoken["value"] = preg_replace("$pattern", '$2'.$this->chr["division"].'$3', $parsedHTMLtoken["value"]);
-		
 		//revert fractions to basic slash
 		// we'll leave styling fractions to smart_fractions
 		$pattern = "/
