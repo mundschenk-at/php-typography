@@ -51,7 +51,7 @@ class phpTypography {
 		$this->chr["figureSpace"] = $this->uchr(8199);
 		$this->chr["thinSpace"] = $this->uchr(8201);
 		$this->chr["zeroWidthSpace"] = $this->uchr(8203);
-		$this->chr["hyphen"] = $this->uchr(8208);
+		$this->chr["hyphen"] = "-";  // should be $this->uchr(8208), but IE6 chokes;
 		$this->chr["noBreakHyphen"] = $this->uchr(8209);
 		$this->chr["enDash"] = $this->uchr(8211);
 		$this->chr["emDash"] = $this->uchr(8212);
