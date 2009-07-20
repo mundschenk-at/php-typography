@@ -1,4 +1,12 @@
-1.0.2 - July 15, 2009
+1.1 - July 20, 2009
+
+By default, when class phpTypography is constructed, set_defaults is called.  However, if you are going to manually set all settings, you can now bypass the set_defaults call for slightly improved performance.  Just call `$typo = new phpTypography(FALSE)`
+
+1.0.3 - July 17, 2009 =
+
+Reverted use of the hyphen character to the basic minus-hyphen in words like "mother-in-law" because of poor support in IE6
+
+1.0.2 - July 16, 2009
 
 Corrected smart_math to not convert slashes in URLs to division signs
 
