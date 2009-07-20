@@ -3,7 +3,7 @@
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/tyography-php/
 	File: typography.php
-	Version: 1.0.2
+	Version: 1.1
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -38,7 +38,7 @@ class phpTypography {
 	#=======================================================================
 
 	// __ naming defines constructor that is automatically called on each newly-createy object
-	function __construct() {
+	function __construct($setDefaults = TRUE) {
 		$this->chr["noBreakSpace"] = $this->uchr(160);
 		$this->chr["noBreakNarrowSpace"] = $this->uchr(160); //should be 8239, but not supported consistently, used in unit spacing
 		$this->chr["copyright"] = $this->uchr(169);
@@ -70,13 +70,15 @@ class phpTypography {
 		$this->chr["tradeMark"] = $this->uchr(8482);
 		$this->chr["minus"] = $this->uchr(8722);
 
-		$this->set_defaults();
+		if($setDefaults) {
+			$this->set_defaults();
+		}
 		
 		return TRUE;
 	}
 
 	function set_defaults() {
-	
+
 		// general attributes
 		$this->set_tags_to_ignore();
 		$this->set_classes_to_ignore();
@@ -982,6 +984,7 @@ echo "<br />";
 		if(!isset($parsedHTMLtoken["nextChr"])) { // we have the last type "text" child of a block level element
 			$encodings = array("ASCII","UTF-8", "ISO-8859-1");
 			$encoding = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
+			$u="";
 			if("UTF-8" == $encoding) {
 				$u = "u";
 				if(!function_exists('mb_strlen')) return $parsedHTMLtoken;
