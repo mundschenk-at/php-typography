@@ -1,6 +1,7 @@
-1.1 - July 20, 2009
+1.1 - July 22, 2009
 
 By default, when class phpTypography is constructed, set_defaults is called.  However, if you are going to manually set all settings, you can now bypass the set_defaults call for slightly improved performance.  Just call `$typo = new phpTypography(FALSE)`
+Added `html_entity_decode` to process_feed to avoid invalid character injection (according to XML's specs)
 
 1.0.3 - July 17, 2009 =
 

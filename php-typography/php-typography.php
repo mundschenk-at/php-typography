@@ -585,6 +585,9 @@ echo "<br />";
 			$unlockedText = $this->smart_dashes($unlockedText);
 			$unlockedText = $this->smart_ellipses($unlockedText);
 			$unlockedText = $this->smart_marks($unlockedText);
+			
+			// for feeds only we will decode all htmlentities (otherwise we could cause invalid characters)
+			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8");
 		}
 		
 		// add $initialChrs and $widows back into $unlockedTexts;
