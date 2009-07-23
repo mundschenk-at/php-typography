@@ -570,16 +570,14 @@ echo "<br />";
 		$unlockedTexts = $this->parsedHTML->get_unlocked_text();
 		
 		foreach($unlockedTexts as &$unlockedText) {
-			$unlockedText["value"] = htmlentities($unlockedText["value"], ENT_QUOTES, "UTF-8");
+			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
+			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
 			
 			// modify anything that requires adjacent text awareness here
 			$unlockedText = $this->smart_quotes($unlockedText);
 			$unlockedText = $this->smart_dashes($unlockedText);
 			$unlockedText = $this->smart_ellipses($unlockedText);
 			$unlockedText = $this->smart_marks($unlockedText);
-			
-			// for feeds only we will decode all htmlentities (otherwise we could cause invalid characters)
-			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8");
 		}
 		
 		// add $initialChrs and $widows back into $unlockedTexts;
