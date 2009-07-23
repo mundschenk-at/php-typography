@@ -3,7 +3,7 @@
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/tyography-php/
 	File: typography.php
-	Version: 1.3 beta
+	Version: 1.2
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -570,6 +570,7 @@ echo "<br />";
 		$unlockedTexts = $this->parsedHTML->get_unlocked_text();
 		
 		foreach($unlockedTexts as &$unlockedText) {
+			// decode all characters except < > &
 			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
 			
