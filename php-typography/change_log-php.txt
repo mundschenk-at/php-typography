@@ -1,3 +1,7 @@
+1.2 - July 23, 2009
+
+moved the processing of widow handling after hyphenation so that max-pull would not be compared to the length of the adjacent word, but rather the length of the adjacent word segment (i.e. that after a soft hyphen)
+
 1.1 - July 22, 2009
 
 By default, when class phpTypography is constructed, set_defaults is called.  However, if you are going to manually set all settings, you can now bypass the set_defaults call for slightly improved performance.  Just call `$typo = new phpTypography(FALSE)`
