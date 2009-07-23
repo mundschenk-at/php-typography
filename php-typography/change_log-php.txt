@@ -1,3 +1,7 @@
+1.3 beta - in development
+
+Cleaned up HTML character handling in process_feed().  No errors were identified prior to edit, but now it is consistent with how process() works.
+
 1.2 - July 23, 2009
 
 moved the processing of widow handling after hyphenation so that max-pull would not be compared to the length of the adjacent word, but rather the length of the adjacent word segment (i.e. that after a soft hyphen)
