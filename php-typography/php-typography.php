@@ -505,14 +505,7 @@ class phpTypography {
 			//break it down for a bit more granularity
 			$this->parsedText = new parseText();
 			$this->parsedText->load($unlockedText);
-/*
-echo "<br />";
-print_r($this->parsedText->text);
-echo "<br />";
-echo "<br />";
-/**/
 			$parsedMixedWords = $this->parsedText->get_words(-1,0); // prohibit letter only words, allow caps
-//$parsedMixedWords = array(); // prohibit letter only words, allow caps
 			$caps = ($this->settings["hyphenateAllCaps"]) ? 0 : -1 ;
 			$parsedWords = $this->parsedText->get_words(1,$caps);  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
 			$parsedOther = $this->parsedText->get_other();
