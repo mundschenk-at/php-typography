@@ -3,7 +3,7 @@
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/tyography-php/
 	File: typography.php
-	Version: 1.1
+	Version: 1.2
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -12,14 +12,6 @@
 	
 	For web design services, please contact jeff@kingdesk.com.
 */
-
-// cant call $this in create_function() as of PHP5.  Instead, we will set needed data as a global vars
-$noBreakSpace = NULL;
-$zeroWidthSpace = NULL;
-$softHyphen = NULL;
-$dewidowMaxPull = NULL;
-$dewidowMaxLength = NULL;
-
 
 # if used with multibyte language, UTF-8 encoding is required!
 class phpTypography {
@@ -500,7 +492,6 @@ class phpTypography {
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
 
 			// modify anything that requires adjacent text awareness here
-			$unlockedText = $this->dewidow($unlockedText);
 			$unlockedText = $this->smart_math($unlockedText);
 			$unlockedText = $this->smart_quotes($unlockedText);
 			$unlockedText = $this->smart_dashes($unlockedText);
@@ -538,6 +529,7 @@ echo "<br />";
 			
 			//everything that requires HTML injection occurs here (functions above assume tag-free content)
 			//pay careful attention to functions below for tolerance of injected tags
+			$unlockedText = $this->dewidow($unlockedText);
 			
 			$unlockedText = $this->smart_ordinal_suffix($unlockedText);	// call before "style_numbers" and "smart_fractions"	
 			$unlockedText = $this->smart_exponents($unlockedText); // call before "style_numbers"
@@ -1004,12 +996,12 @@ echo "<br />";
 							[\s".$this->chr["zeroWidthSpace"].$this->chr["softHyphen"]."]+
 						)
 						(																#subpattern 2: neighbors widow (short as possible)
-							[^\s]+
+							[^\s".$this->chr["zeroWidthSpace"].$this->chr["softHyphen"]."]+
 						)
 					)
 				)
 				(																		#subpattern 3: space between
-					[\s]+
+					[\s".$this->chr["noBreakSpace"]."]+
 				)
 				(																		#subpattern 4: widow
 					[^\s".$this->chr["zeroWidthSpace"]."]+?
@@ -1020,43 +1012,43 @@ echo "<br />";
 				\Z
 			/x$u";
 
-			
-			// cant call $this in create_function() as of PHP5.  Instead, we will set needed data as a global var
-			global $noBreakSpace, $zeroWidthSpace, $softHyphen, $dewidowMaxPull, $dewidowMaxLength;
-			$noBreakSpace = $this->chr["noBreakSpace"];
-			$zeroWidthSpace = $this->chr["zeroWidthSpace"];
-			$softHyphen = $this->chr["softHyphen"];
-			$dewidowMaxPull = $this->settings["dewidowMaxPull"];
-			$dewidowMaxLength = $this->settings["dewidowMaxLength"];
-
 			$parsedHTMLtoken["value"] = preg_replace_callback(
 				$widowPattern,
 				create_function(
-					'$widow',
 					'
-						// cant call $this in create_function() as of PHP5.  Instead, we will set needed data as a global var
-						global $noBreakSpace, $zeroWidthSpace, $softHyphen, $dewidowMaxPull, $dewidowMaxLength;
-
+						$widow,
+						$noBreakSpace = '.$this->chr["noBreakSpace"].',
+						$zeroWidthSpace = '.$this->chr["zeroWidthSpace"].',
+						$softHyphen = '.$this->chr["softHyphen"].',
+						$dewidowMaxPull = '.$this->settings["dewidowMaxPull"].',
+						$dewidowMaxLength = '.$this->settings["dewidowMaxLength"].'
+					',
+					'
 						$encodings = array("ASCII","UTF-8", "ISO-8859-1");
 						$multibyte = FALSE;
 						$encoding = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
 						if("UTF-8" == $encoding) $multibyte = TRUE;
+
+						// if we are here, we know that widows are being protected in some fashion
+						//   with that, we will assert that widows should never be hyphenated or wrapped
+						//   as such, we will strip soft hyphens and zero-width-spaces
+						$widow[4] = str_replace($zeroWidthSpace, "", $widow[4]);
+						$widow[4] = str_replace($softHyphen, "", $widow[4]);							
+						$widow[5] = preg_replace("/\s+/", $noBreakSpace, $widow[5]);
+						$widow[5] = str_replace($zeroWidthSpace, "", $widow[5]);
+						$widow[5] = str_replace($softHyphen, "", $widow[5]);
 						
 						// eject if widows neighbor is proceeded by a no break space
-						if($widow[1] == "" || strstr($noBreakSpace, $widow[1])) return $widow[0];
+						if($widow[1] == "" || strstr($noBreakSpace, $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 						
-						// strip unwanted characters here so that our check for max string length does not wrongly count these characters
-						$widow[4] = str_replace($zeroWidthSpace, "", $widow[4]);
-						$widow[4] = str_replace($softHyphen, "", $widow[4]);
-						
-					if($multibyte) {
+						if($multibyte) {
 							// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
 							if(
 								($widow[2] != "" && mb_strlen($widow[2]) > $dewidowMaxPull)
 								||
 								mb_strlen($widow[4]) > $dewidowMaxLength
 								)
-									return $widow[0];
+									return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 						} else {
 							// single byte version of previous
 							if(
@@ -1064,14 +1056,10 @@ echo "<br />";
 								||
 								strlen($widow[4]) > $dewidowMaxLength
 								)
-									return $widow[0];
+									return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 						}
 						
-						// if we get here, we are a go
-						$widow[5] = preg_replace("/\s+/", $noBreakSpace, $widow[5]);
-						$widow[5] = str_replace($zeroWidthSpace, "", $widow[5]);
-						$widow[5] = str_replace($softHyphen, "", $widow[5]);
-
+						// lets protect some widows!
 						return $widow[1].$widow[2].$noBreakSpace.$widow[4].$widow[5];
 					'
 				),
