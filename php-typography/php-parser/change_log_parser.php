@@ -1,3 +1,7 @@
+1.4 - July 23, 2009
+
+Added letter connectors (like soft-hyphens) as prohibited characters for get_words if it is set to strictly return letter only words.
+
 1.3 - July 23, 2009
 
 Uninitialized variables corrected throughout.
