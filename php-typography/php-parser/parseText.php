@@ -340,7 +340,7 @@ class parseText {
 				}
 				
 				if(isset($this->parsedHTML["parents"]))
-					$tokens[$index]["parents"] = $parsedHTML["parents"];
+					$tokens[$index]["parents"] = $this->parsedHTML["parents"];
 				
 				$index++;
 			}
