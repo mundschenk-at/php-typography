@@ -1,8 +1,7 @@
 <?php
 /*
 	Project: PHP Typography
-	Project URI: http://kingdesk.com/projects/tyography-php/
-	File: typography.php
+	Project URI: http://kingdesk.com/projects/php-tyography/
 	Version: 1.3
 
 
@@ -337,7 +336,8 @@ class phpTypography {
 	
 	// defines hyphenation language for text
 	function set_hyphenation_language($lang = "en-US") {
-		if ($this->settings["hyphenLanguage"] == $lang) return TRUE;
+		if (isset($this->settings["hyphenLanguage"]) &&	$this->settings["hyphenLanguage"] == $lang)
+			return TRUE;
 		
 		$this->settings["hyphenLanguage"] = $lang;
 
@@ -735,24 +735,7 @@ class phpTypography {
 			/ux";
 		$parsedHTMLtoken["value"] = preg_replace_callback(
 			$pattern,
-			create_function(
-				// single quotes are essential here,
-				// or alternative escape all $ as \$
-				// because $this can not be passed into create_function in PHP 5, we will pass some extra params
-				'
-					$matches,
-					$minus="'.$this->chr["minus"].'",
-					$multiplication="'.$this->chr["multiplication"].'",
-					$division="'.$this->chr["division"].'"
-				',
-				'
-					$matches[0] = str_replace("-", $minus, $matches[0]);
-					$matches[0] = str_replace("/", $division, $matches[0]);
-					$matches[0] = str_replace("x", $multiplication, $matches[0]);
-					$matches[0] = str_replace("*", $multiplication, $matches[0]);
-					return $matches[0];
-				'
-			),
+			array($this, '_smart_math_callback'),
 			$parsedHTMLtoken["value"]
 		);
 		
@@ -787,6 +770,14 @@ class phpTypography {
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1/$2", $parsedHTMLtoken["value"]);
 
 		return $parsedHTMLtoken;
+	}
+	
+	function _smart_math_callback($matches) {
+		$matches[0] = str_replace("-", $this->chr["minus"], $matches[0]);
+		$matches[0] = str_replace("/", $this->chr["division"], $matches[0]);
+		$matches[0] = str_replace("x", $this->chr["multiplication"], $matches[0]);
+		$matches[0] = str_replace("*", $this->chr["multiplication"], $matches[0]);
+		return $matches[0];
 	}
 
 	//expecting parsedHTML token of type text
@@ -971,7 +962,8 @@ class phpTypography {
 		if(!isset($parsedHTMLtoken["nextChr"])) { // we have the last type "text" child of a block level element
 			$encodings = array("ASCII","UTF-8", "ISO-8859-1");
 			$encoding = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-			$u="";
+			$u = '';
+
 			if("UTF-8" == $encoding) {
 				$u = "u";
 				if(!function_exists('mb_strlen')) return $parsedHTMLtoken;
@@ -1006,61 +998,55 @@ class phpTypography {
 
 			$parsedHTMLtoken["value"] = preg_replace_callback(
 				$widowPattern,
-				create_function(
-					'
-						$widow,
-						$noBreakSpace = '.$this->chr["noBreakSpace"].',
-						$zeroWidthSpace = '.$this->chr["zeroWidthSpace"].',
-						$softHyphen = '.$this->chr["softHyphen"].',
-						$dewidowMaxPull = '.$this->settings["dewidowMaxPull"].',
-						$dewidowMaxLength = '.$this->settings["dewidowMaxLength"].'
-					',
-					'
-						$encodings = array("ASCII","UTF-8", "ISO-8859-1");
-						$multibyte = FALSE;
-						$encoding = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-						if("UTF-8" == $encoding) $multibyte = TRUE;
-
-						// if we are here, we know that widows are being protected in some fashion
-						//   with that, we will assert that widows should never be hyphenated or wrapped
-						//   as such, we will strip soft hyphens and zero-width-spaces
-						$widow[4] = str_replace($zeroWidthSpace, "", $widow[4]);
-						$widow[4] = str_replace($softHyphen, "", $widow[4]);							
-						$widow[5] = preg_replace("/\s+/", $noBreakSpace, $widow[5]);
-						$widow[5] = str_replace($zeroWidthSpace, "", $widow[5]);
-						$widow[5] = str_replace($softHyphen, "", $widow[5]);
-						
-						// eject if widows neighbor is proceeded by a no break space
-						if($widow[1] == "" || strstr($noBreakSpace, $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
-						
-						if($multibyte) {
-							// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
-							if(
-								($widow[2] != "" && mb_strlen($widow[2]) > $dewidowMaxPull)
-								||
-								mb_strlen($widow[4]) > $dewidowMaxLength
-								)
-									return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
-						} else {
-							// single byte version of previous
-							if(
-								($widow[2] != "" && strlen($widow[2]) > $dewidowMaxPull)
-								||
-								strlen($widow[4]) > $dewidowMaxLength
-								)
-									return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
-						}
-						
-						// lets protect some widows!
-						return $widow[1].$widow[2].$noBreakSpace.$widow[4].$widow[5];
-					'
-				),
+				array($this, '_dewidow_callback'),
 				$parsedHTMLtoken["value"]
 				);
 			
 		}
 		return $parsedHTMLtoken;
 	}
+	
+
+	function _dewidow_callback($widow) {
+		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
+		$multibyte = FALSE;
+		$encoding = mb_detect_encoding($widow[0]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
+		if("UTF-8" == $encoding) $multibyte = TRUE;
+
+		// if we are here, we know that widows are being protected in some fashion
+		//   with that, we will assert that widows should never be hyphenated or wrapped
+		//   as such, we will strip soft hyphens and zero-width-spaces
+		$widow[4] = str_replace($this->chr["zeroWidthSpace"], "", $widow[4]);
+		$widow[4] = str_replace($this->chr["softHyphen"], "", $widow[4]);							
+		$widow[5] = preg_replace("/\s+/", $this->chr["noBreakSpace"], $widow[5]);
+		$widow[5] = str_replace($this->chr["zeroWidthSpace"], "", $widow[5]);
+		$widow[5] = str_replace($this->chr["softHyphen"], "", $widow[5]);
+		
+		// eject if widows neighbor is proceeded by a no break space
+		if($widow[1] == "" || strstr($this->chr["noBreakSpace"], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		
+		if($multibyte) {
+			// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
+			if(
+				($widow[2] != "" && mb_strlen($widow[2]) > $this->settings["dewidowMaxPull"])
+				||
+				mb_strlen($widow[4]) > $this->settings["dewidowMaxLength"]
+				)
+					return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		} else {
+			// single byte version of previous
+			if(
+				($widow[2] != "" && strlen($widow[2]) > $this->settings["dewidowMaxPull"])
+				||
+				strlen($widow[4]) > $this->settings["dewidowMaxLength"]
+				)
+					return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		}
+		
+		// lets protect some widows!
+		return $widow[1].$widow[2].$this->chr["noBreakSpace"].$widow[4].$widow[5];
+	}
+
 
 	// expecting parsedText tokens
 	function wrap_urls($parsedTextTokens) {
