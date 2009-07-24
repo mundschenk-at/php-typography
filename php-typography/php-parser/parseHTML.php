@@ -225,7 +225,7 @@ $i = 0;
 						$tokens[$index]["parents"] = $nestedTags;
 				} elseif(preg_match("@\A$htmlTagDetail@x", $part, $tagMatch)) {
 					$tagName = $tagMatch[2];
-					$selfClose = ($tagMatch[3]) ? TRUE : FALSE;
+					$selfClose = (isset($tagMatch[3]) && ($tagMatch[3])) ? TRUE : FALSE;
 					$closing = ($tagMatch[1] || $selfClose) ? TRUE : FALSE;
 				
 					$tokens[$index] = array(
@@ -263,7 +263,11 @@ $i = 0;
 						
 						//add to $nestedTags
 						$nestedTags[$index]["tagName"] = $tagName;
-						$nestedTags[$index]["attributes"] = $tokens[$index]["attribute"];
+						if (isset($tokens[$index]["attribute"])) {
+							$nestedTags[$index]["attributes"] = $tokens[$index]["attribute"];
+						} else {
+							$nestedTags[$index]["attributes"] = NULL;
+						}
 					} else { // is closing
 						if($selfClose) {
 							// remember parents
@@ -379,7 +383,7 @@ $i = 0;
 	#	Returns:	TRUE on completion
 	function update($tokens) {
 		foreach($tokens as $index => $token) {
-			if(!$this->html[$index]["locked"])
+			if(!isset($this->html[$index]["locked"]) || !$this->html[$index]["locked"])
 				$this->html[$index]["value"] = $token["value"];
 		}
 		return TRUE;		
@@ -1088,7 +1092,7 @@ $i = 0;
 	function get_unlocked_type($type) {
 		$tokens = array();
 		foreach($this->get_type($type) as $index => $token) {
-			if(!$token["locked"])
+			if(!(isset($token["locked"])) || !$token["locked"])
 				$tokens[$index] = $token; 
 		}
 		return $tokens;		
