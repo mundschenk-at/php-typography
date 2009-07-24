@@ -450,10 +450,10 @@ class parseText {
 		foreach($words as $index => $token) {
 			if($this->mb) {
 				$capped = mb_strtoupper($token["value"], "UTF-8");
-				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/u", "", $token["value"]);
+				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/ux", "", $token["value"]);
 			} else {
 				$capped = strtoupper($token["value"]);
-				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/", "", $token["value"]);
+				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/ux", "", $token["value"]);
 			}
 			
 			if( ($abc == -1 && $lettered != $token["value"]) && ($caps == -1 && $capped != $token["value"]) ) $tokens[$index] = $token;
