@@ -181,7 +181,7 @@ class parseText {
 			";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
 
-
+		// duplicated in get_words
 		// letter connectors allowed in words
 		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
 		#		underscore ("&#95;", "&#x005f;")
@@ -417,13 +417,43 @@ class parseText {
 	function get_words($abc = 0, $caps = 0) {
 		$words = $this->get_type("word");
 		$tokens = array();
+		
+		//duplicated from load
+		$htmlLetterConnectors = '
+			(?:
+				(?:												# alpha matches
+					&
+					(?: shy|zwj|zwnj )
+					;
+				)
+				|
+				(?:												# decimal matches
+					&\#
+					(?: 45|95|173|820[3-589]|8210 )
+					;
+				)
+				|
+				(?:												# hexidecimal matches
+					&\#x
+					(?: 002d|005f|00ad|200[b-d]|201[0-2] )
+					;
+				)
+				|
+				(?:												# actual characters
+					\x{002d}|\x{005f}|\x{00ad}|\x{200b}|\x{200c}|\x{200d}|\x{2010}|\x{2011}|\x{2012}
+				)
+			)
+		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+
+
+
 		foreach($words as $index => $token) {
 			if($this->mb) {
 				$capped = mb_strtoupper($token["value"], "UTF-8");
-				$lettered = preg_replace("/[0-9\-_&#;\/]/u", "", $token["value"]);
+				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/u", "", $token["value"]);
 			} else {
 				$capped = strtoupper($token["value"]);
-				$lettered = preg_replace("/[0-9\-_&#;\/]/", "", $token["value"]);
+				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/", "", $token["value"]);
 			}
 			
 			if( ($abc == -1 && $lettered != $token["value"]) && ($caps == -1 && $capped != $token["value"]) ) $tokens[$index] = $token;
