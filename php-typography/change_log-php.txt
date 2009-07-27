@@ -1,3 +1,7 @@
+1.5 - July 27, 2009
+
+Added Hungarian Hyphenation Pattern
+
 1.4 - July 23, 2009
 
 Updated with PHP Parser 1.4 (fixed a hyphenation problem where pre-hyphenated words were processed again)
