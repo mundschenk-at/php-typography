@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.5
+	Version: 1.6
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -495,6 +495,9 @@ class phpTypography {
 
 		foreach($unlockedTexts as &$unlockedText) {
 		
+			// we won't be doing anything with spaces, so we can jump ship if that is all we have
+			if (0 == strlen(trim($unlockedText["value"]))) continue;
+		
 			// decode all characters except < > &
 			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
@@ -571,6 +574,10 @@ class phpTypography {
 		$unlockedTexts = $this->parsedHTML->get_unlocked_text();
 		
 		foreach($unlockedTexts as &$unlockedText) {
+		
+			// we won't be doing anything with spaces, so we can jump ship if that is all we have
+			if (0 == strlen(trim($unlockedText["value"]))) continue;
+
 			// decode all characters except < > &
 			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
@@ -1362,7 +1369,7 @@ class phpTypography {
 					$lhwLength = mb_strlen($lowercaseHyphenedWord, "UTF-8");
 				} else {  //same as above without mutlibyte string functions to improve preformance
 					$lowercaseHyphenedWord = $this->settings["hyphenationExceptions"][$theKey];
-					$lhwArray = $this->str_split($lowercaseHyphenedWord, 1);
+					$lhwArray = str_split($lowercaseHyphenedWord, 1);
 					$lhwLength = strlen($lowercaseHyphenedWord);
 				}
 			
@@ -1395,7 +1402,7 @@ class phpTypography {
 								if($multibyte)
 									$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["begin"][$segment], 1, "UTF-8");
 								else
-									$segmentPattern = $this->str_split($this->settings["hyphenationPattern"]["begin"][$segment], 1);
+									$segmentPattern = str_split($this->settings["hyphenationPattern"]["begin"][$segment], 1);
 								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
 							}
 						}
@@ -1404,7 +1411,7 @@ class phpTypography {
 								if($multibyte)
 									$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["end"][$segment], 1, "UTF-8");
 								else
-									$segmentPattern = $this->str_split($this->settings["hyphenationPattern"]["end"][$segment], 1);
+									$segmentPattern = str_split($this->settings["hyphenationPattern"]["end"][$segment], 1);
 								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
 							}
 						}
@@ -1412,7 +1419,7 @@ class phpTypography {
 							if($multibyte)
 								$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["all"][$segment], 1, "UTF-8");
 							else
-								$segmentPattern = $this->str_split($this->settings["hyphenationPattern"]["all"][$segment], 1);
+								$segmentPattern = str_split($this->settings["hyphenationPattern"]["all"][$segment], 1);
 							$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
 						}
 					}
@@ -1423,7 +1430,7 @@ class phpTypography {
 			if($multibyte) {
 				$wordArray = $this->mb_str_split($parsedTextToken["value"], 1, "UTF-8");
 			} else {  //same as above without mutlibyte string functions to improve preformance
-				$wordArray = $this->str_split($parsedTextToken["value"], 1);
+				$wordArray = str_split($parsedTextToken["value"], 1);
 			}
 			
 			$hyphenatedWord = "";
@@ -1454,15 +1461,6 @@ class phpTypography {
 	//is a number odd? returns 0 if even and 1 if odd
 	function is_odd($number) {
 		return $number % 2;
-	}
-
-	// because str_split is only available in PHP5 or greater
-	function str_split($text, $split = 1) {
-		$array = array();
-		for ($i = 0; $i < strlen($text); $i += $split) {
-			$array[] = substr($text, $i, $split);
-		}
-		return $array;
 	}
 
 	//multibyte character support is built in to accomodate language support of multibyte alphabets
