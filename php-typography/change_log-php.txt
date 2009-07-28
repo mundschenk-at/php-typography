@@ -1,3 +1,7 @@
+1.6 - July 28, 2009
+
+Efficiency Optimizations ( approximately 25% speed increase )
+
 1.5 - July 27, 2009
 
 Added the set_hyphenate_title_case() method to exclude hyphenation of capitalized (title case) words to help protect proper nouns
