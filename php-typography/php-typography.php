@@ -389,6 +389,7 @@ class phpTypography {
 		$this->settings["hyphenateAllCaps"] = $on;
 		return TRUE;
 	}
+	
 	// allows hyphenation of strings of all capital characters
 	// added in version 1.5
 	function set_hyphenate_title_case($on = TRUE) {
