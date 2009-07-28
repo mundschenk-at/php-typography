@@ -1,3 +1,7 @@
+1.7 - July 28, 2009
+
+Reformatted language files with line returns after each key=>value pair in an array
+
 1.6 - July 28, 2009
 
 Efficiency Optimizations ( approximately 25% speed increase ) Thanks Jenny!
