@@ -1,6 +1,6 @@
 1.6 - July 28, 2009
 
-Efficiency Optimizations ( approximately 25% speed increase )
+Efficiency Optimizations ( approximately 25% speed increase ) Thanks Jenny!
 
 1.5 - July 27, 2009
 
