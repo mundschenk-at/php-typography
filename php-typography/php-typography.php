@@ -114,6 +114,7 @@ class phpTypography {
 		$this->set_min_after_hyphenation();
 		$this->set_hyphenate_headings();
 		$this->set_hyphenate_all_caps();
+		$this->set_hyphenate_title_case(); // added in version 1.5
 		$this->set_hyphenation_exceptions();
 		
 		return TRUE;
@@ -386,6 +387,12 @@ class phpTypography {
 	// allows hyphenation of strings of all capital characters
 	function set_hyphenate_all_caps($on = TRUE) {
 		$this->settings["hyphenateAllCaps"] = $on;
+		return TRUE;
+	}
+	// allows hyphenation of strings of all capital characters
+	// added in version 1.5
+	function set_hyphenate_title_case($on = TRUE) {
+		$this->settings["hyphenateTitleCase"] = $on;
 		return TRUE;
 	}
 	
@@ -1339,8 +1346,12 @@ class phpTypography {
 				$theKey = strtolower($parsedTextToken["value"]);
 			}
 		
-			if($wordLength< $this->settings["hyphenMinLength"]) continue;
+			if($wordLength < $this->settings["hyphenMinLength"]) continue;
 
+			//if this is a capitalized word, and settings do not allow hyphenation of such, abort!
+			// note. this is different than uppercase words, where we are looking for title case
+			if( !$this->settings["hyphenateTitleCase"] && substr($theKey,0,1) != substr($parsedTextToken["value"],0,1)) continue;
+			
 			// give exceptions preference
 			if(isset($this->settings["hyphenationExceptions"][$theKey])) {
 				//Set the wordPattern - this method keeps any contextually important capitalization
