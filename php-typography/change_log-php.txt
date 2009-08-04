@@ -1,6 +1,8 @@
 1.8 - August 4, 2009
 
 Fixed date handling in smart_math() and smart_dashes() methods
+Fixed style_caps() method to be friendly with soft-hyphens
+
 
 1.7 - July 28, 2009
 
