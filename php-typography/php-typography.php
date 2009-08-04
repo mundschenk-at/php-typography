@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.7
+	Version: 1.8
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -767,6 +767,27 @@ class phpTypography {
 				)
 			/xu";
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2", $parsedHTMLtoken["value"]);
+		
+		// revert dates seperated by dashes back to plain minus-hyphen
+		$pattern = "/
+				(
+					(?<=\s|\A|".$this->chr["noBreakSpace"].")
+					\d+
+				)
+				[\-".$this->chr["minus"]."]
+				(
+					\d+
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+				".$this->chr["minus"]."
+				(
+					\d+
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1#$2#$3", $parsedHTMLtoken["value"]);
+
+
 
 		//revert fractions to basic slash
 		// we'll leave styling fractions to smart_fractions
