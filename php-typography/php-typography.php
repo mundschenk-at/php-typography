@@ -700,7 +700,81 @@ class phpTypography {
 		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)\-(\d+\b)/", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(\b\d{3})".$this->chr["enDash"]."(\d{4}\b)/", '$1'.$this->chr["noBreakHyphen"].'$2', $parsedHTMLtoken["value"]); // phone numbers
 		$parsedHTMLtoken["value"] = str_replace("xn".$this->chr["enDash"], "xn--", $parsedHTMLtoken["value"]);
+
+
+		// revert dates back to original formats
 		
+		// YYYY-MM-DD
+		$pattern = "/
+				(
+					(?<=\s|\A|".$this->chr["noBreakSpace"].")
+					[12][0-9]{3}
+				)
+				[\-".$this->chr["enDash"]."]
+				(
+					(?:[0][1-9]|[1][0-2])
+				)
+				[\-".$this->chr["enDash"]."]
+				(
+					(?:[0][1-9]|[12][0-9]|[3][0-1])
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2-$3", $parsedHTMLtoken["value"]);
+		
+		// MM-DD-YYYY or DD-MM-YYYY
+		$pattern = "/
+				(?:
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0]?[1-9]|[1][0-2])
+						)
+						[\-".$this->chr["enDash"]."]
+						(
+							(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+						)
+					)
+					|
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+						)
+						[\-".$this->chr["enDash"]."]
+						(
+							(?:[0]?[1-9]|[1][0-2])
+						)
+					)
+				)
+				[\-".$this->chr["enDash"]."]
+				(
+					[12][0-9]{3}
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1$3-$2$4-$5", $parsedHTMLtoken["value"]);
+		
+		// YYYY-MM or YYYY-DDDD next
+		$pattern = "/
+				(
+					(?<=\s|\A|".$this->chr["noBreakSpace"].")
+					[12][0-9]{3}
+				)
+				[\-".$this->chr["enDash"]."]
+				(
+					(?:
+						(?:[0][1-9]|[1][0-2])
+						|
+						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
+					)
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2", $parsedHTMLtoken["value"]);
+
+
+
 		return $parsedHTMLtoken;
 	}
 
@@ -760,33 +834,13 @@ class phpTypography {
 					(?<=\s|\A|".$this->chr["noBreakSpace"].")
 					\d+
 				)
-				".$this->chr["minus"]."
+				[\-".$this->chr["minus"]."]
 				(
 					\d+
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
 				)
 			/xu";
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2", $parsedHTMLtoken["value"]);
-		
-		// revert dates seperated by dashes back to plain minus-hyphen
-		$pattern = "/
-				(
-					(?<=\s|\A|".$this->chr["noBreakSpace"].")
-					\d+
-				)
-				".$this->chr["minus"]."
-				(
-					\d+
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
-				)
-				".$this->chr["minus"]."
-				(
-					\d+
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
-				)
-			/xu";
-		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1 x $2 x $3", $parsedHTMLtoken["value"]);
-
 
 
 		//revert fractions to basic slash
@@ -804,6 +858,110 @@ class phpTypography {
 				)
 			/xu";
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1/$2", $parsedHTMLtoken["value"]);
+
+		
+		// revert date back to original formats
+		
+		// YYYY-MM-DD
+		$pattern = "/
+				(
+					(?<=\s|\A|".$this->chr["noBreakSpace"].")
+					[12][0-9]{3}
+				)
+				[\-".$this->chr["minus"]."]
+				(
+					(?:[0][1-9]|[1][0-2])
+				)
+				[\-".$this->chr["minus"]."]
+				(
+					(?:[0][1-9]|[12][0-9]|[3][0-1])
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1-$2-$3", $parsedHTMLtoken["value"]);
+		
+		// MM-DD-YYYY or DD-MM-YYYY
+		$pattern = "/
+				(?:
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0]?[1-9]|[1][0-2])
+						)
+						[\-".$this->chr["minus"]."]
+						(
+							(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+						)
+					)
+					|
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+						)
+						[\-".$this->chr["minus"]."]
+						(
+							(?:[0]?[1-9]|[1][0-2])
+						)
+					)
+				)
+				[\-".$this->chr["minus"]."]
+				(
+					[12][0-9]{3}
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1$3-$2$4-$5", $parsedHTMLtoken["value"]);
+		
+		// YYYY-MM or YYYY-DDDD next
+		$pattern = "/
+				(
+					(?<=\s|\A|".$this->chr["noBreakSpace"].")
+					[12][0-9]{3}
+				)
+				[\-".$this->chr["minus"]."]
+				(
+					(?:
+						(?:[0][1-9]|[1][0-2])
+						|
+						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
+					)
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+			
+		// MM/DD/YYYY or DD/MM/YYYY
+		$pattern = "/
+				(?:
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0][1-9]|[1][0-2])
+						)
+						[\/".$this->chr["division"]."]
+						(
+							(?:[0][1-9]|[12][0-9]|[3][0-1])
+						)
+					)
+					|
+					(?:
+						(
+							(?<=\s|\A|".$this->chr["noBreakSpace"].")
+							(?:[0][1-9]|[12][0-9]|[3][0-1])
+						)
+						[\/".$this->chr["division"]."]
+						(
+							(?:[0][1-9]|[1][0-2])
+						)
+					)
+				)
+				[\/".$this->chr["division"]."]
+				(
+					[12][0-9]{3}
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
+				)
+			/xu";
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1$3/$2$4/$5", $parsedHTMLtoken["value"]);
 
 		return $parsedHTMLtoken;
 	}
