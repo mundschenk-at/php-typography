@@ -774,7 +774,7 @@ class phpTypography {
 					(?<=\s|\A|".$this->chr["noBreakSpace"].")
 					\d+
 				)
-				[\-".$this->chr["minus"]."]
+				".$this->chr["minus"]."
 				(
 					\d+
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
@@ -785,7 +785,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
 				)
 			/xu";
-		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1#$2#$3", $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1 x $2 x $3", $parsedHTMLtoken["value"]);
 
 
 
