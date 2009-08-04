@@ -1377,20 +1377,26 @@ class phpTypography {
 		// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
 		// for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
 		$pattern = '
-				\b								# word boundary
+				(?<![\w\-_'.$this->chr["zeroWidthSpace"].$this->chr["softHyphen"].'])
+												# negative lookbehind assertion
 				(
 					(?:							# CASE 1: " 9A "
 						[0-9]+					# starts with at least one number
 						\p{Lu}					# must contain at least one capital letter
-						(?:\p{Lu}|[0-9])*		# may be followed by any number of numbers or capital letters
+						(?:\p{Lu}|[0-9]|\-|_|'.$this->chr["zeroWidthSpace"].'|'.$this->chr["softHyphen"].')*
+												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 					)
 					|
 					(?:							# CASE 2: " A9 "
 						\p{Lu}					# starts with capital letter
-						(?:\p{Lu}|[0-9])+		# may be followed by any number of numbers or capital letters
+						(?:\p{Lu}|[0-9])		# must be followed a number or capital letter
+						(?:\p{Lu}|[0-9]|\-|_|'.$this->chr["zeroWidthSpace"].'|'.$this->chr["softHyphen"].')*
+												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
+
 					)
 				)
-				\b								# word boundary
+				(?![\w\-_'.$this->chr["zeroWidthSpace"].$this->chr["softHyphen"].'])
+							# negative lookahead assertion
 			'; // required modifiers: x (multiline pattern) u (utf8)
 		
 		$parsedHTMLtoken["value"] = preg_replace("/$pattern/xu", '<span class="caps">$1</span>', $parsedHTMLtoken["value"]);
