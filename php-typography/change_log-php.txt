@@ -1,3 +1,7 @@
+1.8 - August 4, 2009
+
+Fixed date handling in smart_math() and smart_dashes() methods
+
 1.7 - July 28, 2009
 
 Reformatted language files with line returns after each key=>value pair in an array
