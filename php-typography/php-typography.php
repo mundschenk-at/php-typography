@@ -870,11 +870,11 @@ class phpTypography {
 				)
 				[\-".$this->chr["minus"]."]
 				(
-					(?:[0][1-9]|[1][0-2])
+					(?:[0]?[1-9]|[1][0-2])
 				)
 				[\-".$this->chr["minus"]."]
 				(
-					(?:[0][1-9]|[12][0-9]|[3][0-1])
+					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr["noBreakSpace"].")
 				)
 			/xu";
@@ -913,7 +913,7 @@ class phpTypography {
 			/xu";
 		$parsedHTMLtoken["value"] = preg_replace($pattern, "$1$3-$2$4-$5", $parsedHTMLtoken["value"]);
 		
-		// YYYY-MM or YYYY-DDDD next
+		// YYYY-MM or YYYY-DDD next
 		$pattern = "/
 				(
 					(?<=\s|\A|".$this->chr["noBreakSpace"].")
