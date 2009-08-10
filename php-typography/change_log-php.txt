@@ -1,3 +1,7 @@
+1.9
+
+Fixed bug where hyphenation pattern settings were not initialized with multiple phpTypography class instances.
+
 1.8 - August 4, 2009
 
 Fixed date handling in smart_math() and smart_dashes() methods
