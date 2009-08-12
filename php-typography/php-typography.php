@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.9 beta
+	Version: 1.9
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -87,6 +87,7 @@ class phpTypography {
 		// DEPRECIATED: $this->set_smart_multiplication();
 		
 		//smart spacing
+		$this->set_single_character_word_spacing();
 		$this->set_fraction_spacing();
 		$this->set_unit_spacing();
 		$this->set_units();
@@ -223,6 +224,12 @@ class phpTypography {
 		return TRUE;
 	}
 
+	// single character words are forced to next line with insertion of &nbsp;
+	function set_single_character_word_spacing($on = TRUE) {
+		$this->settings["singleCharacterWordSpacing"] = $on;
+		return TRUE;
+	}
+	
 	// units and values are kept together with insertion of &nbsp;
 	function set_fraction_spacing($on = TRUE) {
 		$this->settings["fractionSpacing"] = $on;
@@ -510,6 +517,7 @@ class phpTypography {
 			$unlockedText = $this->smart_marks($unlockedText);
 			
 			//keep spacing after smart character replacement
+			$unlockedText = $this->single_character_word_spacing($unlockedText);
 			$unlockedText = $this->dash_spacing($unlockedText);
 			$unlockedText = $this->unit_spacing($unlockedText);
 
@@ -1045,6 +1053,50 @@ class phpTypography {
 		return $parsedHTMLtoken;
 	}
 
+
+
+	//expecting parsedHTML token of type text
+	function single_character_word_spacing($parsedHTMLtoken) {
+		if(!$this->settings["singleCharacterWordSpacing"]) return $parsedHTMLtoken;
+
+		// add $nextChr and $prevChr for context
+		$nextChr = "";
+		$prevChr = "";
+		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
+			$prevChr = $parsedHTMLtoken["prevChr"];
+			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
+		}
+		if(isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
+			$nextChr = $parsedHTMLtoken["nextChr"];
+			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
+		}
+		
+		$parsedHTMLtoken["value"] = preg_replace(
+			"/
+				(?:
+					(\s)
+					(\w)
+					\s
+					(?=\w)
+				)
+			/xu", 
+			'$1$2'.$this->chr['noBreakSpace'], 
+			$parsedHTMLtoken["value"]
+			);
+			
+		//remove $prevChr
+		if($prevChr)
+			$parsedHTMLtoken["value"] = substr($parsedHTMLtoken["value"], 1);
+		//remove $nextChr
+		if($nextChr)
+			$parsedHTMLtoken["value"] = substr($parsedHTMLtoken["value"], 0, -1);
+
+		return $parsedHTMLtoken;
+
+	}
+
+
+
 	//expecting parsedHTML token of type text
 	function dash_spacing($parsedHTMLtoken) {
 		if(!$this->settings["dashSpacing"]) return $parsedHTMLtoken;
@@ -1083,7 +1135,8 @@ class phpTypography {
 			$this->chr['thinSpace'].'$1$2'.$this->chr['thinSpace'], 
 			$parsedHTMLtoken["value"]
 			);
-/**/		return $parsedHTMLtoken;
+			
+		return $parsedHTMLtoken;
 	}
 
 	//expecting parsedHTML token of type text
