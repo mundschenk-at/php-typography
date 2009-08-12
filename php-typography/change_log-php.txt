@@ -1,6 +1,6 @@
 1.9 - August 12, 2009
 
-Added option to force single character letters to wrap to new line (unless they are widows).
+Added option to force single character words to wrap to new line (unless they are widows).
 Fixed bug where hyphenation pattern settings were not initialized with multiple phpTypography class instances.
 
 1.8 - August 4, 2009
