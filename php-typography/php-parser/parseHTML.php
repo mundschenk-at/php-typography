@@ -5,7 +5,6 @@ Project Name: PHP Parser
 Project URI: http://kingdesk.com/projects/php-parser/
 Author: Jeffrey D. King
 Author URI: http://kingdesk.com/about/jeff/
-Version: 1.0 beta 1
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
 
