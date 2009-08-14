@@ -1,3 +1,7 @@
+1.11 - August 14, 2009
+
+Added language specific quote handling (for single quotes, not just double) for English, German and French quotation styles
+
 1.10 - August 14, 2009
 
 Added set_smart_quotes_language() for unique handling of English, German and French quotation styles
