@@ -1,3 +1,8 @@
+1.10 - August 14, 2009
+
+Increased set of recognized multibyte word characters
+Corrected multibyte handling of nextChr and prevChr
+
 1.4 - July 23, 2009
 
 Added letter connectors (like soft-hyphens) as prohibited characters for get_words if it is set to strictly return letter only words.
