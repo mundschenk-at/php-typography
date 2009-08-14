@@ -34,7 +34,7 @@ class phpTypography {
 		$this->chr["noBreakNarrowSpace"] = $this->uchr(160); //should be 8239, but not supported consistently, used in unit spacing
 		$this->chr["copyright"] = $this->uchr(169);
 		$this->chr["guillemetOpen"] = $this->uchr(171);
-		$this->chr["softHyphen"] = "SHY"; //$this->uchr(173);
+		$this->chr["softHyphen"] = $this->uchr(173);
 		$this->chr["registeredMark"] = $this->uchr(174);
 		$this->chr["guillemetClose"] = $this->uchr(187);
 		$this->chr["multiplication"] = $this->uchr(215);
