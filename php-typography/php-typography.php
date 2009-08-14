@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.10
+	Version: 1.11
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -46,15 +46,18 @@ class phpTypography {
 		$this->chr["noBreakHyphen"] = $this->uchr(8209);
 		$this->chr["enDash"] = $this->uchr(8211);
 		$this->chr["emDash"] = $this->uchr(8212);
-		$this->chr["singleQuoteOpen"] = $this->uchr(8216);
-		$this->chr["singleQuoteClose"] = $this->uchr(8217);
+		$this->chr["singleQuoteOpen"] = $this->uchr(8216); // reset in set_smart_quotes_language()
+		$this->chr["singleQuoteClose"] = $this->uchr(8217); // reset in set_smart_quotes_language()
+		$this->chr["apostrophe"] = $this->uchr(8217); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies
 		$this->chr["singleLow9Quote"] = $this->uchr(8218);
 		$this->chr["doubleQuoteOpen"] = $this->uchr(8220); // reset in set_smart_quotes_language()
 		$this->chr["doubleQuoteClose"] = $this->uchr(8221); // reset in set_smart_quotes_language()
 		$this->chr["doubleLow9Quote"] = $this->uchr(8222);
 		$this->chr["ellipses"] = $this->uchr(8230);
 		$this->chr["singlePrime"] = $this->uchr(8242);
-		$this->chr["doublePrime"] = $this->uchr(8243);		
+		$this->chr["doublePrime"] = $this->uchr(8243);
+		$this->chr["singleAngleQuoteOpen"] = $this->uchr(8249);
+		$this->chr["singleAngleQuoteClose"] = $this->uchr(8250);
 		$this->chr["fractionSlash"] = $this->uchr(8260);
 		$this->chr["soundCopyMark"] = $this->uchr(8471);
 		$this->chr["serviceMark"] = $this->uchr(8480);
@@ -186,16 +189,24 @@ class phpTypography {
 	function set_smart_quotes_language($lang = "en") {
 		if($lang == "de") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["doubleLow9Quote"];
-			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
+			$this->chr["doubleQuoteClose"] = $this->uchr(8220);
+			$this->chr["singleQuoteOpen"] = $this->chr["singleLow9Quote"];
+			$this->chr["singleQuoteClose"] = $this->uchr(8216);
 		} elseif($lang == "fr") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["guillemetOpen"];
 			$this->chr["doubleQuoteClose"] = $this->chr["guillemetClose"];
+			$this->chr["singleQuoteOpen"] = $this->chr["singleAngleQuoteOpen"];
+			$this->chr["singleQuoteClose"] = $this->chr["singleAngleQuoteClose"];
 		} elseif($lang == "fr-reverse") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["guillemetClose"];
 			$this->chr["doubleQuoteClose"] = $this->chr["guillemetOpen"];
+			$this->chr["singleQuoteOpen"] = $this->chr["singleAngleQuoteClose"];
+			$this->chr["singleQuoteClose"] = $this->chr["singleAngleQuoteOpen"];
 		} else {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8220);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
+			$this->chr["singleQuoteOpen"] = $this->uchr(8216);
+			$this->chr["singleQuoteClose"] = $this->uchr(8217);
 		}
 
 		return TRUE;
@@ -660,8 +671,8 @@ class phpTypography {
 		////Logic
 		
 		// before primes, handle quoted numbers
-		$parsedHTMLtoken["value"] = preg_replace("/(?<=\W|\A)'(\d+)'(?=\W|\Z)/", $this->chr["singleQuoteOpen"].'$1'.$this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/", $this->chr["doubleQuoteOpen"].'$1'.$this->chr["doubleQuoteClose"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u", $this->chr["singleQuoteOpen"].'$1'.$this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u", $this->chr["doubleQuoteOpen"].'$1'.$this->chr["doubleQuoteClose"], $parsedHTMLtoken["value"]);
 
 		// guillemets
 		$parsedHTMLtoken["value"] = str_replace("<<", $this->chr["guillemetOpen"], $parsedHTMLtoken["value"]);
@@ -671,9 +682,9 @@ class phpTypography {
 
 
 		// primes
-		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)''(?=\W|\Z)/", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)\"(?=\W|\Z)/", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)'(?=\W|\Z)/", '$1'.$this->chr["singlePrime"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)''(?=\W|\Z)/u", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)\"(?=\W|\Z)/u", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr["singlePrime"], $parsedHTMLtoken["value"]);
 		
 		// backticks
 		$parsedHTMLtoken["value"] = str_replace("``", $this->chr["doubleQuoteOpen"], $parsedHTMLtoken["value"]);
@@ -685,22 +696,21 @@ class phpTypography {
 		$parsedHTMLtoken["value"] = preg_replace("/(?<=\s|\A),(?=\S)/", $this->chr["singleLow9Quote"], $parsedHTMLtoken["value"]); //like _,¿hola?'_
 		
 		// apostrophes
-		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)'/", $this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]); //this will also match some quotes, but that is ok
-		$parsedHTMLtoken["value"] = preg_replace("/'(\d\d\b)/", $this->chr["singleQuoteClose"].'$1', $parsedHTMLtoken["value"]); // decades: '98
-		$exceptions = array("'tain".$this->chr["singleQuoteClose"]."t", "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
-		$replacements = array($this->chr["singleQuoteClose"]."tain".$this->chr["singleQuoteClose"]."t", $this->chr["singleQuoteClose"]."twere", $this->chr["singleQuoteClose"]."twas", $this->chr["singleQuoteClose"]."tis", $this->chr["singleQuoteClose"]."til", $this->chr["singleQuoteClose"]."bout", $this->chr["singleQuoteClose"]."nuff", $this->chr["singleQuoteClose"]."round", $this->chr["singleQuoteClose"]."cause", $this->chr["singleQuoteClose"]."splainin");
-		$parsedHTMLtoken["value"] =str_replace($exceptions, $replacements, $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)'(?=\w)/u", $this->chr["apostrophe"], $parsedHTMLtoken["value"]);		$parsedHTMLtoken["value"] = preg_replace("/'(\d\d\b)/", $this->chr["apostrophe"].'$1', $parsedHTMLtoken["value"]); // decades: '98
+		$exceptions = array("'tain".$this->chr["apostrophe"]."t", "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
+		$replacements = array($this->chr["apostrophe"]."tain".$this->chr["apostrophe"]."t", $this->chr["apostrophe"]."twere", $this->chr["apostrophe"]."twas", $this->chr["apostrophe"]."tis", $this->chr["apostrophe"]."til", $this->chr["apostrophe"]."bout", $this->chr["apostrophe"]."nuff", $this->chr["apostrophe"]."round", $this->chr["apostrophe"]."cause", $this->chr["apostrophe"]."splainin");
+		$parsedHTMLtoken["value"] = str_replace($exceptions, $replacements, $parsedHTMLtoken["value"]);
 		
 		//quotes
 		$quoteRules = array("['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"");
 		$quoteRulesReplace = array("[".$this->chr["singleQuoteOpen"], "{".$this->chr["singleQuoteOpen"], "(".$this->chr["singleQuoteOpen"], $this->chr["singleQuoteClose"]."]", $this->chr["singleQuoteClose"]."}", $this->chr["singleQuoteClose"].")", "[".$this->chr["doubleQuoteOpen"], "{".$this->chr["doubleQuoteOpen"], "(".$this->chr["doubleQuoteOpen"], $this->chr["doubleQuoteClose"]."]", $this->chr["doubleQuoteClose"]."}", $this->chr["doubleQuoteClose"].")", $this->chr["doubleQuoteOpen"].$this->chr["singleQuoteOpen"], $this->chr["singleQuoteClose"].$this->chr["doubleQuoteClose"]);
 		$parsedHTMLtoken["value"] =str_replace($quoteRules, $quoteRulesReplace, $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/'(?=\w)/", $this->chr["singleQuoteOpen"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)'/", $this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/'(?=\w)/u", $this->chr["singleQuoteOpen"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)'/u", $this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(?<=\s|\A)'(?=\S)/", $this->chr["singleQuoteOpen"], $parsedHTMLtoken["value"]); //like _'¿hola?'_
 		$parsedHTMLtoken["value"] = preg_replace("/(?<=\S)'(?=\s|\Z)/", $this->chr["singleQuoteClose"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/\"(?=\w)/", $this->chr["doubleQuoteOpen"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)\"/", $this->chr["doubleQuoteClose"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/\"(?=\w)/u", $this->chr["doubleQuoteOpen"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(?<=\w)\"/u", $this->chr["doubleQuoteClose"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(?<=\s|\A)\"(?=\S)/", $this->chr["doubleQuoteOpen"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(?<=\S)\"(?=\s|\Z)/", $this->chr["doubleQuoteClose"], $parsedHTMLtoken["value"]);
 
@@ -732,8 +742,8 @@ class phpTypography {
 		$parsedHTMLtoken["value"] = str_replace("--", $this->chr["enDash"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = str_replace(" - ", " ".$this->chr["emDash"]." ", $parsedHTMLtoken["value"]);
 
-		$parsedHTMLtoken["value"] = preg_replace("/(\A|\s)\-(\w)/", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(\w)\-(\Z|\s)/", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\A|\s)\-(\w)/u", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\w)\-(\Z|\s)/u", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)\-(\d+\b)/", '$1'.$this->chr["enDash"].'$2', $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = preg_replace("/(\b\d{3})".$this->chr["enDash"]."(\d{4}\b)/", '$1'.$this->chr["noBreakHyphen"].'$2', $parsedHTMLtoken["value"]); // phone numbers
 		$parsedHTMLtoken["value"] = str_replace("xn".$this->chr["enDash"], "xn--", $parsedHTMLtoken["value"]);
