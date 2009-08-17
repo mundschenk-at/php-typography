@@ -335,10 +335,8 @@ $i = 0;
 					if($prevTextIndex != NULL) {
 						// assign "prevChr"
 						$tokens[$index]["prevChr"] = mb_substr($tokens[$prevTextIndex]["value"], -1, 1,"UTF-8");
-echo "parsed prevChr = _".$tokens[$index]["prevChr"]."_<br />".PHP_EOL;						
 						//set "nextChr" of previous text token
 						$tokens[$prevTextIndex]["nextChr"] = mb_substr($tokens[$index]["value"], 0, 1,"UTF-8");						
-echo "parsed nextChr = _".$tokens[$prevTextIndex]["nextChr"]."_<br />".PHP_EOL;						
 					}
 					//set $prevTextIndex for next text item
 					$prevTextIndex = $index;

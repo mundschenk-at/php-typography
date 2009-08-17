@@ -1099,7 +1099,6 @@ class phpTypography {
 		// add $nextChr and $prevChr for context
 		$nextChr = "";
 		$prevChr = "";
-echo "pre-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
 			$prevChr = $parsedHTMLtoken["prevChr"];
 			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
@@ -1108,9 +1107,6 @@ echo "pre-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 			$nextChr = $parsedHTMLtoken["nextChr"];
 			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
 		}
-echo "nextChr = _".$nextChr."_<br />".PHP_EOL;
-echo "prevChr = _".$prevChr."_<br />".PHP_EOL;
-echo "mid-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 
 		$parsedHTMLtoken["value"] = preg_replace(
 			"/
@@ -1135,7 +1131,6 @@ echo "mid-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 		if($nextChr) {
 			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 0, mb_strlen($parsedHTMLtoken["value"], $e)-1, $e);
 		}
-echo "post-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 
 		return $parsedHTMLtoken;
 
