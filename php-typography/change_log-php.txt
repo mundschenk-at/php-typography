@@ -1,3 +1,7 @@
+1.12 - August 17, 2009
+
+Corrected multibyte character error that caused set_single_character_word_spacing() to drop words under rare circumstances
+
 1.11 - August 14, 2009
 
 Added language specific quote handling (for single quotes, not just double) for English, German and French quotation styles
