@@ -655,18 +655,18 @@ class phpTypography {
 	//expecting parsedHTML token of type text
 	function smart_quotes($parsedHTMLtoken) {
 		if(!isset($this->settings["smartQuotes"]) || !$this->settings["smartQuotes"]) return $parsedHTMLtoken;
+
 		//need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		//if we have adjacent characters add them to the text
-		$prevChr = FALSE;
-		$nextChr = FALSE;
-		
-		if(isset($parsedHTMLtoken["prevChr"])) {
-			$parsedHTMLtoken["value"] = $parsedHTMLtoken["prevChr"].$parsedHTMLtoken["value"];
-			$prevChr = TRUE;
+		$nextChr = "";
+		$prevChr = "";
+		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
+			$prevChr = $parsedHTMLtoken["prevChr"];
+			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
 		}
-		if(isset($parsedHTMLtoken["nextChr"])) {
-			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$parsedHTMLtoken["nextChr"];
-			$nextChr = TRUE;
+		if(isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
+			$nextChr = $parsedHTMLtoken["nextChr"];
+			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
 		}
 		////Logic
 		
@@ -1099,6 +1099,7 @@ class phpTypography {
 		// add $nextChr and $prevChr for context
 		$nextChr = "";
 		$prevChr = "";
+echo "pre-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
 			$prevChr = $parsedHTMLtoken["prevChr"];
 			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
@@ -1107,6 +1108,9 @@ class phpTypography {
 			$nextChr = $parsedHTMLtoken["nextChr"];
 			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
 		}
+echo "nextChr = _".$nextChr."_<br />".PHP_EOL;
+echo "prevChr = _".$prevChr."_<br />".PHP_EOL;
+echo "mid-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 
 		$parsedHTMLtoken["value"] = preg_replace(
 			"/
@@ -1121,12 +1125,17 @@ class phpTypography {
 			$parsedHTMLtoken["value"]
 			);
 			
-		//remove $prevChr
-		if($prevChr)
-			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 1);
-		//remove $nextChr
-		if($nextChr)
-			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 0, -1);
+		//if we have adjacent characters remove them from the text
+		$encodings = array("ASCII","UTF-8");
+		$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
+		if(!isset($e) || $e == "") $e = "ASCII";
+		if($prevChr) {
+			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
+		}
+		if($nextChr) {
+			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 0, mb_strlen($parsedHTMLtoken["value"], $e)-1, $e);
+		}
+echo "post-value = _".$parsedHTMLtoken["value"]."_<br />".PHP_EOL;
 
 		return $parsedHTMLtoken;
 
