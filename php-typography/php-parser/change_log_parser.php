@@ -1,3 +1,7 @@
+1.12 - August 17, 2009
+
+Corrected multibyte handling of nextChr and prevChr
+
 1.10 - August 14, 2009
 
 Increased set of recognized multibyte word characters
