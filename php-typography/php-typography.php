@@ -103,6 +103,7 @@ class phpTypography {
 		$this->set_url_wrap();
 		$this->set_email_wrap();
 		$this->set_min_after_url_wrap();
+		$this->set_space_collapse();
 		
 		//character styling
 		$this->set_style_ampersands();
@@ -289,6 +290,12 @@ class phpTypography {
 	// Em and En dashes are wrapped in thin spaces
 	function set_dash_spacing($on = TRUE) {
 		$this->settings["dashSpacing"] = $on;
+		return TRUE;
+	}
+	
+	// Remove extra space Characters
+	function set_space_collapse($on = TRUE) {
+		$this->settings["spaceCollapse"] = $on;
 		return TRUE;
 	}
 
@@ -577,10 +584,12 @@ class phpTypography {
 			$this->parsedText->update($parsedMixedWords+$parsedWords+$parsedOther);
 			$unlockedText = $this->parsedText->unload();
 			
+			//some final space manipulation
+			$unlockedText = $this->dewidow($unlockedText);
+			$unlockedText = $this->space_collapse($unlockedText);
+
 			//everything that requires HTML injection occurs here (functions above assume tag-free content)
 			//pay careful attention to functions below for tolerance of injected tags
-			$unlockedText = $this->dewidow($unlockedText);
-			
 			$unlockedText = $this->smart_ordinal_suffix($unlockedText);	// call before "style_numbers" and "smart_fractions"	
 			$unlockedText = $this->smart_exponents($unlockedText); // call before "style_numbers"
 			$unlockedText = $this->smart_fractions($unlockedText); // call before "style_numbers" and after "smart_ordinal_suffix"
@@ -1180,6 +1189,102 @@ class phpTypography {
 		return $parsedHTMLtoken;
 	}
 
+
+
+	//expecting parsedHTML token of type text
+	function space_collapse($parsedHTMLtoken) {
+		if(!isset($this->settings["spaceCollapse"]) || !$this->settings["spaceCollapse"]) return $parsedHTMLtoken;
+
+
+		# find the HTML character representation for the following characters:
+		#		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
+		#		ogham space mark | en quad space | em quad space | en-space | three-per-em space
+		#		four-per-em space | six-per-em space | figure space | punctuation space | em-space
+		#		thin space | hair space | narrow no-break space
+		#		medium mathematical space | ideographic space
+		# Some characters are used inside words, we will not count these as a space for the purpose
+		# of finding word boundaries:
+		#		zero-width-space ("&#8203;", "&#x200b;")
+		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+
+		$htmlSpaces = '
+			\x{00a0}		# no-break space
+			|
+			\x{1361}		# ethiopic wordspace
+			|
+			\x{2000}		# en quad-space
+			|
+			\x{2001}		# em quad-space
+			|
+			\x{2002}		# en space
+			|
+			\x{2003}		# em space
+			|
+			\x{2004}		# three-per-em space
+			|
+			\x{2005}		# four-per-em space
+			|
+			\x{2006}		# six-per-em space
+			|
+			\x{2007}		# figure space
+			|
+			\x{2008}		# punctuation space
+			|
+			\x{2009}		# thin space
+			|
+			\x{200a}		# hair space
+			|
+			\x{200b}		# zero-width space
+			|
+			\x{200c}		# zero-width joiner
+			|
+			\x{200d}		# zero-width non-joiner
+			|
+			\x{202f}		# narrow no-break space
+			|
+			\x{205f}		# medium mathematical space
+			|
+			\x{3000}		# ideographic space
+			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+
+		// normal spacing
+	    $parsedHTMLtoken["value"] = preg_replace(
+			"/\s+/xu", 
+			" ", 
+			$parsedHTMLtoken["value"]
+			);
+		
+		// nbsp get's priority.  if nbsp exists in a string of spaces, it collapses to nbsp
+	    $parsedHTMLtoken["value"] = preg_replace(
+			"/(?:\s|$htmlSpaces)*".$this->chr["noBreakSpace"]."(?:\s|$htmlSpaces)*/xu", 
+			$this->chr["noBreakSpace"], 
+			$parsedHTMLtoken["value"]
+			);
+		
+		// for any other spaceing, replace with the first occurance of an unusual space character
+	    $parsedHTMLtoken["value"] = preg_replace(
+			"/(?:\s|$htmlSpaces)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", 
+			"$1", 
+			$parsedHTMLtoken["value"]
+			);
+
+		// remove all spacing at beginning of block level elements
+		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
+	    $parsedHTMLtoken["value"] = preg_replace(
+			"/\A(?:\s|$htmlSpaces)+/xu", 
+			"", 
+			$parsedHTMLtoken["value"]
+			);
+		}
+/**/
+		
+		return $parsedHTMLtoken;
+	}
+
+
+
+
 	//expecting parsedHTML token of type text
 	function unit_spacing($parsedHTMLtoken) {
 		if(!isset($this->settings["unitSpacing"]) || !$this->settings["unitSpacing"]) return $parsedHTMLtoken;
@@ -1535,7 +1640,7 @@ class phpTypography {
 	function style_initial_quotes($parsedHTMLtoken, $isTitle = FALSE) {
 		if(!isset($this->settings["styleInitialQuotes"]) || !$this->settings["styleInitialQuotes"] || !isset($this->settings["initialQuoteTags"]) || !$this->settings["initialQuoteTags"]) return $parsedHTMLtoken;
 	
-		if(!isset($parsedHTMLtoken["prevChr"])) { // we have the first text in a block level element
+		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
 			$firstChr = mb_substr($parsedHTMLtoken["value"],0,1);
 			if($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == "," || $firstChr == "\"" || $firstChr == $this->chr["doubleQuoteOpen"] || $firstChr == $this->chr["guillemetOpen"] || $firstChr == $this->chr["guillemetClose"] || $firstChr == $this->chr["doubleLow9Quote"]) {
 
