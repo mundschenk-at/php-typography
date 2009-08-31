@@ -1,3 +1,7 @@
+1.13 - August 31, 2009
+
+Added set_space_collapse and space_collapse methods
+
 1.12 - August 17, 2009
 
 Corrected multibyte character error that caused set_single_character_word_spacing() to drop words under rare circumstances
