@@ -27,7 +27,6 @@ Fixed bug where hyphenation pattern settings were not initialized with multiple 
 Fixed date handling in smart_math() and smart_dashes() methods
 Fixed style_caps() method to be friendly with soft-hyphens
 
-
 1.7 - July 28, 2009
 
 Reformatted language files with line returns after each key=>value pair in an array
