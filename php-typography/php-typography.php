@@ -1264,7 +1264,7 @@ class phpTypography {
 		
 		// for any other spaceing, replace with the first occurance of an unusual space character
 	    $parsedHTMLtoken["value"] = preg_replace(
-			"/(?:\s|$htmlSpaces)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", 
+			"/(?:\s)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", 
 			"$1", 
 			$parsedHTMLtoken["value"]
 			);
