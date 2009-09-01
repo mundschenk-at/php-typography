@@ -1,3 +1,7 @@
+1.14 - 
+
+Improved space_collapse method
+
 1.13 - August 31, 2009
 
 Added set_space_collapse and space_collapse methods
