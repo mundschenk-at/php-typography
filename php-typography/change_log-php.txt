@@ -1,6 +1,7 @@
-1.14 - 
+1.14 - September 8, 2009
 
 Improved space_collapse method
+Corrected bug in smart quote and single character word handling where the "0" character may be improperly duplicated
 
 1.13 - August 31, 2009
 
