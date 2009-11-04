@@ -675,6 +675,29 @@ class phpTypography {
 		return $results;
 	}
 
+	#	Returns:	ARRAY of supported hyphenation languages in the form array( language code => language name)
+	function get_diacritic_languages() {
+		$languages = array();
+		$diacriticDir = dirname(__FILE__)."/diacritics/";
+		$handler = opendir($langDir);
+		
+		// read all files in directory
+		while ($file = readdir($handler)) {
+			// we only want the php files
+			if (substr($file, -4) == ".php") {
+				$fileContent = file_get_contents($langDir.$file);
+				preg_match('/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches);
+				$languageName = substr($matches[1], 1, -1);
+				$languageCode = substr($file, 0, -4);
+				$results[$languageCode] = $languageName;
+			}
+		}
+		closedir($handler);
+
+		asort($results);
+		return $results;
+	}
+
 	#	Action:		modifies $html according to the defined settings
 	#	Returns:	processed $html
 	function process($html, $isTitle = FALSE) {
@@ -704,6 +727,8 @@ class phpTypography {
 			// decode all characters except < > &
 			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
+
+			// diacritic replacement gets done here
 
 			// modify anything that requires adjacent text awareness here
 			$unlockedText = $this->smart_math($unlockedText);
