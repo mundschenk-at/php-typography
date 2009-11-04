@@ -790,10 +790,9 @@ class phpTypography {
 			$unlockedText["value"] = html_entity_decode($unlockedText["value"], ENT_QUOTES, "UTF-8"); //converts all HTML entities to their applicable characters
 			$unlockedText["value"] = htmlspecialchars($unlockedText["value"], ENT_NOQUOTES, "UTF-8"); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
 
-			// diacritic replacement gets done here
-
 			// modify anything that requires adjacent text awareness here
 			$unlockedText = $this->smart_math($unlockedText);
+			$unlockedText = $this->smart_diacritics($unlockedText);
 			$unlockedText = $this->smart_quotes($unlockedText);
 			$unlockedText = $this->smart_dashes($unlockedText);
 			$unlockedText = $this->smart_ellipses($unlockedText);
