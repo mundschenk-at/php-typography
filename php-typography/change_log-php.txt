@@ -1,3 +1,9 @@
+1.16
+
+Added get_diacritic_languages() method
+Added US English list of all words containing diacritics to `/diacritics/en-US.php`
+
+
 1.15 - October 21, 2009
 
 Depreciated set_smart_quotes_language()
