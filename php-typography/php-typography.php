@@ -1081,28 +1081,19 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function smart_diacritics($parsedHTMLtoken) {
+	function a($parsedHTMLtoken) {
 		if(!isset($this->settings["smartDiacritics"]) || !$this->settings["smartDiacritics"]) return $parsedHTMLtoken;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		if( isset($this->settings["diacriticCustomReplacements"]) && ( count($this->settings["diacriticCustomReplacements"]) > 0 ) ) {
+			foreach($this->settings["diacriticCustomReplacements"] as $needle => $replacement) {
+				$parsedHTMLtoken = preg_replace("/\b$needle\b/", $replacement, $parsedHTMLtoken);
+			}
+		}
+		if( isset($this->settings["diacriticWords"]) && ( count($this->settings["diacriticWords"]) > 0 ) ) {
+			foreach($this->settings["diacriticWords"] as $needle => $replacement) {
+				$parsedHTMLtoken = preg_replace("/\b$needle\b/", $replacement, $parsedHTMLtoken);
+			}
+		}
 
 		return $parsedHTMLtoken;
 	}
