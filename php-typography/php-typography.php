@@ -89,6 +89,9 @@ class phpTypography {
 		$this->set_smart_quotes_secondary(); /* added in version 1.15 */
 		$this->set_smart_dashes();
 		$this->set_smart_ellipses();
+		$this->set_smart_diacritics();
+		$this->set_diacritic_language();
+		$this->set_diacritic_custom_replacements();
 		$this->set_smart_marks();
 		$this->set_smart_ordinal_suffix();
 		$this->set_smart_math();
@@ -375,6 +378,65 @@ class phpTypography {
 		$this->settings["smartEllipses"] = $on;
 		return TRUE;
 	}
+	
+	// replaces "creme brulee" with "crème brûlée"
+	function set_smart_diacritics($on = TRUE) {
+		$this->settings["smartDiacritics"] = $on;
+		return TRUE;
+	}
+
+	// defines hyphenation language for text
+	function set_diacritic_language($lang = "en-US") {
+		if (isset($this->settings["diacriticLanguage"]) &&	$this->settings["diacriticLanguage"] == $lang)
+			return TRUE;
+		
+		$this->settings["diacriticLanguage"] = $lang;
+
+		if(file_exists(dirname(__FILE__).'/diacritics/'.$this->settings["diacriticLanguage"].'.php')) {
+			include('diacritics/'.$this->settings["diacriticLanguage"].'.php');
+		} else {
+			include('diacritics/en-US.php');
+		}
+		$this->settings["diacriticWords"] = $diacriticWords;
+		
+		return TRUE;
+	}
+
+	// $customReplacements must be
+	//		an array formatted array(needle=>replacement, needle=>replacement...), or
+	//		a string formatted `"needle"=>"replacement","needle"=>"replacement",...`
+	function set_diacritic_custom_replacements($customReplacements = array()) {
+		if(!is_array($customReplacements)) 
+			$customReplacementChunks = preg_split("/,/", $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
+			$customReplacements = array();
+			foreach($customReplacementChunks as $customReplacementChunk) {
+				//account for single and double quotes
+				preg_match("/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacementChunk, $doubleQuoteKeyMatch);
+				preg_match("/(?:')([^']+)(?:'\s*=>)/", $customReplacementChunk, $singleQuoteKeyMatch);
+				preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacementChunk, $doubleQuoteValueMatch);
+				preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacementChunk, $singleQuoteValueMatch);
+
+				if( isset($doubleQuoteKeyMatch) && ( $doubleQuoteKeyMatch != "" ) )
+					$key = $doubleQuoteKeyMatch;
+				} elseif( isset($singleQuoteKeyMatch) && ( $singleQuoteKeyMatch != "" ) ) {
+					$key = $singleQuoteKeyMatch;
+				}
+				
+				if( isset($doubleQuoteValueMatch) && ( $doubleQuoteValueMatch != "" ) )
+					$value = $doubleQuoteValueMatch;
+				} elseif( isset($singleQuoteValueMatch) && ( $singleQuoteValueMatch != "" ) ) {
+					$value = $singleQuoteValueMatch;
+				}
+				
+				if( isset($key) && isset($value) ) {
+					$customReplacements[strip_tags(trim($key))] = strip_tags(trim($value));
+				}
+			}
+			
+		$this->settings["diacriticCustomReplacements"] = $customReplacements;
+		return TRUE;
+	}
+
 
 	// replaces (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗
 	function set_smart_marks($on = TRUE) {
@@ -1017,6 +1079,36 @@ class phpTypography {
 		$parsedHTMLtoken["value"] = str_replace(array("...",     ". . .",), $this->chr["ellipses"], $parsedHTMLtoken["value"]);
 		return $parsedHTMLtoken;
 	}
+
+	//expecting parsedHTML token of type text
+	function smart_diacritics($parsedHTMLtoken) {
+		if(!isset($this->settings["smartDiacritics"]) || !$this->settings["smartDiacritics"]) return $parsedHTMLtoken;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		return $parsedHTMLtoken;
+	}
+
+
+
 
 	//expecting parsedHTML token of type text
 	function smart_marks($parsedHTMLtoken) {
