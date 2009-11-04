@@ -1,4 +1,4 @@
-1.16
+1.16 - November 4, 2009
 
 Added US English list of all words containing diacritics to `/diacritics/en-US.php`
 Added get_diacritic_languages() method
