@@ -6,6 +6,7 @@ Added set_smart_diacritics() method
 Added set_diacritic_language() method
 Added set_diacritic_custom_replacements() method
 Added smart_diacritics() method
+Improved smart quotes and dashes to be sensitive to adjacent diacritic characters.
 
 1.15 - October 21, 2009
 
