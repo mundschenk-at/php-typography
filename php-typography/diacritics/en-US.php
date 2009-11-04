@@ -6,7 +6,7 @@
  *	An array of all words containing diacritics (and their non-diacritic
  *	alternatives that should be replaced), provided a legitimate English
  *	word does not exist without such diacritic characters (i.e.
- *	divorcé & divorce, exposé & expose).
+ *	divorcé & divorce, exposé & expose, résumé & resume ).
  *	
  *	In the form of $diacriticWords = array( key => value );
  *	where "key" is the needle and "value" is the replacement
@@ -377,8 +377,6 @@ $diacriticWords = array(
 	"Reclame"=>"Réclame",
 	"regime"=>"régime",
 	"Regime"=>"Régime",
-	"resume"=>"résumé",
-	"Resume"=>"Résumé",
 	"retrousse"=>"retroussé",
 	"Retrousse"=>"Retroussé",
 	"risque"=>"risqué",
