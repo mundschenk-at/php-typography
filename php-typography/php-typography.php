@@ -1081,7 +1081,7 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function a($parsedHTMLtoken) {
+	function smart_diacritics($parsedHTMLtoken) {
 		if(!isset($this->settings["smartDiacritics"]) || !$this->settings["smartDiacritics"]) return $parsedHTMLtoken;
 
 		if( isset($this->settings["diacriticCustomReplacements"]) && ( count($this->settings["diacriticCustomReplacements"]) > 0 ) ) {
