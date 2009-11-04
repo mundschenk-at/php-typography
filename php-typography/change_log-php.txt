@@ -1,8 +1,11 @@
 1.16
 
-Added get_diacritic_languages() method
 Added US English list of all words containing diacritics to `/diacritics/en-US.php`
-
+Added get_diacritic_languages() method
+Added set_smart_diacritics() method
+Added set_diacritic_language() method
+Added set_diacritic_custom_replacements() method
+Added smart_diacritics() method
 
 1.15 - October 21, 2009
 
