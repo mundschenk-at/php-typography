@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.16
+	Version: 1.17
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -416,16 +416,16 @@ class phpTypography {
 				preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacementChunk, $doubleQuoteValueMatch);
 				preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacementChunk, $singleQuoteValueMatch);
 
-				if( isset($doubleQuoteKeyMatch) && ( $doubleQuoteKeyMatch != "" ) ) {
-					$key = $doubleQuoteKeyMatch;
-				} elseif( isset($singleQuoteKeyMatch) && ( $singleQuoteKeyMatch != "" ) ) {
-					$key = $singleQuoteKeyMatch;
+				if( isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" ) ) {
+					$key = $doubleQuoteKeyMatch[1];
+				} elseif( isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" ) ) {
+					$key = $singleQuoteKeyMatch[1];
 				}
 				
-				if( isset($doubleQuoteValueMatch) && ( $doubleQuoteValueMatch != "" ) ) {
-					$value = $doubleQuoteValueMatch;
-				} elseif( isset($singleQuoteValueMatch) && ( $singleQuoteValueMatch != "" ) ) {
-					$value = $singleQuoteValueMatch;
+				if( isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" ) ) {
+					$value = $doubleQuoteValueMatch[1];
+				} elseif( isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" ) ) {
+					$value = $singleQuoteValueMatch[1];
 				}
 				
 				if( isset($key) && isset($value) ) {
