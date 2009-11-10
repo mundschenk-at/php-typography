@@ -1,3 +1,7 @@
+1.17 - November 9, 2009
+
+Fixed bug in diacritic handling
+
 1.16 - November 4, 2009
 
 Added US English list of all words containing diacritics to `/diacritics/en-US.php`
