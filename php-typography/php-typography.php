@@ -1715,8 +1715,11 @@ class phpTypography {
 		//   with that, we will assert that widows should never be hyphenated or wrapped
 		//   as such, we will strip soft hyphens and zero-width-spaces
 		$widow[4] = str_replace($this->chr["zeroWidthSpace"], "", $widow[4]);
-		$widow[4] = str_replace($this->chr["softHyphen"], "", $widow[4]);							
-		$widow[5] = preg_replace("/\s+/", $this->chr["noBreakSpace"], $widow[5]);
+		$widow[4] = str_replace($this->chr["softHyphen"], "", $widow[4]);
+						
+//		$widow[5] = preg_replace("/\s+/", $this->chr["noBreakSpace"], $widow[5]);
+		$widow[5] = preg_replace("/\s+/", "", $widow[5]); // let's see if this fixes pik256's problem
+
 		$widow[5] = str_replace($this->chr["zeroWidthSpace"], "", $widow[5]);
 		$widow[5] = str_replace($this->chr["softHyphen"], "", $widow[5]);
 		
