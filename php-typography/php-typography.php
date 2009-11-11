@@ -1723,7 +1723,7 @@ class phpTypography {
 		$widow[5] = str_replace($this->chr["zeroWidthSpace"], "", $widow[5]);
 		$widow[5] = str_replace($this->chr["softHyphen"], "", $widow[5]);
 		
-		// eject if widows neighbor is proceeded by a no break space
+		// eject if widows neighbor is proceeded by a no break space (the pulled text would be too long)
 		if($widow[1] == "" || strstr($this->chr["noBreakSpace"], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		
 		if($multibyte) {
