@@ -585,7 +585,7 @@ $i = 0;
 	function lock_children($tokens, $tokenType = ALL_TOKENS) {
 		foreach($tokens as $index => $token) {
 			//only process opening tags
-			if(!$token["openPos"] && $token["closePos"]) {
+			if( (!isset($token["openPos"]) || !$token["openPos"]) && ( isset($token["closePos"]) && $token["closePos"]) ) {
 				$begIndex = $index+1;
 				$endIndex = $token["closePos"]-1;
 				if($begIndex > $endIndex) continue;
@@ -599,7 +599,7 @@ $i = 0;
 	function unlock_children($tokens, $tokenType = ALL_TOKENS) {
 		foreach($tokens as $index => $token) {
 			//only process opening tags
-			if(!$token["openPos"] && $token["closePos"]) {
+			if( (!isset($token["openPos"]) || !$token["openPos"]) && (isset($token["closePos"]) && $token["closePos"]) ) {
 				$begIndex = $index+1;
 				$endIndex = $token["closePos"]-1;
 				if($begIndex > $endIndex) continue;
@@ -957,7 +957,7 @@ $i = 0;
 		$results = array();
 		foreach($tokens as $index => $token) {
 			//exclude (self)closing tags
-			if($token["closePos"] && !$token["openPos"]) {
+			if( (isset($token["closePos"]) && $token["closePos"]) && (!isset($token["openPos"]) || !$token["openPos"]) ) {
 				$begIndex = $index+1;
 				$endIndex = $token["closePos"]-1;
 				if($begIndex > $endIndex) continue;
