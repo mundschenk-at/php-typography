@@ -1,4 +1,4 @@
-1.12 - December 1, 2009
+1.19 - December 1, 2009
 
 Corrected some uninitiated variables
 
