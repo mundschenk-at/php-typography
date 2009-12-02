@@ -1,3 +1,10 @@
+1.19 - December 1, 2009
+
+Fixed bug where dewidow functionality would add broken no-break spaces to the end of texts, and smart_exponents would drop some of the resulting text.
+Declared encoding in all instances of mb_substr to avoid conflicts
+Corrected a few instances of undeclared variables.
+Updated to PHP Parser 1.19
+
 1.18 - November 10, 2009
 
 Added Norwegian Hyphenation Patterns
