@@ -1,3 +1,7 @@
+1.12 - December 1, 2009
+
+Corrected some uninitiated variables
+
 1.12 - August 17, 2009
 
 Corrected multibyte handling of nextChr and prevChr
