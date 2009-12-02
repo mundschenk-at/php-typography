@@ -1718,8 +1718,8 @@ class phpTypography {
 		$widow[4] = str_replace($this->chr["softHyphen"], "", $widow[4]);
 						
 //		$widow[5] = preg_replace("/\s+/", $this->chr["noBreakSpace"], $widow[5]);
-		$widow[5] = preg_replace("/\s+/", "", $widow[5]); // let's see if this fixes pik256's problem
-
+		$widow[5] = mb_ereg_replace("/\s+/", $this->chr["noBreakSpace"], $widow[5], "p");; // fixes multibyte unicode corruption that occurs in some instances in the line above.
+		
 		$widow[5] = str_replace($this->chr["zeroWidthSpace"], "", $widow[5]);
 		$widow[5] = str_replace($this->chr["softHyphen"], "", $widow[5]);
 		
