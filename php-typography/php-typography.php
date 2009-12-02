@@ -1945,7 +1945,11 @@ class phpTypography {
 		if(!isset($this->settings["styleInitialQuotes"]) || !$this->settings["styleInitialQuotes"] || !isset($this->settings["initialQuoteTags"]) || !$this->settings["initialQuoteTags"]) return $parsedHTMLtoken;
 	
 		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
-			$firstChr = mb_substr($parsedHTMLtoken["value"],0,1);
+
+			$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
+			if(!isset($e) || $e == "") $e = "ASCII";
+
+			$firstChr = mb_substr($parsedHTMLtoken["value"], 0, 1, $e);
 			if($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == "," || $firstChr == "\"" || $firstChr == $this->chr["doubleQuoteOpen"] || $firstChr == $this->chr["guillemetOpen"] || $firstChr == $this->chr["guillemetClose"] || $firstChr == $this->chr["doubleLow9Quote"]) {
 
 				$style = FALSE;
@@ -1965,9 +1969,9 @@ class phpTypography {
 				
 				if($style) {
 					if($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == ",") {
-						$parsedHTMLtoken["value"] = '<span class="quo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"],1);
+						$parsedHTMLtoken["value"] = '<span class="quo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
 					} else { // double quotes or guillemets
-						$parsedHTMLtoken["value"] = '<span class="dquo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"],1);
+						$parsedHTMLtoken["value"] = '<span class="dquo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
 					}
 				}
 			}
