@@ -1,3 +1,9 @@
+1.20 - December 20, 2009
+
+Resolved uninitiated variable
+Updated to PHP Parser 1.20
+
+
 1.19 - December 1, 2009
 
 Fixed bug where dewidow functionality would add broken no-break spaces to the end of texts, and smart_exponents would drop some of the resulting text.
