@@ -1,7 +1,7 @@
 1.20 - December 20, 2009
 
 Resolved uninitiated variable
-Added HTML 5 elements to list of block level elements
+Added HTML5 elements to parsing algorithm for greater contextual awareness
 Updated to PHP Parser 1.20
 
 
