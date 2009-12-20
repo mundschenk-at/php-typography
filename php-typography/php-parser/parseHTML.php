@@ -82,7 +82,7 @@ define("CDATA_TAG_AND_COMMENT_TOKENS", 15);
 #########################################################################################################
 class parseHTML {
 
-	var $blockTags = array("address", "blockquote", "center", "dir", "div", "dl", "fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6", "isindex", "menu", "noframes", "noscript", "ol", "p", "pre", "table", "ul", "dd", "dt", "frameset", "li", "tbody", "td", "tfoot", "th", "thead", "tr");
+	var $blockTags = array("address", "article", "aside", "blockquote", "center", "dd", "dialog", "dir", "div", "dl", "dt", "fieldset", "figure", "footer", "form", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "isindex", "li", "menu", "nav", "noframes", "noscript", "ol", "p", "pre", "section", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul");
 	var $html = array();
 			/*
 		$html is an ARRAY with the following structure:
