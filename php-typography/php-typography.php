@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.19
+	Version: 1.20
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -1946,6 +1946,7 @@ class phpTypography {
 	
 		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
 
+			$encodings = array("ASCII","UTF-8", "ISO-8859-1");
 			$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
 			if(!isset($e) || $e == "") $e = "ASCII";
 
