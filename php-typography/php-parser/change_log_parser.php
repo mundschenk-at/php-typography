@@ -1,6 +1,6 @@
 1.20 - December 20, 2009
 
-Added HTML 5 elements to list of block level elements
+Added HTML5 elements to parsing algorithm for greater contextual awareness
 
 1.19 - December 1, 2009
 
