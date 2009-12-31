@@ -406,34 +406,34 @@ class phpTypography {
 	//		an array formatted array(needle=>replacement, needle=>replacement...), or
 	//		a string formatted `"needle"=>"replacement","needle"=>"replacement",...`
 	function set_diacritic_custom_replacements($customReplacements = array()) {
+		$replacements = array();
 		if(!is_array($customReplacements)) 
-			$customReplacementChunks = preg_split("/,/", $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
-			$customReplacements = array();
-			foreach($customReplacementChunks as $customReplacementChunk) {
-				//account for single and double quotes
-				preg_match("/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacementChunk, $doubleQuoteKeyMatch);
-				preg_match("/(?:')([^']+)(?:'\s*=>)/", $customReplacementChunk, $singleQuoteKeyMatch);
-				preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacementChunk, $doubleQuoteValueMatch);
-				preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacementChunk, $singleQuoteValueMatch);
+			$customReplacements = preg_split("/,/", $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
+		foreach($customReplacements as $customReplacement) {
+			//account for single and double quotes
+			preg_match("/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacement, $doubleQuoteKeyMatch);
+			preg_match("/(?:')([^']+)(?:'\s*=>)/", $customReplacement, $singleQuoteKeyMatch);
+			preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacement, $doubleQuoteValueMatch);
+			preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacement, $singleQuoteValueMatch);
 
-				if( isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" ) ) {
-					$key = $doubleQuoteKeyMatch[1];
-				} elseif( isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" ) ) {
-					$key = $singleQuoteKeyMatch[1];
-				}
-				
-				if( isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" ) ) {
-					$value = $doubleQuoteValueMatch[1];
-				} elseif( isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" ) ) {
-					$value = $singleQuoteValueMatch[1];
-				}
-				
-				if( isset($key) && isset($value) ) {
-					$customReplacements[strip_tags(trim($key))] = strip_tags(trim($value));
-				}
+			if( isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" ) ) {
+				$key = $doubleQuoteKeyMatch[1];
+			} elseif( isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" ) ) {
+				$key = $singleQuoteKeyMatch[1];
 			}
 			
-		$this->settings["diacriticCustomReplacements"] = $customReplacements;
+			if( isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" ) ) {
+				$value = $doubleQuoteValueMatch[1];
+			} elseif( isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" ) ) {
+				$value = $singleQuoteValueMatch[1];
+			}
+			
+			if( isset($key) && isset($value) ) {
+				$replacements[strip_tags(trim($key))] = strip_tags(trim($value));
+			}
+		}
+			
+		$this->settings["diacriticCustomReplacements"] = $replacements;
 		return TRUE;
 	}
 
