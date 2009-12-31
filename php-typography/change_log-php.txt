@@ -1,3 +1,8 @@
+1.21 - December 31, 2009
+
+Fixed bug in custom diacritic handling
+
+
 1.20 - December 20, 2009
 
 Resolved uninitiated variable
