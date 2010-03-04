@@ -2,7 +2,7 @@
 /*
 	Project: PHP Typography
 	Project URI: http://kingdesk.com/projects/php-tyography/
-	Version: 1.21
+	Version: 1.22
 
 
 	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
@@ -2092,8 +2092,8 @@ class phpTypography {
 				for($i=0; $i < $wordLength +1; $i++) {
 					array_push($wordPattern, "0");
 				}
-				// we grab all possible segments from $parsedTextToken of length 2 through $this->settings["hyphenationPatternMaxSegment"]
-				for($segmentLength=2; ($segmentLength <= $wordLength) && ($segmentLength <= $this->settings["hyphenationPatternMaxSegment"]); $segmentLength++) {
+				// we grab all possible segments from $parsedTextToken of length 1 through $this->settings["hyphenationPatternMaxSegment"]
+				for($segmentLength=1; ($segmentLength <= $wordLength) && ($segmentLength <= $this->settings["hyphenationPatternMaxSegment"]); $segmentLength++) {
 					for($segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++) {
 						if($multibyte)
 							$segment = mb_strtolower(mb_substr($parsedTextToken["value"], $segmentPosition, $segmentLength, "UTF-8"), "UTF-8");
