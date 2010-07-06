@@ -1,4 +1,8 @@
-1.22 - March 4, 2009
+1.23 - July 6, 2010
+
+Simplified acronym identification to not include some obscure uppercase characters. This will reduce support for some non-English languages, but it resolves an issue of catastrophic failure with certain server configurations.
+
+1.22 - March 4, 2010
 
 Fixed bug that caused occasional hyphenation errors for non-English languages.
 
