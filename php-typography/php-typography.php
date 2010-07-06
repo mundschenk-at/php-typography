@@ -1881,6 +1881,7 @@ class phpTypography {
 	function style_caps($parsedHTMLtoken) {
 		if(!isset($this->settings["styleCaps"]) || !$this->settings["styleCaps"]) return $parsedHTMLtoken;
 		
+/*
 		// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
 		// for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
 		$pattern = '
@@ -1905,7 +1906,32 @@ class phpTypography {
 				(?![\w\-_'.$this->chr["zeroWidthSpace"].$this->chr["softHyphen"].'])
 							# negative lookahead assertion
 			'; // required modifiers: x (multiline pattern) u (utf8)
+*/
 		
+		// Servers with PCRE compiled without "--enable-unicode-properties" fail at \p{Lu} by returning an empty string (this leaving the screen void of text
+		// thus are testing this alternative
+		$pattern = '
+				(?<![\w\-_'.$this->chr["zeroWidthSpace"].$this->chr["softHyphen"].'])
+												# negative lookbehind assertion
+				(
+					(?:							# CASE 1: " 9A "
+						[0-9]+					# starts with at least one number
+						[A-ZÀ-ÖØ-Ý]					# must contain at least one capital letter
+						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|'.$this->chr["zeroWidthSpace"].'|'.$this->chr["softHyphen"].')*
+												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
+					)
+					|
+					(?:							# CASE 2: " A9 "
+						[A-ZÀ-ÖØ-Ý]					# starts with capital letter
+						(?:[A-ZÀ-ÖØ-Ý]|[0-9])		# must be followed a number or capital letter
+						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|'.$this->chr["zeroWidthSpace"].'|'.$this->chr["softHyphen"].')*
+												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
+
+					)
+				)
+				(?![\w\-_'.$this->chr["zeroWidthSpace"].$this->chr["softHyphen"].'])
+							# negative lookahead assertion
+			'; // required modifiers: x (multiline pattern) u (utf8)
 		$parsedHTMLtoken["value"] = preg_replace("/$pattern/xu", '<span class="caps">$1</span>', $parsedHTMLtoken["value"]);
 		
 		return $parsedHTMLtoken;
