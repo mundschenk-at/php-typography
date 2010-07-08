@@ -119,9 +119,14 @@ class parseHTML {
 	#	Action:		Tokenized $rawHTML saved to $this->html
 	#	Returns:	TRUE on completion
 	function load($rawHTML) {
+
+		// abort if a simple string exceeds 500 characters (security concern)
+		if( preg_match("@\w{500}@s", $rawHTML) ) {
+			return;
+		}
 		
 		$this->clear();
-		
+				
 		$tokens = array();
 		$index = 0;
 		$nestedTags = array(); // stores $index => "unclosed tag name"
