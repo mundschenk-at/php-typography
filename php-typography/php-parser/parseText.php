@@ -60,6 +60,12 @@ class parseText {
 	# 	Action:		Tokenizes $rawText (or $rawText["value"] - as the case may be) and saves it to $this->text
 	#   Returns:    TRUE on completion
 	function load($rawText) {
+
+		// abort if a simple string exceeds 500 characters (security concern)
+		if( preg_match("@\w{500}@s", $rawHTML) ) {
+			return;
+		}
+
 		$this->clear();
 		if(is_string($rawText)) {
 			// not passed a token of class parseHTML so we will fake it
