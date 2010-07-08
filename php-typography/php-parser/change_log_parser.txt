@@ -1,3 +1,7 @@
+2.0 – July 7, 2010
+
+Added security fix for excessively long strings that caused PHP error
+
 1.20 - December 20, 2009
 
 Added HTML5 elements to parsing algorithm for greater contextual awareness
