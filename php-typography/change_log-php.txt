@@ -1,6 +1,9 @@
-1.23 - July 6, 2010
+2.0 - July 7, 2010
 
 Simplified acronym identification to not include some obscure uppercase characters. This will reduce support for some non-English languages, but it resolves an issue of catastrophic failure with certain server configurations.
+Security Fix: Prevented comments with exceptionally long strings from causing fatal PHP error.
+Updated to PHP Parser 2.0
+
 
 1.22 - March 4, 2010
 
