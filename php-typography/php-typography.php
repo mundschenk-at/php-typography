@@ -950,8 +950,8 @@ class phpTypography {
 
 		// primes
 		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)''(?=\W|\Z)/u", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)\"(?=\W|\Z)/u", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr["singlePrime"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\b\d{1,3})\"(?=\W|\Z)/u", '$1'.$this->chr["doublePrime"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = preg_replace("/(\b\d{1,3})'(?=\W|\Z)/u", '$1'.$this->chr["singlePrime"], $parsedHTMLtoken["value"]);
 		
 		// backticks
 		$parsedHTMLtoken["value"] = str_replace("``", $this->chr["doubleQuoteOpen"], $parsedHTMLtoken["value"]);
