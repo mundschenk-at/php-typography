@@ -18,7 +18,7 @@ class phpTypography {
 	var $mb = FALSE; //cannot be changed after load
 	var $chr = array();
 	var $settings = array();  // operational attributes
-	var $parsedHTML = array(); // to hold current instance of class parseHTML
+	var $parsedHTML = array(); // to hold current instance of class HTMLParser
 	var $parsedText = array(); // to hold current instance of class parseText
 	
 
@@ -770,7 +770,7 @@ class phpTypography {
 		require_once("php-parser/php-parser.php");
 		
 		// parse the html
-		$this->parsedHTML = new parseHTML();
+		$this->parsedHTML = new HTMLParser();
 		$this->parsedHTML->load($html);
 		$this->parsedHTML->unlock_text();
 		$tagsToIgnore = $this->parsedHTML->get_tags_by_name($this->settings["ignoreTags"]);
@@ -856,7 +856,7 @@ class phpTypography {
 		require_once("php-parser/php-parser.php");
 		
 		// parse the html
-		$this->parsedHTML = new parseHTML();
+		$this->parsedHTML = new HTMLParser();
 		$this->parsedHTML->load($html);
 		$this->parsedHTML->unlock_text();
 		$tagsToIgnore = $this->parsedHTML->get_tags_by_name($this->settings["ignoreTags"]);
