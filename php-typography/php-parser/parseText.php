@@ -62,7 +62,7 @@ class parseText {
 	function load($rawText) {
 
 		// abort if a simple string exceeds 500 characters (security concern)
-		if( preg_match("@\w{500}@s", $rawHTML) ) {
+		if( (is_string($rawText) && preg_match("@\w{500}@s", $rawText)) || (preg_match("@\w{500}@s", $rawText['value'])) ) {
 			return;
 		}
 
@@ -76,7 +76,7 @@ class parseText {
 			$rawText = $rawText["value"];
 		} else {
 			// we have an error
-			return FALSE;
+			return false;
 		}
 		
 		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
