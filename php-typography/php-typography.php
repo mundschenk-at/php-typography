@@ -15,7 +15,7 @@
 # if used with multibyte language, UTF-8 encoding is required!
 class phpTypography {
 
-	var $mb = FALSE; //cannot be changed after load
+	var $mb = false; //cannot be changed after load
 	var $chr = array();
 	var $settings = array();  // operational attributes
 	var $parsedHTML = array(); // to hold current instance of class HTMLParser
@@ -29,7 +29,8 @@ class phpTypography {
 	#=======================================================================
 
 	// __ naming defines constructor that is automatically called on each newly-createy object
-	function __construct($setDefaults = TRUE) {
+	function __construct($setDefaults = true)
+	{
 		$this->chr["noBreakSpace"] = $this->uchr(160);
 		$this->chr["noBreakNarrowSpace"] = $this->uchr(160); //should be 8239, but not supported consistently, used in unit spacing
 		$this->chr["copyright"] = $this->uchr(169);
@@ -68,14 +69,15 @@ class phpTypography {
 		$this->chr["leftWhiteCornerBracket"] = $this->uchr(12302);
 		$this->chr["rightWhiteCornerBracket"] = $this->uchr(12303);
 
-		if($setDefaults) {
+		if ($setDefaults) {
 			$this->set_defaults();
 		}
 		
-		return TRUE;
+		return true;
 	}
 
-	function set_defaults() {
+	function set_defaults()
+	{
 
 		// general attributes
 		$this->set_tags_to_ignore();
@@ -84,7 +86,6 @@ class phpTypography {
 		
 		//smart characters
 		$this->set_smart_quotes();
-		//DEPRECIATED $this->set_smart_quotes_language();
 		$this->set_smart_quotes_primary(); /* added in version 1.15 */
 		$this->set_smart_quotes_secondary(); /* added in version 1.15 */
 		$this->set_smart_dashes();
@@ -97,7 +98,6 @@ class phpTypography {
 		$this->set_smart_math();
 		$this->set_smart_fractions();
 		$this->set_smart_exponents();
-		// DEPRECIATED: $this->set_smart_multiplication();
 		
 		//smart spacing
 		$this->set_single_character_word_spacing();
@@ -132,14 +132,15 @@ class phpTypography {
 		$this->set_hyphenate_title_case(); // added in version 1.5
 		$this->set_hyphenation_exceptions();
 		
-		return TRUE;
+		return true;
 	}
 
 	// sets tags where typography of children will be untouched
-	function set_tags_to_ignore($tags = array("code", "head", "kbd", "object", "option", "pre", "samp", "script", "select", "style", "textarea", "title", "var", "math")) {
-		if(!is_array($tags)) 
+	function set_tags_to_ignore($tags = array("code", "head", "kbd", "object", "option", "pre", "samp", "script", "select", "style", "textarea", "title", "var", "math"))
+	{
+		if (!is_array($tags)) 
 			$tags = preg_split("/[\s,]+/", $tags, -1, PREG_SPLIT_NO_EMPTY);
-		foreach($tags as &$tag){
+		foreach ($tags as &$tag){
 			$tag = strtolower($tag);
 		}
 		
@@ -148,8 +149,8 @@ class phpTypography {
 		$tagsCount = count($tags);
 		// don't use foreach, we need to modify the array we are indexing through
 		$key = 0; //we need to look through every initial key ($i), but the total key count will reduce over time ($key)
-		for($i=0; $i<$tagsCount; $i++) {
-			if(FALSE !== array_search($tags[$key], $selfClosingTags)) {
+		for ($i=0; $i<$tagsCount; $i++) {
+			if (false !== array_search($tags[$key], $selfClosingTags)) {
 				$tags =array_merge(array_slice($tags, 0, $key), array_slice($tags, $key+1)); // array_merge renumbers numeric keys!
 				$key--; //adjust for shorter array
 			}
@@ -158,36 +159,38 @@ class phpTypography {
 
 		// include all inappropriate tags in $tags
 		$inappropriateTags = array('iframe', 'textarea', 'button', 'select', 'optgroup', 'option' ,'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param');
-		foreach($inappropriateTags as $inappropriateTag) {
-			if(FALSE === array_search($inappropriateTag, $tags)) {
+		foreach ($inappropriateTags as $inappropriateTag) {
+			if (false === array_search($inappropriateTag, $tags)) {
 				array_push($tags, $inappropriateTag);
 			}
 		}
 		
 		$this->settings["ignoreTags"] = $tags;
-		return TRUE;
+		return true;
 	}
 
 	// sets classes where typography of children will be untouched
-	function set_classes_to_ignore($classes = array("vcard", "noTypo")) {
-		if(!is_array($classes)) 
+	function set_classes_to_ignore($classes = array("vcard", "noTypo"))
+	{
+		if (!is_array($classes)) 
 			$classes = preg_split("/[\s,]+/", $classes, -1, PREG_SPLIT_NO_EMPTY);
 		$this->settings["ignoreClasses"] = $classes;
-		return TRUE;
+		return true;
 	}
 
 	// sets IDs where typography of children will be untouched
-	function set_ids_to_ignore($ids = array()) {
-		if(!is_array($ids)) 
+	function set_ids_to_ignore($ids = array())
+	{
+		if (!is_array($ids)) 
 			$ids = preg_split("/[\s,]+/", $ids, -1, PREG_SPLIT_NO_EMPTY);
 		$this->settings["ignoreIDs"] = $ids;
-		return TRUE;
+		return true;
 	}
 
 	// curl quotemarks
-	function set_smart_quotes($on = TRUE) {
+	function set_smart_quotes($on = true) {
 		$this->settings["smartQuotes"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// DEPRECIATED
@@ -220,7 +223,7 @@ class phpTypography {
 			$this->chr["singleQuoteClose"] = $this->uchr(8217);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 
@@ -241,57 +244,58 @@ class phpTypography {
 	//	"singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
 	//	"cornerBrackets" => "&#x300c;foo&#x300d;",
 	//	"whiteCornerBracket" => "&#x300e;foo&#x300f;",
-	function set_smart_quotes_primary($style = "doubleCurled") {
+	function set_smart_quotes_primary($style = "doubleCurled")
+	{
 		if($style == "doubleCurled") {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8220);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleCurledReversed") {
+		} elseif ($style == "doubleCurledReversed") {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8221);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleLow9") {
+		} elseif ($style == "doubleLow9") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["doubleLow9Quote"];
 			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleLow9Reversed") {
+		} elseif ($style == "doubleLow9Reversed") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["doubleLow9Quote"];
 			$this->chr["doubleQuoteClose"] = $this->uchr(8220);
-		} elseif($style == "singleCurled") {
+		} elseif ($style == "singleCurled") {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8216);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleCurledReversed") {
+		} elseif ($style == "singleCurledReversed") {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8217);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleLow9") {
+		} elseif ($style == "singleLow9") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["singleLow9Quote"];
 			$this->chr["doubleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleLow9Reversed") {
+		} elseif ($style == "singleLow9Reversed") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["singleLow9Quote"];
 			$this->chr["doubleQuoteClose"] = $this->uchr(8216);
-		} elseif($style == "doubleGuillemetsFrench") {
+		} elseif ($style == "doubleGuillemetsFrench") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["guillemetOpen"].$this->chr["noBreakSpace"];
 			$this->chr["doubleQuoteClose"] = $this->chr["noBreakSpace"].$this->chr["guillemetClose"];
-		} elseif($style == "doubleGuillemets") {
+		} elseif ($style == "doubleGuillemets") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["guillemetOpen"];
 			$this->chr["doubleQuoteClose"] = $this->chr["guillemetClose"];
-		} elseif($style == "doubleGuillemetsReversed") {
+		} elseif ($style == "doubleGuillemetsReversed") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["guillemetClose"];
 			$this->chr["doubleQuoteClose"] = $this->chr["guillemetOpen"];
-		} elseif($style == "singleGuillemets") {
+		} elseif ($style == "singleGuillemets") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["singleAngleQuoteOpen"];
 			$this->chr["doubleQuoteClose"] = $this->chr["singleAngleQuoteClose"];
-		} elseif($style == "singleGuillemetsReversed") {
+		} elseif ($style == "singleGuillemetsReversed") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["singleAngleQuoteClose"];
 			$this->chr["doubleQuoteClose"] = $this->chr["singleAngleQuoteOpen"];
-		} elseif($style == "cornerBrackets") {
+		} elseif ($style == "cornerBrackets") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["leftCornerBracket"];
 			$this->chr["doubleQuoteClose"] = $this->chr["rightCornerBracket"];
-		} elseif($style == "whiteCornerBracket") {
+		} elseif ($style == "whiteCornerBracket") {
 			$this->chr["doubleQuoteOpen"] = $this->chr["leftWhiteCornerBracket"];
 			$this->chr["doubleQuoteClose"] = $this->chr["rightWhiteCornerBracket"];
 		} else {
 			$this->chr["doubleQuoteOpen"] = $this->uchr(8220);
 			$this->chr["doubleQuoteClose"] = $this->uchr(8221);
 		}
-		return TRUE;
+		return true;
 	}
 	// Secondary quotemarks style
 	// allowed values for $style
@@ -310,302 +314,323 @@ class phpTypography {
 	//	"singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
 	//	"cornerBrackets" => "&#x300c;foo&#x300d;",
 	//	"whiteCornerBracket" => "&#x300e;foo&#x300f;",
-	function set_smart_quotes_secondary($style = "singleCurled") {
-		if($style == "doubleCurled") {
+	function set_smart_quotes_secondary($style = "singleCurled")
+	{
+		if ($style == "doubleCurled") {
 			$this->chr["singleQuoteOpen"] = $this->uchr(8220);
 			$this->chr["singleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleCurledReversed") {
+		} elseif ($style == "doubleCurledReversed") {
 			$this->chr["singleQuoteOpen"] = $this->uchr(8221);
 			$this->chr["singleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleLow9") {
+		} elseif ($style == "doubleLow9") {
 			$this->chr["singleQuoteOpen"] = $this->chr["doubleLow9Quote"];
 			$this->chr["singleQuoteClose"] = $this->uchr(8221);
-		} elseif($style == "doubleLow9Reversed") {
+		} elseif ($style == "doubleLow9Reversed") {
 			$this->chr["singleQuoteOpen"] = $this->chr["doubleLow9Quote"];
 			$this->chr["singleQuoteClose"] = $this->uchr(8220);
-		} elseif($style == "singleCurled") {
+		} elseif ($style == "singleCurled") {
 			$this->chr["singleQuoteOpen"] = $this->uchr(8216);
 			$this->chr["singleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleCurledReversed") {
+		} elseif ($style == "singleCurledReversed") {
 			$this->chr["singleQuoteOpen"] = $this->uchr(8217);
 			$this->chr["singleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleLow9") {
+		} elseif ($style == "singleLow9") {
 			$this->chr["singleQuoteOpen"] = $this->chr["singleLow9Quote"];
 			$this->chr["singleQuoteClose"] = $this->uchr(8217);
-		} elseif($style == "singleLow9Reversed") {
+		} elseif ($style == "singleLow9Reversed") {
 			$this->chr["singleQuoteOpen"] = $this->chr["singleLow9Quote"];
 			$this->chr["singleQuoteClose"] = $this->uchr(8216);
-		} elseif($style == "doubleGuillemetsFrench") {
+		} elseif ($style == "doubleGuillemetsFrench") {
 			$this->chr["singleQuoteOpen"] = $this->chr["guillemetOpen"].$this->chr["noBreakSpace"];
 			$this->chr["singleQuoteClose"] = $this->chr["noBreakSpace"].$this->chr["guillemetClose"];
-		} elseif($style == "doubleGuillemets") {
+		} elseif ($style == "doubleGuillemets") {
 			$this->chr["singleQuoteOpen"] = $this->chr["guillemetOpen"];
 			$this->chr["singleQuoteClose"] = $this->chr["guillemetClose"];
-		} elseif($style == "doubleGuillemetsReversed") {
+		} elseif ($style == "doubleGuillemetsReversed") {
 			$this->chr["singleQuoteOpen"] = $this->chr["guillemetClose"];
 			$this->chr["singleQuoteClose"] = $this->chr["guillemetOpen"];
-		} elseif($style == "singleGuillemets") {
+		} elseif ($style == "singleGuillemets") {
 			$this->chr["singleQuoteOpen"] = $this->chr["singleAngleQuoteOpen"];
 			$this->chr["singleQuoteClose"] = $this->chr["singleAngleQuoteClose"];
-		} elseif($style == "singleGuillemetsReversed") {
+		} elseif ($style == "singleGuillemetsReversed") {
 			$this->chr["singleQuoteOpen"] = $this->chr["singleAngleQuoteClose"];
 			$this->chr["singleQuoteClose"] = $this->chr["singleAngleQuoteOpen"];
-		} elseif($style == "cornerBrackets") {
+		} elseif ($style == "cornerBrackets") {
 			$this->chr["singleQuoteOpen"] = $this->chr["leftCornerBracket"];
 			$this->chr["singleQuoteClose"] = $this->chr["rightCornerBracket"];
-		} elseif($style == "whiteCornerBracket") {
+		} elseif ($style == "whiteCornerBracket") {
 			$this->chr["singleQuoteOpen"] = $this->chr["leftWhiteCornerBracket"];
 			$this->chr["singleQuoteClose"] = $this->chr["rightWhiteCornerBracket"];
 		} else {
 			$this->chr["singleQuoteOpen"] = $this->uchr(8216);
 			$this->chr["singleQuoteClose"] = $this->uchr(8217);
 		}
-		return TRUE;
+		return true;
 	}
 
-
-
-
-
 	// replaces "a--a" with En Dash " -- " and "---" with Em Dash
-	function set_smart_dashes($on = TRUE) {
+	function set_smart_dashes($on = true)
+	{
 		$this->settings["smartDashes"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// replaces "..." with "…"
-	function set_smart_ellipses($on = TRUE) {
+	function set_smart_ellipses($on = true)
+	{
 		$this->settings["smartEllipses"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// replaces "creme brulee" with "crème brûlée"
-	function set_smart_diacritics($on = TRUE) {
+	function set_smart_diacritics($on = true)
+	{
 		$this->settings["smartDiacritics"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// defines hyphenation language for text
-	function set_diacritic_language($lang = "en-US") {
+	function set_diacritic_language($lang = "en-US")
+	{
 		if (isset($this->settings["diacriticLanguage"]) &&	$this->settings["diacriticLanguage"] == $lang)
-			return TRUE;
+			return true;
 		
 		$this->settings["diacriticLanguage"] = $lang;
 
-		if(file_exists(dirname(__FILE__).'/diacritics/'.$this->settings["diacriticLanguage"].'.php')) {
+		if (file_exists(dirname(__FILE__).'/diacritics/'.$this->settings["diacriticLanguage"].'.php')) {
 			include('diacritics/'.$this->settings["diacriticLanguage"].'.php');
 		} else {
 			include('diacritics/en-US.php');
 		}
 		$this->settings["diacriticWords"] = $diacriticWords;
 		
-		return TRUE;
+		return true;
 	}
 
 	// $customReplacements must be
 	//		an array formatted array(needle=>replacement, needle=>replacement...), or
 	//		a string formatted `"needle"=>"replacement","needle"=>"replacement",...`
-	function set_diacritic_custom_replacements($customReplacements = array()) {
+	function set_diacritic_custom_replacements($customReplacements = array())
+	{
 		$replacements = array();
-		if(!is_array($customReplacements)) 
+		if (!is_array($customReplacements)) 
 			$customReplacements = preg_split("/,/", $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
-		foreach($customReplacements as $customReplacement) {
+		foreach ($customReplacements as $customReplacement) {
 			//account for single and double quotes
 			preg_match("/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacement, $doubleQuoteKeyMatch);
 			preg_match("/(?:')([^']+)(?:'\s*=>)/", $customReplacement, $singleQuoteKeyMatch);
 			preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacement, $doubleQuoteValueMatch);
 			preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacement, $singleQuoteValueMatch);
 
-			if( isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" ) ) {
+			if (isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" )) {
 				$key = $doubleQuoteKeyMatch[1];
-			} elseif( isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" ) ) {
+			} elseif (isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" )) {
 				$key = $singleQuoteKeyMatch[1];
 			}
 			
-			if( isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" ) ) {
+			if (isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" )) {
 				$value = $doubleQuoteValueMatch[1];
-			} elseif( isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" ) ) {
+			} elseif (isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" )) {
 				$value = $singleQuoteValueMatch[1];
 			}
 			
-			if( isset($key) && isset($value) ) {
+			if (isset($key) && isset($value) ) {
 				$replacements[strip_tags(trim($key))] = strip_tags(trim($value));
 			}
 		}
 			
 		$this->settings["diacriticCustomReplacements"] = $replacements;
-		return TRUE;
+		return true;
 	}
 
 
 	// replaces (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗
-	function set_smart_marks($on = TRUE) {
+	function set_smart_marks($on = true)
+	{
 		$this->settings["smartMarks"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_math($on = TRUE) {
+	function set_smart_math($on = true)
+	{
 		$this->settings["smartMath"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_exponents($on = TRUE) {
+	function set_smart_exponents($on = true)
+	{
 		$this->settings["smartExponents"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_fractions($on = TRUE) {
+	function set_smart_fractions($on = true)
+	{
 		$this->settings["smartFractions"] = $on;
-		return TRUE;
+		return true;
 	}
 
-	// DEPRECIATED
-	function set_smart_multiplication($on = TRUE) {
-		$this->settings["smartMath"] = $on;
-		return TRUE;
-	}
-	
 	// wrap numbers in <span class="numbers">
-	function set_smart_ordinal_suffix($on = TRUE) {
+	function set_smart_ordinal_suffix($on = true)
+	{
 		$this->settings["smartOrdinalSuffix"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// single character words are forced to next line with insertion of &nbsp;
-	function set_single_character_word_spacing($on = TRUE) {
+	function set_single_character_word_spacing($on = true)
+	{
 		$this->settings["singleCharacterWordSpacing"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// units and values are kept together with insertion of &nbsp;
-	function set_fraction_spacing($on = TRUE) {
+	function set_fraction_spacing($on = true)
+	{
 		$this->settings["fractionSpacing"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// units and values are kept together with insertion of &nbsp;
-	function set_unit_spacing($on = TRUE) {
+	function set_unit_spacing($on = true)
+	{
 		$this->settings["unitSpacing"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// a list of units to keep with their values
-	function set_units($units = array()) {
-		if(!is_array($units)) 
+	function set_units($units = array())
+	{
+		if (!is_array($units)) 
 			$units = preg_split("/[\s,]+/", $units, -1, PREG_SPLIT_NO_EMPTY);
 		$this->settings["units"] = $units;
-		return TRUE;
+		return true;
 	}
 
 	// Em and En dashes are wrapped in thin spaces
-	function set_dash_spacing($on = TRUE) {
+	function set_dash_spacing($on = true)
+	{
 		$this->settings["dashSpacing"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// Remove extra space Characters
-	function set_space_collapse($on = TRUE) {
+	function set_space_collapse($on = true)
+	{
 		$this->settings["spaceCollapse"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// enables widow handling
-	function set_dewidow($on = TRUE) {
+	function set_dewidow($on = true)
+	{
 		$this->settings["dewidow"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// establishes maximum length of a widows that will be protected
-	function set_max_dewidow_length($len = 5) {
+	function set_max_dewidow_length($len = 5)
+	{
 		$len = ($len > 1) ? $len : 5;
 		$this->settings["dewidowMaxLength"] = $len;
-		return TRUE;
+		return true;
 	}
 	
 	// establishes maximum length of pulled text to keep widows company
-	function set_max_dewidow_pull($len = 5) {
+	function set_max_dewidow_pull($len = 5)
+	{
 		$len = ($len > 1) ? $len : 5;
 		$this->settings["dewidowMaxPull"] = $len;
-		return TRUE;
+		return true;
 	}
 	
 	// enables wrapping at hard hyphens internal to a word with the insertion of a zero-width-space
-	function set_wrap_hard_hyphens($on = TRUE) {
+	function set_wrap_hard_hyphens($on = true)
+	{
 		$this->settings["hyphenHardWrap"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// enables wrapping of urls
-	function set_url_wrap($on = TRUE) {
+	function set_url_wrap($on = true)
+	{
 		$this->settings["urlWrap"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// enables wrapping of email addresses
-	function set_email_wrap($on = TRUE) {
+	function set_email_wrap($on = true)
+	{
 		$this->settings["emailWrap"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// establishes minimum character requirement after a url wrapping point
-	function set_min_after_url_wrap($len = 5) {
+	function set_min_after_url_wrap($len = 5)
+	{
 		$len = ($len > 0) ? $len : 5;
 		$this->settings["urlMinAfterWrap"] = $len;
-		return TRUE;
+		return true;
 	}
 
 	// wrap ampersands in <span class="amp">
-	function set_style_ampersands($on = TRUE) {
+	function set_style_ampersands($on = true)
+	{
 		$this->settings["styleAmpersands"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// wrap caps in <span class="caps">
-	function set_style_caps($on = TRUE) {
+	function set_style_caps($on = true)
+	{
 		$this->settings["styleCaps"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// wrap initial quotes in <span class="quo"> or <span class="dquo">
-	function set_style_initial_quotes($on = TRUE) {
+	function set_style_initial_quotes($on = true)
+	{
 		$this->settings["styleInitialQuotes"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// wrap numbers in <span class="numbers">
-	function set_style_numbers($on = TRUE) {
+	function set_style_numbers($on = true)
+	{
 		$this->settings["styleNumbers"] = $on;
-		return TRUE;
+		return true;
 	}
 
 	// sets tags where initial quotes and guillemets should be styled
-	function set_initial_quote_tags($tags = array("p", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "li", "dd", "dt")) {
-		if(!is_array($tags)) 
+	function set_initial_quote_tags($tags = array("p", "h1", "h2", "h3", "h4", 
+	"h5", "h6", "blockquote", "li", "dd", "dt")) {
+		if (!is_array($tags)) 
 			$tags = preg_split("/[^a-z0-9]+/", $tags, -1, PREG_SPLIT_NO_EMPTY);
-		foreach($tags as &$tag){
+		foreach ($tags as &$tag){
 			$tag = strtolower($tag);
 		}
 		$this->settings["initialQuoteTags"] = $tags;
-		return TRUE;
+		return true;
 	}
 
 	// enables hyphenation of text
-	function set_hyphenation($on = TRUE) {
+	function set_hyphenation($on = true)
+	{
 		$this->settings["hyphenation"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// defines hyphenation language for text
-	function set_hyphenation_language($lang = "en-US") {
+	function set_hyphenation_language($lang = "en-US")
+	{
 		if (isset($this->settings["hyphenLanguage"]) &&	$this->settings["hyphenLanguage"] == $lang)
-			return TRUE;
+			return true;
 		
 		$this->settings["hyphenLanguage"] = $lang;
 
-		if(file_exists(dirname(__FILE__).'/lang/'.$this->settings["hyphenLanguage"].'.php')) {
+		if (file_exists(dirname(__FILE__).'/lang/'.$this->settings["hyphenLanguage"].'.php')) {
 			include('lang/'.$this->settings["hyphenLanguage"].'.php');
 		} else {
 			include('lang/en-US.php');
@@ -615,77 +640,81 @@ class phpTypography {
 		$this->settings["hyphenationPatternExceptions"] = $patgenExceptions;
 		
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
-		if(isset($this->settings["hyphenationExceptions"])) unset($this->settings["hyphenationExceptions"]);
+		if (isset($this->settings["hyphenationExceptions"])) unset($this->settings["hyphenationExceptions"]);
 		
-		return TRUE;
+		return true;
 	}
 	
 	// establishes minimum length of a word that may be hyphenated
-	function set_min_length_hyphenation($len = 5) {
+	function set_min_length_hyphenation($len = 5)
+	{
 		$len = ($len > 1) ? $len : 5;
 		$this->settings["hyphenMinLength"] = $len;
-		return TRUE;
+		return true;
 	}
 	
 	// establishes minimum character requirement before a hyphenation point
-	function set_min_before_hyphenation($len = 3) {
+	function set_min_before_hyphenation($len = 3)
+	{
 		$len = ($len > 0) ? $len : 3;
 		$this->settings["hyphenMinBefore"] = $len;
-		return TRUE;
+		return true;
 	}
 	
 	// establishes minimum character requirement after a hyphenation point
-	function set_min_after_hyphenation($len = 2) {
+	function set_min_after_hyphenation($len = 2)
+	{
 		$len = ($len > 0) ? $len : 2;
 		$this->settings["hyphenMinAfter"] = $len;
-		return TRUE;
+		return true;
 	}
 	
 	// allows/disallows hyphenation of title/heading text
-	function set_hyphenate_headings($on = TRUE) {
+	function set_hyphenate_headings($on = true)
+	{
 		$this->settings["hyphenateTitle"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// allows hyphenation of strings of all capital characters
-	function set_hyphenate_all_caps($on = TRUE) {
+	function set_hyphenate_all_caps($on = true)
+	{
 		$this->settings["hyphenateAllCaps"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// allows hyphenation of strings of all capital characters
 	// added in version 1.5
-	function set_hyphenate_title_case($on = TRUE) {
+	function set_hyphenate_title_case($on = true)
+	{
 		$this->settings["hyphenateTitleCase"] = $on;
-		return TRUE;
+		return true;
 	}
 	
 	// defines custom word hyphenations
 	// expected input is an array of words with all hyphenation points marked with a hard hyphen
-	function set_hyphenation_exceptions($exceptions = array()) {
-
+	function set_hyphenation_exceptions($exceptions = array())
+	{
 		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
-		$multibyte = FALSE;
+		$multibyte = false;
 		$u = "";
-		if(!is_array($exceptions)) 
+		if (!is_array($exceptions)) 
 			$exceptions = preg_split("/[^a-zA-Z0-9\-]+/", $exceptions, -1, PREG_SPLIT_NO_EMPTY);
 		
 		$exceptionKeys = array();
-		foreach($exceptions as $key => &$exception) {
-			
-			
+		foreach ($exceptions as $key => &$exception) {
 			$encoding = mb_detect_encoding($exception."a", $encodings);
-			if("UTF-8" == $encoding) {
-				$multibyte = TRUE;
+			if ("UTF-8" == $encoding) {
+				$multibyte = true;
 				$u = "u";
-				if(!function_exists('mb_strlen')) return FALSE;
-			} elseif("ASCII" == $encoding) {
-				$multibyte = FALSE;
+				if(!function_exists('mb_strlen')) return false;
+			} elseif ("ASCII" == $encoding) {
+				$multibyte = false;
 			} else {
-				return FALSE;
+				return false;
 			}
 			
-			if($multibyte) {
+			if ($multibyte) {
 				$exception = mb_strtolower($exception, "UTF-8");
 			} else {  //same as above without multibyte string functions to improve preformance
 				$exception = strtolower($exception);
@@ -693,7 +722,7 @@ class phpTypography {
 			$exceptionKeys[$key] = preg_replace("#-#$u", "", $exception);
 		}
 		$e = array();
-		foreach($exceptionKeys as $key => $value)    {
+		foreach ($exceptionKeys as $key => $value)	{
 			$e[$value] = $exceptions[$key];
 		}
 		
@@ -702,7 +731,7 @@ class phpTypography {
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
 		if(isset($this->settings["hyphenationExceptions"])) unset($this->settings["hyphenationExceptions"]);
 
-		return TRUE;
+		return true;
 	}
 
 	
@@ -715,7 +744,8 @@ class phpTypography {
 
 
 	#	Returns:	ARRAY of supported hyphenation languages in the form array( language code => language name)
-	function get_languages() {
+	function get_languages()
+	{
 		$languages = array();
 		$langDir = dirname(__FILE__)."/lang/";
 		$handler = opendir($langDir);
@@ -738,7 +768,8 @@ class phpTypography {
 	}
 
 	#	Returns:	ARRAY of supported hyphenation languages in the form array( language code => language name)
-	function get_diacritic_languages() {
+	function get_diacritic_languages()
+	{
 		$languages = array();
 		$langDir = dirname(__FILE__)."/diacritics/";
 		$handler = opendir($langDir);
@@ -762,9 +793,10 @@ class phpTypography {
 
 	#	Action:		modifies $html according to the defined settings
 	#	Returns:	processed $html
-	function process($html, $isTitle = FALSE) {
+	function process($html, $isTitle = false)
+	{
 		
-		if( isset($this->settings["ignoreTags"] ) && $isTitle && ( in_array('h1', $this->settings["ignoreTags"]) || in_array('h2', $this->settings["ignoreTags"]) ) )
+		if (isset($this->settings["ignoreTags"] ) && $isTitle && ( in_array('h1', $this->settings["ignoreTags"]) || in_array('h2', $this->settings["ignoreTags"]) ))
 			return $html;
 		
 		require_once("php-parser/php-parser.php");
@@ -774,14 +806,14 @@ class phpTypography {
 		$this->parsedHTML->load($html);
 		$this->parsedHTML->unlock_text();
 		$tagsToIgnore = $this->parsedHTML->get_tags_by_name($this->settings["ignoreTags"]);
-		if(isset($this->settings["ignoreClasses"]))
+		if (isset($this->settings["ignoreClasses"]))
 			$tagsToIgnore += $this->parsedHTML->get_tags_by_class($this->settings["ignoreClasses"]); //union to avoid dup keys
-		if(isset($this->settings["ignoreIDs"]))
+		if (isset($this->settings["ignoreIDs"]))
 			$tagsToIgnore += $this->parsedHTML->get_tag_by_id($this->settings["ignoreIDs"]); //union to avoid dup keys
 		$this->parsedHTML->lock_children($tagsToIgnore);
 		$unlockedTexts = $this->parsedHTML->get_unlocked_text();
 
-		foreach($unlockedTexts as &$unlockedText) {
+		foreach ($unlockedTexts as &$unlockedText) {
 		
 			// we won't be doing anything with spaces, so we can jump ship if that is all we have
 			if (0 == strlen(trim($unlockedText["value"]))) continue;
@@ -830,13 +862,13 @@ class phpTypography {
 			$unlockedText = $this->smart_ordinal_suffix($unlockedText);	// call before "style_numbers" and "smart_fractions"	
 			$unlockedText = $this->smart_exponents($unlockedText); // call before "style_numbers"
 			$unlockedText = $this->smart_fractions($unlockedText); // call before "style_numbers" and after "smart_ordinal_suffix"
-			if(!$this->parsedHTML->in_class('caps', $unlockedText))
+			if (!$this->parsedHTML->in_class('caps', $unlockedText))
 				$unlockedText = $this->style_caps($unlockedText); // call before "style_numbers"		
-			if(!$this->parsedHTML->in_class('numbers', $unlockedText))
+			if (!$this->parsedHTML->in_class('numbers', $unlockedText))
 				$unlockedText = $this->style_numbers($unlockedText); // call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"	
-			if(!$this->parsedHTML->in_class('amp', $unlockedText))
+			if (!$this->parsedHTML->in_class('amp', $unlockedText))
 				$unlockedText = $this->style_ampersands($unlockedText);			
-			if(!$this->parsedHTML->in_class(array('quo','dquo'), $unlockedText)) 
+			if (!$this->parsedHTML->in_class(array('quo','dquo'), $unlockedText)) 
 				$unlockedText = $this->style_initial_quotes($unlockedText, $isTitle);
 		}
 		
@@ -848,9 +880,10 @@ class phpTypography {
 	#	Action:		modifies $html according to the defined settings as only appropriate for RSS feeds 
 	#				(i.e. excluding processes that may not display well with limited character set inteligence)
 	#	Returns:	processed $html
-	function process_feed($html, $isTitle = FALSE) {
+	function process_feed($html, $isTitle = false)
+	{
 
-		if( isset($this->settings["ignoreTags"]) && $isTitle && ( in_array('h1', $this->settings["ignoreTags"]) || in_array('h2', $this->settings["ignoreTags"]) ) )
+		if (isset($this->settings["ignoreTags"]) && $isTitle && ( in_array('h1', $this->settings["ignoreTags"]) || in_array('h2', $this->settings["ignoreTags"]) ) )
 			return $html;
 
 		require_once("php-parser/php-parser.php");
@@ -860,14 +893,14 @@ class phpTypography {
 		$this->parsedHTML->load($html);
 		$this->parsedHTML->unlock_text();
 		$tagsToIgnore = $this->parsedHTML->get_tags_by_name($this->settings["ignoreTags"]);
-		if(isset($this->settings["ignoreClasses"]))
+		if (isset($this->settings["ignoreClasses"]))
 			$tagsToIgnore += $this->parsedHTML->get_tags_by_class($this->settings["ignoreClasses"]); //union to avoid dup keys
-		if(isset($this->settings["ignoreIDs"]))
+		if (isset($this->settings["ignoreIDs"]))
 			$tagsToIgnore += $this->parsedHTML->get_tag_by_id($this->settings["ignoreIDs"]); //union to avoid dup keys
 		$this->parsedHTML->lock_children($tagsToIgnore);
 		$unlockedTexts = $this->parsedHTML->get_unlocked_text();
 		
-		foreach($unlockedTexts as &$unlockedText) {
+		foreach ($unlockedTexts as &$unlockedText) {
 		
 			// we won't be doing anything with spaces, so we can jump ship if that is all we have
 			if (0 == strlen(trim($unlockedText["value"]))) continue;
@@ -899,7 +932,8 @@ class phpTypography {
 	#=======================================================================
 	
 	//expecting parsedHTML token of type text
-	function smart_quotes($parsedHTMLtoken) {
+	function smart_quotes($parsedHTMLtoken)
+	{
 		if(!isset($this->settings["smartQuotes"]) || !$this->settings["smartQuotes"]) return $parsedHTMLtoken;
 
 		$nonEnglishWordCharacters = "
@@ -927,11 +961,11 @@ class phpTypography {
 		//if we have adjacent characters add them to the text
 		$nextChr = "";
 		$prevChr = "";
-		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
+		if (isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
 			$prevChr = $parsedHTMLtoken["prevChr"];
 			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
 		}
-		if(isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
+		if (isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
 			$nextChr = $parsedHTMLtoken["nextChr"];
 			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
 		}
@@ -990,11 +1024,11 @@ class phpTypography {
 		//if we have adjacent characters remove them from the text
 		$encodings = array("ASCII","UTF-8");
 		$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-		if(!isset($e) || $e == "") $e = "ASCII";
-		if($prevChr != "") {
+		if (!isset($e) || $e == "") $e = "ASCII";
+		if ($prevChr != "") {
 			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
 		}
-		if($nextChr != "") {
+		if ($nextChr != "") {
 			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 0, mb_strlen($parsedHTMLtoken["value"], $e)-1, $e);
 		}
 				
@@ -1002,8 +1036,9 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function smart_dashes($parsedHTMLtoken) {
-		if(!isset($this->settings["smartDashes"]) || !$this->settings["smartDashes"]) return $parsedHTMLtoken;
+	function smart_dashes($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartDashes"]) || !$this->settings["smartDashes"]) return $parsedHTMLtoken;
 
 		$nonEnglishWordCharacters = "
 					[0-9A-Za-z]|\x{00c0}|\x{00c1}|\x{00c2}|\x{00c3}|\x{00c4}|\x{00c5}|\x{00c6}|\x{00c7}|\x{00c8}|\x{00c9}|
@@ -1115,24 +1150,26 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function smart_ellipses($parsedHTMLtoken) {
-		if(!isset($this->settings["smartEllipses"]) || !$this->settings["smartEllipses"]) return $parsedHTMLtoken;
-		$parsedHTMLtoken["value"] = str_replace(array("....",     ". . . .",), ".".$this->chr["ellipses"], $parsedHTMLtoken["value"]);
-		$parsedHTMLtoken["value"] = str_replace(array("...",     ". . .",), $this->chr["ellipses"], $parsedHTMLtoken["value"]);
+	function smart_ellipses($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartEllipses"]) || !$this->settings["smartEllipses"]) return $parsedHTMLtoken;
+		$parsedHTMLtoken["value"] = str_replace(array("....",	 ". . . .",), ".".$this->chr["ellipses"], $parsedHTMLtoken["value"]);
+		$parsedHTMLtoken["value"] = str_replace(array("...",	 ". . .",), $this->chr["ellipses"], $parsedHTMLtoken["value"]);
 		return $parsedHTMLtoken;
 	}
 
 	//expecting parsedHTML token of type text
-	function smart_diacritics($parsedHTMLtoken) {
-		if(!isset($this->settings["smartDiacritics"]) || !$this->settings["smartDiacritics"]) return $parsedHTMLtoken;
+	function smart_diacritics($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartDiacritics"]) || !$this->settings["smartDiacritics"]) return $parsedHTMLtoken;
 
-		if( isset($this->settings["diacriticCustomReplacements"]) && ( count($this->settings["diacriticCustomReplacements"]) > 0 ) ) {
-			foreach($this->settings["diacriticCustomReplacements"] as $needle => $replacement) {
+		if (isset($this->settings["diacriticCustomReplacements"]) && ( count($this->settings["diacriticCustomReplacements"]) > 0 ) ) {
+			foreach ($this->settings["diacriticCustomReplacements"] as $needle => $replacement) {
 				$parsedHTMLtoken["value"] = preg_replace("/\b$needle\b/", $replacement, $parsedHTMLtoken["value"]);
 			}
 		}
-		if( isset($this->settings["diacriticWords"]) && ( count($this->settings["diacriticWords"]) > 0 ) ) {
-			foreach($this->settings["diacriticWords"] as $needle => $replacement) {
+		if (isset($this->settings["diacriticWords"]) && ( count($this->settings["diacriticWords"]) > 0 )) {
+			foreach ($this->settings["diacriticWords"] as $needle => $replacement) {
 				$parsedHTMLtoken["value"] = preg_replace("/\b$needle\b/", $replacement, $parsedHTMLtoken["value"]);
 			}
 		}
@@ -1144,8 +1181,9 @@ class phpTypography {
 
 
 	//expecting parsedHTML token of type text
-	function smart_marks($parsedHTMLtoken) {
-		if(!isset($this->settings["smartMarks"]) || !$this->settings["smartMarks"]) return $parsedHTMLtoken;
+	function smart_marks($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartMarks"]) || !$this->settings["smartMarks"]) return $parsedHTMLtoken;
 		$parsedHTMLtoken["value"] = str_replace(array("(c)", "(C)"), $this->chr["copyright"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = str_replace(array("(r)", "(R)"), $this->chr["registeredMark"], $parsedHTMLtoken["value"]);
 		$parsedHTMLtoken["value"] = str_replace(array("(p)", "(P)"), $this->chr["soundCopyMark"], $parsedHTMLtoken["value"]);
@@ -1155,9 +1193,10 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function smart_math($parsedHTMLtoken) {
+	function smart_math($parsedHTMLtoken)
+	{
 		
-		if(!isset($this->settings["smartMath"]) || !$this->settings["smartMath"]) return $parsedHTMLtoken;
+		if (!isset($this->settings["smartMath"]) || !$this->settings["smartMath"]) return $parsedHTMLtoken;
 
 		//first, let's find math equations
 		$pattern = "/
@@ -1323,7 +1362,8 @@ class phpTypography {
 		return $parsedHTMLtoken;
 	}
 	
-	function _smart_math_callback($matches) {
+	function _smart_math_callback($matches)
+	{
 		$matches[0] = str_replace("-", $this->chr["minus"], $matches[0]);
 		$matches[0] = str_replace("/", $this->chr["division"], $matches[0]);
 		$matches[0] = str_replace("x", $this->chr["multiplication"], $matches[0]);
@@ -1333,8 +1373,9 @@ class phpTypography {
 
 	//expecting parsedHTML token of type text
 	// purposefully seperatred from smart_math because of HTML code injection
-	function smart_exponents($parsedHTMLtoken) {
-		if(!isset($this->settings["smartExponents"]) || !$this->settings["smartExponents"]) return $parsedHTMLtoken;
+	function smart_exponents($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartExponents"]) || !$this->settings["smartExponents"]) return $parsedHTMLtoken;
 		
 		//handle exponents (ie. 4^2)
 		$pat = "/
@@ -1353,17 +1394,18 @@ class phpTypography {
 	// call before sytle_numbers
 	// call after smart_ordinal_suffix
 	// purposefully seperatred from smart_math because of HTML code injection
-	function smart_fractions($parsedHTMLtoken) {
-		if((!isset($this->settings["smartFractions"]) || !$this->settings["smartFractions"]) && (!isset($this->settings["fractionSpacing"]) || !$this->settings["fractionSpacing"])) return $parsedHTMLtoken;
+	function smart_fractions($parsedHTMLtoken)
+	{
+		if ((!isset($this->settings["smartFractions"]) || !$this->settings["smartFractions"]) && (!isset($this->settings["fractionSpacing"]) || !$this->settings["fractionSpacing"])) return $parsedHTMLtoken;
 		
 		$pat = "/\b(\d+)\s(\d+\s?\/\s?\d+)\b/";
-		if((isset($this->settings["fractionSpacing"]) && $this->settings["fractionSpacing"]) && (isset($this->settings["smartFractions"]) && $this->settings["smartFractions"])) {
+		if ((isset($this->settings["fractionSpacing"]) && $this->settings["fractionSpacing"]) && (isset($this->settings["smartFractions"]) && $this->settings["smartFractions"])) {
 			$parsedHTMLtoken["value"] = preg_replace($pat, '$1'.$this->chr["noBreakNarrowSpace"].'$2', $parsedHTMLtoken["value"]);
-		} elseif((isset($this->settings["fractionSpacing"]) && $this->settings["fractionSpacing"]) && (!isset($this->settings["fractionSpacing"]) || !$this->settings["smartFractions"])) {
+		} elseif ((isset($this->settings["fractionSpacing"]) && $this->settings["fractionSpacing"]) && (!isset($this->settings["fractionSpacing"]) || !$this->settings["smartFractions"])) {
 			$parsedHTMLtoken["value"] = preg_replace($pat, '$1'.$this->chr["noBreakSpace"].'$2', $parsedHTMLtoken["value"]);
 		}
 		
-		if(isset($this->settings["smartFractions"]) && $this->settings["smartFractions"]) {
+		if (isset($this->settings["smartFractions"]) && $this->settings["smartFractions"]) {
 			// because without simple variables, the pattern fails...
 			$nbsp = $this->chr['noBreakSpace'];
 			$nbnsp = $this->chr['noBreakNarrowSpace'];
@@ -1384,16 +1426,11 @@ class phpTypography {
 		return $parsedHTMLtoken;
 	}
 
-	//DEPRECIATED!!
-	//expecting parsedHTML token of type text
-	function smart_multiplication($parsedHTMLtoken) {
-		return $this->smart_math($parsedHTMLtoken);
-	}
-
 	// expecting parsedHTML token of type text
 	// call before sytle_numbers
-	function smart_ordinal_suffix($parsedHTMLtoken) {
-		if(!isset($this->settings["smartOrdinalSuffix"]) || !$this->settings["smartOrdinalSuffix"]) return $parsedHTMLtoken;
+	function smart_ordinal_suffix($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["smartOrdinalSuffix"]) || !$this->settings["smartOrdinalSuffix"]) return $parsedHTMLtoken;
 
 		$parsedHTMLtoken["value"] = preg_replace("/\b(\d+)(st|nd|rd|th)\b/", '$1'.'<sup>$2</sup>', $parsedHTMLtoken["value"]);
 
@@ -1403,17 +1440,18 @@ class phpTypography {
 
 
 	//expecting parsedHTML token of type text
-	function single_character_word_spacing($parsedHTMLtoken) {
-		if(!isset($this->settings["singleCharacterWordSpacing"]) || !$this->settings["singleCharacterWordSpacing"]) return $parsedHTMLtoken;
+	function single_character_word_spacing($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["singleCharacterWordSpacing"]) || !$this->settings["singleCharacterWordSpacing"]) return $parsedHTMLtoken;
 
 		// add $nextChr and $prevChr for context
 		$nextChr = "";
 		$prevChr = "";
-		if(isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
+		if (isset($parsedHTMLtoken["prevChr"]) && $parsedHTMLtoken["prevChr"] != "") {
 			$prevChr = $parsedHTMLtoken["prevChr"];
 			$parsedHTMLtoken["value"] = $prevChr.$parsedHTMLtoken["value"];
 		}
-		if(isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
+		if (isset($parsedHTMLtoken["nextChr"]) && $parsedHTMLtoken["nextChr"] != "") {
 			$nextChr = $parsedHTMLtoken["nextChr"];
 			$parsedHTMLtoken["value"] = $parsedHTMLtoken["value"].$nextChr;
 		}
@@ -1434,11 +1472,11 @@ class phpTypography {
 		//if we have adjacent characters remove them from the text
 		$encodings = array("ASCII","UTF-8");
 		$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-		if(!isset($e) || $e == "") $e = "ASCII";
-		if($prevChr != "") {
+		if (!isset($e) || $e == "") $e = "ASCII";
+		if ($prevChr != "") {
 			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
 		}
-		if($nextChr != "") {
+		if ($nextChr != "") {
 			$parsedHTMLtoken["value"] = mb_substr($parsedHTMLtoken["value"], 0, mb_strlen($parsedHTMLtoken["value"], $e)-1, $e);
 		}
 
@@ -1449,9 +1487,10 @@ class phpTypography {
 
 
 	//expecting parsedHTML token of type text
-	function dash_spacing($parsedHTMLtoken) {
-		if(!isset($this->settings["dashSpacing"]) || !$this->settings["dashSpacing"]) return $parsedHTMLtoken;
-	    $parsedHTMLtoken["value"] = preg_replace(
+	function dash_spacing($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["dashSpacing"]) || !$this->settings["dashSpacing"]) return $parsedHTMLtoken;
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/
 				(?:
 					\s
@@ -1469,7 +1508,7 @@ class phpTypography {
 			$parsedHTMLtoken["value"]
 			);
 
-	    $parsedHTMLtoken["value"] = preg_replace(
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/
 				(?:
 					\s
@@ -1493,8 +1532,9 @@ class phpTypography {
 
 
 	//expecting parsedHTML token of type text
-	function space_collapse($parsedHTMLtoken) {
-		if(!isset($this->settings["spaceCollapse"]) || !$this->settings["spaceCollapse"]) return $parsedHTMLtoken;
+	function space_collapse($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["spaceCollapse"]) || !$this->settings["spaceCollapse"]) return $parsedHTMLtoken;
 
 
 		# find the HTML character representation for the following characters:
@@ -1550,29 +1590,29 @@ class phpTypography {
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
 		// normal spacing
-	    $parsedHTMLtoken["value"] = preg_replace(
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/\s+/xu", 
 			" ", 
 			$parsedHTMLtoken["value"]
 			);
 		
 		// nbsp get's priority.  if nbsp exists in a string of spaces, it collapses to nbsp
-	    $parsedHTMLtoken["value"] = preg_replace(
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/(?:\s|$htmlSpaces)*".$this->chr["noBreakSpace"]."(?:\s|$htmlSpaces)*/xu", 
 			$this->chr["noBreakSpace"], 
 			$parsedHTMLtoken["value"]
 			);
 		
 		// for any other spaceing, replace with the first occurance of an unusual space character
-	    $parsedHTMLtoken["value"] = preg_replace(
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/(?:\s)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", 
 			"$1", 
 			$parsedHTMLtoken["value"]
 			);
 
 		// remove all spacing at beginning of block level elements
-		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
-	    $parsedHTMLtoken["value"] = preg_replace(
+		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == null) { // we have the first text in a block level element
+		$parsedHTMLtoken["value"] = preg_replace(
 			"/\A(?:\s|$htmlSpaces)+/xu", 
 			"", 
 			$parsedHTMLtoken["value"]
@@ -1587,12 +1627,13 @@ class phpTypography {
 
 
 	//expecting parsedHTML token of type text
-	function unit_spacing($parsedHTMLtoken) {
-		if(!isset($this->settings["unitSpacing"]) || !$this->settings["unitSpacing"]) return $parsedHTMLtoken;
+	function unit_spacing($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["unitSpacing"]) || !$this->settings["unitSpacing"]) return $parsedHTMLtoken;
 		
 		$units = array();
-		if(isset($this->settings["units"])) {
-			foreach($this->settings["units"] as $unit) {
+		if (isset($this->settings["units"])) {
+			foreach ($this->settings["units"] as $unit) {
 				$units[] = preg_replace("#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#", "\\\\$1", $unit ); // escape special chrs
 			}
 		}
@@ -1634,16 +1675,17 @@ class phpTypography {
 	}
 
 	//expecting parsedHTML token of type text
-	function wrap_hard_hyphens($parsedTextTokens) {
-		if((isset($this->settings["hyphenHardWrap"]) && $this->settings["hyphenHardWrap"]) || (isset($this->settings["smartDashes"]) && $this->settings["smartDashes"])) {
-			foreach($parsedTextTokens as &$parsedTextToken) {
+	function wrap_hard_hyphens($parsedTextTokens)
+	{
+		if ((isset($this->settings["hyphenHardWrap"]) && $this->settings["hyphenHardWrap"]) || (isset($this->settings["smartDashes"]) && $this->settings["smartDashes"])) {
+			foreach ($parsedTextTokens as &$parsedTextToken) {
 				if(isset($this->settings["hyphenHardWrap"]) && $this->settings["hyphenHardWrap"]) {
 					$hyphens = array('-',$this->chr["hyphen"]);
 					$parsedTextToken["value"] = str_replace($hyphens, "-".$this->chr["zeroWidthSpace"], $parsedTextToken["value"]);
 					$parsedTextToken["value"] = str_replace("_", "_".$this->chr["zeroWidthSpace"], $parsedTextToken["value"]);
 					$parsedTextToken["value"] = str_replace("/", "/".$this->chr["zeroWidthSpace"], $parsedTextToken["value"]);
 				}
-				if(isset($this->settings["smartDashes"]) && $this->settings["smartDashes"]) // handled here because we need to know we are inside a word and not a url
+				if (isset($this->settings["smartDashes"]) && $this->settings["smartDashes"]) // handled here because we need to know we are inside a word and not a url
 					$parsedTextToken["value"] = str_replace("-", $this->chr["hyphen"], $parsedTextToken["value"]);
 			}
 		}		
@@ -1651,7 +1693,8 @@ class phpTypography {
 	}
 	
 	//expecting parsedHTML token of type text
-	function dewidow($parsedHTMLtoken) {
+	function dewidow($parsedHTMLtoken)
+	{
 		// intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser
 		// intervening tags will only interfere if they separate the widow from previous or preceding whitespace
 		if(!isset($this->settings["dewidow"]) || !$this->settings["dewidow"]) return $parsedHTMLtoken;
@@ -1660,10 +1703,10 @@ class phpTypography {
 			$encoding = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
 			$u = '';
 
-			if("UTF-8" == $encoding) {
+			if ("UTF-8" == $encoding) {
 				$u = "u";
 				if(!function_exists('mb_strlen')) return $parsedHTMLtoken;
-			} elseif("ASCII" != $encoding) {
+			} elseif ("ASCII" != $encoding) {
 				return $parsedHTMLtoken;
 			}
 
@@ -1704,12 +1747,12 @@ class phpTypography {
 	
 
 	function _dewidow_callback($widow) {
-		if(!isset($this->settings["dewidowMaxPull"]) || !$this->settings["dewidowMaxPull"] || !isset($this->settings["dewidowMaxLength"]) || !$this->settings["dewidowMaxLength"]) return $widow[0];
+		if (!isset($this->settings["dewidowMaxPull"]) || !$this->settings["dewidowMaxPull"] || !isset($this->settings["dewidowMaxLength"]) || !$this->settings["dewidowMaxLength"]) return $widow[0];
 		
 		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
-		$multibyte = FALSE;
+		$multibyte = false;
 		$encoding = mb_detect_encoding($widow[0]."a", $encodings); // ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-		if("UTF-8" == $encoding) $multibyte = TRUE;
+		if ("UTF-8" == $encoding) $multibyte = true;
 
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
@@ -1724,11 +1767,11 @@ class phpTypography {
 		$widow[5] = str_replace($this->chr["softHyphen"], "", $widow[5]);
 		
 		// eject if widows neighbor is proceeded by a no break space (the pulled text would be too long)
-		if($widow[1] == "" || strstr($this->chr["noBreakSpace"], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		if ($widow[1] == "" || strstr($this->chr["noBreakSpace"], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		
-		if($multibyte) {
+		if ($multibyte) {
 			// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
-			if(
+			if (
 				($widow[2] != "" && mb_strlen($widow[2]) > $this->settings["dewidowMaxPull"])
 				||
 				mb_strlen($widow[4]) > $this->settings["dewidowMaxLength"]
@@ -1736,7 +1779,7 @@ class phpTypography {
 					return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		} else {
 			// single byte version of previous
-			if(
+			if (
 				($widow[2] != "" && strlen($widow[2]) > $this->settings["dewidowMaxPull"])
 				||
 				strlen($widow[4]) > $this->settings["dewidowMaxLength"]
@@ -1750,8 +1793,9 @@ class phpTypography {
 
 
 	// expecting parsedText tokens
-	function wrap_urls($parsedTextTokens) {
-		if(!isset($this->settings["urlWrap"]) || !$this->settings["urlWrap"] || !isset($this->settings["urlMinAfterWrap"]) || !$this->settings["urlMinAfterWrap"]) return $parsedTextTokens;
+	function wrap_urls($parsedTextTokens)
+	{
+		if (!isset($this->settings["urlWrap"]) || !$this->settings["urlWrap"] || !isset($this->settings["urlMinAfterWrap"]) || !$this->settings["urlMinAfterWrap"]) return $parsedTextTokens;
 
 
 		// test for and parse urls 
@@ -1788,8 +1832,8 @@ class phpTypography {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 		
-		foreach($parsedTextTokens as &$parsedTextToken) {
-			if(preg_match("`$urlPattern`xi", $parsedTextToken["value"], $urlMatch)) {
+		foreach ($parsedTextTokens as &$parsedTextToken) {
+			if (preg_match("`$urlPattern`xi", $parsedTextToken["value"], $urlMatch)) {
 				// $urlMatch[1] holds "http://"
 				// $urlMatch[2] holds "subdomains.domain.tld"
 				// $urlMatch[3] holds the path after the domain
@@ -1802,7 +1846,7 @@ class phpTypography {
 				// first, we hyphenate each part
 				// we need it formated like a group of words
 				$parsedWordsLike = array();
-				foreach($domainParts as $key => $domainPart) {
+				foreach ($domainParts as $key => $domainPart) {
 					$parsedWordsLike[$key]["value"] = $domainPart;
 				}
 	
@@ -1810,7 +1854,7 @@ class phpTypography {
 				$parsedWordsLike = $this->do_hyphenate($parsedWordsLike);
 
 				// restore format
-				foreach($parsedWordsLike as $key => $parsedWordLike) {
+				foreach ($parsedWordsLike as $key => $parsedWordLike) {
 					$domainParts[$key] = $parsedWordLike["value"];
 				}
 				foreach ($domainParts as $key => &$domainPart) {
@@ -1818,7 +1862,7 @@ class phpTypography {
 					$domainPart = str_replace($this->chr["softHyphen"], $this->chr["zeroWidthSpace"], $domainPart);
 				
 					//we also insert zero-spaces before periods and hyphens
-					if($key > 0 && strlen($domainPart) == 1) {
+					if ($key > 0 && strlen($domainPart) == 1) {
 						$domainPart = $this->chr["zeroWidthSpace"].$domainPart;
 					}
 				}
@@ -1830,7 +1874,7 @@ class phpTypography {
 				$pathParts = str_split($urlMatch[3], 1);
 				$pathCount = count($pathParts);
 				$path = "";
-				for($i = 0; $i < $pathCount; $i++) {
+				for ($i = 0; $i < $pathCount; $i++) {
 					$path .= (0 == $i || $pathCount - $i < $this->settings["urlMinAfterWrap"]) ? $pathParts[$i] : $this->chr["zeroWidthSpace"].$pathParts[$i];
 				}
 	
@@ -1842,8 +1886,9 @@ class phpTypography {
 	}
 	
 	// expecting parsedText tokens
-	function wrap_emails($parsedTextTokens) {
-		if(!isset($this->settings["emailWrap"]) || !$this->settings["emailWrap"]) return $parsedTextTokens;
+	function wrap_emails($parsedTextTokens)
+	{
+		if (!isset($this->settings["emailWrap"]) || !$this->settings["emailWrap"]) return $parsedTextTokens;
 		// test for and parse urls 
 		$validTLD = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
 		$emailPattern = "(?:
@@ -1866,8 +1911,8 @@ class phpTypography {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 		
-		foreach($parsedTextTokens as &$parsedTextToken) {
-			if(preg_match("/$emailPattern/xi", $parsedTextToken["value"], $urlMatch)) {
+		foreach ($parsedTextTokens as &$parsedTextToken) {
+			if (preg_match("/$emailPattern/xi", $parsedTextToken["value"], $urlMatch)) {
 				$parsedTextToken["value"] = preg_replace("/([^a-zA-Z])/", '$1'.$this->chr["zeroWidthSpace"], $parsedTextToken["value"]);
 			}
 		}
@@ -1878,8 +1923,9 @@ class phpTypography {
 	// wraps words of all caps (may include numbers) in <span class="caps">
 	// only call if you are certain that no html tags have been injected containing capital letters
 	// call before style_numbers
-	function style_caps($parsedHTMLtoken) {
-		if(!isset($this->settings["styleCaps"]) || !$this->settings["styleCaps"]) return $parsedHTMLtoken;
+	function style_caps($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["styleCaps"]) || !$this->settings["styleCaps"]) return $parsedHTMLtoken;
 		
 /*
 		// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
@@ -1942,8 +1988,9 @@ class phpTypography {
 	// call after style_caps so A9 becomes <span class="caps">A<span class="numbers">9</span></span>)
 	// only call if you are certain that no html tags have been injected containing numbers
 	// call after smart_fractions, smart_ordinal_suffix and style_caps
-	function style_numbers($parsedHTMLtoken) {
-		if(!isset($this->settings["styleNumbers"]) || !$this->settings["styleNumbers"]) return $parsedHTMLtoken;
+	function style_numbers($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["styleNumbers"]) || !$this->settings["styleNumbers"]) return $parsedHTMLtoken;
 
 		$pattern = '([0-9]+)'; // required modifier: u (utf8)
 		$parsedHTMLtoken["value"] = preg_replace("/$pattern/u", '<span class="numbers">$1</span>', $parsedHTMLtoken["value"]);
@@ -1956,8 +2003,9 @@ class phpTypography {
 	// call after style_caps so H&amp;J becomes <span class="caps">H<span class="amp">&amp;</span>J</span>)
 	// note that all standalone ampersands were previously converted to &amp;
 	// only call if you are certain that no html tags have been injected containing "&amp;"
-	function style_ampersands($parsedHTMLtoken) {
-		if(!isset($this->settings["styleAmpersands"]) || !$this->settings["styleAmpersands"]) return $parsedHTMLtoken;
+	function style_ampersands($parsedHTMLtoken)
+	{
+		if (!isset($this->settings["styleAmpersands"]) || !$this->settings["styleAmpersands"]) return $parsedHTMLtoken;
 
 		$pattern = '(\&amp\;)'; // required modifier: u (utf8)
 		$parsedHTMLtoken["value"] = preg_replace("/$pattern/u", '<span class="amp">$1</span>', $parsedHTMLtoken["value"]);
@@ -1967,35 +2015,36 @@ class phpTypography {
 	
 	// expecting parsedHTML token of type text
 	// styles initial quotes and guillemets
-	function style_initial_quotes($parsedHTMLtoken, $isTitle = FALSE) {
-		if(!isset($this->settings["styleInitialQuotes"]) || !$this->settings["styleInitialQuotes"] || !isset($this->settings["initialQuoteTags"]) || !$this->settings["initialQuoteTags"]) return $parsedHTMLtoken;
+	function style_initial_quotes($parsedHTMLtoken, $isTitle = false)
+	{
+		if (!isset($this->settings["styleInitialQuotes"]) || !$this->settings["styleInitialQuotes"] || !isset($this->settings["initialQuoteTags"]) || !$this->settings["initialQuoteTags"]) return $parsedHTMLtoken;
 	
-		if(!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == NULL) { // we have the first text in a block level element
+		if (!isset($parsedHTMLtoken["prevChr"]) || $parsedHTMLtoken["prevChr"] == null) { // we have the first text in a block level element
 
 			$encodings = array("ASCII","UTF-8", "ISO-8859-1");
 			$e = mb_detect_encoding($parsedHTMLtoken["value"]."a", $encodings);// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-			if(!isset($e) || $e == "") $e = "ASCII";
+			if (!isset($e) || $e == "") $e = "ASCII";
 
 			$firstChr = mb_substr($parsedHTMLtoken["value"], 0, 1, $e);
-			if($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == "," || $firstChr == "\"" || $firstChr == $this->chr["doubleQuoteOpen"] || $firstChr == $this->chr["guillemetOpen"] || $firstChr == $this->chr["guillemetClose"] || $firstChr == $this->chr["doubleLow9Quote"]) {
+			if ($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == "," || $firstChr == "\"" || $firstChr == $this->chr["doubleQuoteOpen"] || $firstChr == $this->chr["guillemetOpen"] || $firstChr == $this->chr["guillemetClose"] || $firstChr == $this->chr["doubleLow9Quote"]) {
 
-				$style = FALSE;
+				$style = false;
 				$immediateParent = "";
-				if($parsedHTMLtoken["parents"]) {
+				if ($parsedHTMLtoken["parents"]) {
 					$immediateParent = end($parsedHTMLtoken["parents"]);
-				} elseif($isTitle) {
+				} elseif ($isTitle) {
 					// assume page title is h2
 					$immediateParent = array("tagName" => "h2");
 				}
-				if($immediateParent["tagName"]) {
+				if ($immediateParent["tagName"]) {
 					foreach($this->settings["initialQuoteTags"] as $tag) {
 						if($tag == $immediateParent["tagName"])
-							$style = TRUE;
+							$style = true;
 					}
 				}
 				
-				if($style) {
-					if($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == ",") {
+				if ($style) {
+					if ($firstChr == "'" || $firstChr == $this->chr["singleQuoteOpen"] || $firstChr == $this->chr["singleLow9Quote"] || $firstChr == ",") {
 						$parsedHTMLtoken["value"] = '<span class="quo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
 					} else { // double quotes or guillemets
 						$parsedHTMLtoken["value"] = '<span class="dquo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken["value"], 1, mb_strlen($parsedHTMLtoken["value"], $e), $e);
@@ -2009,9 +2058,10 @@ class phpTypography {
 	
 
 	//injects the PatGen segments pattern into the PatGen words pattern
-	function hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength) {
+	function hyphenation_pattern_injection($wordPattern, $segmentPattern, 
+		$segmentPosition, $segmentLength) {
 	
-		for($numberPosition=$segmentPosition; $numberPosition <= $segmentPosition + $segmentLength; $numberPosition++) {
+		for ($numberPosition=$segmentPosition; $numberPosition <= $segmentPosition + $segmentLength; $numberPosition++) {
 			$wordPattern[$numberPosition] = 
 				(intval($wordPattern[$numberPosition]) >= intval($segmentPattern[$numberPosition-$segmentPosition])) ?
 				$wordPattern[$numberPosition] :
@@ -2021,36 +2071,38 @@ class phpTypography {
 	}
 	
 	// expecting parseText tokens filtered to words
-	function hyphenate($parsedTextTokens, $isTitle = FALSE) {
-		if(!isset($this->settings["hyphenation"]) || !$this->settings["hyphenation"]) return $parsedTextTokens;
+	function hyphenate($parsedTextTokens, $isTitle = false)
+	{
+		if (!isset($this->settings["hyphenation"]) || !$this->settings["hyphenation"]) return $parsedTextTokens;
 
-		$isHeading = FALSE;
-		if(isset($parsedTextTokens["parents"])) {
+		$isHeading = false;
+		if (isset($parsedTextTokens["parents"])) {
 			foreach($parsedTextTokens["parents"] as $tagName) {
-				if($tagName == "h1" || $tagName == "h2" || $tagName == "h3" || $tagName == "h4" || $tagName == "h5" || $tagName == "h6") $isHeading = TRUE;
+				if($tagName == "h1" || $tagName == "h2" || $tagName == "h3" || $tagName == "h4" || $tagName == "h5" || $tagName == "h6") $isHeading = true;
 			}
 		}
-		if((!isset($this->settings["hyphenateTitle"]) || !$this->settings["hyphenateTitle"]) && ($isTitle || $isHeading)) return $parsedTextTokens;
+		if ((!isset($this->settings["hyphenateTitle"]) || !$this->settings["hyphenateTitle"]) && ($isTitle || $isHeading)) return $parsedTextTokens;
 
 		// call functionality as seperate function so it can be run without test for setting["hyphenation"] - such as with url wrapping
 		return $this->do_hyphenate($parsedTextTokens);
 	}	
 	// expecting parsedText tokens filtered to words
-	function do_hyphenate($parsedTextTokens) {
-		if(!isset($this->settings["hyphenMinLength"]) || !$this->settings["hyphenMinLength"]) return $parsedTextTokens;				
-		if(!isset($this->settings["hyphenMinBefore"]) || !$this->settings["hyphenMinBefore"]) return $parsedTextTokens;				
-		if(!isset($this->settings["hyphenationPatternMaxSegment"])) return $parsedTextTokens;				
-		if(!isset($this->settings["hyphenationPatternExceptions"])) return $parsedTextTokens;				
-		if(!isset($this->settings["hyphenationPattern"])) return $parsedTextTokens;				
+	function do_hyphenate($parsedTextTokens)
+	{
+		if (!isset($this->settings["hyphenMinLength"]) || !$this->settings["hyphenMinLength"]) return $parsedTextTokens;
+		if (!isset($this->settings["hyphenMinBefore"]) || !$this->settings["hyphenMinBefore"]) return $parsedTextTokens;
+		if (!isset($this->settings["hyphenationPatternMaxSegment"])) return $parsedTextTokens;
+		if (!isset($this->settings["hyphenationPatternExceptions"])) return $parsedTextTokens;
+		if (!isset($this->settings["hyphenationPattern"])) return $parsedTextTokens;
 		
 		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
-		$multibyte = FALSE;
+		$multibyte = false;
 		$u = "";
 		// make sure we have full exceptions list
-		if(!isset($this->settings["hyphenationExceptions"])) {
-			if($this->settings["hyphenationPatternExceptions"] || (isset($this->settings["hyphenationCustomExceptions"]) && $this->settings["hyphenationCustomExceptions"])) {
+		if (!isset($this->settings["hyphenationExceptions"])) {
+			if ($this->settings["hyphenationPatternExceptions"] || (isset($this->settings["hyphenationCustomExceptions"]) && $this->settings["hyphenationCustomExceptions"])) {
 				$exceptions = array();
-				if(isset($this->settings["hyphenationCustomExceptions"])) {
+				if (isset($this->settings["hyphenationCustomExceptions"])) {
 					// merges custom and language specific word hyphenations
 					$exceptions = array_merge($this->settings["hyphenationCustomExceptions"], $this->settings["hyphenationPatternExceptions"]);
 				} else {
@@ -2062,19 +2114,19 @@ class phpTypography {
 				$this->settings["hyphenationExceptions"]=array();
 			}
 		}
-		foreach($parsedTextTokens as &$parsedTextToken) {
+		foreach ($parsedTextTokens as &$parsedTextToken) {
 			// ."a" is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
 			$encoding = mb_detect_encoding($parsedTextToken["value"]."a", $encodings);
 
-			if("UTF-8" == $encoding) {
-				$multibyte = TRUE;
+			if ("UTF-8" == $encoding) {
+				$multibyte = true;
 				$u = "u";
 				if(!function_exists('mb_strlen')) continue;
-			} elseif("ASCII" != $encoding) {
+			} elseif ("ASCII" != $encoding) {
 				continue;
 			}
 
-			if($multibyte) {
+			if ($multibyte) {
 				$wordLength = mb_strlen($parsedTextToken["value"], "UTF-8");
 				$theKey = mb_strtolower($parsedTextToken["value"], "UTF-8");
 			} else {  //same as above without mutlibyte string functions to improve preformance
@@ -2082,16 +2134,16 @@ class phpTypography {
 				$theKey = strtolower($parsedTextToken["value"]);
 			}
 		
-			if($wordLength < $this->settings["hyphenMinLength"]) continue;
+			if ($wordLength < $this->settings["hyphenMinLength"]) continue;
 
 			//if this is a capitalized word, and settings do not allow hyphenation of such, abort!
 			// note. this is different than uppercase words, where we are looking for title case
-			if((!isset($this->settings["hyphenateTitleCase"]) || !$this->settings["hyphenateTitleCase"]) && substr($theKey,0,1) != substr($parsedTextToken["value"],0,1)) continue;
+			if ((!isset($this->settings["hyphenateTitleCase"]) || !$this->settings["hyphenateTitleCase"]) && substr($theKey,0,1) != substr($parsedTextToken["value"],0,1)) continue;
 			
 			// give exceptions preference
-			if(isset($this->settings["hyphenationExceptions"][$theKey])) {
+			if (isset($this->settings["hyphenationExceptions"][$theKey])) {
 				//Set the wordPattern - this method keeps any contextually important capitalization
-				if($multibyte) {			
+				if ($multibyte) {			
 					$lowercaseHyphenedWord = $this->settings["hyphenationExceptions"][$theKey];
 					$lhwArray = $this->mb_str_split($lowercaseHyphenedWord, 1, "UTF-8");
 					$lhwLength = mb_strlen($lowercaseHyphenedWord, "UTF-8");
@@ -2102,7 +2154,7 @@ class phpTypography {
 				}
 			
 				$wordPattern=array();
-				for($i=0; $i < $lhwLength; $i++) {
+				for ($i=0; $i < $lhwLength; $i++) {
 					if("-" == $lhwArray[$i]) {
 						array_push($wordPattern, "9");
 						$i++;
@@ -2112,20 +2164,20 @@ class phpTypography {
 				}
 				array_push($wordPattern, "0"); //for consistent length with the other word patterns
 			}
-			if(!isset($wordPattern)) {
+			if (!isset($wordPattern)) {
 				// first we set up the matching pattern to be a series of zeros one character longer than $parsedTextToken
 				$wordPattern = array();
-				for($i=0; $i < $wordLength +1; $i++) {
+				for ($i=0; $i < $wordLength +1; $i++) {
 					array_push($wordPattern, "0");
 				}
 				// we grab all possible segments from $parsedTextToken of length 1 through $this->settings["hyphenationPatternMaxSegment"]
-				for($segmentLength=1; ($segmentLength <= $wordLength) && ($segmentLength <= $this->settings["hyphenationPatternMaxSegment"]); $segmentLength++) {
-					for($segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++) {
-						if($multibyte)
+				for ($segmentLength=1; ($segmentLength <= $wordLength) && ($segmentLength <= $this->settings["hyphenationPatternMaxSegment"]); $segmentLength++) {
+					for ($segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++) {
+						if ($multibyte)
 							$segment = mb_strtolower(mb_substr($parsedTextToken["value"], $segmentPosition, $segmentLength, "UTF-8"), "UTF-8");
 						else
 							$segment = strtolower(substr($parsedTextToken["value"], $segmentPosition, $segmentLength));
-						if(0 == $segmentPosition) {
+						if (0 == $segmentPosition) {
 							if(isset($this->settings["hyphenationPattern"]["begin"][$segment])) {
 								if($multibyte)
 									$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["begin"][$segment], 1, "UTF-8");
@@ -2134,17 +2186,17 @@ class phpTypography {
 								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
 							}
 						}
-						if($segmentPosition + $segmentLength == $wordLength) {
-							if(isset($this->settings["hyphenationPattern"]["end"][$segment])) {
-								if($multibyte)
+						if ($segmentPosition + $segmentLength == $wordLength) {
+							if (isset($this->settings["hyphenationPattern"]["end"][$segment])) {
+								if ($multibyte)
 									$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["end"][$segment], 1, "UTF-8");
 								else
 									$segmentPattern = str_split($this->settings["hyphenationPattern"]["end"][$segment], 1);
 								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
 							}
 						}
-						if(isset($this->settings["hyphenationPattern"]["all"][$segment])) {
-							if($multibyte)
+						if (isset($this->settings["hyphenationPattern"]["all"][$segment])) {
+							if ($multibyte)
 								$segmentPattern = $this->mb_str_split($this->settings["hyphenationPattern"]["all"][$segment], 1, "UTF-8");
 							else
 								$segmentPattern = str_split($this->settings["hyphenationPattern"]["all"][$segment], 1);
@@ -2152,18 +2204,17 @@ class phpTypography {
 						}
 					}
 				}
-
 			}
 			//add soft-hyphen based on $wordPattern
-			if($multibyte) {
+			if ($multibyte) {
 				$wordArray = $this->mb_str_split($parsedTextToken["value"], 1, "UTF-8");
 			} else {  //same as above without mutlibyte string functions to improve preformance
 				$wordArray = str_split($parsedTextToken["value"], 1);
 			}
 			
 			$hyphenatedWord = "";
-			for($i=0; $i < $wordLength; $i++) {
-				if(($this->is_odd(intval($wordPattern[$i]))) && ($i >= $this->settings["hyphenMinBefore"]) && ($i < $wordLength - $this->settings["hyphenMinAfter"])) {
+			for ($i=0; $i < $wordLength; $i++) {
+				if (($this->is_odd(intval($wordPattern[$i]))) && ($i >= $this->settings["hyphenMinBefore"]) && ($i < $wordLength - $this->settings["hyphenMinAfter"])) {
 					$hyphenatedWord .= $this->chr["softHyphen"].$wordArray[$i];
 				} else {
 					$hyphenatedWord .= $wordArray[$i];
@@ -2178,23 +2229,25 @@ class phpTypography {
 
 	########################################################################
 	#   params:		$codes = decimal value cooresponding to unicode character
-	#   Returns:    unicode character
-	function uchr ($codes) {
-	    if (is_scalar($codes)) $codes= func_get_args();
-	    $str= '';
-	    foreach ($codes as $code) $str.= html_entity_decode('&#'.$code.';',ENT_NOQUOTES,'UTF-8');
-	    return $str;
+	#   Returns:	unicode character
+	function uchr ($codes)
+	{
+		if (is_scalar($codes)) $codes= func_get_args();
+		$str= '';
+		foreach ($codes as $code) $str.= html_entity_decode('&#'.$code.';',ENT_NOQUOTES,'UTF-8');
+		return $str;
 	}
 
 	//is a number odd? returns 0 if even and 1 if odd
-	function is_odd($number) {
+	function is_odd($number)
+	{
 		return $number % 2;
 	}
 
 	//multibyte character support is built in to accomodate language support of multibyte alphabets
 	function mb_str_split($str, $length = 1, $encoding = 'UTF-8') {
-	    if(!function_exists('mb_strlen')) return FALSE;
-		if ($length < 1) return FALSE;
+		if (!function_exists('mb_strlen')) return false;
+		if ($length < 1) return false;
 		$result = array();
 		for ($i = 0; $i < mb_strlen($str, $encoding); $i += $length) {
 			$result[] = mb_substr($str, $i, $length, $encoding);
@@ -2216,3 +2269,4 @@ class phpTypography {
 ###		
 	
 }
+
