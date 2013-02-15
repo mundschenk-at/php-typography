@@ -934,7 +934,7 @@ class phpTypography {
 	//expecting parsedHTML token of type text
 	function smart_quotes($parsedHTMLtoken)
 	{
-		if(!isset($this->settings["smartQuotes"]) || !$this->settings["smartQuotes"]) return $parsedHTMLtoken;
+		if (!isset($this->settings["smartQuotes"]) || !$this->settings["smartQuotes"]) return $parsedHTMLtoken;
 
 		$nonEnglishWordCharacters = "
 					[0-9A-Za-z]|\x{00c0}|\x{00c1}|\x{00c2}|\x{00c3}|\x{00c4}|\x{00c5}|\x{00c6}|\x{00c7}|\x{00c8}|\x{00c9}|
