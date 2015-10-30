@@ -1,3 +1,7 @@
+2.1 - October 24, 2015
+
+Removed obsolete HTML parsing cases (use DOMText->nodeValue as input)
+
 2.0 – July 7, 2010
 
 Added security fix for excessively long strings that caused PHP error

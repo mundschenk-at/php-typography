@@ -6,16 +6,21 @@ URI: http://kingdesk.com/projects/php-parser/
 Author: Jeffrey D. King
 Author URI: http://kingdesk.com/about/jeff/
 
-	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, the request for a link to http://kingdesk.com, and the web design services contact information unchanged. If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
+	Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public License 2.0. 
+	If you use, modify and/or redistribute this software, you must leave the KINGdesk, LLC copyright information, 
+	the request for a link to http://kingdesk.com, and the web design services contact information unchanged. 
+	If you redistribute this software, or any derivative, it must be released under the GNU General Public License 2.0. 
+	This program is distributed without warranty (implied or otherwise) of suitability for any particular purpose. 
+	See the GNU General Public License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
 
 	WE DON'T WANT YOUR MONEY: NO TIPS NECESSARY!  If you enjoy this plugin, a link to http://kingdesk.com from your website would be appreciated.
 	
 	For web design services, please contact info@kingdesk.com.
 */
 
-
-
-
+/*
+ * Additional work on PHP Parser by Marie Hogebrandt (c) 2012 and Peter Putzer (c) 2014-2015.
+ */
 
 #########################################################################################################
 #########################################################################################################
@@ -27,9 +32,9 @@ Author URI: http://kingdesk.com/about/jeff/
 #########################################################################################################
 #########################################################################################################
 class parseText {
-
-	var $mb = FALSE; //changes to this must occur prior to load
-	var $parsedHTML;
+	
+	var $encodings = array();
+	var $mb = false; //changes to this must occur prior to load
 	var $text = array();
 			/*
 				$text structure:
@@ -37,60 +42,22 @@ class parseText {
 						index	=> ARRAY: tokenized Text
 				 
 				 			// REQUIRED
-							"type" 		=> STRING: "space" | "punctuation" | "word" | "other"
-							"value"		=> STRING: token content
-							"parents"	=> ARRAY: parent tags: "index" => array("tagName" => tagName, "attributes" => array(name => value, ... ))
-			 								// elements must be assigned this value if it has a parent HTML element
+							'type' 		=> STRING: 'space' | 'punctuation' | 'word' | 'other'
+							'value'		=> STRING: token content
 			*/
 
-
-
+	var $components = array();
+	var $regex = array();
+	
 	#=======================================================================
 	#=======================================================================
 	#==	METHODS
 	#=======================================================================
 	#=======================================================================
-	
-	
-	########################################################################
-	#	( UN | RE )LOAD, UPDATE AND CLEAR METHODS
-	#
 
-	#   Params:		$rawText STRING containing HTML markup OR ARRAY containg a single parseHTML token
-	# 	Action:		Tokenizes $rawText (or $rawText["value"] - as the case may be) and saves it to $this->text
-	#   Returns:    TRUE on completion
-	function load($rawText) {
-
-		// abort if a simple string exceeds 500 characters (security concern)
-		if( (is_string($rawText) && preg_match("@\w{500}@s", $rawText)) || (preg_match("@\w{500}@s", $rawText['value'])) ) {
-			return;
-		}
-
-		$this->clear();
-		if(is_string($rawText)) {
-			// not passed a token of class parseHTML so we will fake it
-			$this->parsedHTML = "";
-		} elseif(is_array($rawText)) {
-			// passed an instance of a parseHTML token
-			$this->parsedHTML = $rawText;
-			$rawText = $rawText["value"];
-		} else {
-			// we have an error
-			return false;
-		}
+	function __construct($encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
+		$this->encodings = $encodings;	
 		
-		$encodings = array("ASCII","UTF-8", "ISO-8859-1");
-		$encoding = mb_detect_encoding($rawText."a", $encodings);
-		if("UTF-8" == $encoding) {
-			$this->mb = TRUE;
-			if(!function_exists('mb_strlen')) return FALSE;
-		} elseif("ASCII" != $encoding) {
-			return FALSE;
-		}
-		$utf8 = ($this->mb) ? "u" : "";
-		
-		$tokens = array();
-	
 		# find spacing FIRST (as it is the primary delimiter)
 		
 		# find the HTML character representation for the following characters:
@@ -104,8 +71,8 @@ class parseText {
 		#		zero-width-space ("&#8203;", "&#x200b;")
 		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-
-		$htmlSpaces = '
+		
+		$this->components['htmlSpacing'] = '
 				(?:
 					(?:										# alpha matches
 						&
@@ -131,11 +98,9 @@ class parseText {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-			
-		$space = "(?:\s|$htmlSpaces)+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8 
-	
-
-	
+		
+		$this->components['space'] = "(?:\s|{$this->components['htmlSpacing']})+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8
+		
 		# find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
 		
 		# see http://www.unicode.org/charts/PDF/U2000.pdf
@@ -149,7 +114,7 @@ class parseText {
 		# of finding word boundaries:
 		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
 		#		underscore ("&#95;", "&#x005f;")
-		$htmlPunctuation = '
+		$this->components['htmlPunctuation'] = '
 				(?:
 					(?:										# alpha matches
 						&
@@ -170,22 +135,22 @@ class parseText {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-
-		$punctuation = "
-				(?:
-					(?:
-						[^\w\s\&\/\@]			# assume characters that are not word spaces or whitespace are punctuation
-												# exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
-												# exclude slash \/as to not include the last slash in a URL
-												# exclude @ as to keep twitter names together
-												|								
-						$htmlPunctuation			# catch any HTML reps of punctuation
-					)+
-				)
-			";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-
+		
+		
+		$this->components['punctuation'] = "
+		(?:
+		(?:
+		[^\w\s\&\/\@]			# assume characters that are not word spaces or whitespace are punctuation
+		# exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
+		# exclude slash \/as to not include the last slash in a URL
+		# exclude @ as to keep twitter names together
+		|
+		{$this->components['htmlPunctuation']}			# catch any HTML reps of punctuation
+		)+
+		)
+		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+	
+		
 		// duplicated in get_words
 		// letter connectors allowed in words
 		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
@@ -193,7 +158,7 @@ class parseText {
 		#		zero-width-space ("&#8203;", "&#x200b;")
 		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-		$htmlLetterConnectors = '
+		$this->components['htmlLetterConnectors'] = '
 			(?:
 				(?:												# alpha matches
 					&
@@ -218,13 +183,13 @@ class parseText {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-		 
+		
+			
 		// word character html entities
 		// character	0-9__ A-Z__ a-z___ other_special_chrs_____
 		// decimal		48-57 65-90 97-122 192-214,216-246,248-255, 256-383
 		// hex			31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
-		$htmlLetters = '
+		$this->components['htmlLetters'] = '
 			(?:
 				(?:												# alpha matches
 					&
@@ -272,49 +237,87 @@ class parseText {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-		$word = "
-				(?:
-					(?<![\w\&])							# negative lookbehind to ensure
-														#	1) we are proceeded by a non-word-character, and
-														#	2) we are not inside an HTML character def
-					(?:
-						[\w\-\_\/]
-						|
-						$htmlLetters
-						|
-						$htmlLetterConnectors
-					)+
-				)
-			"; // required modifiers: x (multiline pattern) u (utf8)
-
+		
+		$this->components['word'] = "
+		(?:
+		(?<![\w\&])							# negative lookbehind to ensure
+		#	1) we are proceeded by a non-word-character, and
+		#	2) we are not inside an HTML character def
+		(?:
+		[\w\-\_\/]
+		|
+		{$this->components['htmlLetters']}
+		|
+		{$this->components['htmlLetterConnectors']}
+		)+
+		)
+		"; // required modifiers: x (multiline pattern) u (utf8)
+	
 		# find any text
-		$anyText = "$space|$punctuation|$word"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		$parts = preg_split("/($anyText)/ixu", $rawText, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$this->components['anyText'] = "{$this->components['space']}|{$this->components['punctuation']}|{$this->components['word']}"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+		
+		// store compiled regexes for later use
+		// uses S modifier ('study')
+		$this->regex['anyText'] = "/({$this->components['anyText']})/Sixu";
+		$this->regex['space'] = "/\A{$this->components['space']}\Z/Sxiu";
+		$this->regex['punctuation'] = "/\A{$this->components['punctuation']}\Z/Ssxiu";
+		$this->regex['word'] = "/\A{$this->components['word']}\Z/Sxu";
+		$this->regex['htmlLetterConnectors'] = "/{$this->components['htmlLetterConnectors']}|[0-9\-_&#;\/]/Sxu";
+	}
+	
+	########################################################################
+	#	( UN | RE )LOAD, UPDATE AND CLEAR METHODS
+	#
 
+	#   Params:		$rawText STRING containing HTML markup OR ARRAY containg a single parseHTML token
+	# 	Action:		Tokenizes $rawText (or $rawText['value'] - as the case may be) and saves it to $this->text
+	#   Returns:    true on completion
+	function load($rawText) {
+
+		// abort if a simple string exceeds 500 characters (security concern)
+		if( (is_string($rawText) && preg_match("@\w{500}@s", $rawText)) || (is_array($rawText) && preg_match("@\w{500}@s", $rawText['value'])) ) {
+			return;
+		}
+
+		$this->clear();
+		if(! is_string($rawText) ) {
+			// we have an error
+			return false;
+		}
+		
+		$encoding = mb_detect_encoding($rawText.'a', $this->encodings);
+		if('UTF-8' == $encoding) {
+ 			$this->mb = true;
+			if(!function_exists('mb_strlen')) return false;
+		} elseif('ASCII' != $encoding) {
+			return false;
+		}
+				
+		$tokens = array();
+		$parts = preg_split($this->regex['anyText'], $rawText, -1, PREG_SPLIT_DELIM_CAPTURE);
+		
 		$index = 0;
 		foreach ($parts as $part) {
-			if ($part != "") {
+			if ($part !== '') {
 		
-				if(preg_match("/\A$space\Z/xiu", $part)) {
+				if(preg_match($this->regex['space'], $part)) {					
 					$tokens[$index] = array(
-									"type"		=> 'space',
-									"value"		=> $part,
+									'type'		=> 'space',
+									'value'		=> $part,
 									);
-				} elseif(preg_match("/\A$punctuation\Z/sxiu", $part)) {
+				} elseif(preg_match($this->regex['punctuation'], $part)) {				
 					$tokens[$index] = array(
-									"type"		=> 'punctuation',
-									"value"		=> $part,
+									'type'		=> 'punctuation',
+									'value'		=> $part,
 									);
-				} elseif(preg_match("/\A$word\Z/xu", $part)) {
-					//make sure that things like email addresses and URLs are not broken up into words and punctuation
-					
-					// not preceeded by an "other"
+				} elseif(preg_match($this->regex['word'], $part)) {
+					//make sure that things like email addresses and URLs are not broken up into words and punctuation					
+					// not preceeded by an 'other'
 					if($index-1 >= 0 && $tokens[$index-1]['type'] == 'other') {
 						$oldPart = $tokens[$index-1]['value'];
 						$tokens[$index-1] = array(
-									"type"		=> 'other',
-									"value"		=> $oldPart.$part,
+									'type'		=> 'other',
+									'value'		=> $oldPart.$part,
 									);
 						$index = $index-1;
 						
@@ -323,59 +326,56 @@ class parseText {
 						$oldPart = $tokens[$index-1]['value'];
 						$olderPart = $tokens[$index-2]['value'];
 						$tokens[$index-2] = array(
-									"type"		=> 'other',
-									"value"		=> $olderPart.$oldPart.$part,
+									'type'		=> 'other',
+									'value'		=> $olderPart.$oldPart.$part,
 									);
 						unset($tokens[$index-1]);
 						$index = $index-2;
 					} else {	
 						$tokens[$index] = array(
-									"type"		=> 'word',
-									"value"		=> $part,
+									'type'		=> 'word',
+									'value'		=> $part,
 									);
 					}
-				} else {
+				} else {					
 					//make sure that things like email addresses and URLs are not broken up into words and punctuation
-					// not preceeded by an "other" or "word"
+					// not preceeded by an 'other' or 'word'
 					if($index-1 >= 0 && ($tokens[$index-1]['type'] == 'word' || $tokens[$index-1]['type'] == 'other')) {
 						$index = $index-1;
 						$oldPart = $tokens[$index]['value'];
 						$tokens[$index] = array(
-									"type"		=> 'other',
-									"value"		=> $oldPart.$part,
+									'type'		=> 'other',
+									'value'		=> $oldPart.$part,
 									);
 					// not preceeded by a non-space + punctuation
 					} elseif($index-2 >= 0 && $tokens[$index-1]['type'] == 'punctuation' && $tokens[$index-2]['type'] != 'space') {
 						$oldPart = $tokens[$index-1]['value'];
 						$olderPart = $tokens[$index-2]['value'];
 						$tokens[$index-2] = array(
-									"type"		=> 'other',
-									"value"		=> $olderPart.$oldPart.$part,
+									'type'		=> 'other',
+									'value'		=> $olderPart.$oldPart.$part,
 									);
 						unset($tokens[$index-1]);
 						$index = $index-2;
 					} else {	
 						$tokens[$index] = array(
-									"type"		=> 'other',
-									"value"		=> $part,
+									'type'		=> 'other',
+									'value'		=> $part,
 									);
 					}
 				}
-				
-				if(isset($this->parsedHTML["parents"]))
-					$tokens[$index]["parents"] = $this->parsedHTML["parents"];
-				
+								
 				$index++;
 			}
 		}
 		
 		$this->text = $tokens;
-		return TRUE;
+		return true;
 	}
 	
 	#	Action:		reloads $this->text (i.e. capture new inserted text, or remove those whose values are deleted)
-	#	Returns:	TRUE on completion
-	#	WARNING: 	Tokens previously acquired through "get" methods may not match new tokenization
+	#	Returns:	true on completion
+	#	WARNING: 	Tokens previously acquired through 'get' methods may not match new tokenization
 	function reload() {
 		return $this->load($this->unload());
 	}
@@ -383,38 +383,31 @@ class parseText {
 	#	Action:		outputs Text as string
 	#	Returns:	STRING of Text (if string was initially loaded), or ARRAY of
 	function unload() {
-		$reassembledText = "";
-		foreach($this->text as $token) {
-			$reassembledText .= $token["value"];
+		$reassembledText = '';
+		foreach($this->text as &$token) {
+			$reassembledText .= $token['value'];
 		}
-		if($this->parsedHTML != "") {
-			// the initial value loaded was a single token of class parseHTML, so we will return in the same format
-			$this->parsedHTML["value"] = $reassembledText;
-			$output = $this->parsedHTML;
-		} else {
-			// the initial value loaded was a string, so we will return in the same format
-			$output = $reassembledText;
-		}
+				
 		$this->clear();
-		return $output;
+		return $reassembledText;
 	}
 	
 	#	Action:		unsets $this->text
-	#	Returns:	TRUE on completion
+	#	Returns:	true on completion
 	function clear() {
 		$this->text = array();
-		$this->parsedHTML = "";
-		return TRUE;		
+		$this->mb = false;
+		return true;		
 	}
 	
 	#   Parameter:  ARRAY of tokens
-	#	Action:		overwrite "value" for all matching tokens
-	#	Returns:	TRUE on completion
+	#	Action:		overwrite 'value' for all matching tokens
+	#	Returns:	true on completion
 	function update($tokens) {
 		foreach($tokens as $index => $token) {
-			$this->text[$index]["value"] = $token["value"];
+			$this->text[$index]['value'] = $token['value'];
 		}
-		return TRUE;		
+		return true;		
 	}
 
 
@@ -428,72 +421,42 @@ class parseText {
 	}
 
 	function get_spaces() {
-		return $this->get_type("space");
+		return $this->get_type('space');
 	}
 
 	function get_punctuation() {
-		return $this->get_type("punctuation");
+		return $this->get_type('punctuation');
 	}
 
 	#   Parameter:  $abc letter-only match OPTIONAL INT -1=>prohibit, 0=>allow, 1=>require
 	# 				$caps capital-only match (allows non letter chrs) OPTIONAL INT  -1=>prohibit, 0=>allow, 1=>require
 	function get_words($abc = 0, $caps = 0) {
-		$words = $this->get_type("word");
+		$words = $this->get_type('word');
 		$tokens = array();
 		
-		//duplicated from load
-		$htmlLetterConnectors = '
-			(?:
-				(?:												# alpha matches
-					&
-					(?: shy|zwj|zwnj )
-					;
-				)
-				|
-				(?:												# decimal matches
-					&\#
-					(?: 45|95|173|820[3-589]|8210 )
-					;
-				)
-				|
-				(?:												# hexidecimal matches
-					&\#x
-					(?: 002d|005f|00ad|200[b-d]|201[0-2] )
-					;
-				)
-				|
-				(?:												# actual characters
-					\x{002d}|\x{005f}|\x{00ad}|\x{200b}|\x{200c}|\x{200d}|\x{2010}|\x{2011}|\x{2012}
-				)
-			)
-		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-
-
 		foreach($words as $index => $token) {
 			if($this->mb) {
-				$capped = mb_strtoupper($token["value"], "UTF-8");
-				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/ux", "", $token["value"]);
+				$capped = mb_strtoupper($token['value'], 'UTF-8');
 			} else {
-				$capped = strtoupper($token["value"]);
-				$lettered = preg_replace("/".$htmlLetterConnectors."|[0-9\-_&#;\/]/ux", "", $token["value"]);
+				$capped = strtoupper($token['value']);
 			}
-			
-			if( ($abc == -1 && $lettered != $token["value"]) && ($caps == -1 && $capped != $token["value"]) ) $tokens[$index] = $token;
-			elseif( ($abc == -1 && $lettered != $token["value"]) && $caps == 0 ) $tokens[$index] = $token;
-			elseif( ($abc == -1 && $lettered != $token["value"]) && ($caps == 1 && $capped == $token["value"]) ) $tokens[$index] = $token;
-			elseif( $abc == 0 && ($caps == -1 && $capped != $token["value"]) ) $tokens[$index] = $token;
+			$lettered = preg_replace($this->regex['htmlLetterConnectors'], '', $token['value']);
+				
+			if( ($abc == -1 && $lettered != $token['value']) && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
+			elseif( ($abc == -1 && $lettered != $token['value']) && $caps == 0 ) $tokens[$index] = $token;
+			elseif( ($abc == -1 && $lettered != $token['value']) && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
+			elseif( $abc == 0 && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
 			elseif( $abc == 0 && $caps == 0 ) $tokens[$index] = $token;
-			elseif( $abc == 0 && ($caps == 1 && $capped == $token["value"]) ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token["value"]) && ($caps == -1 && $capped != $token["value"]) ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token["value"]) && $caps == 0 ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token["value"]) && ($caps == 1 && $capped == $token["value"]) ) $tokens[$index] = $token;
+			elseif( $abc == 0 && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
+			elseif( ($abc == 1 && $lettered == $token['value']) && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
+			elseif( ($abc == 1 && $lettered == $token['value']) && $caps == 0 ) $tokens[$index] = $token;
+			elseif( ($abc == 1 && $lettered == $token['value']) && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
 		}
 		return $tokens;
 	}
 
 	function get_other() {
-		return $this->get_type("other");
+		return $this->get_type('other');
 	}
 
 
@@ -508,7 +471,7 @@ class parseText {
 	function get_type($type) {
 		$tokens = array();
 		foreach($this->text as $index => $token) {
-			if($token["type"] == $type)
+			if($token['type'] == $type)
 				$tokens[$index] = $token; 
 		}
 		return $tokens;		
