@@ -56,12 +56,12 @@ class phpTypography {
 		$this->chr['noBreakHyphen']           = $this->uchr(8209);
 		$this->chr['enDash']                  = $this->uchr(8211);
 		$this->chr['emDash']                  = $this->uchr(8212);
-		$this->chr['singleQuoteOpen']         = $this->uchr(8216); // reset in set_smart_quotes_language()
-		$this->chr['singleQuoteClose']        = $this->uchr(8217); // reset in set_smart_quotes_language()
+		$this->chr['singleQuoteOpen']         = $this->uchr(8216);
+		$this->chr['singleQuoteClose']        = $this->uchr(8217);
 		$this->chr['apostrophe']              = $this->uchr(8217); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies
 		$this->chr['singleLow9Quote']         = $this->uchr(8218);
-		$this->chr['doubleQuoteOpen']         = $this->uchr(8220); // reset in set_smart_quotes_language()
-		$this->chr['doubleQuoteClose']        = $this->uchr(8221); // reset in set_smart_quotes_language()
+		$this->chr['doubleQuoteOpen']         = $this->uchr(8220);
+		$this->chr['doubleQuoteClose']        = $this->uchr(8221);
 		$this->chr['doubleLow9Quote']         = $this->uchr(8222);
 		$this->chr['ellipses']                = $this->uchr(8230);
 		$this->chr['singlePrime']             = $this->uchr(8242);
@@ -204,40 +204,6 @@ class phpTypography {
 		$this->settings['smartQuotes'] = $on;
 		return true;
 	}
-
-	// DEPRECATED
-	// language preferences for curling quotemarks
-	// allowed values for $lang
-	//		"en" = English style quotes, replaces "foo" with “foo”
-	//		"de" = German style quotes, replaces "foo" with „foo”
-	//		"fr" = French guillemets, replaces "foo" with «foo»
-	//		"fr-reverse" = Reverse French guillemets, replaces "foo" with »foo«
-	function set_smart_quotes_language($lang = 'en') {
-		if($lang == 'de') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['doubleLow9Quote'];
-			$this->chr['doubleQuoteClose'] = $this->uchr(8220);
-			$this->chr['singleQuoteOpen'] = $this->chr['singleLow9Quote'];
-			$this->chr['singleQuoteClose'] = $this->uchr(8216);
-		} elseif($lang == 'fr') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['guillemetOpen'];
-			$this->chr['doubleQuoteClose'] = $this->chr['guillemetClose'];
-			$this->chr['singleQuoteOpen'] = $this->chr['singleAngleQuoteOpen'];
-			$this->chr['singleQuoteClose'] = $this->chr['singleAngleQuoteClose'];
-		} elseif($lang == 'fr-reverse') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['guillemetClose'];
-			$this->chr['doubleQuoteClose'] = $this->chr['guillemetOpen'];
-			$this->chr['singleQuoteOpen'] = $this->chr['singleAngleQuoteClose'];
-			$this->chr['singleQuoteClose'] = $this->chr['singleAngleQuoteOpen'];
-		} else {
-			$this->chr['doubleQuoteOpen'] = $this->uchr(8220);
-			$this->chr['doubleQuoteClose'] = $this->uchr(8221);
-			$this->chr['singleQuoteOpen'] = $this->uchr(8216);
-			$this->chr['singleQuoteClose'] = $this->uchr(8217);
-		}
-
-		return true;
-	}
-
 
 	// Primary quotemarks style
 	// allowed values for $style
