@@ -48,7 +48,7 @@ Improved smart quotes and dashes to be sensitive to adjacent diacritic character
 
 1.15 - October 21, 2009
 
-Depreciated set_smart_quotes_language()
+Deprecated set_smart_quotes_language()
 Added set_smart_quotes_primary()
 Added set_smart_quotes_secondary()
 
@@ -150,7 +150,7 @@ Added smart guillemet conversion as part of smart quotes: &lt;&lt; and &gt;&gt; 
 Added smart Single Low 9 Quote conversion as part of smart quotes: comma followed by non-space becomes Single Low 9 Quote
 Added Single Low 9 Quote, Double Low 9 Quote and » to style_initial_character functionality
 Added a new phpTypography method smart_math that assigns proper characters to minus, multiplication and division characters
-Depreciated the phpTypography method smart_multiplication in favor of smart_math
+Deprecated the phpTypography method smart_multiplication in favor of smart_math
 Cleaned up some smart quote functionality
 Added ability to wrap after "/" if set_wrap_hard_hyphen is TRUE (like "this/that")
 
