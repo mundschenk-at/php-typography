@@ -1034,12 +1034,11 @@ class phpTypography {
 	static function get_prev_chr($element) {
 		$prevText = self::get_previous_textnode($element);
 		
-		if ( is_object( $prevText ) ) {
+		if ( is_object( $prevText ) ) {				
 			// determine encoding
 			$encoding = self::detect_encoding( $element->nodeValue );
 			return mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding );
-			
-		} else {
+		} else {			
 			return '';
 		}
 	}	
@@ -1051,22 +1050,25 @@ class phpTypography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	static function get_previous_textnode($element) {
+	static function get_previous_textnode( $element ) {
 		$prevText = null;
 		$node = $element;
 				
-		if (!is_object($element))
+		if ( ! is_object( $element ) ) {
 			return null;
-		
-		if ($node instanceof DOMElement && HTML5\Elements::isA($node->tagName, HTML5\Elements::BLOCK_TAG))
-			return null;
-		
-		while (($node = $node->previousSibling) && !$prevText) {			
-			$prevText = self::get_last_textnode($node);
 		}
 		
-		if (!$prevText) {
-			$prevText = self::get_previous_textnode($element->parentNode);			
+		if ( $node instanceof DOMElement && 
+			 (HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) ) {
+			return null;
+		}
+			 
+		while ( ( $node = $node->previousSibling ) && ! $prevText ) {			
+			$prevText = self::get_last_textnode( $node );
+		}
+		
+		if ( ! $prevText ) {
+			$prevText = self::get_previous_textnode( $element->parentNode );			
 		}
 				
 		return $prevText;
@@ -1079,20 +1081,21 @@ class phpTypography {
 	 * 
 	 * @return DOMNode The last child of tpye DOMText, the element itself if it is of type DOMText or null.
 	 */
-	static function get_last_textnode($element) {
-		if (!is_object($element))
+	static function get_last_textnode( $element ) {
+		if ( ! is_object( $element ) ) {
 			return null;
-		elseif ($element instanceof DOMText)
+		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		elseif (HTML5\Elements::isA($element->tagName, HTML5\Elements::BLOCK_TAG))
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) {
 			return null;
+		}
 		
 		$last_textnode = null;				
 		$children = $element->childNodes;
 		$i = $children->length - 1;
 		
-		while ($i >= 0 && $last_textnode == null) {
-			$last_textnode = self::get_last_textnode($children->item($i));
+		while ( $i >= 0 && $last_textnode == null ) {
+			$last_textnode = self::get_last_textnode( $children->item( $i ) );
 			$i--;
 		}
 		
@@ -1106,22 +1109,25 @@ class phpTypography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	static function get_next_textnode($element) {
+	static function get_next_textnode( $element ) {
 		$nextText = null;
 		$node = $element;
 	
-		if (!is_object($element))
+		if ( ! is_object( $element ) ) {
 			return null;
+		}
 	
-		if ($node instanceof DOMElement && HTML5\Elements::isA($node->tagName, HTML5\Elements::BLOCK_TAG))
+		if ( $node instanceof DOMElement &&
+			 (HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) ) {
 			return null;
-		
-		while (($node = $node->nextSibling) && $nextText == null) {
-			$nextText = self::get_first_textnode($node);
+		}
+			 
+		while ( ( $node = $node->nextSibling ) && $nextText == null ) {
+			$nextText = self::get_first_textnode( $node );
 		}
 			
-		if (!$nextText) {
-			$nextText = self::get_next_textnode($element->parentNode);
+		if ( ! $nextText ) {
+			$nextText = self::get_next_textnode( $element->parentNode );
 		}
 	
 		return $nextText;
@@ -1134,22 +1140,23 @@ class phpTypography {
 	 *
 	 * @return DOMNode The first child of tpye DOMText, the element itself if it is of type DOMText or null.
 	 */
-	static function get_first_textnode($element) {
-		if (!is_object($element))
+	static function get_first_textnode( $element ) {
+		if ( ! is_object( $element ) ) {
 			return null;
-		elseif ($element instanceof DOMText)
+		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		elseif (HTML5\Elements::isA($element->tagName, HTML5\Elements::BLOCK_TAG))
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) {
 			return null;
-	
+		}
+		
 		$first_textnode = null;
 	
-		if ($element->hasChildNodes()) {
+		if ( $element->hasChildNodes() ) {
 			$children = $element->childNodes;
 			$i = 0;
 				
-			while ($i < $children->length && $first_textnode == false) {
-				$first_textnode = self::get_first_textnode($children->item($i));
+			while ( $i < $children->length && $first_textnode == false ) {
+				$first_textnode = self::get_first_textnode( $children->item( $i ) );
 				$i++;
 			}
 		}
@@ -1218,7 +1225,7 @@ class phpTypography {
 	function smart_quotes($parsedHTMLtoken)
 	{
 		if ( empty($this->settings['smartQuotes']) ) return;
-
+		
 		$nonEnglishWordCharacters = "
 					[0-9A-Za-z]|\x{00c0}|\x{00c1}|\x{00c2}|\x{00c3}|\x{00c4}|\x{00c5}|\x{00c6}|\x{00c7}|\x{00c8}|\x{00c9}|
 					\x{00ca}|\x{00cb}|\x{00cc}|\x{00cd}|\x{00ce}|\x{00cf}|\x{00d0}|\x{00d1}|\x{00d2}|\x{00d3}|\x{00d4}|
@@ -1243,51 +1250,50 @@ class phpTypography {
 		//need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		//if we have adjacent characters add them to the text
 		
-		$prevChr = $this->get_prev_chr($parsedHTMLtoken);
-		if ($prevChr != "")
+		$prevChr = $this->get_prev_chr($parsedHTMLtoken);		
+		if ($prevChr != '')
 			$parsedHTMLtoken->nodeValue =  $prevChr.$parsedHTMLtoken->nodeValue;		
-		$nextChr = $this->get_next_chr($parsedHTMLtoken);
-		if ($nextChr != "")
+		$nextChr = $this->get_next_chr($parsedHTMLtoken);		
+		if ($nextChr != '')
 			$parsedHTMLtoken->nodeValue =  $parsedHTMLtoken->nodeValue.$nextChr;
 				
-		////Logic
-		
+		////Logic			
+			
 		// before primes, handle quoted numbers
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u", $this->chr['singleQuoteOpen'].'$1'.$this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u", $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
-
+		
 		// guillemets
 		$parsedHTMLtoken->nodeValue =  str_replace("<<", $this->chr['guillemetOpen'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue =  str_replace("&lt;&lt;", $this->chr['guillemetOpen'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue =  str_replace(">>", $this->chr['guillemetClose'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue =  str_replace("&gt;&gt;", $this->chr['guillemetClose'], $parsedHTMLtoken->nodeValue);
-
-
+		
 		// primes
 		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)''(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)\"(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr['singlePrime'], $parsedHTMLtoken->nodeValue);
+		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr['singlePrime'], $parsedHTMLtoken->nodeValue);		
 		
 		// backticks
 		$parsedHTMLtoken->nodeValue =  str_replace("``", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue =  str_replace("`", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace("''", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
+		$parsedHTMLtoken->nodeValue =  str_replace("''", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
 		
 		// comma quotes
 		$parsedHTMLtoken->nodeValue =  str_replace(",,", $this->chr['doubleLow9Quote'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A),(?=\S)/", $this->chr['singleLow9Quote'], $parsedHTMLtoken->nodeValue); //like _,¿hola?'_
+		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A),(?=\S)/", $this->chr['singleLow9Quote'], $parsedHTMLtoken->nodeValue); //like _,¿hola?'_		
 		
 		// apostrophes
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['apostrophe'], $parsedHTMLtoken->nodeValue);
+		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['apostrophe'], $parsedHTMLtoken->nodeValue);		
 		$parsedHTMLtoken->nodeValue = preg_replace("/'(\d\d\b)/", $this->chr['apostrophe'].'$1', $parsedHTMLtoken->nodeValue); // decades: '98
 		$exceptions = array("'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
 		$replacements = array($this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin');
-		$parsedHTMLtoken->nodeValue =  str_replace($exceptions, $replacements, $parsedHTMLtoken->nodeValue);
+		$parsedHTMLtoken->nodeValue =  str_replace($exceptions, $replacements, $parsedHTMLtoken->nodeValue);		
 		
 		//quotes
 		$quoteRules = array("['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"");
 		$quoteRulesReplace = array("[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose']);
-		$parsedHTMLtoken->nodeValue =  str_replace($quoteRules, $quoteRulesReplace, $parsedHTMLtoken->nodeValue);
+		$parsedHTMLtoken->nodeValue = str_replace($quoteRules, $quoteRulesReplace, $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'/u", $this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A)'(?=\S)/", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue); //like _'¿hola?'_
@@ -1295,20 +1301,19 @@ class phpTypography {
 		$parsedHTMLtoken->nodeValue = preg_replace("/\"(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])\"/u", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
 		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A)\"(?=\S)/", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\S)\"(?=\s|\Z)/", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
-
+		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\S)\"(?=\s|\Z)/", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
+		
 		//quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
 		$parsedHTMLtoken->nodeValue =  str_replace("'", $this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace('"', $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
-
+		$parsedHTMLtoken->nodeValue =  str_replace('"', $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
 
 		//if we have adjacent characters remove them from the text
 		$e = self::detect_encoding($parsedHTMLtoken->nodeValue);
 		
-		if ($prevChr != "") {
+		if ($prevChr != '') {
 			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 1, mb_strlen($parsedHTMLtoken->nodeValue, $e), $e);
 		}
-		if ($nextChr != "") {
+		if ($nextChr != '') {
 			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 0, mb_strlen($parsedHTMLtoken->nodeValue, $e)-1, $e);
 		}
 	}
