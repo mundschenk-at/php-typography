@@ -25,11 +25,11 @@ class phpTypography {
 	var $chr = array();
 	var $settings = array();  // operational attributes
 
-	var $parsedText;  // custom parser for DOMText (php-parser/parseText.php)
+	var $textparser;  // custom parser for DOMText (php-parser/parseText.php)
 	var $html5parser; // HTML5-PHP parser
 
-	static $encodings = array('UTF-8', 'ISO-8859-1', 'ASCII');
-	static $heading_tags = array('h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true);
+	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' );
+	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
 	
 	#=======================================================================
 	#=======================================================================
@@ -38,7 +38,7 @@ class phpTypography {
 	#=======================================================================
 
 	// __ naming defines constructor that is automatically called on each newly-createy object
-	function __construct($setDefaults = true)
+	function __construct( $setDefaults = true )
 	{
 		$this->chr['noBreakSpace']            = $this->uchr(160);
 		$this->chr['noBreakNarrowSpace']      = $this->uchr(160); //should be 8239, but not supported consistently, used in unit spacing
@@ -146,12 +146,29 @@ class phpTypography {
 	}
 
 	// sets tags where typography of children will be untouched
-	function set_tags_to_ignore($tags = array('code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math'))
-	{
-		if (!is_array($tags)) 
-			$tags = preg_split("/[\s,]+/", $tags, -1, PREG_SPLIT_NO_EMPTY);
-		foreach ($tags as &$tag){
-			$tag = strtolower($tag);
+	function set_tags_to_ignore( $tags = array( 
+											'code', 
+											'head', 
+											'kbd', 
+											'object', 
+											'option', 
+											'pre', 
+											'samp', 
+											'script', 
+											'noscript', 
+											'noembed', 
+											'select', 
+											'style', 
+											'textarea',
+											'title', 
+											'var',
+											'math',		
+										  ) ) {
+		if ( ! is_array( $tags ) ) {
+			$tags = preg_split( '/[\s,]+/', $tags, -1, PREG_SPLIT_NO_EMPTY); 
+		}
+		foreach ( $tags as &$tag ){
+			$tag = strtolower( $tag );
 		}
 		
 		// self closing tags shouldn't be in $tags
@@ -165,25 +182,25 @@ class phpTypography {
 	}
 
 	// sets classes where typography of children will be untouched
-	function set_classes_to_ignore($classes = array('vcard', 'noTypo'))
-	{
-		if (!is_array($classes)) 
-			$classes = preg_split("/[\s,]+/", $classes, -1, PREG_SPLIT_NO_EMPTY);
+	function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
+		if ( ! is_array( $classes ) ) { 
+			$classes = preg_split( '/[\s,]+/', $classes, -1, PREG_SPLIT_NO_EMPTY );
+		}
 		$this->settings['ignoreClasses'] = $classes;
 		return true;
 	}
 
 	// sets IDs where typography of children will be untouched
-	function set_ids_to_ignore($ids = array())
-	{
-		if (!is_array($ids)) 
-			$ids = preg_split("/[\s,]+/", $ids, -1, PREG_SPLIT_NO_EMPTY);
+	function set_ids_to_ignore( $ids = array() ) {
+		if ( ! is_array( $ids ) ) { 
+			$ids = preg_split( '/[\s,]+/', $ids, -1, PREG_SPLIT_NO_EMPTY );
+		}
 		$this->settings['ignoreIDs'] = $ids;
 		return true;
 	}
 
 	// curl quotemarks
-	function set_smart_quotes($on = true) {
+	function set_smart_quotes( $on = true ) {
 		$this->settings['smartQuotes'] = $on;
 		return true;
 	}
@@ -800,8 +817,8 @@ class phpTypography {
 		// Lazy-load our parsers
 		if ( !isset($this->html5parser) )
 			$this->html5parser = new HTML5( array('disable_html_ns' => true) );
-		if ( !isset($this->parsedText) ) 
-			$this->parsedText = new parseText();
+		if ( !isset($this->textparser) ) 
+			$this->textparser = new parseText();
 		
 		// parse the html
 		$dom = $this->html5parser->loadHTML('<body>' . $html . '</body>' );
@@ -852,11 +869,11 @@ class phpTypography {
 			$this->unit_spacing($textnode);
 
 			//break it down for a bit more granularity
-			$this->parsedText->load($textnode->nodeValue);
-			$parsedMixedWords = $this->parsedText->get_words(-1,0); // prohibit letter only words, allow caps
+			$this->textparser->load($textnode->nodeValue);
+			$parsedMixedWords = $this->textparser->get_words(-1,0); // prohibit letter only words, allow caps
 			$caps = (isset($this->settings['hyphenateAllCaps']) && $this->settings['hyphenateAllCaps']) ? 0 : -1 ;
-			$parsedWords = $this->parsedText->get_words(1,$caps);  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
-			$parsedOther = $this->parsedText->get_other();
+			$parsedWords = $this->textparser->get_words(1,$caps);  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
+			$parsedOther = $this->textparser->get_other();
 			
 			// process individual text parts here
 			$parsedMixedWords = $this->wrap_hard_hyphens($parsedMixedWords);
@@ -865,8 +882,8 @@ class phpTypography {
 			$parsedOther = $this->wrap_emails($parsedOther);
 			
 			//apply updates to unlockedText
-			$this->parsedText->update($parsedMixedWords+$parsedWords+$parsedOther);
-			$textnode->nodeValue = $this->parsedText->unload();
+			$this->textparser->update($parsedMixedWords+$parsedWords+$parsedOther);
+			$textnode->nodeValue = $this->textparser->unload();
 			
 			//some final space manipulation
 			$this->dewidow($textnode);
@@ -2489,28 +2506,36 @@ class phpTypography {
 	########################################################################
 	#   params:		$codes = decimal value cooresponding to unicode character
 	#   Returns:	unicode character
-	function uchr ($codes)
+	function uchr( $codes )
 	{
-		if (is_scalar($codes)) $codes= func_get_args();
+		if ( is_scalar( $codes ) ) { 
+			$codes = func_get_args();
+		}
 		$str= '';
-		foreach ($codes as $code) $str.= html_entity_decode('&#'.$code.';',ENT_NOQUOTES,'UTF-8');
+		
+		foreach ( $codes as $code ) {
+			$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
+		}
+		
 		return $str;
 	}
 
 	//is a number odd? returns 0 if even and 1 if odd
-	function is_odd($number)
+	function is_odd( $number )
 	{
 		return $number % 2;
 	}
 
 	//multibyte character support is built in to accomodate language support of multibyte alphabets
-	function mb_str_split($str, $length = 1, $encoding = 'UTF-8') {
-		if (!function_exists('mb_strlen')) return false;
-		if ($length < 1) return false;
+	function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
+		if ( ! function_exists( 'mb_strlen' ) ) return false;
+		if ( $length < 1 ) return false;
+		
 		$result = array();
-		for ($i = 0; $i < mb_strlen($str, $encoding); $i += $length) {
-			$result[] = mb_substr($str, $i, $length, $encoding);
+		for ( $i = 0; $i < mb_strlen( $str, $encoding ); $i += $length ) {
+			$result[] = mb_substr( $str, $i, $length, $encoding );
 		}
+		
 		return $result;
 	}
 
@@ -2528,4 +2553,3 @@ class phpTypography {
 ###		
 	
 }
-
