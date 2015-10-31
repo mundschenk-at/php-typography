@@ -1069,7 +1069,7 @@ class phpTypography {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) {
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $element->tagName ) {
 			return null;
 		}
 		
@@ -1128,7 +1128,7 @@ class phpTypography {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) {
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $element->tagName ) {
 			return null;
 		}
 		
