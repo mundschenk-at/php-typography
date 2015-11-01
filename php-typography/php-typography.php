@@ -1020,7 +1020,7 @@ class phpTypography {
 		if ( is_object( $prevText ) ) {				
 			// determine encoding
 			$encoding = self::detect_encoding( $element->nodeValue );
-			return preg_replace( '/\p{C}/u', '', mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding ) );
+			return preg_replace( '/\p{C}/Su', '', mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding ) );
 		} else {			
 			return '';
 		}
@@ -1159,7 +1159,7 @@ class phpTypography {
 			// determine encoding
 			$encoding = self::detect_encoding($element->nodeValue);			
 			
-			return preg_replace( '/\p{C}/u', '', mb_substr($nextText->nodeValue, 0, 1, $encoding) );
+			return preg_replace( '/\p{C}/Su', '', mb_substr($nextText->nodeValue, 0, 1, $encoding) );
 		} else {
 			return '';
 		}	
