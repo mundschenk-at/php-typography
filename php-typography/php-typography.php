@@ -1020,7 +1020,7 @@ class phpTypography {
 		if ( is_object( $prevText ) ) {				
 			// determine encoding
 			$encoding = self::detect_encoding( $element->nodeValue );
-			return mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding );
+			return preg_replace( '/\p{C}/u', '', mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding ) );
 		} else {			
 			return '';
 		}
@@ -1041,8 +1041,7 @@ class phpTypography {
 			return null;
 		}
 		
-		if ( $node instanceof DOMElement && 
-			 (HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) ) {
+		if ( $node instanceof DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
 			 
@@ -1069,7 +1068,7 @@ class phpTypography {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $element->tagName ) {
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
 		
@@ -1100,8 +1099,7 @@ class phpTypography {
 			return null;
 		}
 	
-		if ( $node instanceof DOMElement &&
-			 (HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $node->tagName ) ) {
+		if ( $node instanceof DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
 			 
@@ -1128,7 +1126,7 @@ class phpTypography {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
 			return $element;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) || 'li' === $element->tagName ) {
+		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
 		
@@ -1159,11 +1157,11 @@ class phpTypography {
 				
 		if (is_object($nextText)) {
 			// determine encoding
-			$e = self::detect_encoding($element->nodeValue);			
+			$encoding = self::detect_encoding($element->nodeValue);			
 			
-			return mb_substr($nextText->nodeValue, 0, 1, $e);
+			return preg_replace( '/\p{C}/u', '', mb_substr($nextText->nodeValue, 0, 1, $encoding) );
 		} else {
-			return "";
+			return '';
 		}	
 	}
 	
@@ -1236,7 +1234,7 @@ class phpTypography {
 		$prevChr = $this->get_prev_chr($parsedHTMLtoken);		
 		if ($prevChr != '')
 			$parsedHTMLtoken->nodeValue =  $prevChr.$parsedHTMLtoken->nodeValue;		
-		$nextChr = $this->get_next_chr($parsedHTMLtoken);		
+		$nextChr = $this->get_next_chr($parsedHTMLtoken);
 		if ($nextChr != '')
 			$parsedHTMLtoken->nodeValue =  $parsedHTMLtoken->nodeValue.$nextChr;
 				
