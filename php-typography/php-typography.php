@@ -12,23 +12,25 @@
 	For web design services, please contact jeff@kingdesk.com.
 */
 
-require_once("php-parser/parseText.php");
-require_once("HTML5.php");
+require_once('php-parser/parseText.php');
+require_once('HTML5.php');
 
 use Masterminds\HTML5;
 
 
-# if used with multibyte language, UTF-8 encoding is required!
+/**
+ * If used with multibyte language, UTF-8 encoding is required!
+ */
 class phpTypography {
 
-	var $mb = false; //cannot be changed after load
-	var $chr = array();
-	var $settings = array();  // operational attributes
+	var $mb = false;         //cannot be changed after load
+	var $chr = array();      // hashmap for various special characters
+	var $settings = array(); // operational attributes
 
 	var $textparser;  // custom parser for DOMText (php-parser/parseText.php)
 	var $html5parser; // HTML5-PHP parser
 
-	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' );
+	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' ); // allowed encodings
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
 	
 	#=======================================================================
@@ -41,7 +43,7 @@ class phpTypography {
 	function __construct( $setDefaults = true )
 	{
 		$this->chr['noBreakSpace']            = $this->uchr(160);
-		$this->chr['noBreakNarrowSpace']      = $this->uchr(160); //should be 8239, but not supported consistently, used in unit spacing
+		$this->chr['noBreakNarrowSpace']      = $this->uchr(160);  //should be 8239, but not supported consistently, used in unit spacing
 		$this->chr['copyright']               = $this->uchr(169);
 		$this->chr['guillemetOpen']           = $this->uchr(171);
 		$this->chr['softHyphen']              = $this->uchr(173);
@@ -52,7 +54,7 @@ class phpTypography {
 		$this->chr['figureSpace']             = $this->uchr(8199);
 		$this->chr['thinSpace']               = $this->uchr(8201);
 		$this->chr['zeroWidthSpace']          = $this->uchr(8203);
-		$this->chr['hyphen']                  = '-';  // should be $this->uchr(8208), but IE6 chokes;
+		$this->chr['hyphen']                  = '-';               // should be $this->uchr(8208), but IE6 chokes;
 		$this->chr['noBreakHyphen']           = $this->uchr(8209);
 		$this->chr['enDash']                  = $this->uchr(8211);
 		$this->chr['emDash']                  = $this->uchr(8212);
@@ -88,6 +90,9 @@ class phpTypography {
 		return true;
 	}
 
+	/**
+	 * (Re)set various options to their default values.
+	 */
 	function set_defaults() {
 		// general attributes
 		$this->set_tags_to_ignore();
@@ -145,7 +150,13 @@ class phpTypography {
 		return true;
 	}
 
-	// sets tags where typography of children will be untouched
+	/**
+	 * Sets tags for which the typography of their children will be left untouched.
+	 * 
+	 * @param string|array $tags A comma separated list or an array of tag names.
+	 * 
+	 * @return boolean Returns true.
+	 */
 	function set_tags_to_ignore( $tags = array( 
 											'code', 
 											'head', 
@@ -181,8 +192,14 @@ class phpTypography {
 		return true;
 	}
 
-	// sets classes where typography of children will be untouched
-	function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
+	/**
+	 * Sets classes for which the typography of their children will be left untouched.
+	 * 
+	 * @param string|array $tags A comma separated list or an array of class names.
+	 * 
+	 * @return boolean Returns true.
+	 */
+	 function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
 		if ( ! is_array( $classes ) ) { 
 			$classes = preg_split( '/[\s,]+/', $classes, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -190,7 +207,13 @@ class phpTypography {
 		return true;
 	}
 
-	// sets IDs where typography of children will be untouched
+	/**
+	 * Sets IDs for which the typography of their children will be left untouched.
+	 *
+	 * @param string|array $tags A comma separated list or an array of tag names.
+	 *
+	 * @return boolean Returns true.
+	 */
 	function set_ids_to_ignore( $ids = array() ) {
 		if ( ! is_array( $ids ) ) { 
 			$ids = preg_split( '/[\s,]+/', $ids, -1, PREG_SPLIT_NO_EMPTY );
@@ -199,31 +222,41 @@ class phpTypography {
 		return true;
 	}
 
-	// curl quotemarks
+	/**
+	 * Enable/disable typographic quotes.
+	 * 
+	 * @param boolean $on Defaults to true.
+	 * @return boolean Returns true.
+	 */
 	function set_smart_quotes( $on = true ) {
 		$this->settings['smartQuotes'] = $on;
 		return true;
 	}
-
-	// Primary quotemarks style
-	// allowed values for $style
-	//	"doubleCurled" => "&ldquo;foo&rdquo;",
-	//	"doubleCurledReversed" => "&rdquo;foo&rdquo;",
-	//	"doubleLow9" => "&bdquo;foo&rdquo;",
-	//	"doubleLow9Reversed" => "&bdquo;foo&ldquo;",
-	//	"singleCurled" => "&lsquo;foo&rsquo;",
-	//	"singleCurledReversed" => "&rsquo;foo&rsquo;",
-	//	"singleLow9" => "&sbquo;foo&rsquo;",
-	//	"singleLow9Reversed" => "&sbquo;foo&lsquo;",
-	//	"doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
-	//	"doubleGuillemets" => "&laquo;foo&raquo;",
-	//	"doubleGuillemetsReversed" => "&raquo;foo&laquo;",
-	//	"singleGuillemets" => "&lsaquo;foo&rsaquo;",
-	//	"singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
-	//	"cornerBrackets" => "&#x300c;foo&#x300d;",
-	//	"whiteCornerBracket" => "&#x300e;foo&#x300f;",
-	function set_smart_quotes_primary($style = 'doubleCurled')
-	{
+	
+	/**
+	 * Set the style for primary ('double') quotemarks.
+	 * 
+	 * Allowed values for $style:
+	 * "doubleCurled" => "&ldquo;foo&rdquo;",
+	 * "doubleCurledReversed" => "&rdquo;foo&rdquo;",
+	 * "doubleLow9" => "&bdquo;foo&rdquo;",
+	 * "doubleLow9Reversed" => "&bdquo;foo&ldquo;",
+	 * "singleCurled" => "&lsquo;foo&rsquo;",
+	 * "singleCurledReversed" => "&rsquo;foo&rsquo;",
+	 * "singleLow9" => "&sbquo;foo&rsquo;",
+	 * "singleLow9Reversed" => "&sbquo;foo&lsquo;",
+	 * "doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
+	 * "doubleGuillemets" => "&laquo;foo&raquo;",
+	 * "doubleGuillemetsReversed" => "&raquo;foo&laquo;",
+	 * "singleGuillemets" => "&lsaquo;foo&rsaquo;",
+	 * "singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
+	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
+	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
+	 * 
+	 * @param string $style Defaults to 'doubleCurled.
+	 * @return boolean Returns true.
+	 */
+	function set_smart_quotes_primary( $style = 'doubleCurled' ) {
 		if($style == 'doubleCurled') {
 			$this->chr['doubleQuoteOpen'] = $this->uchr(8220);
 			$this->chr['doubleQuoteClose'] = $this->uchr(8221);
@@ -275,25 +308,31 @@ class phpTypography {
 		}
 		return true;
 	}
-	// Secondary quotemarks style
-	// allowed values for $style
-	//	"doubleCurled" => "&ldquo;foo&rdquo;",
-	//	"doubleCurledReversed" => "&rdquo;foo&rdquo;",
-	//	"doubleLow9" => "&bdquo;foo&rdquo;",
-	//	"doubleLow9Reversed" => "&bdquo;foo&ldquo;",
-	//	"singleCurled" => "&lsquo;foo&rsquo;",
-	//	"singleCurledReversed" => "&rsquo;foo&rsquo;",
-	//	"singleLow9" => "&sbquo;foo&rsquo;",
-	//	"singleLow9Reversed" => "&sbquo;foo&lsquo;",
-	//	"doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
-	//	"doubleGuillemets" => "&laquo;foo&raquo;",
-	//	"doubleGuillemetsReversed" => "&raquo;foo&laquo;",
-	//	"singleGuillemets" => "&lsaquo;foo&rsaquo;",
-	//	"singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
-	//	"cornerBrackets" => "&#x300c;foo&#x300d;",
-	//	"whiteCornerBracket" => "&#x300e;foo&#x300f;",
-	function set_smart_quotes_secondary($style = 'singleCurled')
-	{
+
+	/**
+	 * Set the style for secondary ('single') quotemarks.
+	 *
+	 * Allowed values for $style:
+	 * "doubleCurled" => "&ldquo;foo&rdquo;",
+	 * "doubleCurledReversed" => "&rdquo;foo&rdquo;",
+	 * "doubleLow9" => "&bdquo;foo&rdquo;",
+	 * "doubleLow9Reversed" => "&bdquo;foo&ldquo;",
+	 * "singleCurled" => "&lsquo;foo&rsquo;",
+	 * "singleCurledReversed" => "&rsquo;foo&rsquo;",
+	 * "singleLow9" => "&sbquo;foo&rsquo;",
+	 * "singleLow9Reversed" => "&sbquo;foo&lsquo;",
+	 * "doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
+	 * "doubleGuillemets" => "&laquo;foo&raquo;",
+	 * "doubleGuillemetsReversed" => "&raquo;foo&laquo;",
+	 * "singleGuillemets" => "&lsaquo;foo&rsaquo;",
+	 * "singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
+	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
+	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
+	 *
+	 * @param string $style Defaults to 'singleCurled'.
+	 * @return boolean Returns true.
+	 */
+	function set_smart_quotes_secondary($style = 'singleCurled') {
 		if ($style == 'doubleCurled') {
 			$this->chr['singleQuoteOpen'] = $this->uchr(8220);
 			$this->chr['singleQuoteClose'] = $this->uchr(8221);
@@ -346,74 +385,95 @@ class phpTypography {
 		return true;
 	}
 
-	// replaces "a--a" with En Dash " -- " and "---" with Em Dash
-	function set_smart_dashes($on = true)
-	{
+	/**
+	 * Enable/disable replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
+	 * 
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_dashes( $on = true ) {
 		$this->settings['smartDashes'] = $on;
 		return true;
 	}
 
-	// replaces "..." with "…"
-	function set_smart_ellipses($on = true)
-	{
+	/**
+	 * Enable/disable replacement of "..." with "…".
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_ellipses( $on = true ) {
 		$this->settings['smartEllipses'] = $on;
 		return true;
 	}
 	
-	// replaces "creme brulee" with "crème brûlée"
-	function set_smart_diacritics($on = true)
-	{
+	/**
+	 * Enable/disable replacement "creme brulee" with "crème brûlée".
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_diacritics( $on = true ) {
 		$this->settings['smartDiacritics'] = $on;
 		return true;
 	}
 
-	// defines hyphenation language for text
-	function set_diacritic_language($lang = 'en-US')
-	{
-		if (isset($this->settings['diacriticLanguage']) &&	$this->settings['diacriticLanguage'] == $lang)
+	/**
+	 * Sets the diacritics replacement language. // FIXME
+	 * 
+	 * @param string $lang Defaults to 'en-US'.
+	 * @return boolean Returns true;
+	 */
+	function set_diacritic_language( $lang = 'en-US' ) {
+		if ( isset($this->settings['diacriticLanguage']) && $this->settings['diacriticLanguage'] == $lang ) {
 			return true;
+		}
 		
 		$this->settings['diacriticLanguage'] = $lang;
 
-		if (file_exists(dirname(__FILE__).'/diacritics/'.$this->settings['diacriticLanguage'].'.php')) {
-			include('diacritics/'.$this->settings['diacriticLanguage'].'.php');
+		if ( file_exists( dirname( __FILE__ ).'/diacritics/'.$this->settings['diacriticLanguage'].'.php' ) ) {
+			include( 'diacritics/'.$this->settings['diacriticLanguage'].'.php' );
 		} else {
-			include('diacritics/en-US.php');
+			include( 'diacritics/en-US.php' );
 		}
 		$this->settings['diacriticWords'] = $diacriticWords;
 		
 		return true;
 	}
 
-	// $customReplacements must be
-	//		an array formatted array(needle=>replacement, needle=>replacement...), or
-	//		a string formatted `"needle"=>"replacement","needle"=>"replacement",...`
-	function set_diacritic_custom_replacements($customReplacements = array())
-	{
+	/**
+	 * Set up custom diacritics replacements.
+	 * 
+	 * @param string|array $customReplacements An array formatted array(needle=>replacement, needle=>replacement...), or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @return boolean Returns true.
+	 */
+	function set_diacritic_custom_replacements( $customReplacements = array() ) {
+		if ( ! is_array( $customReplacements ) ) { 
+			$customReplacements = preg_split('/,/', $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
+		}
+		
 		$replacements = array();
-		if (!is_array($customReplacements)) 
-			$customReplacements = preg_split("/,/", $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
-		foreach ($customReplacements as $customReplacement) {
+		foreach ( $customReplacements as $customReplacement ) {
 			//account for single and double quotes
-			preg_match("/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacement, $doubleQuoteKeyMatch);
-			preg_match("/(?:')([^']+)(?:'\s*=>)/", $customReplacement, $singleQuoteKeyMatch);
-			preg_match("/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacement, $doubleQuoteValueMatch);
-			preg_match("/(?:=>\s*')([^']+)(?:')/", $customReplacement, $singleQuoteValueMatch);
+			preg_match( "/(?:\")([^\"]+)(?:\"\s*=>)/", $customReplacement, $doubleQuoteKeyMatch );
+			preg_match( "/(?:')([^']+)(?:'\s*=>)/",    $customReplacement, $singleQuoteKeyMatch );
+			preg_match( "/(?:=>\s*\")([^\"]+)(?:\")/", $customReplacement, $doubleQuoteValueMatch );
+			preg_match( "/(?:=>\s*')([^']+)(?:')/",    $customReplacement, $singleQuoteValueMatch );
 
-			if (isset($doubleQuoteKeyMatch[1]) && ( $doubleQuoteKeyMatch[1] != "" )) {
+			if ( isset( $doubleQuoteKeyMatch[1] ) && ( '' != $doubleQuoteKeyMatch[1] ) ) {
 				$key = $doubleQuoteKeyMatch[1];
-			} elseif (isset($singleQuoteKeyMatch[1]) && ( $singleQuoteKeyMatch[1] != "" )) {
+			} elseif ( isset( $singleQuoteKeyMatch[1] ) && ( '' != $singleQuoteKeyMatch[1] ) ) {
 				$key = $singleQuoteKeyMatch[1];
 			}
 			
-			if (isset($doubleQuoteValueMatch[1]) && ( $doubleQuoteValueMatch[1] != "" )) {
+			if (isset( $doubleQuoteValueMatch[1] ) && ( '' != $doubleQuoteValueMatch[1] ) ) {
 				$value = $doubleQuoteValueMatch[1];
-			} elseif (isset($singleQuoteValueMatch[1]) && ( $singleQuoteValueMatch[1] != "" )) {
+			} elseif ( isset( $singleQuoteValueMatch[1] ) && ( '' != $singleQuoteValueMatch[1] ) ) {
 				$value = $singleQuoteValueMatch[1];
 			}
 			
-			if (isset($key) && isset($value) ) {
-				$replacements[strip_tags(trim($key))] = strip_tags(trim($value));
+			if ( isset( $key ) && isset( $value ) ) {
+				$replacements[ strip_tags( trim( $key ) ) ] = strip_tags( trim( $value ) );
 			}
 		}
 			
@@ -421,175 +481,274 @@ class phpTypography {
 		return true;
 	}
 
-
-	// replaces (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗
-	function set_smart_marks($on = true)
-	{
+	/**
+	 * Enable/disable replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_marks( $on = true ) {
 		$this->settings['smartMarks'] = $on;
 		return true;
 	}
 
-	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_math($on = true)
-	{
+	/**
+	 * Enable/disable proper mathematical symbols.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_math( $on = true ) {
 		$this->settings['smartMath'] = $on;
 		return true;
 	}
 
-	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_exponents($on = true)
-	{
+	/**
+	 * Enable/disable replacement of 2^2 with 2<sup>2</sup>
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_exponents( $on = true ) {
 		$this->settings['smartExponents'] = $on;
 		return true;
 	}
 
-	// replaces 1/4  with <sup>1</sup>&#8260;<sub>4</sub>
-	function set_smart_fractions($on = true)
-	{
+	/**
+	 * Enable/disable replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_fractions( $on = true ) {
 		$this->settings['smartFractions'] = $on;
 		return true;
 	}
 
-	// wrap numbers in <span class="numbers">
-	function set_smart_ordinal_suffix($on = true)
-	{
+	/**
+	 * Enable/disable replacement of 1st with 1<sup>st</sup>.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_smart_ordinal_suffix( $on = true )	{
 		$this->settings['smartOrdinalSuffix'] = $on;
 		return true;
 	}
 
-	// single character words are forced to next line with insertion of &nbsp;
-	function set_single_character_word_spacing($on = true)
-	{
+	/**
+	 * Enable/disable forcing single character words to next line with the insertion of &nbsp;.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_single_character_word_spacing( $on = true ) {
 		$this->settings['singleCharacterWordSpacing'] = $on;
 		return true;
 	}
 	
-	// units and values are kept together with insertion of &nbsp;
-	function set_fraction_spacing($on = true)
-	{
+	/**
+	 * Enable/disable FIXME.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_fraction_spacing( $on = true ) {
 		$this->settings['fractionSpacing'] = $on;
 		return true;
 	}
 
-	// units and values are kept together with insertion of &nbsp;
-	function set_unit_spacing($on = true)
-	{
+	/**
+	 * Enable/disable keeping units and values together with the insertion of &nbsp;.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_unit_spacing($on = true) {
 		$this->settings['unitSpacing'] = $on;
 		return true;
 	}
 
-	// a list of units to keep with their values
-	function set_units($units = array())
-	{
-		if (!is_array($units)) 
-			$units = preg_split("/[\s,]+/", $units, -1, PREG_SPLIT_NO_EMPTY);
+	/**
+	 * Set the list of units to keep together with their values.
+	 *
+	 * @param string|array $units A comma separated list or an array of units.
+	 * @return boolean Returns true.
+	 */
+	function set_units( $units = array() ) {
+		if ( ! is_array( $units ) ) {
+			$units = preg_split( '/[\s,]+/', $units, -1, PREG_SPLIT_NO_EMPTY );
+		}
+		
 		$this->settings['units'] = $units;
 		return true;
 	}
 
-	// Em and En dashes are wrapped in thin spaces
-	function set_dash_spacing($on = true)
-	{
+	/**
+	 * Enable/disable wrapping of Em and En dashes are in thin spaces.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_dash_spacing( $on = true )	{
 		$this->settings['dashSpacing'] = $on;
 		return true;
 	}
 	
-	// Remove extra space Characters
-	function set_space_collapse($on = true)
-	{
+	/**
+	 * Enable/disable removal of extra whitespace characters.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_space_collapse( $on = true ) {
 		$this->settings['spaceCollapse'] = $on;
 		return true;
 	}
 
-	// enables widow handling
-	function set_dewidow($on = true)
-	{
+	/**
+	 * Enable/disable widow handling.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_dewidow( $on = true ) {
 		$this->settings['dewidow'] = $on;
 		return true;
 	}
 	
-	// establishes maximum length of a widows that will be protected
-	function set_max_dewidow_length($len = 5)
-	{
-		$len = ($len > 1) ? $len : 5;
-		$this->settings['dewidowMaxLength'] = $len;
+	/**
+	 * Set the maximum length of widows that will be protected.
+	 *
+	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_max_dewidow_length( $length = 5 )	{
+		$length = ($length > 1) ? $length : 5;
+
+		$this->settings['dewidowMaxLength'] = $length;
 		return true;
 	}
 	
-	// establishes maximum length of pulled text to keep widows company
-	function set_max_dewidow_pull($len = 5)
-	{
-		$len = ($len > 1) ? $len : 5;
-		$this->settings['dewidowMaxPull'] = $len;
+	/**
+	 * Set the maximum length of pulled text to keep widows company.
+	 *
+	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_max_dewidow_pull( $length = 5 ) {
+		$length = ($length > 1) ? $length : 5;
+		
+		$this->settings['dewidowMaxPull'] = $length;
 		return true;
 	}
 	
-	// enables wrapping at hard hyphens internal to a word with the insertion of a zero-width-space
-	function set_wrap_hard_hyphens($on = true)
-	{
+	/**
+	 * Enable/disable wrapping at internal hard hyphens with the insertion of a zero-width-space.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_wrap_hard_hyphens( $on = true ) {
 		$this->settings['hyphenHardWrap'] = $on;
 		return true;
 	}
 
-	// enables wrapping of urls
-	function set_url_wrap($on = true)
-	{
+	/**
+	 * Enable/disable wrapping of urls.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_url_wrap( $on = true ) {
 		$this->settings['urlWrap'] = $on;
 		return true;
 	}
 
-	// enables wrapping of email addresses
-	function set_email_wrap($on = true)
-	{
+	/**
+	 * Enable/disable wrapping of email addresses.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_email_wrap( $on = true ) {
 		$this->settings['emailWrap'] = $on;
 		return true;
 	}
 	
-	// establishes minimum character requirement after a url wrapping point
-	function set_min_after_url_wrap($len = 5)
-	{
-		$len = ($len > 0) ? $len : 5;
-		$this->settings['urlMinAfterWrap'] = $len;
+	/**
+	 * Set the minimum character requirement after an URL wrapping point.
+	 *
+	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_min_after_url_wrap( $length = 5 ) {
+		$length = ($length > 0) ? $length : 5;
+		
+		$this->settings['urlMinAfterWrap'] = $length;
 		return true;
 	}
 
-	// wrap ampersands in <span class="amp">
-	function set_style_ampersands($on = true)
-	{
+	/**
+	 * Enable/disable wrapping of ampersands in <span class="amp">.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_style_ampersands( $on = true ) {
 		$this->settings['styleAmpersands'] = $on;
 		return true;
 	}
 
-	// wrap caps in <span class="caps">
-	function set_style_caps($on = true)
-	{
+	/**
+	 * Enable/disable wrapping caps in <span class="caps">.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_style_caps( $on = true ) {
 		$this->settings['styleCaps'] = $on;
 		return true;
 	}
 
-	// wrap initial quotes in <span class="quo"> or <span class="dquo">
+	/**
+	 * Enable/disable wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
 	function set_style_initial_quotes($on = true)
 	{
 		$this->settings['styleInitialQuotes'] = $on;
 		return true;
 	}
 	
-	// wrap numbers in <span class="numbers">
-	function set_style_numbers($on = true)
-	{
+	/**
+	 * Enable/disable wrapping of numbers in <span class="numbers">.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_style_numbers( $on = true ) {
 		$this->settings['styleNumbers'] = $on;
 		return true;
 	}
 
-	// sets tags where initial quotes and guillemets should be styled
+	/**
+	 * Set the list of tags where initial quotes and guillemets should be styled.
+	 *
+	 * @param string|array $units A comma separated list or an array of tag names.
+	 * @return boolean Returns true.
+	 */
 	function set_initial_quote_tags( $tags = array('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt') ) {
 		// make array if handed a list of tags as a string
-		if (!is_array($tags)) 
-			$tags = preg_split("/[^a-z0-9]+/", $tags, -1, PREG_SPLIT_NO_EMPTY);
+		if ( ! is_array( $tags ) ) { 
+			$tags = preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
+		}
 		
 		// all tags need to be lower-cased
-		foreach ($tags as &$tag){
-			$tag = strtolower($tag);
+		foreach ( $tags as &$tag ) {
+			$tag = strtolower( $tag );
 		}
 		
 		// store the tag array inverted (with the tagName as its index for faster lookup)
@@ -598,120 +757,166 @@ class phpTypography {
 		return true;
 	}
 
-	// enables hyphenation of text
-	function set_hyphenation($on = true)
-	{
+	/**
+	 * Enable/disable hyphenation.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_hyphenation( $on = true ) {
 		$this->settings['hyphenation'] = $on;
 		return true;
 	}
 	
-	// defines hyphenation language for text
-	function set_hyphenation_language($lang = 'en-US')
-	{
-		if (isset($this->settings['hyphenLanguage']) &&	$this->settings['hyphenLanguage'] == $lang)
-			return true;
+	/**
+	 * Set the hyphenation pattern language. //FIXME
+	 *
+	 * @param string $lang Defaults to 'en-US'.
+	 * @return boolean Returns true.
+	 */
+	function set_hyphenation_language( $lang = 'en-US' ) {
+		if ( isset( $this->settings['hyphenLanguage'] ) && $this->settings['hyphenLanguage'] == $lang ) {
+			return true; // bail out, no need to do anything
+		}
 		
 		$this->settings['hyphenLanguage'] = $lang;
 
-		if (file_exists(dirname(__FILE__).'/lang/'.$this->settings['hyphenLanguage'].'.php')) {
-			include('lang/'.$this->settings['hyphenLanguage'].'.php');
+		if ( file_exists( dirname( __FILE__ ).'/lang/'.$this->settings['hyphenLanguage'].'.php' ) ) {
+			include( 'lang/'.$this->settings['hyphenLanguage'].'.php' );
 		} else {
-			include('lang/en-US.php');
+			include( 'lang/en-US.php' );
 		}
 		$this->settings['hyphenationPattern'] = $patgen;
 		$this->settings['hyphenationPatternMaxSegment'] = $patgenMaxSeg;
 		$this->settings['hyphenationPatternExceptions'] = $patgenExceptions;
 		
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
-		if (isset($this->settings['hyphenationExceptions'])) unset($this->settings['hyphenationExceptions']);
+		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
+			unset( $this->settings['hyphenationExceptions'] );
+		}
 		
 		return true;
 	}
 	
-	// establishes minimum length of a word that may be hyphenated
-	function set_min_length_hyphenation($len = 5)
-	{
-		$len = ($len > 1) ? $len : 5;
-		$this->settings['hyphenMinLength'] = $len;
+	/**
+	 * Set the minimum length of a word that may be hyphenated.
+	 *
+	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_min_length_hyphenation( $length = 5 ) {
+		$length = ($length > 1) ? $length : 5;
+		
+		$this->settings['hyphenMinLength'] = $length;
 		return true;
 	}
 	
-	// establishes minimum character requirement before a hyphenation point
-	function set_min_before_hyphenation($len = 3)
-	{
-		$len = ($len > 0) ? $len : 3;
-		$this->settings['hyphenMinBefore'] = $len;
+	/**
+	 * Set the minimum character requirement before a hyphenation point.
+	 *
+	 * @param number $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_min_before_hyphenation( $length = 3 ) {
+		$length = ($length > 0) ? $length : 3;
+		
+		$this->settings['hyphenMinBefore'] = $length;
 		return true;
 	}
 	
-	// establishes minimum character requirement after a hyphenation point
-	function set_min_after_hyphenation($len = 2)
-	{
-		$len = ($len > 0) ? $len : 2;
-		$this->settings['hyphenMinAfter'] = $len;
+	/**
+	 * Set the minimum character requirement after a hyphenation point.
+	 *
+	 * @param number $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
+	 * @return boolean Returns true.
+	 */
+	function set_min_after_hyphenation( $length = 2 ) {
+		$length = ($length > 0) ? $length : 2;
+		
+		$this->settings['hyphenMinAfter'] = $length;
 		return true;
 	}
 	
-	// allows/disallows hyphenation of title/heading text
-	function set_hyphenate_headings($on = true)
-	{
+	/**
+	 * Enable/disable hyphenation of titles and headings.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_hyphenate_headings( $on = true ) {
 		$this->settings['hyphenateTitle'] = $on;
 		return true;
 	}
 	
-	// allows hyphenation of strings of all capital characters
-	function set_hyphenate_all_caps($on = true)
-	{
+	/**
+	 * Enable/disable hyphenation of words set completely in capital letters.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_hyphenate_all_caps( $on = true ) {
 		$this->settings['hyphenateAllCaps'] = $on;
 		return true;
 	}
 	
-	// allows hyphenation of strings of all capital characters
-	// added in version 1.5
-	function set_hyphenate_title_case($on = true)
-	{
+	/**
+	 * Enable/disable hyphenation of words starting with a capital letter.
+	 *
+	 * @param boolean $on Defaults to true;
+	 * @return boolean Returns true.
+	 */
+	function set_hyphenate_title_case( $on = true ) {
 		$this->settings['hyphenateTitleCase'] = $on;
 		return true;
 	}
 	
-	// defines custom word hyphenations
-	// expected input is an array of words with all hyphenation points marked with a hard hyphen
-	function set_hyphenation_exceptions($exceptions = array())
-	{
+	/**
+	 * Sets custom word hyphenations.
+	 * 
+ 	 * @param string|array $exceptions An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
+ 	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
+ 	 * @return boolean Returns true.
+	 */
+	function set_hyphenation_exceptions( $exceptions = array() ) {
 		$multibyte = false;
-		$u = "";
-		if (!is_array($exceptions)) 
-			$exceptions = preg_split("/[^a-zA-Z0-9\-]+/", $exceptions, -1, PREG_SPLIT_NO_EMPTY);
+		$u = '';
+		
+		if ( ! is_array( $exceptions ) ) { 
+			$exceptions = preg_split( '/[^a-zA-Z0-9\-]+/', $exceptions, -1, PREG_SPLIT_NO_EMPTY );
+		}
 		
 		$exceptionKeys = array();
-		foreach ($exceptions as $key => &$exception) {
-			$encoding = self::detect_encoding($exception);
-			if ('UTF-8' == $encoding) {
-				$multibyte = true;
-				$u = 'u';
-				if(!function_exists('mb_strlen')) return false;
-			} elseif ('ASCII' == $encoding) {
-				$multibyte = false;
-			} else {
-				return false;
-			}
-			
-			if ($multibyte) {
-				$exception = mb_strtolower($exception, 'UTF-8');
+		foreach ( $exceptions as $key => &$exception ) {
+ 			switch ( self::detect_encoding( $exception ) ) {
+ 				case 'UTF-8':
+ 					$multibyte = true;
+ 					$u = 'u';
+ 					if(!function_exists('mb_strlen')) return false;
+ 					break;
+ 					
+ 				case 'ASCII':
+ 					$multibyte = false;
+ 					$u = '';
+ 					break;
+ 					
+ 				default:
+ 					return false;
+ 			}
+ 						
+			if ( $multibyte ) {
+				$exception = mb_strtolower( $exception, 'UTF-8' );
 			} else {  //same as above without multibyte string functions to improve preformance
-				$exception = strtolower($exception);
+				$exception = strtolower( $exception );
 			}
-			$exceptionKeys[$key] = preg_replace("#-#$u", "", $exception);
+			$exceptionKeys[$key] = preg_replace( "#-#$u", '', $exception );
 		}
-		$e = array();
-		foreach ($exceptionKeys as $key => $value)	{
-			$e[$value] = $exceptions[$key];
-		}
-		
-		$this->settings['hyphenationCustomExceptions'] = $e;
+				
+		$this->settings['hyphenationCustomExceptions'] = array_flip( $exceptionKeys );
 				
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
-		if(isset($this->settings['hyphenationExceptions'])) unset($this->settings['hyphenationExceptions']);
+		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
+			unset( $this->settings['hyphenationExceptions'] );
+		}
 
 		return true;
 	}
@@ -908,12 +1113,14 @@ class phpTypography {
 		return $out;
 	}
 	
-	/*
-	 * Returns an array containing all the ancestors of the node.
+	/**
+	 * Retrieve an array containing all the ancestors of the node.
+	 * 
+	 * @param DOMNode $node
+	 * @return array of DOMNode
 	 */
 	static function get_ancestors(DOMNode $node) {
 		$result = array();
-		$orig = $node;
 		
 		while ($node = $node->parentNode) {
 			$result[] = $node;
@@ -1014,8 +1221,8 @@ class phpTypography {
 	 * 
 	 * @return string A single character (or the empty string).
 	 */
-	static function get_prev_chr($element) {
-		$prevText = self::get_previous_textnode($element);
+	static function get_prev_chr( $element ) {
+		$prevText = self::get_previous_textnode( $element );
 		
 		if ( is_object( $prevText ) ) {				
 			// determine encoding
@@ -2372,7 +2579,7 @@ class phpTypography {
 		
 			if ($wordLength < $this->settings['hyphenMinLength']) continue;
 
-			//if this is a capitalized word, and settings do not allow hyphenation of such, abort!
+			// if this is a capitalized word, and settings do not allow hyphenation of such, abort!
 			// note. this is different than uppercase words, where we are looking for title case
 			if ((!isset($this->settings['hyphenateTitleCase']) || !$this->settings['hyphenateTitleCase']) && substr($theKey,0,1) != substr($parsedTextToken['value'],0,1)) continue;
 			
