@@ -39,7 +39,11 @@ class phpTypography {
 	#=======================================================================
 	#=======================================================================
 
-	// __ naming defines constructor that is automatically called on each newly-createy object
+	/**
+	 * Set up a new phpTypography object.
+	 * 
+	 * @param boolean $setDefaults If true, set default values for various properties. Defaults to true. 
+	 */
 	function __construct( $setDefaults = true )
 	{
 		$this->chr['noBreakSpace']            = $this->uchr(160);
@@ -86,8 +90,6 @@ class phpTypography {
 		
 		// not sure if this is necessary - but error_log seems to have problems with the strings.
 		$encoding_set = mb_internal_encoding('UTF-8');
-		
-		return true;
 	}
 
 	/**
