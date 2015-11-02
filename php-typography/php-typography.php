@@ -931,170 +931,190 @@ class phpTypography {
 	#=======================================================================
 	#=======================================================================
 
-
-	#	Returns:	ARRAY of supported hyphenation languages in the form array( language code => language name)
-	function get_languages()
-	{
+	/**
+	 * Retrieve the supported hyphenation languages.
+	 * 
+	 * @return array An associative array in the form array( language code => language name )
+	 */
+	function get_languages() {
 		$languages = array();
-		$langDir = dirname(__FILE__)."/lang/";
-		$handler = opendir($langDir);
+		$langDir = dirname( __FILE__ ) . '/lang/';
+		$handler = opendir( $langDir );
 		
 		// read all files in directory
-		while ($file = readdir($handler)) {
+		while ( $file = readdir( $handler ) ) {
 			// we only want the php files
-			if (substr($file, -4) == ".php") {
-				$fileContent = file_get_contents($langDir.$file);
-				preg_match('/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches);
-				$languageName = substr($matches[1], 1, -1);
-				$languageCode = substr($file, 0, -4);
+			if ('.php' == substr( $file, -4 ) ) {
+				$fileContent = file_get_contents( $langDir . $file );
+				preg_match( '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches );
+				$languageName = substr( $matches[1], 1, -1 );
+				$languageCode = substr( $file, 0, -4 );
 				$results[$languageCode] = $languageName;
 			}
 		}
-		closedir($handler);
+		closedir( $handler );
 
-		asort($results);
+		asort( $results );
 		return $results;
 	}
 
-	#	Returns:	ARRAY of supported hyphenation languages in the form array( language code => language name)
-	function get_diacritic_languages()
-	{
+	/**
+	 * Retrieve the supported diacritics replacement languages.
+	 *
+	 * @return array An associative array in the form array( language code => language name )
+	 */
+	function get_diacritic_languages() {
 		$languages = array();
-		$langDir = dirname(__FILE__)."/diacritics/";
-		$handler = opendir($langDir);
+		$langDir = dirname( __FILE__ ) . '/diacritics/';
+		$handler = opendir( $langDir );
 		
 		// read all files in directory
-		while ($file = readdir($handler)) {
+		while ( $file = readdir( $handler ) ) {
 			// we only want the php files
-			if (substr($file, -4) == ".php") {
-				$fileContent = file_get_contents($langDir.$file);
-				preg_match('/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches);
-				$languageName = substr($matches[1], 1, -1);
-				$languageCode = substr($file, 0, -4);
+			if ('.php' == substr( $file, -4 ) ) {
+				$fileContent = file_get_contents( $langDir.$file );
+				preg_match( '/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches );
+				$languageName = substr( $matches[1], 1, -1 );
+				$languageCode = substr( $file, 0, -4 );
 				$results[$languageCode] = $languageName;
 			}
 		}
-		closedir($handler);
+		closedir( $handler );
 
-		asort($results);
+		asort( $results );
 		return $results;
 	}
 		
-	#	Action:		modifies $html according to the defined settings
-	#	Returns:	processed $html
-	function process($html, $isTitle = false)
-	{
-		if (isset($this->settings['ignoreTags'] ) && $isTitle && ( in_array('h1', $this->settings['ignoreTags']) || in_array('h2', $this->settings['ignoreTags']) ))
+	/**
+	 * Modifies $html according to the defined settings.
+	 * 
+	 * @param string $html
+	 * @param string $isTitle If the HTML fragment is a title. Defaults to false.
+	 * @return string The processed $html.
+	 */
+	function process( $html, $isTitle = false ) {
+		if ( isset( $this->settings['ignoreTags'] ) && $isTitle && ( in_array('h1', $this->settings['ignoreTags'] ) || in_array('h2', $this->settings['ignoreTags'] ) ) ) {
 			return $html;
+		}
 		
 		// Lazy-load our parsers
-		if ( !isset($this->html5parser) )
+		if ( ! isset( $this->html5parser ) ) {
 			$this->html5parser = new HTML5( array('disable_html_ns' => true) );
-		if ( !isset($this->textparser) ) 
+		}
+		if ( ! isset( $this->textparser ) ) {
 			$this->textparser = new parseText();
+		}
 		
 		// parse the html
-		$dom = $this->html5parser->loadHTML('<body>' . $html . '</body>' );
+		$dom = $this->html5parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
-		$xpath = new DOMXPath($dom);
+		$xpath = new DOMXPath( $dom );
 		
 		$tagsToIgnore = array(); // actually replaced by DOMNodeList
-		$bodyNode = $xpath->query('/html/body')->item(0);
+		$bodyNode = $xpath->query( '/html/body' )->item( 0 );
 		$xpathIgnoreQuery = array();
 		
 		if ( ! empty( $this->settings['ignoreTags'] ) ) {
-			$xpathIgnoreQuery[] = '//' . implode(' | //', $this->settings['ignoreTags']);				
+			$xpathIgnoreQuery[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );				
 		}	
 		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
-			$xpathIgnoreQuery[] = "//*[contains(concat(' ', @class, ' '), ' " . implode(" ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses']) . " ')]";
+			$xpathIgnoreQuery[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$xpathIgnoreQuery[] = '//*[@id=\'' . implode('\'] | //*[@id=\'', $this->settings['ignoreIDs']) . '\']';
+			$xpathIgnoreQuery[] = '//*[@id=\'' . implode( '\'] | //*[@id=\'', $this->settings['ignoreIDs'] ) . '\']';
 		}
 		
-		$allTextnodes = $xpath->query('//text()');
-		if ( count($xpathIgnoreQuery) > 0 ) {
+		$allTextnodes = $xpath->query( '//text()' );
+		if ( count( $xpathIgnoreQuery ) > 0 ) {
 			$tagsToIgnore = self::nodelist_to_array( $xpath->query( implode(' | ', $xpathIgnoreQuery ), $bodyNode ) );
 		}
 		
-		foreach ($allTextnodes as $textnode) {					
-			if (self::array_intersection($tagsToIgnore, self::get_ancestors($textnode)))
+		foreach ( $allTextnodes as $textnode ) {					
+			if ( self::array_intersection( $tagsToIgnore, self::get_ancestors( $textnode ) ) ) {
 				continue;
+			}
 			
 			// we won't be doing anything with spaces, so we can jump ship if that is all we have
-			if ($textnode->isWhitespaceInElementContent()) continue;
+			if ( $textnode->isWhitespaceInElementContent() ) {
+				continue;
+			}
 		
 			// decode all characters except < > &
 			//$textnode->data = html_entity_decode($textnode->data, ENT_QUOTES, 'UTF-8'); //converts all HTML entities to their applicable characters
-			$textnode->data = htmlspecialchars($textnode->data, ENT_NOQUOTES, 'UTF-8'); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
+			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); //returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
 
 			// modify anything that requires adjacent text awareness here
-			$this->smart_math($textnode);	
-			$this->smart_diacritics($textnode);
-			$this->smart_quotes($textnode);
-			$this->smart_dashes($textnode);
-			$this->smart_ellipses($textnode);
-			$this->smart_marks($textnode);
+			$this->smart_math( $textnode );	
+			$this->smart_diacritics( $textnode );
+			$this->smart_quotes( $textnode );
+			$this->smart_dashes( $textnode );
+			$this->smart_ellipses( $textnode );
+			$this->smart_marks( $textnode );
 			
 			//keep spacing after smart character replacement
-			$this->single_character_word_spacing($textnode);
-			$this->dash_spacing($textnode);
-			$this->unit_spacing($textnode);
+			$this->single_character_word_spacing( $textnode );
+			$this->dash_spacing( $textnode );
+			$this->unit_spacing( $textnode );
 
 			//break it down for a bit more granularity
-			$this->textparser->load($textnode->nodeValue);
-			$parsedMixedWords = $this->textparser->get_words(-1,0); // prohibit letter only words, allow caps
-			$caps = (isset($this->settings['hyphenateAllCaps']) && $this->settings['hyphenateAllCaps']) ? 0 : -1 ;
-			$parsedWords = $this->textparser->get_words(1,$caps);  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
+			$this->textparser->load( $textnode->nodeValue );
+			$parsedMixedWords = $this->textparser->get_words( -1, 0 ); // prohibit letter only words, allow caps
+			$caps = ( ! empty ( $this->settings['hyphenateAllCaps'] ) ? 0 : -1 );
+			$parsedWords = $this->textparser->get_words( 1, $caps );  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
 			$parsedOther = $this->textparser->get_other();
 			
 			// process individual text parts here
-			$parsedMixedWords = $this->wrap_hard_hyphens($parsedMixedWords);
-			$parsedWords = $this->hyphenate($parsedWords, $isTitle, $textnode);
-			$parsedOther = $this->wrap_urls($parsedOther);
-			$parsedOther = $this->wrap_emails($parsedOther);
+			$parsedMixedWords = $this->wrap_hard_hyphens( $parsedMixedWords );
+			$parsedWords = $this->hyphenate( $parsedWords, $isTitle, $textnode );
+			$parsedOther = $this->wrap_urls( $parsedOther );
+			$parsedOther = $this->wrap_emails( $parsedOther );
 			
 			//apply updates to unlockedText
-			$this->textparser->update($parsedMixedWords+$parsedWords+$parsedOther);
+			$this->textparser->update( $parsedMixedWords + $parsedWords + $parsedOther );
 			$textnode->nodeValue = $this->textparser->unload();
 			
 			//some final space manipulation
-			$this->dewidow($textnode);
-			$this->space_collapse($textnode);
+			$this->dewidow( $textnode );
+			$this->space_collapse( $textnode );
 
 			//everything that requires HTML injection occurs here (functions above assume tag-free content)
 			//pay careful attention to functions below for tolerance of injected tags
-			$this->smart_ordinal_suffix($textnode);	// call before "style_numbers" and "smart_fractions"	
-			$this->smart_exponents($textnode); // call before "style_numbers"
-			$this->smart_fractions($textnode); // call before "style_numbers" and after "smart_ordinal_suffix"
+			$this->smart_ordinal_suffix( $textnode );	// call before "style_numbers" and "smart_fractions"	
+			$this->smart_exponents( $textnode ); // call before "style_numbers"
+			$this->smart_fractions( $textnode ); // call before "style_numbers" and after "smart_ordinal_suffix"
 			if (!self::has_class( $textnode, 'caps' ) )
-				$this->style_caps($textnode); // call before "style_numbers"		
+				$this->style_caps( $textnode ); // call before "style_numbers"		
 			if (!self::has_class( $textnode, 'numbers' ) )
-				$this->style_numbers($textnode); // call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"	
+				$this->style_numbers( $textnode ); // call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"	
 			if (!self::has_class( $textnode, 'amp') )
-				$this->style_ampersands($textnode);			
+				$this->style_ampersands( $textnode );			
 			if (!self::has_class( $textnode, array( 'quo', 'dquo' ) ) )
-				$this->style_initial_quotes($textnode, $isTitle);
+				$this->style_initial_quotes( $textnode, $isTitle );
 			
 			// Until now, we've only been working on a textnode. 
 			// HTMLify result
-			$this->set_inner_html($textnode, $textnode->nodeValue);
+			$this->set_inner_html( $textnode, $textnode->nodeValue );
 		}
 				
 		return $this->html5parser->saveHTML( $bodyNode->childNodes );;
 	}
 	
-	/*
-	 * Check for common elements in two arrays (of DOMNode, so array_intersect won't work)
+	/**
+	 * Retrieves intersection of two object arrays using strict comparison.
+	 * 
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
 	 */
-	static function array_intersection(array &$array1, array &$array2) {
-		$out = array();
-		$max = count($array1);
+	static function array_intersection( array &$array1, array &$array2 ) {
+		$max = count( $array1 );
 		
-		for ($i = 0; $i < $max; ++$i) {
-			if (in_array($array1[$i], $array2, true))
-				$out[] = $array1[$i];
-		}
+ 		$out = array();
+		for ( $i = 0; $i < $max; ++$i ) {
+ 			if ( in_array( $array1[ $i ], $array2, true ) ) {
+ 				$out[] = $array1[ $i ];
+ 			}
+ 		}
 		
 		return $out;
 	}
@@ -1102,12 +1122,11 @@ class phpTypography {
 	/**
 	 * Convert DOMNodeList to array;
 	 * 
-	 * @param DOMNodeList $array1
+	 * @param DOMNodeList $list
 	 * @return array Array of DOMNodes
 	 */
-	static function nodelist_to_array(DOMNodeList $list) {
+	static function nodelist_to_array( DOMNodeList $list ) {
 		$out = array();
-		
 		foreach ($list as $node) {
 			$out[] = $node;
 		}
@@ -1121,7 +1140,7 @@ class phpTypography {
 	 * @param DOMNode $node
 	 * @return array of DOMNode
 	 */
-	static function get_ancestors(DOMNode $node) {
+	static function get_ancestors( DOMNode $node ) {
 		$result = array();
 		
 		while ($node = $node->parentNode) {
@@ -1131,72 +1150,92 @@ class phpTypography {
 		return $result;
 	}
 	
-	# Checks whether the element $tag has the class $classnames (can be an array for multiple possible classes)
-	static function has_class($tag, $classnames) {
-		if ($tag instanceof DOMText)
+	/**
+	 * Checks whether the DOMNode has one of the given classes. 
+	 * If $tag is a DOMText, the parent DOMElement is checked instead.
+	 * 
+	 * @param DOMNode $tag An element or textnode.
+	 * @param string|array $classnames A single classname or an array of classnames.
+	 * 
+	 * @return boolean True if the element has the given class(es).
+	 */
+	static function has_class( DOMNode $tag, $classnames ) {
+		if ( $tag instanceof DOMText ) {
 			$tag = $tag->parentNode;
-		
-		if (!(is_null($tag) && is_object($tag))) return false;
-		
-		if (!is_array($classnames)) {
-			$classnames = array($classnames);
 		}
 		
-		$result = false;
-				
-		foreach ($classnames as $classname) {
-			if ($tag->hasAttribute('class')) {
-				$result = result ||  in_array($classname, explode(' ', $tag->getAttribute('class')));			
+		if ( ! ( is_null( $tag ) && is_object( $tag ) ) ) {
+			return false;
+		}
+		
+		if ( ! is_array( $classnames ) ) {
+			$classnames = array( $classnames );
+		}
+		
+		if ( $tag->hasAttribute( 'class' ) ) {
+			$tag_classes = array_flip( explode(' ', $tag->getAttribute('class') ) );
+	
+			foreach ( $classnames as &$classname ) {
+				if ( isset($tag_classes[ $classname ] ) ) {
+					return true;
+				}
 			}
 		}
 		
-		return $result;
+		return false;
 	}
 	
-	
-	#	Action:		modifies $html according to the defined settings as only appropriate for RSS feeds 
-	#				(i.e. excluding processes that may not display well with limited character set inteligence)
-	#	Returns:	processed $html
-	function process_feed($html, $isTitle = false)
-	{
-		if (isset($this->settings['ignoreTags'] ) && $isTitle && ( in_array('h1', $this->settings['ignoreTags']) || in_array('h2', $this->settings['ignoreTags']) ))
+	/**
+	 * Modifies $html according to the defined settings, in a way that is appropriate for RSS feeds
+	 * (i.e. excluding processes that may not display well with limited character set intelligence).
+	 *
+	 * @param string $html
+	 * @param string $isTitle If the HTML fragment is a title. Defaults to false.
+	 * @return string The processed $html.
+	 */
+	function process_feed( $html, $isTitle = false ) {
+		if ( isset( $this->settings['ignoreTags'] ) && $isTitle && ( in_array( 'h1', $this->settings['ignoreTags'] ) || in_array( 'h2', $this->settings['ignoreTags'] ) ) ) {
 			return $html;
+		}
 		
 		// Lazy-load our parser (the text parser is not needed for feeds)
-		if ( !isset($this->html5parser) )
-			$this->html5parser = new HTML5( array('disable_html_ns' => true) );
+		if ( ! isset( $this->html5parser ) ) {
+			$this->html5parser = new HTML5( array( 'disable_html_ns' => true ) );
+		}
 	
 		// parse the html
-		$dom = $this->html5parser->loadHTML('<body>' . $html . '</body>' );
+		$dom = $this->html5parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
-		$xpath = new DOMXPath($dom);
+		$xpath = new DOMXPath( $dom );
 
 		$tagsToIgnore = array(); // actually replaced by DOMNodeList
-		$bodyNode = $xpath->query('/html/body')->item(0);
+		$bodyNode = $xpath->query( '/html/body' )->item( 0 );
 		$xpathIgnoreQuery = array();
 
 		if ( ! empty( $this->settings['ignoreTags'] ) ) {
-			$xpathIgnoreQuery[] = '//' . implode(' | //', $this->settings['ignoreTags']);
+			$xpathIgnoreQuery[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );
 		}
 		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
-			$xpathIgnoreQuery[] = "//*[contains(concat(' ', @class, ' '), ' " . implode(" ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses']) . " ')]";
+			$xpathIgnoreQuery[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$xpathIgnoreQuery[] = '//*[@id=\'' . implode('\'] | //*[@id=\'', $this->settings['ignoreIDs']) . '\']';
+			$xpathIgnoreQuery[] = '//*[@id=\'' . implode( '\'] | //*[@id=\'', $this->settings['ignoreIDs'] ) . '\']';
 		}
 
-		$allTextnodes = $xpath->query('//text()');
-		if ( count($xpathIgnoreQuery) > 0 ) {
-			$tagsToIgnore = self::nodelist_to_array( $xpath->query( implode(' | ', $xpathIgnoreQuery ), $bodyNode ) );
+		$allTextnodes = $xpath->query( '//text()' );
+		if ( count( $xpathIgnoreQuery ) > 0 ) {
+			$tagsToIgnore = self::nodelist_to_array( $xpath->query( implode( ' | ', $xpathIgnoreQuery ), $bodyNode ) );
 		}	
 		
 		foreach ( $allTextnodes as $textnode ) {
-			if ( self::array_intersection( $tagsToIgnore, self::get_ancestors( $textnode ) ) )
+			if ( self::array_intersection( $tagsToIgnore, self::get_ancestors( $textnode ) ) ) {
 				continue;
+			}
 				
 			// we won't be doing anything with spaces, so we can jump ship if that is all we have
-			if ( $textnode->isWhitespaceInElementContent() )
+			if ( $textnode->isWhitespaceInElementContent() ) {
 				continue;
+			}
 				
 			// decode all characters except < > &
 			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively)
@@ -1364,11 +1403,8 @@ class phpTypography {
 	static function get_next_chr($element) {
 		$nextText = self::get_next_textnode($element);
 				
-		if (is_object($nextText)) {
-			// determine encoding
-			$encoding = self::detect_encoding($element->nodeValue);			
-			
-			return preg_replace( '/\p{C}/Su', '', mb_substr($nextText->nodeValue, 0, 1, $encoding) );
+		if ( is_object( $nextText ) ) {		
+			return preg_replace( '/\p{C}/Su', '', mb_substr( $nextText->nodeValue, 0, 1, self::detect_encoding( $element->nodeValue ) ) );
 		} else {
 			return '';
 		}	
@@ -1384,7 +1420,7 @@ class phpTypography {
 	static function get_block_parent($element) {
 		$parent = $element->parentNode;
 		
-		while ( ! HTML5\Elements::isA($parent->tagName, HTML5\Elements::BLOCK_TAG) && !empty($parent->parentNode) ) {
+		while ( ! HTML5\Elements::isA( $parent->tagName, HTML5\Elements::BLOCK_TAG ) && !empty( $parent->parentNode ) ) {
 			$parent = $parent->parentNode;
 		}
 		
@@ -1398,9 +1434,13 @@ class phpTypography {
 	 * 
 	 * @return string The detected encoding (defaults to 'ASCII').
 	 */
-	static function detect_encoding(&$string) {				
-		$encoding = mb_detect_encoding($string . 'a', self::$encodings);// .'a' is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-		if ( empty($encoding) ) $encoding = 'ASCII';
+	static function detect_encoding(&$string) {
+		// .'a' is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
+		// probbably not needed anymore with $strict set to true
+		$encoding = mb_detect_encoding( $string . 'a', self::$encodings, true );
+		if ( empty($encoding) ) { 
+			$encoding = 'ASCII';
+		}
 		
 		return $encoding;
 	}
@@ -1411,10 +1451,15 @@ class phpTypography {
 	#=======================================================================
 	#=======================================================================
 	
-	//expecting parsedHTML token of type text
-	function smart_quotes($parsedHTMLtoken)
-	{
-		if ( empty($this->settings['smartQuotes']) ) return;
+	/**
+	 * Apply smart quotes (if enabled).
+	 * 
+	 * @param DOMText $textnode
+	 */
+	function smart_quotes( DOMText $textnode ) {
+		if ( empty( $this->settings['smartQuotes'] ) ) {
+			return;
+		}
 		
 		$nonEnglishWordCharacters = "
 					[0-9A-Za-z]|\x{00c0}|\x{00c1}|\x{00c2}|\x{00c3}|\x{00c4}|\x{00c5}|\x{00c6}|\x{00c7}|\x{00c8}|\x{00c9}|
@@ -1437,81 +1482,87 @@ class phpTypography {
 					\x{017c}|\x{017d}|\x{017e}|\x{017f}
 					";
 
-		//need to get context of adjacent characters outside adjacent inline tags or HTML comment
-		//if we have adjacent characters add them to the text
-		
-		$prevChr = $this->get_prev_chr($parsedHTMLtoken);		
-		if ($prevChr != '')
-			$parsedHTMLtoken->nodeValue =  $prevChr.$parsedHTMLtoken->nodeValue;		
-		$nextChr = $this->get_next_chr($parsedHTMLtoken);
-		if ($nextChr != '')
-			$parsedHTMLtoken->nodeValue =  $parsedHTMLtoken->nodeValue.$nextChr;
+		// need to get context of adjacent characters outside adjacent inline tags or HTML comment
+		// if we have adjacent characters add them to the text
+		$prevChr = $this->get_prev_chr( $textnode );		
+		if ( '' != $prevChr ) {
+			$textnode->nodeValue = $prevChr.$textnode->nodeValue;		
+		}
+		$nextChr = $this->get_next_chr( $textnode );
+		if ( '' != $nextChr ) {
+			$textnode->nodeValue =  $textnode->nodeValue.$nextChr;
+		}
 				
 		////Logic			
 			
 		// before primes, handle quoted numbers
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u", $this->chr['singleQuoteOpen'].'$1'.$this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u", $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u", $this->chr['singleQuoteOpen'].'$1'.$this->chr['singleQuoteClose'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u", $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $textnode->nodeValue);
 		
 		// guillemets
-		$parsedHTMLtoken->nodeValue =  str_replace("<<", $this->chr['guillemetOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace("&lt;&lt;", $this->chr['guillemetOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace(">>", $this->chr['guillemetClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace("&gt;&gt;", $this->chr['guillemetClose'], $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = str_replace("<<", $this->chr['guillemetOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace("&lt;&lt;", $this->chr['guillemetOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace(">>", $this->chr['guillemetClose'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace("&gt;&gt;", $this->chr['guillemetClose'], $textnode->nodeValue);
 		
 		// primes
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)''(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)\"(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr['singlePrime'], $parsedHTMLtoken->nodeValue);		
+		$textnode->nodeValue = preg_replace("/(\b\d+)''(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(\b\d+)\"(?=\W|\Z)/u", '$1'.$this->chr['doublePrime'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(\b\d+)'(?=\W|\Z)/u", '$1'.$this->chr['singlePrime'], $textnode->nodeValue);		
 		
 		// backticks
-		$parsedHTMLtoken->nodeValue =  str_replace("``", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace("`", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace("''", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
+		$textnode->nodeValue = str_replace("``", $this->chr['doubleQuoteOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace("`", $this->chr['singleQuoteOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace("''", $this->chr['doubleQuoteClose'], $textnode->nodeValue);		
 		
 		// comma quotes
-		$parsedHTMLtoken->nodeValue =  str_replace(",,", $this->chr['doubleLow9Quote'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A),(?=\S)/", $this->chr['singleLow9Quote'], $parsedHTMLtoken->nodeValue); //like _,¿hola?'_		
+		$textnode->nodeValue = str_replace(",,", $this->chr['doubleLow9Quote'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\s|\A),(?=\S)/", $this->chr['singleLow9Quote'], $textnode->nodeValue); //like _,¿hola?'_		
 		
 		// apostrophes
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['apostrophe'], $parsedHTMLtoken->nodeValue);		
-		$parsedHTMLtoken->nodeValue = preg_replace("/'(\d\d\b)/", $this->chr['apostrophe'].'$1', $parsedHTMLtoken->nodeValue); // decades: '98
+		$textnode->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['apostrophe'], $textnode->nodeValue);		
+		$textnode->nodeValue = preg_replace("/'(\d\d\b)/", $this->chr['apostrophe'].'$1', $textnode->nodeValue); // decades: '98
 		$exceptions = array("'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
 		$replacements = array($this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin');
-		$parsedHTMLtoken->nodeValue =  str_replace($exceptions, $replacements, $parsedHTMLtoken->nodeValue);		
+		$textnode->nodeValue = str_replace($exceptions, $replacements, $textnode->nodeValue);		
 		
 		//quotes
 		$quoteRules = array("['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"");
 		$quoteRulesReplace = array("[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose']);
-		$parsedHTMLtoken->nodeValue = str_replace($quoteRules, $quoteRulesReplace, $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'/u", $this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A)'(?=\S)/", $this->chr['singleQuoteOpen'], $parsedHTMLtoken->nodeValue); //like _'¿hola?'_
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\S)'(?=\s|\Z)/", $this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/\"(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])\"/u", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\s|\A)\"(?=\S)/", $this->chr['doubleQuoteOpen'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(?<=\S)\"(?=\s|\Z)/", $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
+		$textnode->nodeValue = str_replace($quoteRules, $quoteRulesReplace, $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/'(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['singleQuoteOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])'/u", $this->chr['singleQuoteClose'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\s|\A)'(?=\S)/", $this->chr['singleQuoteOpen'], $textnode->nodeValue); //like _'¿hola?'_
+		$textnode->nodeValue = preg_replace("/(?<=\S)'(?=\s|\Z)/", $this->chr['singleQuoteClose'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/\"(?=[\w|$nonEnglishWordCharacters])/u", $this->chr['doubleQuoteOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=[\w|$nonEnglishWordCharacters])\"/u", $this->chr['doubleQuoteClose'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\s|\A)\"(?=\S)/", $this->chr['doubleQuoteOpen'], $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(?<=\S)\"(?=\s|\Z)/", $this->chr['doubleQuoteClose'], $textnode->nodeValue);		
 		
 		//quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
-		$parsedHTMLtoken->nodeValue =  str_replace("'", $this->chr['singleQuoteClose'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace('"', $this->chr['doubleQuoteClose'], $parsedHTMLtoken->nodeValue);		
+		$textnode->nodeValue = str_replace("'", $this->chr['singleQuoteClose'], $textnode->nodeValue);
+		$textnode->nodeValue = str_replace('"', $this->chr['doubleQuoteClose'], $textnode->nodeValue);		
 
 		//if we have adjacent characters remove them from the text
-		$e = self::detect_encoding($parsedHTMLtoken->nodeValue);
+		$encoding = self::detect_encoding( $textnode->nodeValue );
 		
-		if ($prevChr != '') {
-			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 1, mb_strlen($parsedHTMLtoken->nodeValue, $e), $e);
+		if ( '' != $prevChr ) {
+			$textnode->nodeValue = mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
 		}
-		if ($nextChr != '') {
-			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 0, mb_strlen($parsedHTMLtoken->nodeValue, $e)-1, $e);
+		if ( '' != $nextChr ) {
+			$textnode->nodeValue = mb_substr( $textnode->nodeValue, 0, mb_strlen( $textnode->nodeValue, $encoding ) - 1, $encoding );
 		}
 	}
 
-	//expecting parsedHTML token of type text
-	function smart_dashes($parsedHTMLtoken)
-	{
-		if ( empty($this->settings['smartDashes']) ) return;
+	/**
+	 * Apply smart dashes (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function smart_dashes( DOMText $textnode ) {
+		if ( empty( $this->settings['smartDashes'] ) ) {
+			return;
+		}
 
 		$nonEnglishWordCharacters = "
 					[0-9A-Za-z]|\x{00c0}|\x{00c1}|\x{00c2}|\x{00c3}|\x{00c4}|\x{00c5}|\x{00c6}|\x{00c7}|\x{00c8}|\x{00c9}|
@@ -1534,16 +1585,16 @@ class phpTypography {
 					\x{017c}|\x{017d}|\x{017e}|\x{017f}
 					";
 
-		$parsedHTMLtoken->nodeValue =  str_replace('---', $this->chr['emDash'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace(' -- ', ' '.$this->chr['emDash'].' ', $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace('--', $this->chr['enDash'], $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue =  str_replace(' - ', ' '.$this->chr['emDash'].' ', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue =  str_replace('---', $this->chr['emDash'], $textnode->nodeValue);
+		$textnode->nodeValue =  str_replace(' -- ', ' '.$this->chr['emDash'].' ', $textnode->nodeValue);
+		$textnode->nodeValue =  str_replace('--', $this->chr['enDash'], $textnode->nodeValue);
+		$textnode->nodeValue =  str_replace(' - ', ' '.$this->chr['emDash'].' ', $textnode->nodeValue);
 
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\A|\s)\-([\w|$nonEnglishWordCharacters])/u", '$1'.$this->chr['enDash'].'$2', $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/([\w|$nonEnglishWordCharacters])\-(\Z|\s)/u", '$1'.$this->chr['enDash'].'$2', $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d+)\-(\d+\b)/", '$1'.$this->chr['enDash'].'$2', $parsedHTMLtoken->nodeValue);
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/", '$1'.$this->chr['noBreakHyphen'].'$2', $parsedHTMLtoken->nodeValue); // phone numbers
-		$parsedHTMLtoken->nodeValue =  str_replace('xn'.$this->chr['enDash'], 'xn--', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace("/(\A|\s)\-([\w|$nonEnglishWordCharacters])/u", '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/([\w|$nonEnglishWordCharacters])\-(\Z|\s)/u", '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(\b\d+)\-(\d+\b)/", '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue);
+		$textnode->nodeValue = preg_replace("/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/", '$1'.$this->chr['noBreakHyphen'].'$2', $textnode->nodeValue); // phone numbers
+		$textnode->nodeValue =  str_replace('xn'.$this->chr['enDash'], 'xn--', $textnode->nodeValue);
 
 
 		// revert dates back to original formats
@@ -1564,7 +1615,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, "$1-$2-$3", $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, "$1-$2-$3", $textnode->nodeValue);
 		
 		// MM-DD-YYYY or DD-MM-YYYY
 		$pattern = "/
@@ -1597,7 +1648,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, "$1$3-$2$4-$5", $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, "$1$3-$2$4-$5", $textnode->nodeValue);
 		
 		// YYYY-MM or YYYY-DDDD next
 		$pattern = "/
@@ -1615,27 +1666,38 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, "$1-$2", $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, "$1-$2", $textnode->nodeValue);
 	}
 
-	//expecting parsedHTML token of type text
-	function smart_ellipses($parsedHTMLtoken)
-	{
-		if ( empty($this->settings['smartEllipses']) ) return;
-		
-		$parsedHTMLtoken->nodeValue = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $parsedHTMLtoken->nodeValue );
-		$parsedHTMLtoken->nodeValue = str_replace( array( '...', '. . .' ),    $this->chr['ellipses'],	     $parsedHTMLtoken->nodeValue );
-	}
-
-	//expecting parsedHTML token of type text
-	function smart_diacritics($parsedHTMLtoken)	{		
-		if ( empty($this->settings['smartDiacritics']) ) return;
-		
-		if (! empty($this->settings['diacriticCustomReplacements']) ) {
- 			$parsedHTMLtoken->nodeValue = $this->translate_words($parsedHTMLtoken->nodeValue, $this->settings['diacriticCustomReplacements']);
+	/**
+	 * Apply smart ellipses (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	 function smart_ellipses( DOMText $textnode ) {
+		if ( empty( $this->settings['smartEllipses'] ) ) {
+			return;
 		}
-		if (! empty($this->settings['diacriticWords']) ) {
- 			$parsedHTMLtoken->nodeValue = $this->translate_words($parsedHTMLtoken->nodeValue, $this->settings['diacriticWords']);
+		
+		$textnode->nodeValue = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '...', '. . .' ), $this->chr['ellipses'], $textnode->nodeValue );
+	}
+
+	/**
+	 * Apply smart ellipses (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function smart_diacritics( DOMText $textnode )	{		
+		if ( empty( $this->settings['smartDiacritics'] ) ) {
+			return;
+		}
+		
+		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
+ 			$textnode->nodeValue = $this->translate_words( $textnode->nodeValue, $this->settings['diacriticCustomReplacements'] );
+		}
+		if ( ! empty( $this->settings['diacriticWords'] ) ) {
+ 			$textnode->nodeValue = $this->translate_words( $textnode->nodeValue, $this->settings['diacriticWords'] );
 		}
 	}
 	
@@ -1649,32 +1711,40 @@ class phpTypography {
 	 */
 	function translate_words(&$source, array &$words){	
 		return (preg_replace_callback("/\b(\w+)\b/u", function($match) use ($words) {			
-				if ( isset( $words[$match[0]] ) ) {
-					return ( $words[$match[0]] );
-				} else {
-					return ( $match[0] );
-				}
-			}, 
-			$source ) );
+					if ( isset( $words[$match[0]] ) ) {
+						return ( $words[$match[0]] );
+					} else {
+						return ( $match[0] );
+					}
+				}, $source ) );
 	}
 	
+	/**
+	 * Apply smart marks (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function smart_marks( DOMText $textnode ) {
+		if ( empty( $this->settings['smartMarks'] ) ) {
+			return;
+		}
 		
-	// expecting parsedHTML token of type text
-	function smart_marks( $parsedHTMLtoken ) {
-		if ( empty( $this->settings['smartMarks'] ) ) return;
-		
-		$parsedHTMLtoken->nodeValue = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $parsedHTMLtoken->nodeValue );
-		$parsedHTMLtoken->nodeValue = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $parsedHTMLtoken->nodeValue );
-		$parsedHTMLtoken->nodeValue = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $parsedHTMLtoken->nodeValue );
-		$parsedHTMLtoken->nodeValue = str_replace( array( '(sm)', '(SM)' ),	$this->chr['serviceMark'],    $parsedHTMLtoken->nodeValue );
-		$parsedHTMLtoken->nodeValue = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $parsedHTMLtoken->nodeValue );
+		$textnode->nodeValue = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '(sm)', '(SM)' ), $this->chr['serviceMark'],    $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $textnode->nodeValue );
 	}
 
 	/**
-	 * Expecting a DOM TextNode
+	 * Apply smart math (if enabled).
+	 *
+	 * @param DOMText $textnode
 	 */
-	function smart_math($parsedHTMLtoken) {		
-		if ( empty($this->settings['smartMath']) ) return;
+	function smart_math( DOMText $textnode ) {		
+		if ( empty( $this->settings['smartMath'] ) ) {
+			return;
+		}
 		
 		//first, let's find math equations
 		$pattern = "/
@@ -1696,10 +1766,9 @@ class phpTypography {
 																# allowed trailing punctuation
 				(?=\Z|\s)										# lookahead assertion: followed by end of string or space
 			/ux";
-		$parsedHTMLtoken->nodeValue = preg_replace_callback( $pattern,
-															 array($this, '_smart_math_callback'),
-															 $parsedHTMLtoken->nodeValue
-														   );
+		$textnode->nodeValue = preg_replace_callback( $pattern,
+													  array($this, '_smart_math_callback'),
+													  $textnode->nodeValue );
 				
 		// revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50)
 		$pattern = "/
@@ -1713,8 +1782,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, "$1-$2", $parsedHTMLtoken->nodeValue);
-
+		$textnode->nodeValue = preg_replace($pattern, "$1-$2", $textnode->nodeValue);
 
 		//revert fractions to basic slash
 		// we'll leave styling fractions to smart_fractions
@@ -1730,8 +1798,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, "$1/$2", $parsedHTMLtoken->nodeValue);
-
+		$textnode->nodeValue = preg_replace($pattern, "$1/$2", $textnode->nodeValue);
 		
 		// revert date back to original formats
 		
@@ -1751,7 +1818,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, '$1-$2-$3', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, '$1-$2-$3', $textnode->nodeValue);
 		
 		// MM-DD-YYYY or DD-MM-YYYY
 		$pattern = "/
@@ -1784,7 +1851,7 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, '$1$3-$2$4-$5', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, '$1$3-$2$4-$5', $textnode->nodeValue);
 		
 		// YYYY-MM or YYYY-DDD next
 		$pattern = "/
@@ -1834,11 +1901,15 @@ class phpTypography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pattern, '$1$3/$2$4/$5', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace($pattern, '$1$3/$2$4/$5', $textnode->nodeValue);
 	}
 	
-	function _smart_math_callback($matches)
-	{
+	/**
+	 * Callback function for smart math.
+	 * 
+	 * @param array $matches
+	 */
+	function _smart_math_callback( $matches ) {
 		$matches[0] = str_replace('-', $this->chr['minus'], $matches[0]);
 		$matches[0] = str_replace('/', $this->chr['division'], $matches[0]);
 		$matches[0] = str_replace('x', $this->chr['multiplication'], $matches[0]);
@@ -1846,10 +1917,16 @@ class phpTypography {
 		return $matches[0];
 	}
 
-	//expecting parsedHTML token of type text
-	// purposefully seperatred from smart_math because of HTML code injection
-	function smart_exponents($parsedHTMLtoken) {
-		if ( empty($this->settings['smartExponents']) ) return;
+	/**
+	 * Apply smart exponents (if enabled). 
+	 * Purposefully seperated from smart_math because of HTML code injection.
+	 *
+	 * @param DOMText $textnode
+	 */
+	function smart_exponents( DOMText $textnode ) {
+		if ( empty( $this->settings['smartExponents'] ) ) {
+			return;
+		}
 		
 		//handle exponents (ie. 4^2)
 		$pat = "/
@@ -1859,13 +1936,16 @@ class phpTypography {
 			(\w+)
 			\b
 		/xu";
-		$parsedHTMLtoken->nodeValue = preg_replace($pat, '$1<sup>$2</sup>', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace( $pat, '$1<sup>$2</sup>', $textnode->nodeValue );
 	}
 
 	// expecting parsedHTML token of type text
 	// call before sytle_numbers
 	// call after smart_ordinal_suffix
 	// purposefully seperatred from smart_math because of HTML code injection
+	
+	
+	
 	function smart_fractions($parsedHTMLtoken) {
 		if ( empty($this->settings['smartFractions']) &&  empty($this->settings['fractionSpacing']) ) return;
 		
@@ -2184,7 +2264,13 @@ class phpTypography {
 	}
 	
 
-	function _dewidow_callback($widow) {
+	/**
+	 * Callback function for de-widowing.
+	 * 
+	 * @param array $widow Regex matching array.
+	 * @return string
+	 */
+	function _dewidow_callback( $widow ) {
 		if ( empty($this->settings['dewidowMaxPull']) || empty($this->settings['dewidowMaxLength']) ) return $widow[0];
 		
 		$multibyte = false;
@@ -2676,16 +2762,18 @@ class phpTypography {
 		return $parsedTextTokens;
 	}
 
-	########################################################################
-	#   params:		$codes = decimal value cooresponding to unicode character
-	#   Returns:	unicode character
-	function uchr( $codes )
-	{
+	/**
+	 * Convert decimal value to unicode character.
+	 * 
+	 * @param string|array $codes Decimal value(s) coresponding to unicode character(s).
+	 * @return string Unicode character(s).
+	 */
+	function uchr( $codes ) {
 		if ( is_scalar( $codes ) ) { 
 			$codes = func_get_args();
 		}
-		$str= '';
 		
+		$str= '';
 		foreach ( $codes as $code ) {
 			$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
 		}
@@ -2693,16 +2781,31 @@ class phpTypography {
 		return $str;
 	}
 
-	//is a number odd? returns 0 if even and 1 if odd
-	function is_odd( $number )
-	{
+	/**
+	 * Is a number odd?
+	 * 
+	 * @param number $number
+	 * @return number 0 if even and 1 if odd 
+	 */
+	function is_odd( $number ) {
 		return $number % 2;
 	}
 
-	//multibyte character support is built in to accomodate language support of multibyte alphabets
+	/**
+	 * Multibyte-safe str_split function.
+	 * 
+	 * @param string $str
+	 * @param number $length Defaults to 1.
+	 * @param string $encoding Defaults to 'UTF-8'.
+	 */
 	function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
-		if ( ! function_exists( 'mb_strlen' ) ) return false;
-		if ( $length < 1 ) return false;
+		if ( ! function_exists( 'mb_strlen' ) ) {
+			return false;
+		}
+		
+		if ( $length < 1 ) {
+			return false;
+		}
 		
 		$result = array();
 		for ( $i = 0; $i < mb_strlen( $str, $encoding ); $i += $length ) {
