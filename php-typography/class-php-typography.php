@@ -45,7 +45,7 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-require_once('php-parser/parseText.php');
+require_once('php-parser/class-parse-text.php');
 require_once('../vendor/HTML5.php');
 
 use Masterminds\HTML5;
@@ -54,14 +54,14 @@ use Masterminds\HTML5;
 /**
  * If used with multibyte language, UTF-8 encoding is required!
  */
-class phpTypography {
+class PHP_Typography {
 
 	var $mb = false;         //cannot be changed after load
 	var $chr = array();      // hashmap for various special characters
 	var $settings = array(); // operational attributes
 
-	var $textparser;  // custom parser for DOMText (php-parser/parseText.php)
-	var $html5parser; // HTML5-PHP parser
+	var $text_parser;  // custom parser for DOMText (php-parser/class-parse-text.php)
+	var $html5_parser; // HTML5-PHP parser
 
 	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' ); // allowed encodings
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
@@ -1031,15 +1031,15 @@ class phpTypography {
 		}
 		
 		// Lazy-load our parsers
-		if ( ! isset( $this->html5parser ) ) {
-			$this->html5parser = new HTML5( array('disable_html_ns' => true) );
+		if ( ! isset( $this->html5_parser ) ) {
+			$this->html5_parser = new HTML5( array('disable_html_ns' => true) );
 		}
-		if ( ! isset( $this->textparser ) ) {
-			$this->textparser = new parseText();
+		if ( ! isset( $this->text_parser ) ) {
+			$this->text_parser = new Parse_Text();
 		}
 		
 		// parse the html
-		$dom = $this->html5parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom = $this->html5_parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
 		$xpath = new DOMXPath( $dom );
 		
@@ -1090,11 +1090,11 @@ class phpTypography {
 			$this->unit_spacing( $textnode );
 
 			//break it down for a bit more granularity
-			$this->textparser->load( $textnode->nodeValue );
-			$parsedMixedWords = $this->textparser->get_words( -1, 0 ); // prohibit letter only words, allow caps
+			$this->text_parser->load( $textnode->nodeValue );
+			$parsedMixedWords = $this->text_parser->get_words( -1, 0 ); // prohibit letter only words, allow caps
 			$caps = ( ! empty ( $this->settings['hyphenateAllCaps'] ) ? 0 : -1 );
-			$parsedWords = $this->textparser->get_words( 1, $caps );  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
-			$parsedOther = $this->textparser->get_other();
+			$parsedWords = $this->text_parser->get_words( 1, $caps );  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
+			$parsedOther = $this->text_parser->get_other();
 			
 			// process individual text parts here
 			$parsedMixedWords = $this->wrap_hard_hyphens( $parsedMixedWords );
@@ -1103,8 +1103,8 @@ class phpTypography {
 			$parsedOther = $this->wrap_emails( $parsedOther );
 			
 			//apply updates to unlockedText
-			$this->textparser->update( $parsedMixedWords + $parsedWords + $parsedOther );
-			$textnode->nodeValue = $this->textparser->unload();
+			$this->text_parser->update( $parsedMixedWords + $parsedWords + $parsedOther );
+			$textnode->nodeValue = $this->text_parser->unload();
 			
 			//some final space manipulation
 			$this->dewidow( $textnode );
@@ -1129,7 +1129,7 @@ class phpTypography {
 			$this->set_inner_html( $textnode, $textnode->nodeValue );
 		}
 				
-		return $this->html5parser->saveHTML( $bodyNode->childNodes );;
+		return $this->html5_parser->saveHTML( $bodyNode->childNodes );;
 	}
 	
 	/**
@@ -1232,12 +1232,12 @@ class phpTypography {
 		}
 		
 		// Lazy-load our parser (the text parser is not needed for feeds)
-		if ( ! isset( $this->html5parser ) ) {
-			$this->html5parser = new HTML5( array( 'disable_html_ns' => true ) );
+		if ( ! isset( $this->html5_parser ) ) {
+			$this->html5_parser = new HTML5( array( 'disable_html_ns' => true ) );
 		}
 	
 		// parse the html
-		$dom = $this->html5parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom = $this->html5_parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
 		$xpath = new DOMXPath( $dom );
 
@@ -1284,7 +1284,7 @@ class phpTypography {
 			$this->set_inner_html( $textnode, $textnode->nodeValue );
 		}
 		
-		return $this->html5parser->saveHTML( $bodyNode->childNodes );;
+		return $this->html5_parser->saveHTML( $bodyNode->childNodes );;
 	}
 
 	
@@ -2548,7 +2548,7 @@ class phpTypography {
 		$parent = $domtext->parentNode;
 		if (!$parent) return $domtext;
 		
-		$innerHTML = $this->html5parser->loadHTMLFragment($content);
+		$innerHTML = $this->html5_parser->loadHTMLFragment($content);
 		if (!$innerHTML) return $domtext;
 				
 		$importedNode = $domtext->ownerDocument->importNode($innerHTML, true);
@@ -2634,7 +2634,7 @@ class phpTypography {
 		return $wordPattern;
 	}
 	
-	// expecting parseText tokens filtered to words
+	// expecting Parse_Text tokens filtered to words
 	function hyphenate( $parsedTextTokens, $isTitle = false, DOMText $textnode = null ) {
 		if ( empty( $this->settings['hyphenation'] ) ) return $parsedTextTokens;
 
