@@ -1,6 +1,7 @@
 2.1 - October 24, 2015
 
 Removed obsolete HTML parsing cases (use DOMText->nodeValue as input)
+All further changes will be tracked only on Github and in the wp-Typography changelog.
 
 2.0 – July 7, 2010
 

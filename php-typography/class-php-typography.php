@@ -45,7 +45,7 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-require_once('php-parser/class-parse-text.php');
+require_once('class-parse-text.php');
 require_once('../vendor/HTML5.php');
 
 use Masterminds\HTML5;

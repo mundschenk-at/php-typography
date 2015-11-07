@@ -1,3 +1,6 @@
+2.1 - November 7., 2015
+All further changes will be tracked on Github and in the wp-Typography changelog.
+
 2.0 - July 7, 2010
 
 Simplified acronym identification to not include some obscure uppercase characters. This will reduce support for some non-English languages, but it resolves an issue of catastrophic failure with certain server configurations.
