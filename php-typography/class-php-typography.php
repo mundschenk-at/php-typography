@@ -1962,76 +1962,92 @@ class PHP_Typography {
 		}
 		
 		//handle exponents (ie. 4^2)
-		$pat = "/
+		$pattern = "/
 			\b
 			(\d+)
 			\^
 			(\w+)
 			\b
 		/xu";
-		$textnode->nodeValue = preg_replace( $pat, '$1<sup>$2</sup>', $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $pattern, '$1<sup>$2</sup>', $textnode->nodeValue );
 	}
 
-	// expecting parsedHTML token of type text
-	// call before sytle_numbers
-	// call after smart_ordinal_suffix
-	// purposefully seperatred from smart_math because of HTML code injection
-	
-	
-	
-	function smart_fractions($parsedHTMLtoken) {
-		if ( empty($this->settings['smartFractions']) &&  empty($this->settings['fractionSpacing']) ) return;
+	/**
+	 * Apply smart fractions (if enabled).
+	 * 
+	 * Call before style_numbers, but after smart_ordinal_suffix. 
+	 * Purposefully seperated from smart_math because of HTML code injection.
+	 *
+	 * @param DOMText $textnode
+	 */
+	function smart_fractions( DOMText $textnode ) {
+		if ( empty( $this->settings['smartFractions'] ) && empty( $this->settings['fractionSpacing'] ) ) {
+			return;
+		}
 		
-		$pat = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
-		if ( !empty($this->settings['fractionSpacing']) && !empty($this->settings['smartFractions']) ) {
-			$parsedHTMLtoken->nodeValue = preg_replace($pat, '$1'.$this->chr['noBreakNarrowSpace'].'$2', $parsedHTMLtoken->nodeValue);
-		} elseif ( !empty($this->settings['fractionSpacing']) && empty($this->settings['fractionSpacing']) ) {
-			$parsedHTMLtoken->nodeValue = preg_replace($pat, '$1'.$this->chr['noBreakSpace'].'$2', $parsedHTMLtoken->nodeValue);
+		$pattern = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
+		if ( ! empty( $this->settings['fractionSpacing'] ) && !empty( $this->settings['smartFractions'] ) ) {
+			$textnode->nodeValue = preg_replace( $pattern, '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
+		} elseif ( ! empty($this->settings['fractionSpacing'] ) && empty( $this->settings['fractionSpacing'] ) ) {
+			$textnode->nodeValue = preg_replace( $pattern, '$1'.$this->chr['noBreakSpace'].'$2', $textnode->nodeValue );
 		}
 		
 		if ( !empty($this->settings['smartFractions']) ) {
 			// because without simple variables, the pattern fails...
 			$nbsp = $this->chr['noBreakSpace'];
 			$nbnsp = $this->chr['noBreakNarrowSpace'];
-			$pat = "/
-				(?<=\A|\s|$nbsp|$nbnsp)																# lookbehind assertion: makes sure we are not messing up a url
+			$pattern = "/
+				(?<=\A|\s|$nbsp|$nbnsp)							# lookbehind assertion: makes sure we are not messing up a url
 				(\d+)
-				(?:\s?\/\s?".$this->chr['zeroWidthSpace'].")										# strip out any zero-width spaces inserted by wrap_hard_hyphens
+				(?:\s?\/\s?".$this->chr['zeroWidthSpace'].")	# strip out any zero-width spaces inserted by wrap_hard_hyphens
 				(\d+)
 				(
-					(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?												# handle ordinals after fractions
-					(?:\Z|\s|".$this->chr['noBreakSpace']."|".$this->chr['noBreakNarrowSpace']."|\.|\!|\?|\)|\;|\:|\'|\")			# makes sure we are not messing up a url
+					(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?			# handle ordinals after fractions
+					(?:\Z|\s|".$this->chr['noBreakSpace']."|".$this->chr['noBreakNarrowSpace']."|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 				)
 			/xu";
 			
- 			$parsedHTMLtoken->nodeValue = preg_replace($pat, '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $parsedHTMLtoken->nodeValue);
+ 			$textnode->nodeValue = preg_replace( $pattern, '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->nodeValue );
 		}
 	}
 
-	// expecting parsedHTML token of type text
-	// call before sytle_numbers
-	function smart_ordinal_suffix($parsedHTMLtoken) {
-		if ( empty($this->settings['smartOrdinalSuffix']) ) return;
+	/**
+	 * Apply smart ordinal suffix (if enabled).
+	 * 
+	 * Call before style_numbers.
+	 * 
+	 * @param DOMText $textnode
+	 */
+	function smart_ordinal_suffix($domtext) {
+		if ( empty( $this->settings['smartOrdinalSuffix'] ) ) {
+			return;
+		}
 
-		$parsedHTMLtoken->nodeValue = preg_replace("/\b(\d+)(st|nd|rd|th)\b/", '$1'.'<sup>$2</sup>', $parsedHTMLtoken->nodeValue);
+		$domtext->nodeValue = preg_replace( "/\b(\d+)(st|nd|rd|th)\b/", '$1'.'<sup>$2</sup>', $domtext->nodeValue );
 	}
 
-
-
-	//expecting parsedHTML token of type text
-	function single_character_word_spacing($parsedHTMLtoken) {
-		if ( empty($this->settings['singleCharacterWordSpacing']) ) return;
+	/**
+	 * Prevent single character words from being alone (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function single_character_word_spacing( DOMText $textnode ) {
+		if ( empty( $this->settings['singleCharacterWordSpacing'] ) ) {
+			return;
+		}
 
 		// add $nextChr and $prevChr for context
-		$prevChr = $this->get_prev_chr($parsedHTMLtoken);
-		if ($prevChr != '')
-			$parsedHTMLtoken->nodeValue =  $prevChr.$parsedHTMLtoken->nodeValue;
+		$prevChr = $this->get_prev_chr( $textnode );
+		if ( '' !== $prevChr) {
+			$textnode->nodeValue =  $prevChr.$textnode->nodeValue;
+		}
 		
-		$nextChr = $this->get_next_chr($parsedHTMLtoken);
-		if ($nextChr != '')
-			$parsedHTMLtoken->nodeValue =  $parsedHTMLtoken->nodeValue.$nextChr;
+		$nextChr = $this->get_next_chr( $textnode );
+		if ( '' !== $nextChr ) {
+			$textnode->nodeValue =  $textnode->nodeValue.$nextChr;
+		}
 		
-		$parsedHTMLtoken->nodeValue = preg_replace(
+		$textnode->nodeValue = preg_replace(
 			"/
 				(?:
 					(\s)
@@ -2041,27 +2057,31 @@ class PHP_Typography {
 				)
 			/xu", 
 			'$1$2'.$this->chr['noBreakSpace'], 
-			$parsedHTMLtoken->nodeValue
+			$textnode->nodeValue
 		);
 			
 		//if we have adjacent characters remove them from the text
-		$e = self::detect_encoding($parsedHTMLtoken->nodeValue);
+		$encoding = self::detect_encoding( $textnode->nodeValue );
 		
-		if ($prevChr != '') {
-			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 1, mb_strlen($parsedHTMLtoken->nodeValue, $e), $e);
+		if ( '' !== $prevChr ) {
+			$textnode->nodeValue =  mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
 		}
-		if ($nextChr != '') {
-			$parsedHTMLtoken->nodeValue =  mb_substr($parsedHTMLtoken->nodeValue, 0, mb_strlen($parsedHTMLtoken->nodeValue, $e)-1, $e);
+		if ( '' !== $nextChr ) {
+			$textnode->nodeValue =  mb_substr( $textnode->nodeValue, 0, mb_strlen( $textnode->nodeValue, $encoding )-1, $encoding );
 		}
 	}
 
-	
-	
-	//expecting parsedHTML token of type text
-	function dash_spacing($parsedHTMLtoken)	{
-		if ( empty($this->settings['dashSpacing']) ) return;
+	/**
+	 * Apply spacing around dashes (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function dash_spacing( DOMText $textnode )	{
+		if ( empty( $this->settings['dashSpacing'] ) ) {
+			return;
+		}
 		
-		$parsedHTMLtoken->nodeValue = preg_replace(
+		$textnode->nodeValue = preg_replace(
 			"/
 				(?:
 					\s
@@ -2076,10 +2096,10 @@ class PHP_Typography {
 				)
 			/xu", 
 			$this->chr['thinSpace'].'$1$2'.$this->chr['thinSpace'], 
-			$parsedHTMLtoken->nodeValue
+			$textnode->nodeValue
 		);
 
-		$parsedHTMLtoken->nodeValue = preg_replace(
+		$textnode->nodeValue = preg_replace(
 			"/
 				(?:
 					\s
@@ -2094,16 +2114,19 @@ class PHP_Typography {
 				)
 			/xu", 
 			$this->chr['thinSpace'].'$1$2'.$this->chr['thinSpace'], 
-			$parsedHTMLtoken->nodeValue
+			$textnode->nodeValue
 		);
 	}
 
-
-
-	//expecting parsedHTML token of type text
-	function space_collapse($parsedHTMLtoken) {
-		if ( empty($this->settings['spaceCollapse']) ) return;
-
+	/**
+	 * Collapse spaces (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function space_collapse( DOMText $textnode ) {
+		if ( empty( $this->settings['spaceCollapse'] ) ) { 
+			return;
+		}
 
 		# find the HTML character representation for the following characters:
 		#		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
@@ -2116,7 +2139,6 @@ class PHP_Typography {
 		#		zero-width-space ("&#8203;", "&#x200b;")
 		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-
 		$htmlSpaces = '
 			\x{00a0}		# no-break space
 			|
@@ -2158,48 +2180,41 @@ class PHP_Typography {
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
 		// normal spacing
-		$parsedHTMLtoken->nodeValue = preg_replace(	'/\s+/xu', 
-			                                        ' ', 
-			                                        $parsedHTMLtoken->nodeValue
-		                                          );
+		$textnode->nodeValue = preg_replace( '/\s+/xu', ' ', $textnode->nodeValue );
 		
 		// nbsp get's priority.  if nbsp exists in a string of spaces, it collapses to nbsp
-		$parsedHTMLtoken->nodeValue = preg_replace(	"/(?:\s|$htmlSpaces)*".$this->chr['noBreakSpace']."(?:\s|$htmlSpaces)*/xu", 
-					                                $this->chr['noBreakSpace'], 
-			                                        $parsedHTMLtoken->nodeValue
-		                                          );
+		$textnode->nodeValue = preg_replace( "/(?:\s|$htmlSpaces)*".$this->chr['noBreakSpace']."(?:\s|$htmlSpaces)*/xu", 
+					                         $this->chr['noBreakSpace'], 
+			                                 $textnode->nodeValue );
 		
 		// for any other spaceing, replace with the first occurance of an unusual space character
-		$parsedHTMLtoken->nodeValue = preg_replace(	"/(?:\s)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", 
-			                                        '$1', 
-			                                        $parsedHTMLtoken->nodeValue
-		                                          );
+		$textnode->nodeValue = preg_replace( "/(?:\s)*($htmlSpaces)(?:\s|$htmlSpaces)*/xu", '$1', $textnode->nodeValue );
 
 		// remove all spacing at beginning of block level elements
-		if( $this->get_prev_chr($parsedHTMLtoken) == '' ) { // we have the first text in a block level element
-			$parsedHTMLtoken->nodeValue = preg_replace(	"/\A(?:\s|$htmlSpaces)+/xu", 
-				                                        '', 
-				                                        $parsedHTMLtoken->nodeValue
-			                                          );
+		if( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element
+			$textnode->nodeValue = preg_replace( "/\A(?:\s|$htmlSpaces)+/xu", '', $textnode->nodeValue );
 		}
 	}
 
-
-
-
-	//expecting parsedHTML token of type text
-	function unit_spacing($parsedHTMLtoken) {
-		if ( empty($this->settings['unitSpacing']) ) return;
+	/**
+	 * Prevent values being split from their units (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function unit_spacing( DOMText $textnode ) {
+		if ( empty( $this->settings['unitSpacing'] ) ) {
+			return;
+		}
 		
 		$units = array();
 		if (isset($this->settings['units'])) {
-			foreach ($this->settings['units'] as $unit) {
-				$units[] = preg_replace("#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#", "\\\\$1", $unit ); // escape special chrs
+			foreach ( $this->settings['units'] as $unit ) {
+				$units[] = preg_replace( "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#", "\\\\$1", $unit ); // escape special chrs
 			}
 		}
 		
-		$customUnits = implode('|', $units);
-		$customUnits .= ($customUnits) ? '|' : '' ;
+		$customUnits = implode( '|', $units );
+		$customUnits .= ( $customUnits ) ? '|' : '' ;
 		$unitPattern = $customUnits.'
 
 			### Temporal units
@@ -2230,41 +2245,61 @@ class PHP_Typography {
 
 		'; // required modifiers: x (multiline pattern)
 
-		$parsedHTMLtoken->nodeValue = preg_replace("/(\d\.?)\s($unitPattern)\b/x", '$1'.$this->chr['noBreakNarrowSpace'].'$2', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace( "/(\d\.?)\s($unitPattern)\b/x", '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
 	}
 
-	//expecting parsedHTML token of type text
-	function wrap_hard_hyphens($parsedTextTokens) {
-		if ((isset($this->settings['hyphenHardWrap']) && $this->settings['hyphenHardWrap']) || (isset($this->settings['smartDashes']) && $this->settings['smartDashes'])) {
-			foreach ($parsedTextTokens as &$parsedTextToken) {
-				if(isset($this->settings['hyphenHardWrap']) && $this->settings['hyphenHardWrap']) {
-					$hyphens = array('-',$this->chr['hyphen']);
-					$parsedTextToken['value'] = str_replace($hyphens, '-'.$this->chr['zeroWidthSpace'], $parsedTextToken['value']);
-					$parsedTextToken['value'] = str_replace('_', '_'.$this->chr['zeroWidthSpace'], $parsedTextToken['value']);
-					$parsedTextToken['value'] = str_replace('/', '/'.$this->chr['zeroWidthSpace'], $parsedTextToken['value']);
+	/**
+	 * Wrap hard hypens with zero-width spaces (if enabled).
+	 *
+	 * @param array $parsed_text_tokens
+	 */
+	function wrap_hard_hyphens( $parsed_text_tokens ) {
+		if ( ! empty( $this->settings['hyphenHardWrap'] ) || ! empty( $this->settings['smartDashes'] ) ) {
+			 	
+			foreach ( $parsed_text_tokens as &$text_token ) {
+				
+				if ( isset( $this->settings['hyphenHardWrap'] ) && $this->settings['hyphenHardWrap'] ) {
+					$hyphens = array( '-', $this->chr['hyphen'] );
+					$text_token['value'] = str_replace( $hyphens, '-' . $this->chr['zeroWidthSpace'], $text_token['value'] );
+					$text_token['value'] = str_replace( '_', '_' . $this->chr['zeroWidthSpace'], $text_token['value'] );
+					$text_token['value'] = str_replace( '/', '/' . $this->chr['zeroWidthSpace'], $text_token['value'] );
 				}
-				if (isset($this->settings['smartDashes']) && $this->settings['smartDashes']) // handled here because we need to know we are inside a word and not a url
-					$parsedTextToken['value'] = str_replace('-', $this->chr['hyphen'], $parsedTextToken['value']);
+				
+				if ( ! empty( $this->settings['smartDashes'] ) ) {
+					// handled here because we need to know we are inside a word and not a url
+					$text_token['value'] = str_replace( '-', $this->chr['hyphen'], $text_token['value'] );
+				}
 			}
-		}		
-		return $parsedTextTokens;
+		}
+		
+		return $parsed_text_tokens;
 	}
 	
-	//expecting parsedHTML token of type text
-	function dewidow($parsedHTMLtoken) {
+	/**
+	 * Prevent widows (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 */
+	function dewidow( DOMText $textnode ) {
 		// intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser
 		// intervening tags will only interfere if they separate the widow from previous or preceding whitespace
-		if( empty($this->settings['dewidow']) ) return;
+		if ( empty( $this->settings['dewidow'] ) ) {
+			return;
+		}
 		
-		if($this->get_next_chr($parsedHTMLtoken) == '') { // we have the last type "text" child of a block level element
-			$encoding = self::detect_encoding($parsedHTMLtoken->nodeValue);
+		if ( '' === $this->get_next_chr($textnode) ) { 
+			// we have the last type "text" child of a block level element
+			
+			$encoding = self::detect_encoding($textnode->nodeValue);
 			$u = '';
 
 			if ('UTF-8' == $encoding) {
 				$u = 'u';
-				if(!function_exists('mb_strlen')) return $parsedHTMLtoken;
+				if( ! function_exists( 'mb_strlen' ) ) {
+					return $textnode; // abort
+				}
 			} elseif ('ASCII' != $encoding) {
-				return $parsedHTMLtoken;
+				return $textnode; // abort
 			}
 
 			$widowPattern = "/
@@ -2292,10 +2327,11 @@ class PHP_Typography {
 				\Z
 			/x$u";
 
-			$parsedHTMLtoken->nodeValue = preg_replace_callback( $widowPattern,	array($this, '_dewidow_callback'), $parsedHTMLtoken->nodeValue );
+			$textnode->nodeValue = preg_replace_callback( $widowPattern, 
+														  array($this, '_dewidow_callback'), 
+														  $textnode->nodeValue );
 		}
 	}
-	
 
 	/**
 	 * Callback function for de-widowing.
@@ -2304,7 +2340,9 @@ class PHP_Typography {
 	 * @return string
 	 */
 	function _dewidow_callback( $widow ) {
-		if ( empty($this->settings['dewidowMaxPull']) || empty($this->settings['dewidowMaxLength']) ) return $widow[0];
+		if ( empty($this->settings['dewidowMaxPull']) || empty($this->settings['dewidowMaxLength']) ) {
+			return $widow[0];
+		}
 		
 		$multibyte = false;
 		$encoding = self::detect_encoding($widow[0]); 
@@ -2347,12 +2385,15 @@ class PHP_Typography {
 		return $widow[1].$widow[2].$this->chr['noBreakSpace'].$widow[4].$widow[5];
 	}
 
-
-	// expecting parsedText tokens
-	function wrap_urls($parsedTextTokens)
-	{
-		if (!isset($this->settings['urlWrap']) || !$this->settings['urlWrap'] || !isset($this->settings['urlMinAfterWrap']) || !$this->settings['urlMinAfterWrap']) return $parsedTextTokens;
-
+	/**
+	 * Wrap URL parts zero-width spaces (if enabled).
+	 *
+	 * @param array $parsed_text_tokens
+	 */
+	function wrap_urls( $parsed_text_tokens ) {
+		if ( empty( $this->settings['urlWrap'] ) || empty( $this->settings['urlMinAfterWrap'] ) ) {
+			return $parsed_text_tokens;
+		}
 
 		// test for and parse urls 
 		$validTLD = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
@@ -2388,63 +2429,69 @@ class PHP_Typography {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 		
-		foreach ($parsedTextTokens as &$parsedTextToken) {
-			if (preg_match("`$urlPattern`xi", $parsedTextToken['value'], $urlMatch)) {
+		foreach ( $parsed_text_tokens as &$text_token ) {
+			if ( preg_match( "`$urlPattern`xi", $text_token['value'], $urlMatch ) ) {
 				// $urlMatch[1] holds "http://"
 				// $urlMatch[2] holds "subdomains.domain.tld"
 				// $urlMatch[3] holds the path after the domain
 	
-				$http = ($urlMatch[1]) ? $urlMatch[1].$this->chr['zeroWidthSpace'] : "" ;
+				$http = ( $urlMatch[1] ) ? $urlMatch[1].$this->chr['zeroWidthSpace'] : "" ;
 
-				$domainParts = preg_split('#(\-|\.)#', $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE);
+				$domain_parts = preg_split( '#(\-|\.)#', $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE );
 
 				//this is a hack, but it works
 				// first, we hyphenate each part
 				// we need it formated like a group of words
-				$parsedWordsLike = array();
-				foreach ($domainParts as $key => $domainPart) {
-					$parsedWordsLike[$key]['value'] = $domainPart;
+				$parsed_words_like = array();
+				foreach ( $domain_parts as $key => &$domain_part ) {
+					$parsed_words_like[ $key ]['value'] = $domain_part;
 				}
 	
 				// do the hyphenation
-				$parsedWordsLike = $this->do_hyphenate($parsedWordsLike);
+				$parsed_words_like = $this->do_hyphenate( $parsed_words_like );
 
 				// restore format
-				foreach ($parsedWordsLike as $key => $parsedWordLike) {
-					$domainParts[$key] = $parsedWordLike['value'];
+				foreach ($parsed_words_like as $key => $parsed_word_like) {
+					$domain_parts[ $key ] = $parsed_word_like['value'];
 				}
-				foreach ($domainParts as $key => &$domainPart) {
+				foreach ($domain_parts as $key => &$domain_part) {
 					//then we swap out each soft-hyphen" with a zero-space
-					$domainPart = str_replace($this->chr['softHyphen'], $this->chr['zeroWidthSpace'], $domainPart);
+					$domain_part = str_replace($this->chr['softHyphen'], $this->chr['zeroWidthSpace'], $domain_part);
 				
 					//we also insert zero-spaces before periods and hyphens
-					if ($key > 0 && strlen($domainPart) == 1) {
-						$domainPart = $this->chr['zeroWidthSpace'].$domainPart;
+					if ($key > 0 && 1 === strlen( $domain_part ) ) {
+						$domain_part = $this->chr['zeroWidthSpace'].$domain_part;
 					}
 				}
 
 				//lastly let's recombine
-				$domain = implode($domainParts);
+				$domain = implode( $domain_parts );
 	
 				//break up the URL path to individual characters
-				$pathParts = str_split($urlMatch[3], 1);
-				$pathCount = count($pathParts);
+				$path_parts = str_split( $urlMatch[3], 1 );
+				$path_count = count( $path_parts );
 				$path = '';
-				for ($i = 0; $i < $pathCount; $i++) {
-					$path .= (0 == $i || $pathCount - $i < $this->settings['urlMinAfterWrap']) ? $pathParts[$i] : $this->chr['zeroWidthSpace'].$pathParts[$i];
+				for ( $i = 0; $i < $path_count; $i++ ) {
+					$path .= ( 0 == $i || $path_count - $i < $this->settings['urlMinAfterWrap'] ) ? $path_parts[$i] : $this->chr['zeroWidthSpace'].$path_parts[$i];
 				}
 	
-				$parsedTextToken['value'] = $http.$domain.$path;
+				$text_token['value'] = $http.$domain.$path;
 			}
 		}
 		
-		return $parsedTextTokens;
+		return $parsed_text_tokens;
 	}
 	
-	// expecting parsedText tokens
-	function wrap_emails($parsedTextTokens)
-	{
-		if (!isset($this->settings['emailWrap']) || !$this->settings['emailWrap']) return $parsedTextTokens;
+	/**
+	 * Wrap email parts zero-width spaces (if enabled).
+	 *
+	 * @param array $parsed_text_tokens
+	 */
+	function wrap_emails( $parsed_text_tokens )	{
+		if ( empty( $this->settings['emailWrap'] ) ) {
+			return $parsed_text_tokens;
+		}
+		
 		// test for and parse urls 
 		$validTLD = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
 		$emailPattern = "(?:
@@ -2467,20 +2514,27 @@ class PHP_Typography {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 		
-		foreach ($parsedTextTokens as &$parsedTextToken) {
-			if (preg_match("/$emailPattern/xi", $parsedTextToken['value'], $urlMatch)) {
-				$parsedTextToken['value'] = preg_replace('/([^a-zA-Z])/', '$1'.$this->chr['zeroWidthSpace'], $parsedTextToken['value']);
+		foreach ( $parsed_text_tokens as &$text_token ) {
+			if ( preg_match( "/$emailPattern/xi", $text_token['value'], $urlMatch ) ) {
+				$text_token['value'] = preg_replace( '/([^a-zA-Z])/', '$1'.$this->chr['zeroWidthSpace'], $text_token['value'] );
 			}
 		}
-		return $parsedTextTokens;
+		
+		return $parsed_text_tokens;
 	}
 
-	// expecting parsedHTML token of type text
-	// wraps words of all caps (may include numbers) in <span class="caps">
-	// only call if you are certain that no html tags have been injected containing capital letters
-	// call before style_numbers
-	function style_caps($parsedHTMLtoken) {
-		if ( empty($this->settings['styleCaps']) ) return;
+	/**
+	 * Wraps words of all caps (may include numbers) in <span class="caps"> if enabled.
+	 * 
+	 * Call before style_numbers().Only call if you are certain that no html tags have been 
+	 * injected containing capital letters.
+	 *
+	 * @param DOMText $textnode
+	 */
+	function style_caps( DOMText $textnode ) {
+		if ( empty($this->settings['styleCaps'] ) ) {
+			return;
+		}
 	
 /*
 		// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
@@ -2512,28 +2566,26 @@ class PHP_Typography {
 		// Servers with PCRE compiled without "--enable-unicode-properties" fail at \p{Lu} by returning an empty string (this leaving the screen void of text
 		// thus are testing this alternative
 		$pattern = '
-				(?<![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].'])
-												# negative lookbehind assertion
+				(?<![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].']) # negative lookbehind assertion
 				(
 					(?:							# CASE 1: " 9A "
 						[0-9]+					# starts with at least one number
-						[A-ZÀ-ÖØ-Ý]					# must contain at least one capital letter
+						[A-ZÀ-ÖØ-Ý]				# must contain at least one capital letter
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|'.$this->chr['zeroWidthSpace'].'|'.$this->chr['softHyphen'].')*
 												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 					)
 					|
 					(?:							# CASE 2: " A9 "
-						[A-ZÀ-ÖØ-Ý]					# starts with capital letter
-						(?:[A-ZÀ-ÖØ-Ý]|[0-9])		# must be followed a number or capital letter
+						[A-ZÀ-ÖØ-Ý]				# starts with capital letter
+						(?:[A-ZÀ-ÖØ-Ý]|[0-9])	# must be followed a number or capital letter
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|'.$this->chr['zeroWidthSpace'].'|'.$this->chr['softHyphen'].')*
 												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 
 					)
 				)
-				(?![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].'])
-							# negative lookahead assertion
+				(?![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].']) # negative lookahead assertion
 			'; // required modifiers: x (multiline pattern) u (utf8)
-		$parsedHTMLtoken->nodeValue = preg_replace("/$pattern/xu", '<span class="caps">$1</span>', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace( "/$pattern/xu", '<span class="caps">$1</span>', $textnode->nodeValue );
 	}
 	
 	/**
@@ -2544,132 +2596,191 @@ class PHP_Typography {
 	 * 
 	 * @return DOMNode The new DOMFragment (or the old DO if the replacement failed).
 	 */
-	function set_inner_html(DOMNode $domtext, $content) {	
+	function set_inner_html( DOMNode $domtext, $content ) {	
 		$parent = $domtext->parentNode;
-		if (!$parent) return $domtext;
+		if ( ! $parent ) {
+			return $domtext;
+		}
 		
-		$innerHTML = $this->html5_parser->loadHTMLFragment($content);
-		if (!$innerHTML) return $domtext;
+		$innerHTML = $this->html5_parser->loadHTMLFragment( $content );
+		if ( ! $innerHTML ) {
+			return $domtext;
+		}
 				
-		$importedNode = $domtext->ownerDocument->importNode($innerHTML, true);
-		if (!$importedNode) return $domtext;
+		$importedNode = $domtext->ownerDocument->importNode( $innerHTML, true );
+		if ( ! $importedNode ) {
+			return $domtext;
+		}
 				
-		if ($parent->replaceChild($importedNode, $domtext)) {
+		if ( $parent->replaceChild( $importedNode, $domtext ) ) {
 			return $importedNode;
 		} else {		
 			return $domtext;
 		}		
 	}
 	
-	// expecting parsedHTML token of type text
-	// wraps numbers in <span class="numbers"> (even numbers that appear inside a word, i.e. A9 becomes A<span class="numbers">9</span>)
-	// call after style_caps so A9 becomes <span class="caps">A<span class="numbers">9</span></span>)
-	// only call if you are certain that no html tags have been injected containing numbers
-	// call after smart_fractions, smart_ordinal_suffix and style_caps
-	function style_numbers(DOMText $parsedHTMLtoken) {
-		if ( empty($this->settings['styleNumbers']) ) return;
+	/**
+	 * Wraps numbers in <span class="numbers"> (even numbers that appear inside a word, 
+	 * i.e. A9 becomes A<span class="numbers">9</span>), if enabled.
+	 *
+	 * Call after style_caps so A9 becomes <span class="caps">A<span class="numbers">9</span></span>.
+	 * Call after smart_fractions and smart_ordinal_suffix. 
+	 * Only call if you are certain that no html tags have been injected containing numbers.
+	 *
+	 * @param DOMText $textnode
+	 */
+	function style_numbers( DOMText $textnode ) {
+		if ( empty( $this->settings['styleNumbers'] ) ) {
+			return;
+		}
 
 		$pattern = '([0-9]+)'; // required modifier: u (utf8)
-		$res = preg_replace("/$pattern/u", '<span class="numbers">$1</span>', $parsedHTMLtoken->nodeValue);
-		//$this->set_inner_html($parsedHTMLtoken, preg_replace("/$pattern/u", '<span class="numbers">$1</span>', $parsedHTMLtoken->nodeValue));
-		//$parsedHTMLtoken = $this->set_inner_html($parsedHTMLtoken, $res);
-		$parsedHTMLtoken->nodeValue =  $res;
+		$textnode->nodeValue = preg_replace( "/$pattern/u", '<span class="numbers">$1</span>', $textnode->nodeValue );
 	}
-	
-	// expecting parsedHTML token of type text
-	// wraps ampersands in <span class="amp"> (i.e. H&amp;J becomes H<span class="amp">&amp;</span>J)
-	// call after style_caps so H&amp;J becomes <span class="caps">H<span class="amp">&amp;</span>J</span>)
-	// note that all standalone ampersands were previously converted to &amp;
-	// only call if you are certain that no html tags have been injected containing "&amp;"
-	function style_ampersands(DOMText $parsedHTMLtoken)	{
-		if ( empty($this->settings['styleAmpersands']) ) return;
+
+	/**
+	 * Wraps ampersands in <span class="amp"> (i.e. H&amp;J becomes H<span class="amp">&amp;</span>J), 
+	 * if enabled.
+	 * 
+	 * Call after style_caps so H&amp;J becomes <span class="caps">H<span class="amp">&amp;</span>J</span>.
+	 * Note that all standalone ampersands were previously converted to &amp;.
+	 * Only call if you are certain that no html tags have been injected containing "&amp;".
+	 *
+	 * @param DOMText $textnode
+	 */
+	function style_ampersands( DOMText $textnode ) {
+		if ( empty( $this->settings['styleAmpersands'] ) ) {
+			return;
+		}
 		
 		$pattern = '(\&amp\;)'; // required modifier: u (utf8)
-		$parsedHTMLtoken->nodeValue = preg_replace("/$pattern/u", '<span class="amp">$1</span>', $parsedHTMLtoken->nodeValue);
+		$textnode->nodeValue = preg_replace( "/$pattern/u", '<span class="amp">$1</span>', $textnode->nodeValue );
 	}
 	
-	// expecting parsedHTML token of type text
-	// styles initial quotes and guillemets
-	function style_initial_quotes($parsedHTMLtoken, $isTitle = false) {		
-		if ( empty($this->settings['styleInitialQuotes']) || empty($this->settings['initialQuoteTags']) ) return;
+	/**
+	 * Styles initial quotes and guillemets (if enabled).
+	 *
+	 * @param DOMText $textnode
+	 * @param boolean $is_title Default false.
+	 */
+	function style_initial_quotes( DOMText $textnode, $is_title = false ) {		
+		if ( empty( $this->settings['styleInitialQuotes'] ) || empty( $this->settings['initialQuoteTags'] ) ) {
+			return;
+		}
 				
-		if ($this->get_prev_chr($parsedHTMLtoken) == "") { // we have the first text in a block level element
+		if ( '' === $this->get_prev_chr( $textnode )) { // we have the first text in a block level element
 						
-			$encoding = self::detect_encoding($parsedHTMLtoken->nodeValue);		
-			$firstChr = mb_substr($parsedHTMLtoken->nodeValue, 0, 1, $encoding);
+			$encoding = self::detect_encoding( $textnode->nodeValue );		
+			$firstChr = mb_substr( $textnode->nodeValue, 0, 1, $encoding );
 						
-			if ($firstChr == "'" || $firstChr == $this->chr['singleQuoteOpen'] || $firstChr == $this->chr['singleLow9Quote'] || $firstChr == "," || $firstChr == '"' || $firstChr == $this->chr['doubleQuoteOpen'] || $firstChr == $this->chr['guillemetOpen'] || $firstChr == $this->chr['guillemetClose'] || $firstChr == $this->chr['doubleLow9Quote']) {
+			if ( $firstChr === "'" || 
+				 $firstChr === $this->chr['singleQuoteOpen'] || 
+				 $firstChr === $this->chr['singleLow9Quote'] || 
+				 $firstChr === "," || 
+				 $firstChr === '"' || 
+				 $firstChr === $this->chr['doubleQuoteOpen'] || 
+				 $firstChr === $this->chr['guillemetOpen'] || 
+				 $firstChr === $this->chr['guillemetClose'] || 
+				 $firstChr === $this->chr['doubleLow9Quote'] ) {
 				
 				$blockParent = false;
-				if ( ! empty($parsedHTMLtoken->parentNode) ) {					
-					$blockParent = self::get_block_parent($parsedHTMLtoken);
-					$blockParent = isset($blockParent->tagName) ? $blockParent->tagName : false;
-				} elseif ($isTitle) {
+				if ( ! empty( $textnode->parentNode ) ) {					
+					$blockParent = self::get_block_parent( $textnode );
+					$blockParent = isset( $blockParent->tagName ) ? $blockParent->tagName : false;
+				} elseif ( $is_title ) {
 					// assume page title is h2
 					$blockParent = 'h2';
 				}
 								
 				if ( $blockParent && isset( $this->settings['initialQuoteTags'][$blockParent] ) ) {
-					if ($firstChr == "'" || $firstChr == $this->chr['singleQuoteOpen'] || $firstChr == $this->chr['singleLow9Quote'] || $firstChr == ",") {
-						$parsedHTMLtoken->nodeValue =  '<span class="quo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken->nodeValue, 1, mb_strlen($parsedHTMLtoken->nodeValue, $encoding), $encoding);
+					if ( $firstChr === "'" || 
+						 $firstChr === $this->chr['singleQuoteOpen'] || 
+						 $firstChr === $this->chr['singleLow9Quote'] || 
+						 $firstChr === ",") {
+						$textnode->nodeValue =  '<span class="quo">'.$firstChr.'</span>'.mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
 					} else { // double quotes or guillemets
-						$parsedHTMLtoken->nodeValue =  '<span class="dquo">'.$firstChr.'</span>'.mb_substr($parsedHTMLtoken->nodeValue, 1, mb_strlen($parsedHTMLtoken->nodeValue, $encoding), $encoding);
+						$textnode->nodeValue =  '<span class="dquo">'.$firstChr.'</span>'.mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
 					}
 				}
 			}
 		}
 	}
 	
+	/**
+	 * Inject the PatGen segments pattern into the PatGen words pattern.
+	 * 
+	 * @param unknown $wordPattern
+	 * @param unknown $segmentPattern
+	 * @param unknown $segmentPosition
+	 * @param unknown $segmentLength
+	 */
+	function hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength ) {
 	
-	//injects the PatGen segments pattern into the PatGen words pattern
-	function hyphenation_pattern_injection($wordPattern, $segmentPattern, 
-		$segmentPosition, $segmentLength) {
-	
-		for ($numberPosition=$segmentPosition; $numberPosition <= $segmentPosition + $segmentLength; $numberPosition++) {
-			$wordPattern[$numberPosition] = 
-				(intval($wordPattern[$numberPosition]) >= intval($segmentPattern[$numberPosition-$segmentPosition])) ?
-				$wordPattern[$numberPosition] :
-				$segmentPattern[$numberPosition-$segmentPosition];
+		for ( $numberPosition = $segmentPosition; 
+			  $numberPosition <= $segmentPosition + $segmentLength; 
+			  $numberPosition++ ) {
+			  	
+			$wordPattern[ $numberPosition ] = 
+				( intval($wordPattern[ $numberPosition ] ) >= intval( $segmentPattern[ $numberPosition - $segmentPosition ] ) ) ?
+					$wordPattern[ $numberPosition ] : $segmentPattern[ $numberPosition - $segmentPosition ];
 		}
+		
 		return $wordPattern;
 	}
 	
 	// expecting Parse_Text tokens filtered to words
-	function hyphenate( $parsedTextTokens, $isTitle = false, DOMText $textnode = null ) {
-		if ( empty( $this->settings['hyphenation'] ) ) return $parsedTextTokens;
-
-		$isHeading = false;
-		if ( !empty($textnode) && !empty($textnode->parentNode) ) {
-			$blockParent = self::get_block_parent($textnode);
-			$blockParent = isset($blockParent->tagName) ? $blockParent->tagName : false;
-			
-			if ( $blockParent && isset(self::$heading_tags[$blockParent] ) )
-				$isHeading = true;
+	/**
+	 * Hyphenate given text fragment (if enabled).
+	 * 
+	 * Actual work is done in do_hyphenate().
+	 *
+	 * @param array $parsed_text_tokens Filtered to words.
+	 * @param boolean $isTitle Flag to indicate title fragments. Optional. Default false.
+	 * @param DOMText $textnode The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
+	 */
+	function hyphenate( $parsed_text_tokens, $is_title = false, DOMText $textnode = null ) {
+		if ( empty( $this->settings['hyphenation'] ) ) {
+			return $parsed_text_tokens; // abort
 		}
-		if ( empty( $this->settings['hyphenateTitle'] ) && ( $isTitle || $isHeading ) ) return $parsedTextTokens;
+
+		$is_heading = false;
+		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
+			$blockParent = self::get_block_parent( $textnode );
+			$blockParent = isset( $blockParent->tagName ) ? $blockParent->tagName : false;
+			
+			if ( $blockParent && isset( self::$heading_tags[ $blockParent ] ) ) {
+				$is_heading = true;
+			}
+		}
+		
+		if ( empty( $this->settings['hyphenateTitle'] ) && ( $is_title || $is_heading ) ) {
+			return $parsed_text_tokens; // abort
+		}
 
 		// call functionality as seperate function so it can be run without test for setting['hyphenation'] - such as with url wrapping
-		return $this->do_hyphenate($parsedTextTokens);
+		return $this->do_hyphenate( $parsed_text_tokens );
 	}	
 	
-	// expecting parsedText tokens filtered to words
-	function do_hyphenate($parsedTextTokens)
-	{
-		if ( empty($this->settings['hyphenMinLength']) ) return $parsedTextTokens;
-		if ( empty($this->settings['hyphenMinBefore']) ) return $parsedTextTokens;
-		if ( !isset($this->settings['hyphenationPatternMaxSegment']) ) return $parsedTextTokens;
-		if ( !isset($this->settings['hyphenationPatternExceptions']) ) return $parsedTextTokens;
-		if ( !isset($this->settings['hyphenationPattern']) ) return $parsedTextTokens;
+	/**
+	 * Really hyphenate given text fragment.
+	 *
+	 * @param array $parsed_text_tokens Filtered to words.
+	*/
+	function do_hyphenate( $parsed_text_tokens ) {
 		
-		$multibyte = false;
-		$u = '';
+		if ( empty( $this->settings['hyphenMinLength'] ) ) return $parsed_text_tokens;
+		if ( empty( $this->settings['hyphenMinBefore'] ) ) return $parsed_text_tokens;
+		if ( ! isset( $this->settings['hyphenationPatternMaxSegment'] ) ) return $parsed_text_tokens;
+		if ( ! isset( $this->settings['hyphenationPatternExceptions'] ) ) return $parsed_text_tokens;
+		if ( ! isset( $this->settings['hyphenationPattern'] ) ) return $parsed_text_tokens;
+		
 		// make sure we have full exceptions list
-		if (!isset($this->settings['hyphenationExceptions'])) {
-			if ($this->settings['hyphenationPatternExceptions'] || (isset($this->settings['hyphenationCustomExceptions']) && $this->settings['hyphenationCustomExceptions'])) {
+		if ( ! isset( $this->settings['hyphenationExceptions'] ) ) {
+			if ( $this->settings['hyphenationPatternExceptions'] || ! empty( $this->settings['hyphenationCustomExceptions'] ) ) {
 				$exceptions = array();
-				if (isset($this->settings['hyphenationCustomExceptions'])) {
+				if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
 					// merges custom and language specific word hyphenations
-					$exceptions = array_merge($this->settings['hyphenationCustomExceptions'], $this->settings['hyphenationPatternExceptions']);
+					$exceptions = array_merge( $this->settings['hyphenationCustomExceptions'], $this->settings['hyphenationPatternExceptions'] );
 				} else {
 					$exceptions = $this->settings['hyphenationPatternExceptions'];
 				}
@@ -2679,120 +2790,130 @@ class PHP_Typography {
 				$this->settings['hyphenationExceptions']=array();
 			}
 		}
-		foreach ($parsedTextTokens as &$parsedTextToken) {
-			$encoding = self::detect_encoding($parsedTextToken['value']);
+
+		$multibyte = false;
+		$u = '';
+		foreach ($parsed_text_tokens as &$text_token) {
+			$encoding = self::detect_encoding( $text_token['value'] );
 			
-			if ('UTF-8' == $encoding) {
+			if ( 'UTF-8' === $encoding ) {
 				$multibyte = true;
 				$u = 'u';
-				if(!function_exists('mb_strlen')) continue;
-			} elseif ('ASCII' != $encoding) {
+				if ( ! function_exists( 'mb_strlen' ) ) continue;
+			} elseif ( 'ASCII' != $encoding ) {
 				continue;
 			}
 
-			if ($multibyte) {
-				$wordLength = mb_strlen($parsedTextToken['value'], 'UTF-8');
-				$theKey = mb_strtolower($parsedTextToken['value'], 'UTF-8');
+			if ( $multibyte ) {
+				$wordLength = mb_strlen( $text_token['value'], 'UTF-8' );
+				$theKey = mb_strtolower( $text_token['value'], 'UTF-8' );
 			} else {  //same as above without mutlibyte string functions to improve preformance
-				$wordLength = strlen($parsedTextToken['value']);
-				$theKey = strtolower($parsedTextToken['value']);
+				$wordLength = strlen( $text_token['value'] );
+				$theKey = strtolower( $text_token['value'] );
 			}
 		
-			if ($wordLength < $this->settings['hyphenMinLength']) continue;
+			if ( $wordLength < $this->settings['hyphenMinLength'] ) continue;
 
 			// if this is a capitalized word, and settings do not allow hyphenation of such, abort!
 			// note. this is different than uppercase words, where we are looking for title case
-			if ((!isset($this->settings['hyphenateTitleCase']) || !$this->settings['hyphenateTitleCase']) && substr($theKey,0,1) != substr($parsedTextToken['value'],0,1)) continue;
+			if ( empty( $this->settings['hyphenateTitleCase'] ) && substr( $theKey , 0 , 1 ) != substr( $text_token['value'], 0, 1 ) ) continue;
 			
 			// give exceptions preference
-			if (isset($this->settings['hyphenationExceptions'][$theKey])) {
+			if ( isset($this->settings['hyphenationExceptions'][ $theKey ] ) ) {
 				//Set the wordPattern - this method keeps any contextually important capitalization
 				if ($multibyte) {			
-					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][$theKey];
-					$lhwArray = $this->mb_str_split($lowercaseHyphenedWord, 1, 'UTF-8');
-					$lhwLength = mb_strlen($lowercaseHyphenedWord, 'UTF-8');
+					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][ $theKey ];
+					$lhwArray = $this->mb_str_split( $lowercaseHyphenedWord, 1, 'UTF-8' );
+					$lhwLength = mb_strlen( $lowercaseHyphenedWord, 'UTF-8' );
 				} else {  //same as above without mutlibyte string functions to improve preformance
-					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][$theKey];
-					$lhwArray = str_split($lowercaseHyphenedWord, 1);
-					$lhwLength = strlen($lowercaseHyphenedWord);
+					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][ $theKey ];
+					$lhwArray = str_split( $lowercaseHyphenedWord, 1 );
+					$lhwLength = strlen( $lowercaseHyphenedWord );
 				}
 			
-				$wordPattern=array();
-				for ($i=0; $i < $lhwLength; $i++) {
-					if('-' == $lhwArray[$i]) {
-						//array_push($wordPattern, '9');
+				$wordPattern = array();
+				for ( $i=0; $i < $lhwLength; $i++ ) {
+					if( '-' === $lhwArray[ $i ] ) {
 						$wordPattern[] = '9';
 						$i++;
 					} else {
-						//array_push($wordPattern, '0');
 						$wordPattern[] = '0';
 					}
 				}
-				//array_push($wordPattern, '0'); //for consistent length with the other word patterns
-				$wordPattern[] = '0';
+				$wordPattern[] = '0'; //for consistent length with the other word patterns
 			}
-			if (!isset($wordPattern)) {
+			
+			if ( ! isset( $wordPattern ) ) {
 				// first we set up the matching pattern to be a series of zeros one character longer than $parsedTextToken
 				$wordPattern = array();
-				for ($i=0; $i < $wordLength +1; $i++) {
-					//array_push($wordPattern, '0');
+				for ( $i=0; $i < $wordLength +1; $i++ ) {
 					$wordPattern[] = '0';
 				}
+				
 				// we grab all possible segments from $parsedTextToken of length 1 through $this->settings['hyphenationPatternMaxSegment']
-				for ($segmentLength=1; ($segmentLength <= $wordLength) && ($segmentLength <= $this->settings['hyphenationPatternMaxSegment']); $segmentLength++) {
-					for ($segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++) {
-						if ($multibyte)
-							$segment = mb_strtolower(mb_substr($parsedTextToken['value'], $segmentPosition, $segmentLength, 'UTF-8'), 'UTF-8');
-						else
-							$segment = strtolower(substr($parsedTextToken['value'], $segmentPosition, $segmentLength));
-						if (0 == $segmentPosition) {
-							if(isset($this->settings['hyphenationPattern']['begin'][$segment])) {
-								if($multibyte)
-									$segmentPattern = $this->mb_str_split($this->settings['hyphenationPattern']['begin'][$segment], 1, 'UTF-8');
-								else
-									$segmentPattern = str_split($this->settings['hyphenationPattern']['begin'][$segment], 1);
-								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
+				for ( $segmentLength=1; ( $segmentLength <= $wordLength ) && ( $segmentLength <= $this->settings['hyphenationPatternMaxSegment'] ); $segmentLength++ ) {
+					for ( $segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++ ) {
+						if ( $multibyte ) {
+							$segment = mb_strtolower( mb_substr( $text_token['value'], $segmentPosition, $segmentLength, 'UTF-8' ), 'UTF-8' );
+						} else {
+							$segment = strtolower( substr( $text_token['value'], $segmentPosition, $segmentLength ) );
+						}
+						
+						if ( 0 == $segmentPosition ) {
+							if( isset($this->settings['hyphenationPattern']['begin'][ $segment ] ) ) {
+								if( $multibyte ) {
+									$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['begin'][ $segment ], 1, 'UTF-8');
+								} else {
+									$segmentPattern = str_split( $this->settings['hyphenationPattern']['begin'][ $segment ], 1 );
+								}
+								$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 							}
 						}
-						if ($segmentPosition + $segmentLength == $wordLength) {
-							if (isset($this->settings['hyphenationPattern']['end'][$segment])) {
-								if ($multibyte)
-									$segmentPattern = $this->mb_str_split($this->settings['hyphenationPattern']['end'][$segment], 1, 'UTF-8');
-								else
-									$segmentPattern = str_split($this->settings['hyphenationPattern']['end'][$segment], 1);
-								$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
+						
+						if ( $segmentPosition + $segmentLength == $wordLength ) {
+							if ( isset($this->settings['hyphenationPattern']['end'][ $segment ] ) ) {
+								if ( $multibyte ) {
+									$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['end'][ $segment ], 1, 'UTF-8' );
+								} else {
+									$segmentPattern = str_split( $this->settings['hyphenationPattern']['end'][ $segment ], 1 );
+								}
+								$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 							}
 						}
-						if (isset($this->settings['hyphenationPattern']['all'][$segment])) {
-							if ($multibyte)
-								$segmentPattern = $this->mb_str_split($this->settings['hyphenationPattern']['all'][$segment], 1, 'UTF-8');
-							else
-								$segmentPattern = str_split($this->settings['hyphenationPattern']['all'][$segment], 1);
-							$wordPattern = $this->hyphenation_pattern_injection($wordPattern, $segmentPattern, $segmentPosition, $segmentLength);
+						
+						if ( isset($this->settings['hyphenationPattern']['all'][ $segment ] ) ) {
+							if ( $multibyte ) {
+								$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['all'][ $segment ], 1, 'UTF-8' );
+							} else {
+								$segmentPattern = str_split( $this->settings['hyphenationPattern']['all'][ $segment ], 1 );
+							}
+							$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 						}
 					}
 				}
 			}
+			
 			//add soft-hyphen based on $wordPattern
-			if ($multibyte) {
-				$wordArray = $this->mb_str_split($parsedTextToken['value'], 1, 'UTF-8');
+			if ( $multibyte ) {
+				$wordArray = $this->mb_str_split( $text_token['value'], 1, 'UTF-8' );
 			} else {  //same as above without mutlibyte string functions to improve preformance
-				$wordArray = str_split($parsedTextToken['value'], 1);
+				$wordArray = str_split( $text_token['value'], 1 );
 			}
 			
-			$hyphenatedWord = "";
-			for ($i=0; $i < $wordLength; $i++) {
-				if (($this->is_odd(intval($wordPattern[$i]))) && ($i >= $this->settings['hyphenMinBefore']) && ($i < $wordLength - $this->settings['hyphenMinAfter'])) {
-					$hyphenatedWord .= $this->chr['softHyphen'].$wordArray[$i];
+			$hyphenatedWord = '';
+			for ( $i=0; $i < $wordLength; $i++ ) {
+				if ( ( $this->is_odd( intval( $wordPattern[ $i ] ) ) ) && ( $i >= $this->settings['hyphenMinBefore']) && ( $i < $wordLength - $this->settings['hyphenMinAfter'] ) ) {
+					$hyphenatedWord .= $this->chr['softHyphen'] . $wordArray[ $i ];
 				} else {
-					$hyphenatedWord .= $wordArray[$i];
+					$hyphenatedWord .= $wordArray[ $i ];
 				}
 			}
 	
-			$parsedTextToken['value'] = $hyphenatedWord;
-			unset($wordPattern);	
+			$text_token['value'] = $hyphenatedWord;
+			unset( $wordPattern );	
 		}
-		return $parsedTextTokens;
+		
+		return $parsed_text_tokens;
 	}
 
 	/**
