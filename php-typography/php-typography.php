@@ -46,7 +46,7 @@
  */
 
 require_once('php-parser/parseText.php');
-require_once('HTML5.php');
+require_once('../vendor/HTML5.php');
 
 use Masterminds\HTML5;
 
