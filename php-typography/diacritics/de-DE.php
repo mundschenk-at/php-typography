@@ -10,7 +10,10 @@
  *	
  *	In the form of $diacriticWords = array( key => value );
  *	where "key" is the needle and "value" is the replacement
-**/
+ *
+ *  @package wpTypography
+ *  @license http://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 $diacriticLanguage = 'German';
 
@@ -25,16 +28,12 @@ $diacriticWords = array(
 	"A la mode"=>"À la mode",
 	"a gogo"=>"à gogo",
 	"A gogo"=>"À gogo",
-	"ago-go"=>"àgo-go",
-	"Ago-go"=>"Àgo-go",
 	"abbe"=>"abbé",
 	"Abbe"=>"Abbé",
 	"adios"=>"adiós",
 	"Adios"=>"Adiós",
 	"agrement"=>"agrément",
 	"Agrement"=>"Agrément",
-	"anime"=>"animé",
-	"Anime"=>"Animé",
 	"Ancien Regime"=>"Ancien Régime",
 	"angstrom"=>"ångström",
 	"Angstrom"=>"Ångström",
@@ -399,4 +398,3 @@ $diacriticWords = array(
 	"Tourtiere"=>"Tourtière",
 	"Zaire"=>"Zaïre",
 );
-

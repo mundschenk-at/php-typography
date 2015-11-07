@@ -1,4 +1,13 @@
 <?php
+
+/**
+ * This file is used as part of wpTypography.
+ *
+ * Copyright (c) 2013 The Authors of HTML5-PHP
+ * 
+ * See HTML5/LICENSE for LICENSE terms and HTML5/CREDITS for contributors.
+ */
+
 namespace Masterminds;
 
 use Masterminds\HTML5\Parser\FileInputStream;
