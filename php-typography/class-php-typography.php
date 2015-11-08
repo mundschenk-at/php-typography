@@ -208,10 +208,8 @@ class PHP_Typography {
 		$this->set_hyphenate_all_caps();
 		$this->set_hyphenate_title_case(); // added in version 1.5
 		$this->set_hyphenation_exceptions();
-		
-		return true;
 	}
-
+	
 	/**
 	 * Sets tags for which the typography of their children will be left untouched.
 	 * 
@@ -1742,10 +1740,14 @@ class PHP_Typography {
 		}
 		
 		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
- 			$textnode->nodeValue = $this->translate_words( $textnode->nodeValue, $this->settings['diacriticCustomReplacements'] );
+			foreach ($this->settings["diacriticCustomReplacements"] as $needle => $replacement) {
+				$textnode->nodeValue = preg_replace("/\b$needle\b/", $replacement, $textnode->nodeValue );
+			}
 		}
 		if ( ! empty( $this->settings['diacriticWords'] ) ) {
- 			$textnode->nodeValue = $this->translate_words( $textnode->nodeValue, $this->settings['diacriticWords'] );
+			foreach ($this->settings["diacriticWords"] as $needle => $replacement) {
+				$textnode->nodeValue =  preg_replace("/\b$needle\b/", $replacement, $textnode->nodeValue );
+			}
 		}
 	}
 	
