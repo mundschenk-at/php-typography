@@ -1051,9 +1051,9 @@ class PHP_Typography {
 	 * 
 	 * @param array $array1
 	 * @param array $array2
-	 * @return array
+	 * @return array A reference to the intersection of the two arrays.
 	 */
-	static function array_intersection( array &$array1, array &$array2 ) {
+	static function &array_intersection( array &$array1, array &$array2 ) {
 		$max = count( $array1 );
 		
  		$out = array();
@@ -1070,10 +1070,11 @@ class PHP_Typography {
 	 * Convert DOMNodeList to array;
 	 * 
 	 * @param DOMNodeList $list
-	 * @return array Array of DOMNodes
+	 * @return array A reference to an array of DOMNodes.
 	 */
-	static function nodelist_to_array( DOMNodeList $list ) {
+	static function &nodelist_to_array( DOMNodeList $list ) {
 		$out = array();
+		
 		foreach ($list as $node) {
 			$out[] = $node;
 		}
@@ -1209,10 +1210,10 @@ class PHP_Typography {
 	 * 
 	 * @return string A single character (or the empty string).
 	 */
-	function get_prev_chr( $element ) {
+	function get_prev_chr( DOMNode $element ) {
 		$prevText = $this->get_previous_textnode( $element );
 		
-		if ( is_object( $prevText ) ) {				
+		if ( isset( $prevText ) ) {				
 			// determine encoding
 			$func = &$this->str_functions[ self::detect_encoding( $element->nodeValue ) ];
 			return preg_replace( '/\p{C}/Su', '', $func['substr']( $prevText->nodeValue, $func['strlen']( $prevText->nodeValue ) - 1, 1 ) );
@@ -1228,13 +1229,13 @@ class PHP_Typography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	function get_previous_textnode( $element ) {
-		$prevText = null;
-		$node = $element;
-				
-		if ( ! is_object( $element ) ) {
+	function get_previous_textnode( DOMNode $element = null) {
+		if ( ! isset( $element ) ) {
 			return null;
 		}
+
+		$prevText = null;
+		$node = $element;
 		
 		if ( $node instanceof DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
@@ -1258,10 +1259,12 @@ class PHP_Typography {
 	 * 
 	 * @return DOMNode The last child of type DOMText, the element itself if it is of type DOMText or null.
 	 */
-	function get_last_textnode( $element ) {
-		if ( ! is_object( $element ) ) {
+	function get_last_textnode( DOMNode $element = null ) {
+		if ( ! isset( $element ) ) {
 			return null;
-		} elseif ( $element instanceof DOMText ) {
+		} 
+		
+		if ( $element instanceof DOMText ) {
 			return $element;
 		} elseif ( ! $element instanceof DOMElement ) {
 			return null;
@@ -1288,14 +1291,14 @@ class PHP_Typography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	function get_next_textnode( $element ) {
-		$nextText = null;
-		$node = $element;
-	
-		if ( ! is_object( $element ) ) {
+	function get_next_textnode( DOMNode $element = null ) {
+		if ( ! isset( $element ) ) {
 			return null;
 		}
-	
+
+		$nextText = null;
+		$node = $element;
+		
 		if ( $node instanceof DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
@@ -1318,10 +1321,12 @@ class PHP_Typography {
 	 *
 	 * @return DOMNode The first child of tpye DOMText, the element itself if it is of type DOMText or null.
 	 */
-	function get_first_textnode( $element ) {
-		if ( ! is_object( $element ) ) {
+	function get_first_textnode( DOMNode $element = null ) {
+		if ( ! isset( $element ) ) {
 			return null;
-		} elseif ( $element instanceof DOMText ) {
+		}
+		
+		if ( $element instanceof DOMText ) {
 			return $element;
 		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
@@ -1349,10 +1354,10 @@ class PHP_Typography {
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	function get_next_chr($element) {
+	function get_next_chr( DOMNode $element ) {
 		$nextText = $this->get_next_textnode($element);
 				
-		if ( is_object( $nextText ) ) {
+		if ( isset( $nextText ) ) {
 			$func = &$this->str_functions[ self::detect_encoding( $element->nodeValue ) ];
 			return preg_replace( '/\p{C}/Su', '', $func['substr']( $nextText->nodeValue, 0, 1 ) );
 		} else {
@@ -1367,7 +1372,7 @@ class PHP_Typography {
 	 * 
 	 * @return DOMNode
 	 */
-	static function get_block_parent($element) {
+	static function get_block_parent( DOMNode $element ) {
 		$parent = $element->parentNode;
 
 		while ( isset( $parent->tagName ) &&
