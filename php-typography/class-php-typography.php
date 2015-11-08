@@ -2181,7 +2181,7 @@ class PHP_Typography {
 	 *
 	 * @param array $parsed_text_tokens
 	 */
-	function wrap_hard_hyphens( $parsed_text_tokens ) {
+	function wrap_hard_hyphens( array $parsed_text_tokens ) {
 		if ( ! empty( $this->settings['hyphenHardWrap'] ) || ! empty( $this->settings['smartDashes'] ) ) {
 			 	
 			foreach ( $parsed_text_tokens as &$text_token ) {
@@ -2298,7 +2298,7 @@ class PHP_Typography {
 	 *
 	 * @param array $parsed_text_tokens
 	 */
-	function wrap_urls( $parsed_text_tokens ) {
+	function wrap_urls( array $parsed_text_tokens ) {
 		if ( empty( $this->settings['urlWrap'] ) || empty( $this->settings['urlMinAfterWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
@@ -2395,7 +2395,7 @@ class PHP_Typography {
 	 *
 	 * @param array $parsed_text_tokens
 	 */
-	function wrap_emails( $parsed_text_tokens )	{
+	function wrap_emails( array $parsed_text_tokens )	{
 		if ( empty( $this->settings['emailWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
@@ -2499,31 +2499,31 @@ class PHP_Typography {
 	/**
 	 * Set "innerHTML" for any DOMNode. Uses the HTML5 parser.
 	 * 
-	 * @param DOMNode $domtext The node to replace.
+	 * @param DOMNode $node The node to replace.
 	 * @param string  $content The HTML fragment used to replace the node.
 	 * 
 	 * @return DOMNode The new DOMFragment (or the old DO if the replacement failed).
 	 */
-	function set_inner_html( DOMNode $domtext, $content ) {	
-		$parent = $domtext->parentNode;
+	function set_inner_html( DOMNode $node, $content ) {	
+		$parent = $node->parentNode;
 		if ( ! $parent ) {
-			return $domtext;
+			return $node;
 		}
 		
-		$innerHTML = $this->html5_parser->loadHTMLFragment( $content );
-		if ( ! $innerHTML ) {
-			return $domtext;
+		$inner_html_fragment = $this->html5_parser->loadHTMLFragment( $content );
+		if ( ! isset( $inner_html_fragment ) ) {
+			return $node;
 		}
 				
-		$importedNode = $domtext->ownerDocument->importNode( $innerHTML, true );
-		if ( ! $importedNode ) {
-			return $domtext;
+		$imported_node = $node->ownerDocument->importNode( $inner_html_fragment, true );
+		if ( ! isset( $imported_node ) ) {
+			return $node;
 		}
 				
-		if ( $parent->replaceChild( $importedNode, $domtext ) ) {
-			return $importedNode;
+		if ( $parent->replaceChild( $imported_node, $node ) ) {
+			return $imported_node;
 		} else {		
-			return $domtext;
+			return $node;
 		}		
 	}
 	
@@ -2673,7 +2673,7 @@ class PHP_Typography {
 	 *
 	 * @param array $parsed_text_tokens Filtered to words.
 	*/
-	function do_hyphenate( $parsed_text_tokens ) {
+	function do_hyphenate( array $parsed_text_tokens ) {
 		
 		if ( empty( $this->settings['hyphenMinLength'] ) ) return $parsed_text_tokens;
 		if ( empty( $this->settings['hyphenMinBefore'] ) ) return $parsed_text_tokens;
