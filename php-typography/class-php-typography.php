@@ -1085,9 +1085,9 @@ class PHP_Typography {
 	 * Retrieve an array containing all the ancestors of the node.
 	 * 
 	 * @param DOMNode $node
-	 * @return array of DOMNode
+	 * @return array of DOMNode A reference to the result array.
 	 */
-	static function get_ancestors( DOMNode $node ) {
+	static function &get_ancestors( DOMNode $node ) {
 		$result = array();
 		
 		while ($node = $node->parentNode) {
