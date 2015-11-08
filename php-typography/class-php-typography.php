@@ -926,7 +926,6 @@ class PHP_Typography {
  				case 'UTF-8':
  					$multibyte = true;
  					$u = 'u';
- 					if(!function_exists('mb_strlen')) return false;
  					break;
  					
  				case 'ASCII':
@@ -2295,9 +2294,6 @@ class PHP_Typography {
 
 			if ('UTF-8' == $encoding) {
 				$u = 'u';
-				if( ! function_exists( 'mb_strlen' ) ) {
-					return $textnode; // abort
-				}
 			} elseif ('ASCII' != $encoding) {
 				return $textnode; // abort
 			}
@@ -2799,7 +2795,6 @@ class PHP_Typography {
 			if ( 'UTF-8' === $encoding ) {
 				$multibyte = true;
 				$u = 'u';
-				if ( ! function_exists( 'mb_strlen' ) ) continue;
 			} elseif ( 'ASCII' != $encoding ) {
 				continue;
 			}
@@ -2952,11 +2947,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 1.
 	 * @param string $encoding Defaults to 'UTF-8'.
 	 */
-	function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
-		if ( ! function_exists( 'mb_strlen' ) ) {
-			return false;
-		}
-		
+	function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {	
 		if ( $length < 1 ) {
 			return false;
 		}
