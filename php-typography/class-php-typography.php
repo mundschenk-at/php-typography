@@ -56,7 +56,6 @@ use Masterminds\HTML5;
  */
 class PHP_Typography {
 
-	var $mb = false;         //cannot be changed after load
 	var $chr = array();      // hashmap for various special characters
 	var $settings = array(); // operational attributes
 
@@ -65,6 +64,16 @@ class PHP_Typography {
 
 	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' ); // allowed encodings
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
+	
+	/**
+	 * A hash map for string functions according to encoding.
+	 * 
+	 * $encoding => array( 'strlen' => $function_name, ... )
+	 */	
+	private $str_functions = array( 'UTF-8' => array(),
+									'ASCII' => array(),
+									'ISO-8859-1' => array(),
+	);
 	
 	#=======================================================================
 	#=======================================================================
@@ -117,12 +126,30 @@ class PHP_Typography {
 		$this->chr['leftWhiteCornerBracket']  = $this->uchr(12302);
 		$this->chr['rightWhiteCornerBracket'] = $this->uchr(12303);
 
+
+		// not sure if this is necessary - but error_log seems to have problems with the strings.
+		// used as the default encoding for mb_* functions
+		$encoding_set = mb_internal_encoding('UTF-8');
+		
+		// Set up both UTF-8 and ASCII string functions
+		// UTF-8 first
+		$this->str_functions['UTF-8']['strlen']     = 'mb_strlen';
+		$this->str_functions['UTF-8']['str_split']  = array( &$this, 'mb_str_split' );
+		$this->str_functions['UTF-8']['strtolower'] = 'mb_strtolower';
+		$this->str_functions['UTF-8']['substr']     = 'mb_substr';
+		$this->str_functions['UTF-8']['u']          = 'u'; // unicode flag for regex
+		// now ASCII
+		$this->str_functions['ASCII']['strlen']     = 'strlen';
+		$this->str_functions['ASCII']['str_split']  = 'str_split';
+		$this->str_functions['ASCII']['strtolower'] = 'strtolower';
+		$this->str_functions['ASCII']['substr']     = 'substr';
+		$this->str_functions['ASCII']['u']			= ''; // no regex flag needed
+		// we don't care about ISO-8859-1
+		// it is just used to make the code cleaner
+		
 		if ($setDefaults) {
 			$this->set_defaults();
 		}
-		
-		// not sure if this is necessary - but error_log seems to have problems with the strings.
-		$encoding_set = mb_internal_encoding('UTF-8');
 	}
 
 	/**
@@ -913,36 +940,20 @@ class PHP_Typography {
  	 * @return boolean Returns true.
 	 */
 	function set_hyphenation_exceptions( $exceptions = array() ) {
-		$multibyte = false;
-		$u = '';
-		
 		if ( ! is_array( $exceptions ) ) { 
 			$exceptions = preg_split( '/[^a-zA-Z0-9\-]+/', $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
 		$exceptionKeys = array();
+		$func = array();
 		foreach ( $exceptions as $key => &$exception ) {
- 			switch ( self::detect_encoding( $exception ) ) {
- 				case 'UTF-8':
- 					$multibyte = true;
- 					$u = 'u';
- 					break;
- 					
- 				case 'ASCII':
- 					$multibyte = false;
- 					$u = '';
- 					break;
- 					
- 				default:
- 					return false;
- 			}
- 						
-			if ( $multibyte ) {
-				$exception = mb_strtolower( $exception, 'UTF-8' );
-			} else {  //same as above without multibyte string functions to improve preformance
-				$exception = strtolower( $exception );
+			$func = &$this->str_function[ self::detect_encoding( $exception ) ];
+			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+				continue; // unknown encoding, abort 
 			}
-			$exceptionKeys[$key] = preg_replace( "#-#$u", '', $exception );
+			
+			$exception = $func['strtolower']( $exception );
+			$exceptionKeys[ $key ] = preg_replace( "#-#{$func['u']}", '', $exception );
 		}
 				
 		$this->settings['hyphenationCustomExceptions'] = array_flip( $exceptionKeys );
@@ -1294,13 +1305,13 @@ class PHP_Typography {
 	 * 
 	 * @return string A single character (or the empty string).
 	 */
-	static function get_prev_chr( $element ) {
-		$prevText = self::get_previous_textnode( $element );
+	function get_prev_chr( $element ) {
+		$prevText = $this->get_previous_textnode( $element );
 		
 		if ( is_object( $prevText ) ) {				
 			// determine encoding
-			$encoding = self::detect_encoding( $element->nodeValue );
-			return preg_replace( '/\p{C}/Su', '', mb_substr( $prevText->nodeValue, mb_strlen( $prevText->nodeValue, $encoding ) - 1, 1, $encoding ) );
+			$func = &$this->str_functions[ self::detect_encoding( $element->nodeValue ) ];
+			return preg_replace( '/\p{C}/Su', '', $func['substr']( $prevText->nodeValue, $func['strlen']( $prevText->nodeValue ) - 1, 1 ) );
 		} else {			
 			return '';
 		}
@@ -1313,7 +1324,7 @@ class PHP_Typography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	static function get_previous_textnode( $element ) {
+	function get_previous_textnode( $element ) {
 		$prevText = null;
 		$node = $element;
 				
@@ -1326,11 +1337,11 @@ class PHP_Typography {
 		}
 			 
 		while ( ( $node = $node->previousSibling ) && ! $prevText ) {			
-			$prevText = self::get_last_textnode( $node );
+			$prevText = $this->get_last_textnode( $node );
 		}
 		
 		if ( ! $prevText ) {
-			$prevText = self::get_previous_textnode( $element->parentNode );			
+			$prevText = $this->get_previous_textnode( $element->parentNode );			
 		}
 				
 		return $prevText;
@@ -1343,7 +1354,7 @@ class PHP_Typography {
 	 * 
 	 * @return DOMNode The last child of tpye DOMText, the element itself if it is of type DOMText or null.
 	 */
-	static function get_last_textnode( $element ) {
+	function get_last_textnode( $element ) {
 		if ( ! is_object( $element ) ) {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
@@ -1357,7 +1368,7 @@ class PHP_Typography {
 		$i = $children->length - 1;
 		
 		while ( $i >= 0 && $last_textnode == null ) {
-			$last_textnode = self::get_last_textnode( $children->item( $i ) );
+			$last_textnode = $this->get_last_textnode( $children->item( $i ) );
 			$i--;
 		}
 		
@@ -1371,7 +1382,7 @@ class PHP_Typography {
 	 *
 	 * @return DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
-	static function get_next_textnode( $element ) {
+	function get_next_textnode( $element ) {
 		$nextText = null;
 		$node = $element;
 	
@@ -1384,11 +1395,11 @@ class PHP_Typography {
 		}
 			 
 		while ( ( $node = $node->nextSibling ) && $nextText == null ) {
-			$nextText = self::get_first_textnode( $node );
+			$nextText = $this->get_first_textnode( $node );
 		}
 			
 		if ( ! $nextText ) {
-			$nextText = self::get_next_textnode( $element->parentNode );
+			$nextText = $this->get_next_textnode( $element->parentNode );
 		}
 	
 		return $nextText;
@@ -1401,7 +1412,7 @@ class PHP_Typography {
 	 *
 	 * @return DOMNode The first child of tpye DOMText, the element itself if it is of type DOMText or null.
 	 */
-	static function get_first_textnode( $element ) {
+	function get_first_textnode( $element ) {
 		if ( ! is_object( $element ) ) {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
@@ -1417,7 +1428,7 @@ class PHP_Typography {
 			$i = 0;
 				
 			while ( $i < $children->length && $first_textnode == false ) {
-				$first_textnode = self::get_first_textnode( $children->item( $i ) );
+				$first_textnode = $this->get_first_textnode( $children->item( $i ) );
 				$i++;
 			}
 		}
@@ -1432,11 +1443,12 @@ class PHP_Typography {
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	static function get_next_chr($element) {
-		$nextText = self::get_next_textnode($element);
+	function get_next_chr($element) {
+		$nextText = $this->get_next_textnode($element);
 				
-		if ( is_object( $nextText ) ) {		
-			return preg_replace( '/\p{C}/Su', '', mb_substr( $nextText->nodeValue, 0, 1, self::detect_encoding( $element->nodeValue ) ) );
+		if ( is_object( $nextText ) ) {
+			$func = &$this->str_functions[ self::detect_encoding( $element->nodeValue ) ];
+			return preg_replace( '/\p{C}/Su', '', $func['substr']( $nextText->nodeValue, 0, 1 ) );
 		} else {
 			return '';
 		}	
@@ -1576,13 +1588,13 @@ class PHP_Typography {
 		$textnode->nodeValue = str_replace('"', $this->chr['doubleQuoteClose'], $textnode->nodeValue);		
 
 		//if we have adjacent characters remove them from the text
-		$encoding = self::detect_encoding( $textnode->nodeValue );
-		
+		$func = &$this->str_functions[ self::detect_encoding( $textnode->nodeValue ) ];
+			
 		if ( '' != $prevChr ) {
-			$textnode->nodeValue = mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
+			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 		}
 		if ( '' != $nextChr ) {
-			$textnode->nodeValue = mb_substr( $textnode->nodeValue, 0, mb_strlen( $textnode->nodeValue, $encoding ) - 1, $encoding );
+			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
 		}
 	}
 
@@ -2060,13 +2072,13 @@ class PHP_Typography {
 		);
 			
 		//if we have adjacent characters remove them from the text
-		$encoding = self::detect_encoding( $textnode->nodeValue );
-		
+		$func = &$this->str_functions[ self::detect_encoding( $textnode->nodeValue ) ];
+			
 		if ( '' !== $prevChr ) {
-			$textnode->nodeValue =  mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
+			$textnode->nodeValue =  $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 		}
 		if ( '' !== $nextChr ) {
-			$textnode->nodeValue =  mb_substr( $textnode->nodeValue, 0, mb_strlen( $textnode->nodeValue, $encoding )-1, $encoding );
+			$textnode->nodeValue =  $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
 		}
 	}
 
@@ -2289,15 +2301,12 @@ class PHP_Typography {
 		if ( '' === $this->get_next_chr($textnode) ) { 
 			// we have the last type "text" child of a block level element
 			
-			$encoding = self::detect_encoding($textnode->nodeValue);
-			$u = '';
-
-			if ('UTF-8' == $encoding) {
-				$u = 'u';
-			} elseif ('ASCII' != $encoding) {
-				return $textnode; // abort
+			// FIXME - maybe faster to just set the 'u' flag
+			$func = &$this->str_functions[ self::detect_encoding($textnode->nodeValue) ];
+			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+				return $textnode; // unknown encoding, abort
 			}
-
+			
 			$widowPattern = "/
 				(?:
 					\A
@@ -2321,10 +2330,10 @@ class PHP_Typography {
 					[^\w]*
 				)
 				\Z
-			/x$u";
+			/x{$func['u']}";
 
 			$textnode->nodeValue = preg_replace_callback( $widowPattern, 
-														  array($this, '_dewidow_callback'), 
+														  array( &$this, '_dewidow_callback' ), 
 														  $textnode->nodeValue );
 		}
 	}
@@ -2340,10 +2349,8 @@ class PHP_Typography {
 			return $widow[0];
 		}
 		
-		$multibyte = false;
-		$encoding = self::detect_encoding($widow[0]); 
-		if ('UTF-8' == $encoding) $multibyte = true;
-
+		$func = &$this->str_functions[ self::detect_encoding( $widow[0] ) ];
+		
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
 		//   as such, we will strip soft hyphens and zero-width-spaces
@@ -2359,24 +2366,12 @@ class PHP_Typography {
 		// eject if widows neighbor is proceeded by a no break space (the pulled text would be too long)
 		if ($widow[1] == '' || strstr($this->chr['noBreakSpace'], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		
-		if ($multibyte) {
-			// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
-			if (
-				($widow[2] != '' && mb_strlen($widow[2]) > $this->settings['dewidowMaxPull'])
-				||
-				mb_strlen($widow[4]) > $this->settings['dewidowMaxLength']
-				)
-					return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
-		} else {
-			// single byte version of previous
-			if (
-				($widow[2] != '' && strlen($widow[2]) > $this->settings['dewidowMaxPull'])
-				||
-				strlen($widow[4]) > $this->settings['dewidowMaxLength']
-				)
-					return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
+		if ( ( $widow[2] != '' && $func['strlen']($widow[2]) > $this->settings['dewidowMaxPull'] ) ||
+			 $func['strlen']( $widow[4] ) > $this->settings['dewidowMaxLength']	) {
+			 	return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		}
-		
+
 		// lets protect some widows!
 		return $widow[1].$widow[2].$this->chr['noBreakSpace'].$widow[4].$widow[5];
 	}
@@ -2435,7 +2430,7 @@ class PHP_Typography {
 
 				$domain_parts = preg_split( '#(\-|\.)#', $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE );
 
-				//this is a hack, but it works
+				// this is a hack, but it works
 				// first, we hyphenate each part
 				// we need it formated like a group of words
 				$parsed_words_like = array();
@@ -2666,8 +2661,8 @@ class PHP_Typography {
 				
 		if ( '' === $this->get_prev_chr( $textnode )) { // we have the first text in a block level element
 						
-			$encoding = self::detect_encoding( $textnode->nodeValue );		
-			$firstChr = mb_substr( $textnode->nodeValue, 0, 1, $encoding );
+			$func = &$this->str_functions[ self::detect_encoding( $textnode->nodeValue ) ];		
+			$firstChr = $func['substr']( $textnode->nodeValue, 0, 1 );
 						
 			if ( $firstChr === "'" || 
 				 $firstChr === $this->chr['singleQuoteOpen'] || 
@@ -2693,9 +2688,9 @@ class PHP_Typography {
 						 $firstChr === $this->chr['singleQuoteOpen'] || 
 						 $firstChr === $this->chr['singleLow9Quote'] || 
 						 $firstChr === ",") {
-						$textnode->nodeValue =  '<span class="quo">'.$firstChr.'</span>'.mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
+						$textnode->nodeValue =  '<span class="quo">'.$firstChr.'</span>'. $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 					} else { // double quotes or guillemets
-						$textnode->nodeValue =  '<span class="dquo">'.$firstChr.'</span>'.mb_substr( $textnode->nodeValue, 1, mb_strlen( $textnode->nodeValue, $encoding ), $encoding );
+						$textnode->nodeValue =  '<span class="dquo">'.$firstChr.'</span>'. $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 					}
 				}
 			}
@@ -2724,7 +2719,6 @@ class PHP_Typography {
 		return $wordPattern;
 	}
 	
-	// expecting Parse_Text tokens filtered to words
 	/**
 	 * Hyphenate given text fragment (if enabled).
 	 * 
@@ -2786,26 +2780,16 @@ class PHP_Typography {
 				$this->settings['hyphenationExceptions']=array();
 			}
 		}
-
-		$multibyte = false;
-		$u = '';
+		
+		$func = array(); // quickly reference string functions according to encoding		
 		foreach ($parsed_text_tokens as &$text_token) {
-			$encoding = self::detect_encoding( $text_token['value'] );
+			$func = &$this->str_functions[ self::detect_encoding( $text_token['value'] ) ];
+			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+				continue; // unknown encoding, abort
+			}
 			
-			if ( 'UTF-8' === $encoding ) {
-				$multibyte = true;
-				$u = 'u';
-			} elseif ( 'ASCII' != $encoding ) {
-				continue;
-			}
-
-			if ( $multibyte ) {
-				$wordLength = mb_strlen( $text_token['value'], 'UTF-8' );
-				$theKey = mb_strtolower( $text_token['value'], 'UTF-8' );
-			} else {  //same as above without mutlibyte string functions to improve preformance
-				$wordLength = strlen( $text_token['value'] );
-				$theKey = strtolower( $text_token['value'] );
-			}
+			$wordLength = $func['strlen']( $text_token['value'] );
+			$theKey = $func['strtolower']( $text_token['value'] );
 		
 			if ( $wordLength < $this->settings['hyphenMinLength'] ) continue;
 
@@ -2816,16 +2800,10 @@ class PHP_Typography {
 			// give exceptions preference
 			if ( isset($this->settings['hyphenationExceptions'][ $theKey ] ) ) {
 				//Set the wordPattern - this method keeps any contextually important capitalization
-				if ($multibyte) {			
-					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][ $theKey ];
-					$lhwArray = $this->mb_str_split( $lowercaseHyphenedWord, 1, 'UTF-8' );
-					$lhwLength = mb_strlen( $lowercaseHyphenedWord, 'UTF-8' );
-				} else {  //same as above without mutlibyte string functions to improve preformance
-					$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][ $theKey ];
-					$lhwArray = str_split( $lowercaseHyphenedWord, 1 );
-					$lhwLength = strlen( $lowercaseHyphenedWord );
-				}
-			
+				$lowercaseHyphenedWord = $this->settings['hyphenationExceptions'][ $theKey ];
+				$lhwArray = $func['str_split']( $lowercaseHyphenedWord, 1 );
+				$lhwLength = $func['strlen']( $lowercaseHyphenedWord );
+							
 				$wordPattern = array();
 				for ( $i=0; $i < $lhwLength; $i++ ) {
 					if( '-' === $lhwArray[ $i ] ) {
@@ -2848,40 +2826,24 @@ class PHP_Typography {
 				// we grab all possible segments from $parsedTextToken of length 1 through $this->settings['hyphenationPatternMaxSegment']
 				for ( $segmentLength=1; ( $segmentLength <= $wordLength ) && ( $segmentLength <= $this->settings['hyphenationPatternMaxSegment'] ); $segmentLength++ ) {
 					for ( $segmentPosition=0; $segmentPosition + $segmentLength <= $wordLength; $segmentPosition++ ) {
-						if ( $multibyte ) {
-							$segment = mb_strtolower( mb_substr( $text_token['value'], $segmentPosition, $segmentLength, 'UTF-8' ), 'UTF-8' );
-						} else {
-							$segment = strtolower( substr( $text_token['value'], $segmentPosition, $segmentLength ) );
-						}
+						$segment = $func['strtolower']( $func['substr']( $text_token['value'], $segmentPosition, $segmentLength ) );
 						
 						if ( 0 == $segmentPosition ) {
 							if( isset($this->settings['hyphenationPattern']['begin'][ $segment ] ) ) {
-								if( $multibyte ) {
-									$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['begin'][ $segment ], 1, 'UTF-8');
-								} else {
-									$segmentPattern = str_split( $this->settings['hyphenationPattern']['begin'][ $segment ], 1 );
-								}
+								$segmentPattern = $func['str_split']( $this->settings['hyphenationPattern']['begin'][ $segment ], 1 );
 								$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 							}
 						}
 						
 						if ( $segmentPosition + $segmentLength == $wordLength ) {
 							if ( isset($this->settings['hyphenationPattern']['end'][ $segment ] ) ) {
-								if ( $multibyte ) {
-									$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['end'][ $segment ], 1, 'UTF-8' );
-								} else {
-									$segmentPattern = str_split( $this->settings['hyphenationPattern']['end'][ $segment ], 1 );
-								}
+								$segmentPattern = $func['str_split']( $this->settings['hyphenationPattern']['end'][ $segment ], 1 );
 								$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 							}
 						}
 						
 						if ( isset($this->settings['hyphenationPattern']['all'][ $segment ] ) ) {
-							if ( $multibyte ) {
-								$segmentPattern = $this->mb_str_split( $this->settings['hyphenationPattern']['all'][ $segment ], 1, 'UTF-8' );
-							} else {
-								$segmentPattern = str_split( $this->settings['hyphenationPattern']['all'][ $segment ], 1 );
-							}
+							$segmentPattern = $func['str_split']( $this->settings['hyphenationPattern']['all'][ $segment ], 1 );
 							$wordPattern = $this->hyphenation_pattern_injection( $wordPattern, $segmentPattern, $segmentPosition, $segmentLength );
 						}
 					}
@@ -2889,11 +2851,7 @@ class PHP_Typography {
 			}
 			
 			//add soft-hyphen based on $wordPattern
-			if ( $multibyte ) {
-				$wordArray = $this->mb_str_split( $text_token['value'], 1, 'UTF-8' );
-			} else {  //same as above without mutlibyte string functions to improve preformance
-				$wordArray = str_split( $text_token['value'], 1 );
-			}
+			$wordArray = $func['str_split']( $text_token['value'], 1 );
 			
 			$hyphenatedWord = '';
 			for ( $i=0; $i < $wordLength; $i++ ) {
@@ -2944,8 +2902,8 @@ class PHP_Typography {
 	 * Multibyte-safe str_split function.
 	 * 
 	 * @param string $str
-	 * @param number $length Defaults to 1.
-	 * @param string $encoding Defaults to 'UTF-8'.
+	 * @param int    $length Optional Default 1.
+	 * @param string $encoding Optional. Default 'UTF-8'.
 	 */
 	function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {	
 		if ( $length < 1 ) {
