@@ -853,15 +853,15 @@ class PHP_Typography {
 		$exceptionKeys = array();
 		$func = array();
 		foreach ( $exceptions as $key => &$exception ) {
-			$func = &$this->str_function[ self::detect_encoding( $exception ) ];
+			$func = &$this->str_functions[ self::detect_encoding( $exception ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort 
 			}
-			
+						
 			$exception = $func['strtolower']( $exception );
-			$exceptionKeys[ $key ] = preg_replace( "#-#{$func['u']}", '', $exception );
+			$exceptionKeys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );	
 		}
-				
+						
 		$this->settings['hyphenationCustomExceptions'] = array_flip( $exceptionKeys );
 				
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
