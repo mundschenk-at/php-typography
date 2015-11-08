@@ -229,24 +229,10 @@ class PHP_Typography {
 	 * 
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
-	function set_tags_to_ignore( $tags = array( 
-											'code', 
-											'head', 
-											'kbd', 
-											'object', 
-											'option', 
-											'pre', 
-											'samp', 
-											'script', 
-											'noscript', 
-											'noembed', 
-											'select', 
-											'style', 
-											'textarea',
-											'title', 
-											'var',
-											'math',		
-										  ) ) {
+	function set_tags_to_ignore( $tags = array( 'code', 'head', 'kbd', 'object', 'option', 'pre',
+		 										'samp', 'script', 'noscript', 'noembed', 'select', 
+												'style', 'textarea', 'title', 'var', 'math',		
+										      ) ) {
 		if ( ! is_array( $tags ) ) {
 			$tags = preg_split( '/[\s,]+/', $tags, -1, PREG_SPLIT_NO_EMPTY); 
 		}
@@ -480,10 +466,10 @@ class PHP_Typography {
 
 		if ( file_exists( dirname( __FILE__ ).'/diacritics/'.$this->settings['diacriticLanguage'].'.php' ) ) {
 			include( 'diacritics/'.$this->settings['diacriticLanguage'].'.php' );
+			$this->settings['diacriticWords'] = $diacriticWords;
 		} else {
-			include( 'diacritics/en-US.php' );
-		}
-		$this->settings['diacriticWords'] = $diacriticWords;	
+			unset( $this->settings['diacriticWords'] );
+		}	
 	}
 
 	/**
@@ -776,12 +762,15 @@ class PHP_Typography {
 
 		if ( file_exists( dirname( __FILE__ ).'/lang/'.$this->settings['hyphenLanguage'].'.php' ) ) {
 			include( 'lang/'.$this->settings['hyphenLanguage'].'.php' );
+			
+			$this->settings['hyphenationPattern'] = $patgen;
+			$this->settings['hyphenationPatternMaxSegment'] = $patgenMaxSeg;
+			$this->settings['hyphenationPatternExceptions'] = $patgenExceptions;
 		} else {
-			include( 'lang/en-US.php' );
+			unset( $this->settings['hyphenationPattern'] );
+			unset( $this->settings['hyphenationPatternMaxSegment'] );
+			unset( $this->settings['hyphenationPatternExceptions'] );
 		}
-		$this->settings['hyphenationPattern'] = $patgen;
-		$this->settings['hyphenationPatternMaxSegment'] = $patgenMaxSeg;
-		$this->settings['hyphenationPatternExceptions'] = $patgenExceptions;
 		
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
 		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
