@@ -45,8 +45,8 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-require_once('class-parse-text.php');
-require_once('../vendor/HTML5.php');
+require_once( 'class-parse-text.php' );
+require_once( __DIR__ . '/../vendor/HTML5.php');
 
 use Masterminds\HTML5;
 
@@ -1352,13 +1352,15 @@ class PHP_Typography {
 	 * 
 	 * @param DOMNode $element
 	 * 
-	 * @return DOMNode The last child of tpye DOMText, the element itself if it is of type DOMText or null.
+	 * @return DOMNode The last child of type DOMText, the element itself if it is of type DOMText or null.
 	 */
 	function get_last_textnode( $element ) {
 		if ( ! is_object( $element ) ) {
 			return null;
 		} elseif ( $element instanceof DOMText ) {
 			return $element;
+		} elseif ( ! $element instanceof DOMElement ) {
+			return null;
 		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
 			return null;
 		}
@@ -1463,8 +1465,10 @@ class PHP_Typography {
 	 */
 	static function get_block_parent($element) {
 		$parent = $element->parentNode;
-		
-		while ( ! HTML5\Elements::isA( $parent->tagName, HTML5\Elements::BLOCK_TAG ) && !empty( $parent->parentNode ) ) {
+
+		while ( isset( $parent->tagName ) &&
+			    ! HTML5\Elements::isA( $parent->tagName, HTML5\Elements::BLOCK_TAG ) &&
+			    ! empty( $parent->parentNode ) ) {
 			$parent = $parent->parentNode;
 		}
 		
