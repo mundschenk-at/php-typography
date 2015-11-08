@@ -66,6 +66,16 @@ class PHP_Typography {
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
 	
 	/**
+	 * An array containing all self-closing HTML5 tags.
+	 */
+	private $self_closing_tags = array();
+	
+	/**
+	 * A array of tags we should never touch.
+	 */
+	private $inappropriate_tags = array();
+	
+	/**
 	 * A hash map for string functions according to encoding.
 	 * 
 	 * $encoding => array( 'strlen' => $function_name, ... )
@@ -145,6 +155,11 @@ class PHP_Typography {
 		$this->str_functions['ASCII']['u']			= ''; // no regex flag needed
 		// we don't care about ISO-8859-1
 		// it is just used to make the code cleaner
+		
+		// setup some arrays for quick HTML5 introspection
+		$this->self_closing_tags = array_filter( array_keys(HTML5\Elements::$html5),
+												 function( &$tag ) { return HTML5\Elements::isA($tag, HTML5\Elements::VOID_TAG); } );		
+		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 		
 		if ($setDefaults) {
 			$this->set_defaults();
@@ -240,12 +255,7 @@ class PHP_Typography {
 		}
 		
 		// self closing tags shouldn't be in $tags
-		$selfClosingTags = array_filter( array_keys(HTML5\Elements::$html5),
-										 function(&$tag) { return HTML5\Elements::isA($tag, HTML5\Elements::VOID_TAG); } ); 
-		$inappropriateTags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option' ,'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
-		$tags = array_unique( array_merge( array_diff( $tags, $selfClosingTags ), $inappropriateTags ) );
-		
-		$this->settings['ignoreTags'] = $tags;
+		$this->settings['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );;
 	}
 
 	/**
