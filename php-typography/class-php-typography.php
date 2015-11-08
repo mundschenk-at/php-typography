@@ -126,7 +126,6 @@ class PHP_Typography {
 		$this->chr['leftWhiteCornerBracket']  = $this->uchr(12302);
 		$this->chr['rightWhiteCornerBracket'] = $this->uchr(12303);
 
-
 		// not sure if this is necessary - but error_log seems to have problems with the strings.
 		// used as the default encoding for mb_* functions
 		$encoding_set = mb_internal_encoding('UTF-8');
@@ -1091,7 +1090,7 @@ class PHP_Typography {
 			$this->smart_dashes( $textnode );
 			$this->smart_ellipses( $textnode );
 			$this->smart_marks( $textnode );
-			
+						
 			//keep spacing after smart character replacement
 			$this->single_character_word_spacing( $textnode );
 			$this->dash_spacing( $textnode );
