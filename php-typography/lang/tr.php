@@ -39,7 +39,7 @@
 	
 */
 
-$patgenLanguage = 'Turkish';
+$patgenLanguage = __( 'Turkish', 'wp-typography' );
 
 $patgenExceptions = array();
 

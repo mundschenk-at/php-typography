@@ -57,7 +57,7 @@
 	
 */
 
-$patgenLanguage = 'Bulgarian';
+$patgenLanguage = __( 'Bulgarian', 'wp-typography' );
 
 $patgenExceptions = array();
 

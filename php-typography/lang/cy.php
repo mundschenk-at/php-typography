@@ -78,7 +78,7 @@ ORIGINAL FILE INFO
 
 */
 
-$patgenLanguage = 'Welsh';
+$patgenLanguage = __( 'Welsh', 'wp-typography' );
 
 $patgenExceptions = array();
 

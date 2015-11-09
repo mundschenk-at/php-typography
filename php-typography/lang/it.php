@@ -155,7 +155,7 @@
 	
 */
 
-$patgenLanguage = 'Italian';
+$patgenLanguage = __( 'Italian', 'wp-typography' );
 
 $patgenExceptions = array();
 

@@ -71,7 +71,7 @@
 	
 */
 
-$patgenLanguage = 'Serbocroatian (Latin)';
+$patgenLanguage = __( 'Serbocroatian (Latin)', 'wp-typography' );
 
 $patgenExceptions = array(
 'nadno'=>'na-dno',

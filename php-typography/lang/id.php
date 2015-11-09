@@ -127,7 +127,7 @@
 	
 */
 
-$patgenLanguage = 'Indonesian';
+$patgenLanguage = __( 'Indonesian', 'wp-typography' );
 
 $patgenExceptions = array(
 'berabe'=>'be-ra-be',

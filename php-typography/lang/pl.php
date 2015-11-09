@@ -102,7 +102,7 @@
 	
 */
 
-$patgenLanguage = 'Polish';
+$patgenLanguage = __( 'Polish', 'wp-typography' );
 
 $patgenExceptions = array(
 'bezach'=>'be-zach',

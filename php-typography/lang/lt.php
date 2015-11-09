@@ -51,7 +51,7 @@
 	
 */
 
-$patgenLanguage = 'Lithuanian';
+$patgenLanguage = __( 'Lithuanian', 'wp-typography' );
 
 $patgenExceptions = array();
 

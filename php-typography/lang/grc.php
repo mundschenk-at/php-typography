@@ -49,7 +49,7 @@
 	
 */
 
-$patgenLanguage = 'Greek (Ancient)';
+$patgenLanguage = __( 'Greek (Ancient)', 'wp-typography' );
 
 $patgenExceptions = array();
 

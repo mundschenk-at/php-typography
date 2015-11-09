@@ -121,7 +121,7 @@
 	
 */
 
-$patgenLanguage = 'Mongolian (Cyrillic)';
+$patgenLanguage = __( 'Mongolian (Cyrillic)', 'wp-typography' );
 
 $patgenExceptions = array();
 

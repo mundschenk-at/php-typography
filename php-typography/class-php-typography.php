@@ -892,16 +892,22 @@ class PHP_Typography {
 			// we only want the php files
 			if ('.php' == substr( $file, -4 ) ) {
 				$fileContent = file_get_contents( $langDir . $file );
-				preg_match( '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches );
-				$languageName = substr( $matches[1], 1, -1 );
+				
+				preg_match( '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches ); // FIXME
+				if ( ! isset($matches[1]) ) {
+					// maybe the language name is being translated
+					preg_match( '/\$patgenLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/', $fileContent, $matches );
+				}
+				$languageName = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
+																					 // language name in the patgen file already.
 				$languageCode = substr( $file, 0, -4 );
-				$results[$languageCode] = $languageName;
+				$languages[$languageCode] = $languageName;
 			}
 		}
 		closedir( $handler );
 
-		asort( $results );
-		return $results;
+		asort( $languages );
+		return $languages;
 	}
 
 	/**
@@ -911,24 +917,29 @@ class PHP_Typography {
 	 */
 	function get_diacritic_languages() {
 		$languages = array();
-		$langDir = dirname( __FILE__ ) . '/diacritics/';
-		$handler = opendir( $langDir );
+		$lang_dir = dirname( __FILE__ ) . '/diacritics/';
+		$handler = opendir( $lang_dir );
 		
 		// read all files in directory
 		while ( $file = readdir( $handler ) ) {
 			// we only want the php files
 			if ('.php' == substr( $file, -4 ) ) {
-				$fileContent = file_get_contents( $langDir.$file );
+				$fileContent = file_get_contents( $lang_dir.$file );
 				preg_match( '/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/', $fileContent, $matches );
-				$languageName = substr( $matches[1], 1, -1 );
+				if ( ! isset($matches[1]) ) {
+					// maybe the language name is being translated
+					preg_match( '/\$diacriticLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/', $fileContent, $matches );
+				}
+				$languageName = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
+																					 // language name in the patgen file already.
 				$languageCode = substr( $file, 0, -4 );
-				$results[$languageCode] = $languageName;
+				$languages[$languageCode] = $languageName;
 			}
 		}
 		closedir( $handler );
 
-		asort( $results );
-		return $results;
+		asort( $languages );
+		return $languages;
 	}
 		
 	/**

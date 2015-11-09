@@ -107,7 +107,7 @@
 	
 */
 
-$patgenLanguage = 'Slovenian';
+$patgenLanguage = __( 'Slovenian', 'wp-typography' );
 
 $patgenExceptions = array();
 

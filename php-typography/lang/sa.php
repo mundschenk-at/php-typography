@@ -32,7 +32,7 @@
 	
 */
 
-$patgenLanguage = 'Sanskrit';
+$patgenLanguage = __( 'Sanskrit', 'wp-typography' );
 
 $patgenExceptions = array();
 

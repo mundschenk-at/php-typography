@@ -96,7 +96,7 @@
 	
 */
 
-$patgenLanguage = 'Slovak';
+$patgenLanguage = __( 'Slovak', 'wp-typography' );
 
 $patgenExceptions = array(
 'dosť'=>'dosť',

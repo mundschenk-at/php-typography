@@ -106,7 +106,7 @@
 	
 */
 
-$patgenLanguage = 'Interlingua';
+$patgenLanguage = __( 'Interlingua', 'wp-typography' );
 
 $patgenExceptions = array(
 'alcun'=>'alc-un',

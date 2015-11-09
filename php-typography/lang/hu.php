@@ -26,7 +26,7 @@
 */
 
 
-$patgenLanguage = 'Hungarian';
+$patgenLanguage = __( 'Hungarian', 'wp-typography' );
 
 $patgenExceptions = array();
 

@@ -35,7 +35,7 @@
 	
 */
 
-$patgenLanguage = "Galician";
+$patgenLanguage = __( "Galician", 'wp-typography' );
 
 $patgenExceptions = array();
 

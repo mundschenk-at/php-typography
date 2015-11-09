@@ -45,7 +45,7 @@
 	
 */
 
-$patgenLanguage = 'German';
+$patgenLanguage = __( 'German', 'wp-typography' );
 
 $patgenExceptions = array();
 

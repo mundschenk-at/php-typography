@@ -120,7 +120,7 @@
 	
 */
 
-$patgenLanguage = 'French';
+$patgenLanguage = __( 'French', 'wp-typography' );
 
 $patgenExceptions = array();
 

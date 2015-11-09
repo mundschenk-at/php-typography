@@ -139,7 +139,7 @@
 	
 */
 
-$patgenLanguage = 'Catalan';
+$patgenLanguage = __( 'Catalan', 'wp-typography' );
 
 $patgenExceptions = array(
 'curie'=>'cu-rie',

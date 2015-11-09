@@ -15,7 +15,7 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-$diacriticLanguage = 'German';
+$diacriticLanguage = __( 'German', 'wp-typography' );
 
 $diacriticWords = array(
 	"a bas"=>"à bas",

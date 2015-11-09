@@ -59,7 +59,7 @@
 	
 */
 
-$patgenLanguage = 'Czech';
+$patgenLanguage = __( 'Czech', 'wp-typography' );
 
 $patgenExceptions = array(
 'koeficient'=>'koe-fi-ci-ent',

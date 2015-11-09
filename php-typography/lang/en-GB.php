@@ -74,7 +74,7 @@
 	
 */
 
-$patgenLanguage = 'English (United Kingdom)';
+$patgenLanguage = __( 'English (United Kingdom)', 'wp-typography' );
 
 $patgenExceptions = array('university'=>'uni-ver-sity',
 'universities'=>'uni-ver-sit-ies',

@@ -92,7 +92,7 @@
 	
 */
 
-$patgenLanguage = 'Finnish';
+$patgenLanguage = __( 'Finnish', 'wp-typography' );
 
 $patgenExceptions = array();
 
