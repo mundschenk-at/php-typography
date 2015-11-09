@@ -50,20 +50,50 @@ require_once( __DIR__ . '/../vendor/HTML5.php');
 
 use Masterminds\HTML5;
 
-
 /**
- * If used with multibyte language, UTF-8 encoding is required!
+ * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
+ * 
+ * If used with multibyte language, UTF-8 encoding is required. 
+ * 
+ * Portions of this code have been inspired by:
+ *  - typogrify (https://code.google.com/p/typogrify/)
+ *  - WordPress code for wptexturize (https://developer.wordpress.org/reference/functions/wptexturize/)
+ *  - PHP SmartyPants Typographer (https://michelf.ca/projects/php-smartypants/typographer/)
+ * 
+ *  @author Jeffrey D. King <jeff@kingdesk.com>
+ *  @author Peter Putzer <github@mundschenk.at>
  */
 class PHP_Typography {
 
-	var $chr = array();      // hashmap for various special characters
-	var $settings = array(); // operational attributes
+	/**
+	 * A hashmap for various special characters.
+	 */
+	public $chr = array();
+	
+	/**
+	 * A hashmap of settings for the various typographic options. 
+	 */
+	public $settings = array(); 
 
-	var $text_parser;  // custom parser for DOMText (php-parser/class-parse-text.php)
-	var $html5_parser; // HTML5-PHP parser
-
-	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' ); // allowed encodings
+	/**
+	 * Allowed encodings.
+	 */
+	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' );
+	
+	/**
+	 * An array of ( $tag => true ) for quick checking with `isset`.  
+	 */
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
+	
+	/**
+	 * A custom parser for DOMText to separate words, whitespace etc. for HTML injection.
+	 */
+	public $text_parser; 
+	
+	/**
+	 * A DOM-based HTML5 parser.
+	 */
+	public $html5_parser;
 	
 	/**
 	 * An array containing all self-closing HTML5 tags.
@@ -2843,19 +2873,5 @@ class PHP_Typography {
 		}
 		
 		return $result;
-	}
-
-
-
-
-##########################################################################################
-##########################################################################################
-##########################################################################################
-###		
-###		portions of this code have been inspired by:
-###			-typogrify (http://code.google.com/p/typogrify/)
-###			-WordPress code for wptexturize (http://xref.redalt.com/wptrunk/nav.htm?index.htm)
-###			-PHP SmartyPants Typographer (http://michelf.com/projects/php-smartypants/)
-###		
-	
+	}	
 }
