@@ -47,20 +47,43 @@
 
 namespace PHP_Typography;
 
-#########################################################################################################
-#########################################################################################################
-##
-##	parseText assumes no HTML markup in text (except for special html characters like &gt;)
-##
-##	if multibyte characters are passed, encoding must be UTF-8 
-##
-#########################################################################################################
-#########################################################################################################
+/**
+ * A class to parse plain text (such as the nodeValue of DOMText).
+ * 
+ * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;). 
+ * If multibyte characters are passed, they must be encoded as UTF-8. 
+ */
 class Parse_Text {
 	
-	var $encodings = array();
-	var $mb = false; //changes to this must occur prior to load
-	var $text = array();
+	/**
+	 * An array of encodings to check.
+	 * 
+	 * @var array $encodings An array of encoding names.
+	 */
+	private $encodings = array();
+	
+	/**
+	 * Do we need multibyte-safe functions?
+	 * 
+	 * Changes to this must occur prior to `load`
+	 * 
+	 * @var boolean $mb. Default false.
+	 */
+	private $mb = false;
+	
+	/**
+	 * The tokenized text.
+	 * 
+	 * @var array $text {
+	 * 		@type array $index {
+	 * 			Tokenized text.
+	 * 
+	 * 			@type string $type 'space' | 'punctuation' | 'word' | 'other'. Required.
+	 * 			@type string $value Token content. Required.
+	 * 		}
+	 * }
+	 */
+	private $text = array();
 			/*
 				$text structure:
 					ARRAY:
@@ -71,8 +94,19 @@ class Parse_Text {
 							'value'		=> STRING: token content
 			*/
 
-	var $components = array();
-	var $regex = array();
+	/**
+	 * An array of various regex components (not complete patterns).
+	 * 
+	 * @var array $components
+	 */
+	private $components = array();
+	
+	/**
+	 * An array of regex patterns.
+	 * 
+	 * @var array $regex
+	 */
+	private $regex = array();
 	
 	#=======================================================================
 	#=======================================================================
@@ -80,7 +114,12 @@ class Parse_Text {
 	#=======================================================================
 	#=======================================================================
 
-	function __construct($encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
+	/**
+	 * Creates a new parser object.
+	 *  
+	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8', 'ISO-8859-1' ].
+	 */
+	function __construct( $encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
 		$this->encodings = $encodings;	
 		
 		# find spacing FIRST (as it is the primary delimiter)
@@ -176,7 +215,6 @@ class Parse_Text {
 		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 	
 		
-		// duplicated in get_words
 		// letter connectors allowed in words
 		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
 		#		underscore ("&#95;", "&#x005f;")
@@ -293,97 +331,106 @@ class Parse_Text {
 	########################################################################
 	#	( UN | RE )LOAD, UPDATE AND CLEAR METHODS
 	#
-
-	#   Params:		$rawText STRING containing HTML markup OR ARRAY containg a single parseHTML token
-	# 	Action:		Tokenizes $rawText (or $rawText['value'] - as the case may be) and saves it to $this->text
-	#   Returns:    true on completion
-	function load($rawText) {
-
-		// abort if a simple string exceeds 500 characters (security concern)
-		if( (is_string($rawText) && preg_match("@\w{500}@s", $rawText)) || (is_array($rawText) && preg_match("@\w{500}@s", $rawText['value'])) ) {
-			return;
-		}
-
-		$this->clear();
-		if(! is_string($rawText) ) {
-			// we have an error
-			return false;
+	
+	/**
+	 * Tokenize a string and store the tokens in $this->text.
+	 * 
+	 * @param string $raw_text A text fragment without any HTML markup.
+	 * @return boolean Returns `true` on successful completion, `false` otherwise.
+	 */
+	function load( $raw_text ) {
+		if( ! is_string( $raw_text ) ) {
+			return false; // we have an error, abort
 		}
 		
-		$encoding = mb_detect_encoding($rawText.'a', $this->encodings);
-		if('UTF-8' == $encoding) {
- 			$this->mb = true;
-			if(!function_exists('mb_strlen')) return false;
-		} elseif('ASCII' != $encoding) {
+		// abort if a simple string exceeds 500 characters (security concern)
+		if ( preg_match( '@\w{500}@s', $raw_text ) ) { // FIXME: should be in $this->regex
 			return false;
+		}
+
+		// clear any remains
+		// FIXME: is this necessary?  
+		$this->clear();
+
+		switch ( mb_detect_encoding($raw_text.'a', $this->encodings) ) {
+			case 'UTF-8':
+				$this->mb = true;
+				break;
+				
+			case 'ASCII':
+				$this->mb = false;
+				break;
+				
+			default:
+				return false; 
 		}
 				
 		$tokens = array();
-		$parts = preg_split($this->regex['anyText'], $rawText, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$parts = preg_split( $this->regex['anyText'], $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE );
 		
 		$index = 0;
-		foreach ($parts as $part) {
-			if ($part !== '') {
+		foreach ( $parts as $part ) {
+			if ( '' !== $part ) {
 		
-				if(preg_match($this->regex['space'], $part)) {					
+				if ( preg_match($this->regex['space'], $part ) ) {					
 					$tokens[$index] = array(
 									'type'		=> 'space',
 									'value'		=> $part,
 									);
-				} elseif(preg_match($this->regex['punctuation'], $part)) {				
+				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {				
 					$tokens[$index] = array(
 									'type'		=> 'punctuation',
 									'value'		=> $part,
 									);
-				} elseif(preg_match($this->regex['word'], $part)) {
-					//make sure that things like email addresses and URLs are not broken up into words and punctuation					
-					// not preceeded by an 'other'
-					if($index-1 >= 0 && $tokens[$index-1]['type'] == 'other') {
-						$oldPart = $tokens[$index-1]['value'];
-						$tokens[$index-1] = array(
+				} elseif ( preg_match( $this->regex['word'], $part ) ) {
+					// make sure that things like email addresses and URLs are not broken up 
+					// into words and punctuation not preceeded by an 'other'
+					if ( $index - 1 >= 0 && $tokens[ $index - 1 ]['type'] === 'other' ) {
+						$old_part = $tokens[ $index - 1 ]['value'];
+						$tokens[ $index - 1 ] = array(
 									'type'		=> 'other',
-									'value'		=> $oldPart.$part,
+									'value'		=> $old_part.$part,
 									);
-						$index = $index-1;
+						$index = $index - 1;
 						
 					// not preceeded by a non-space + punctuation
-					} elseif($index-2 >= 0 && $tokens[$index-1]['type'] == 'punctuation' && $tokens[$index-2]['type'] != 'space') {
-						$oldPart = $tokens[$index-1]['value'];
-						$olderPart = $tokens[$index-2]['value'];
-						$tokens[$index-2] = array(
+					} elseif( $index - 2 >= 0 && $tokens[ $index - 1 ]['type'] === 'punctuation' && $tokens[ $index - 2 ]['type'] !== 'space') {
+						$old_part = $tokens[ $index - 1 ]['value'];
+						$older_part = $tokens[ $index - 2 ]['value'];
+						$tokens[ $index - 2 ] = array(
 									'type'		=> 'other',
-									'value'		=> $olderPart.$oldPart.$part,
+									'value'		=> $older_part.$old_part.$part,
 									);
-						unset($tokens[$index-1]);
-						$index = $index-2;
+						unset( $tokens[ $index - 1 ] );
+						$index = $index - 2;
 					} else {	
-						$tokens[$index] = array(
+						$tokens[ $index ] = array(
 									'type'		=> 'word',
 									'value'		=> $part,
 									);
 					}
 				} else {					
-					//make sure that things like email addresses and URLs are not broken up into words and punctuation
-					// not preceeded by an 'other' or 'word'
-					if($index-1 >= 0 && ($tokens[$index-1]['type'] == 'word' || $tokens[$index-1]['type'] == 'other')) {
-						$index = $index-1;
-						$oldPart = $tokens[$index]['value'];
-						$tokens[$index] = array(
+					// make sure that things like email addresses and URLs are not broken up into words 
+					// and punctuation not preceeded by an 'other' or 'word'
+					if ( $index - 1 >= 0 && ( $tokens[ $index - 1 ]['type'] === 'word' || $tokens[ $index - 1 ]['type'] === 'other' ) ) {
+						$index = $index - 1;
+						$old_part = $tokens[ $index ]['value'];
+						$tokens[ $index ] = array(
 									'type'		=> 'other',
-									'value'		=> $oldPart.$part,
+									'value'		=> $old_part.$part,
 									);
 					// not preceeded by a non-space + punctuation
-					} elseif($index-2 >= 0 && $tokens[$index-1]['type'] == 'punctuation' && $tokens[$index-2]['type'] != 'space') {
-						$oldPart = $tokens[$index-1]['value'];
-						$olderPart = $tokens[$index-2]['value'];
-						$tokens[$index-2] = array(
+					} elseif( $index - 2 >= 0 && $tokens[ $index - 1 ]['type'] === 'punctuation' && $tokens[ $index - 2 ]['type'] !== 'space' ) {
+						$old_part = $tokens[ $index - 1 ]['value'];
+						$older_part = $tokens[ $index - 2 ]['value'];
+						$tokens[ $index - 2 ] = array(
 									'type'		=> 'other',
-									'value'		=> $olderPart.$oldPart.$part,
+									'value'		=> $older_part.$old_part.$part,
 									);
-						unset($tokens[$index-1]);
-						$index = $index-2;
+						unset( $tokens[ $index - 1 ] );
+						$index = $index - 2;
 					} else {	
-						$tokens[$index] = array(
+						$tokens[ $index ] = array(
 									'type'		=> 'other',
 									'value'		=> $part,
 									);
@@ -398,16 +445,24 @@ class Parse_Text {
 		return true;
 	}
 	
-	#	Action:		reloads $this->text (i.e. capture new inserted text, or remove those whose values are deleted)
-	#	Returns:	true on completion
-	#	WARNING: 	Tokens previously acquired through 'get' methods may not match new tokenization
+	/**
+	 * Reloads $this->text (i.e. capture new inserted text, or remove those tokens whose values have been deleted).
+	 * 
+	 * Warning: Tokens previously acquired through 'get' methods may not match new tokenization.
+	 * 
+	 * @return boolean Returns true on successful completion.
+	 */
 	function reload() {
 		return $this->load($this->unload());
 	}
 	
-	#	Action:		outputs Text as string
-	#	Returns:	STRING of Text (if string was initially loaded), or ARRAY of
+	/**
+	 * Returns the complete text as a string and clears the parser.
+	 * 
+	 * @return string 
+	 */
 	function unload() {
+		
 		$reassembledText = '';
 		foreach($this->text as &$token) {
 			$reassembledText .= $token['value'];
@@ -417,22 +472,27 @@ class Parse_Text {
 		return $reassembledText;
 	}
 	
-	#	Action:		unsets $this->text
-	#	Returns:	true on completion
+	/**
+	 * Clears the currently set text from the parser.  
+	 */
 	function clear() {
 		$this->text = array();
 		$this->mb = false;
-		return true;		
 	}
 	
-	#   Parameter:  ARRAY of tokens
-	#	Action:		overwrite 'value' for all matching tokens
-	#	Returns:	true on completion
-	function update($tokens) {
+	/**
+	 * Updates the 'value' field for all matching tokens.
+	 * 
+	 * @param array $tokens {
+	 * 		An array of tokens.
+	 * 
+	 * 		@type string $value
+	 * }
+	 */
+	function update( $tokens ) {
 		foreach($tokens as $index => $token) {
 			$this->text[$index]['value'] = $token['value'];
 		}
-		return true;		
 	}
 
 
@@ -441,20 +501,39 @@ class Parse_Text {
 	#
 	#   Returns:    ARRAY of sought tokens
 
+	/**
+	 * Retrieve all tokens of the currently set text.
+	 * 
+	 * @return array An array of tokens.
+	 */
 	function get_all() {
 		return $this->text;
 	}
 
+	/**
+	 * Retrieve all tokens of the type "space".
+	 * 
+	 * @return array An array of tokens.
+	 */
 	function get_spaces() {
 		return $this->get_type('space');
 	}
 
+	/**
+	 * Retrieve all tokens of the type "punctuation".
+	 * 
+	 * @return array An array of tokens.
+	 */
 	function get_punctuation() {
 		return $this->get_type('punctuation');
 	}
 
-	#   Parameter:  $abc letter-only match OPTIONAL INT -1=>prohibit, 0=>allow, 1=>require
-	# 				$caps capital-only match (allows non letter chrs) OPTIONAL INT  -1=>prohibit, 0=>allow, 1=>require
+	/**
+	 * Retrieve all tokens of the type "word".
+	 * 
+	 * @param number $abc letter-only match OPTIONAL INT -1=>prohibit, 0=>allow, 1=>require
+	 * @param number $caps capital-only match (allows non letter chrs) OPTIONAL INT  -1=>prohibit, 0=>allow, 1=>require
+	 */
 	function get_words($abc = 0, $caps = 0) {
 		$words = $this->get_type('word');
 		$tokens = array();
@@ -480,6 +559,11 @@ class Parse_Text {
 		return $tokens;
 	}
 
+	/**
+	 * Retrieve all tokens of the type "other".
+	 * 
+	 * @return array An array of tokens.
+	 */
 	function get_other() {
 		return $this->get_type('other');
 	}
@@ -492,14 +576,20 @@ class Parse_Text {
 	#=======================================================================
 	#=======================================================================
 
-	#	Params:	STRING type to get
-	function get_type($type) {
+	/**
+	 * Retrieve all tokens of the given type.
+	 * 
+	 * @param string $type The type to get.
+	 */
+	function get_type( $type ) {
 		$tokens = array();
-		foreach($this->text as $index => $token) {
-			if($token['type'] == $type)
+		
+		foreach( $this->text as $index => $token ) {
+			if( $token['type'] === $type )
 				$tokens[$index] = $token; 
 		}
+		
 		return $tokens;		
 	}
 	
-} // end class parseText
+}
