@@ -8,7 +8,12 @@
 
 error_reporting( E_ALL & E_STRICT );
 
-require_once '../php-typography/class-php-typography.php';
+require_once( __DIR__ . '/../php-typography/class-php-typography.php' );
+
+// don't break without translation function
+if ( ! function_exists( '__' ) ) {
+	function &__( $string, $domain = null ) { return $string; }
+}
 
 $testHTML = <<<'EOD'
 <h1>HTML Ipsum Presents</h1>
@@ -114,13 +119,11 @@ $testHTML = <<<'EOD'
 EOD;
 
 $php_typo = new \PHP_Typography\PHP_Typography();
-$i = 0;
 $startTime = microtime(true);
-for (; $i < 100; ++$i) {
+
+for ($i = 0; $i < 100; ++$i) {
 	$php_typo->process($testHTML, false);
 }
 $endTime = microtime(true);
 
 echo "$i iterations took " . ($endTime - $startTime) . " seconds.\n";
-
-?>
