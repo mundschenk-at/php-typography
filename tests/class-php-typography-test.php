@@ -928,26 +928,33 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::smart_math
-     * @todo   Implement testSmart_math().
+     * @covers PHP_Typography::_smart_math_callback
      */
     public function testSmart_math()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers PHP_Typography::_smart_math_callback
-     * @todo   Implement test_smart_math_callback().
-     */
-    public function test_smart_math_callback()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->object;
+    	
+		$typo->set_smart_math( true );
+		
+		// standard equations
+		$this->assertSame( 'xx 7&minus;3=4 xx', $this->clean_html( $typo->process('xx 7-3=4 xx') ) );
+		$this->assertSame( 'xx 3&times;3=5&divide;2 xx', $this->clean_html( $typo->process('xx 3*3=5/2 xx') ) );
+		
+		// some changes should be reversed (not all)
+		$this->assertSame( 'xx 0815-4711 xx', $typo->process( 'xx 0815-4711 xx' ) );
+ 		$this->assertSame( 'xx 1/2 xx', $typo->process( 'xx 1/2 xx') );
+		$this->assertNotSame( 'xx 2001-13-12 xx', $typo->process( 'xx 2001-13-12 xx' ) ); // not a valid date
+		$this->assertSame( 'xx 2001-12-13 xx', $typo->process('xx 2001-12-13 xx') ); 
+		$this->assertNotSame( 'xx 2001-13-13 xx', $typo->process('xx 2001-13-13 xx') ); // not a valid date
+		$this->assertSame( 'xx 13-12-2002 xx', $typo->process('xx 13-12-2002 xx') );
+		$this->assertSame( 'xx 12-13-2002 xx', $typo->process('xx 12-13-2002 xx') );
+		$this->assertNotSame( 'xx 13-13-2002 xx', $typo->process('xx 13-13-2002 xx') ); // not a valid date
+		$this->assertSame( 'xx 2001-12 xx', $typo->process('xx 2001-12 xx') );
+		$this->assertSame( 'xx 2001-13 xx', $typo->process('xx 2001-13 xx') ); // apparently a valid day count
+		$this->assertSame( 'xx 2001-100 xx', $typo->process('xx 2001-100 xx') );
+		$this->assertSame( 'xx 12/13/2010 xx', $typo->process('xx 12/13/2010 xx') );
+		$this->assertSame( 'xx 13/12/2010 xx', $typo->process('xx 13/12/2010 xx') );
+		$this->assertSame( 'xx 13&divide;13&divide;2010 xx', $this->clean_html( $typo->process('xx 13/13/2010 xx') ) ); // not a valid date
     }
 
     /**
