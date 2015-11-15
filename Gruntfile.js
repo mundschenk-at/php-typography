@@ -16,10 +16,22 @@ module.exports = function(grunt) {
 	                updateTimestamp: true
 	            }
 	        }
+	    },
+	    phpunit: {
+	        classes: {
+	            options: {
+	            	testsuite: 'wpTypography',
+	            }
+	        },
+	        options: {
+	            colors: true,
+	            configuration: 'phpunit.xml',
+	        }
 	    }
 	});
 
 	grunt.registerTask( 'default', [
+	    'phpunit',
 		'makepot',
     ]);
 
