@@ -2322,7 +2322,7 @@ class PHP_Typography {
 		if ( '' === $this->get_next_chr( $textnode ) ) { 
 			// we have the last type "text" child of a block level element
 
-			$textnode->nodeValue = preg_replace_callback( $this->regex['dewidow'], array( &$this, '_dewidow_callback' ), $textnode->nodeValue );
+			$textnode->nodeValue = preg_replace_callback( $this->regex['dewidow'], array( $this, '_dewidow_callback' ), $textnode->nodeValue );
 		}
 	}
 
@@ -2337,7 +2337,7 @@ class PHP_Typography {
 			return $widow[0];
 		}
 		
-		$func = &$this->str_functions[ detect_encoding( $widow[0] ) ];
+		$func = $this->str_functions[ detect_encoding( $widow[0] ) ];
 		
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
@@ -2577,7 +2577,7 @@ class PHP_Typography {
 				
 		if ( '' === $this->get_prev_chr( $textnode )) { // we have the first text in a block level element
 						
-			$func = &$this->str_functions[ detect_encoding( $textnode->nodeValue ) ];		
+			$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];		
 			$firstChr = $func['substr']( $textnode->nodeValue, 0, 1 );
 						
 			if ( $firstChr === "'" || 
@@ -2699,7 +2699,7 @@ class PHP_Typography {
 		
 		$func = array(); // quickly reference string functions according to encoding		
 		foreach ($parsed_text_tokens as &$text_token) {
-			$func = &$this->str_functions[ detect_encoding( $text_token['value'] ) ];
+			$func = $this->str_functions[ detect_encoding( $text_token['value'] ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort
 			}
