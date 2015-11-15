@@ -2332,8 +2332,8 @@ class PHP_Typography {
 	 * @param array $widow Regex matching array.
 	 * @return string
 	 */
-	private function _dewidow_callback( $widow ) {
-		if ( empty($this->settings['dewidowMaxPull']) || empty($this->settings['dewidowMaxLength']) ) {
+	private function _dewidow_callback( array $widow ) {
+		if ( empty( $this->settings['dewidowMaxPull'] ) || empty( $this->settings['dewidowMaxLength'] ) ) {
 			return $widow[0];
 		}
 		
@@ -2342,20 +2342,20 @@ class PHP_Typography {
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
 		//   as such, we will strip soft hyphens and zero-width-spaces
-		$widow[4] = str_replace($this->chr['zeroWidthSpace'], '', $widow[4]);
-		$widow[4] = str_replace($this->chr['softHyphen'], '', $widow[4]);
+		$widow[4] = str_replace( $this->chr['zeroWidthSpace'], '', $widow[4] );
+		$widow[4] = str_replace( $this->chr['softHyphen'], '', $widow[4] );
 						
-//		$widow[5] = preg_replace("/\s+/", $this->chr['noBreakSpace'], $widow[5]);
-		$widow[5] = mb_ereg_replace('/\s+/', $this->chr['noBreakSpace'], $widow[5], 'p');; // fixes multibyte unicode corruption that occurs in some instances in the line above.
-		
-		$widow[5] = str_replace($this->chr['zeroWidthSpace'], '', $widow[5]);
-		$widow[5] = str_replace($this->chr['softHyphen'], '', $widow[5]);
+		$widow[5] = preg_replace( "/\s+/{$func['u']}", $this->chr['noBreakSpace'], $widow[5] );	
+		$widow[5] = str_replace( $this->chr['zeroWidthSpace'], '', $widow[5] );
+		$widow[5] = str_replace( $this->chr['softHyphen'], '', $widow[5] );
 		
 		// eject if widows neighbor is proceeded by a no break space (the pulled text would be too long)
-		if ($widow[1] == '' || strstr($this->chr['noBreakSpace'], $widow[1])) return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		if ( '' === $widow[1] || strstr($this->chr['noBreakSpace'], $widow[1])) {
+			return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		}
 		
 		// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
-		if ( ( $widow[2] != '' && $func['strlen']($widow[2]) > $this->settings['dewidowMaxPull'] ) ||
+		if ( ( '' !== $widow[2] && $func['strlen']( $widow[2] ) > $this->settings['dewidowMaxPull'] ) ||
 			 $func['strlen']( $widow[4] ) > $this->settings['dewidowMaxLength']	) {
 			 	return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		}
