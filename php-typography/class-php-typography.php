@@ -1571,7 +1571,7 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Apply smart ellipses (if enabled).
+	 * Apply smart diacritics (if enabled).
 	 *
 	 * @param \DOMText $textnode
 	 */
