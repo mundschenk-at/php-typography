@@ -773,13 +773,8 @@ class PHP_Typography {
 			$tags = preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
-		// all tags need to be lower-cased
-		foreach ( $tags as &$tag ) {
-			$tag = strtolower( $tag );
-		}
-		
 		// store the tag array inverted (with the tagName as its index for faster lookup)
-		$this->settings['initialQuoteTags'] = array_flip( $tags ); 
+		$this->settings['initialQuoteTags'] = array_change_key_case( array_flip( $tags ), CASE_LOWER ); 
 	}
 
 	/**
