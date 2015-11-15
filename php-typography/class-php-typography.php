@@ -1871,12 +1871,12 @@ class PHP_Typography {
 	 * 
 	 * @param \DOMText $textnode
 	 */
-	function smart_ordinal_suffix($domtext) {
+	function smart_ordinal_suffix( \DOMText $textnode) {
 		if ( empty( $this->settings['smartOrdinalSuffix'] ) ) {
 			return;
 		}
 
-		$domtext->nodeValue = preg_replace( "/\b(\d+)(st|nd|rd|th)\b/", '$1'.'<sup>$2</sup>', $domtext->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartOrdinalSuffix'], '$1'.'<sup>$2</sup>', $textnode->nodeValue );
 	}
 
 	/**
