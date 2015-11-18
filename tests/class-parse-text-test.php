@@ -181,7 +181,49 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     	$tokens = $typo->get_words();    	
     	$this->assertCount(4, $tokens);
     	
-    	return $typo;
+    	$typo->load( 'A few m1xed W0RDS.' );
+    	$tokens = $typo->get_words( 'require-all-letters', 'no-all-caps' );
+    	$this->assertCount( 1, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'allow-all-letters', 'no-all-caps' );
+    	$this->assertCount( 2, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'no-all-letters', 'no-all-caps' );
+    	$this->assertCount( 1, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'require-all-letters', 'allow-all-caps' );
+    	$this->assertCount( 2, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
+    	 
+    	$tokens = $typo->get_words( 'allow-all-letters', 'allow-all-caps' );
+    	$this->assertCount( 4, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
+    	 
+    	$tokens = $typo->get_words( 'no-all-letters', 'allow-all-caps' );
+    	$this->assertCount( 2, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'require-all-letters', 'require-all-caps' );
+    	$this->assertCount( 1, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'allow-all-letters', 'require-all-caps' );
+    	$this->assertCount( 2, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
+    	
+    	$tokens = $typo->get_words( 'no-all-letters', 'require-all-caps' );
+    	$this->assertCount( 1, $tokens );
+    	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
     }
 
     /**

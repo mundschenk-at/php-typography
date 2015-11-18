@@ -394,7 +394,7 @@ class Parse_Text {
 						$index = $index - 1;
 						
 					// not preceeded by a non-space + punctuation
-					} elseif( $index - 2 >= 0 && $tokens[ $index - 1 ]['type'] === 'punctuation' && $tokens[ $index - 2 ]['type'] !== 'space') {
+					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
@@ -412,7 +412,7 @@ class Parse_Text {
 				} else {					
 					// make sure that things like email addresses and URLs are not broken up into words 
 					// and punctuation not preceeded by an 'other' or 'word'
-					if ( $index - 1 >= 0 && ( $tokens[ $index - 1 ]['type'] === 'word' || $tokens[ $index - 1 ]['type'] === 'other' ) ) {
+					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
 						$index = $index - 1;
 						$old_part = $tokens[ $index ]['value'];
 						$tokens[ $index ] = array(
@@ -420,7 +420,7 @@ class Parse_Text {
 									'value'		=> $old_part.$part,
 									);
 					// not preceeded by a non-space + punctuation
-					} elseif( $index - 2 >= 0 && $tokens[ $index - 1 ]['type'] === 'punctuation' && $tokens[ $index - 2 ]['type'] !== 'space' ) {
+					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
@@ -516,7 +516,7 @@ class Parse_Text {
 	 * @return array An array of tokens.
 	 */
 	function get_spaces() {
-		return $this->get_type('space');
+		return $this->get_type( 'space' );
 	}
 
 	/**
@@ -525,37 +525,49 @@ class Parse_Text {
 	 * @return array An array of tokens.
 	 */
 	function get_punctuation() {
-		return $this->get_type('punctuation');
+		return $this->get_type( 'punctuation' );
 	}
 
 	/**
 	 * Retrieve all tokens of the type "word".
 	 * 
-	 * @param number $abc letter-only match OPTIONAL INT -1=>prohibit, 0=>allow, 1=>require
-	 * @param number $caps capital-only match (allows non letter chrs) OPTIONAL INT  -1=>prohibit, 0=>allow, 1=>require
+	 * @param string $abc Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Optional. Default 'allow-all-letters'.
+	 * @param string $caps Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Optional. Default 'allow-all-caps'.
 	 */
-	function get_words($abc = 0, $caps = 0) {
-		$words = $this->get_type('word');
+	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps' ) {
+		$words = $this->get_type( 'word' );
 		$tokens = array();
 		
-		foreach($words as $index => $token) {
-			if($this->mb) {
-				$capped = mb_strtoupper($token['value'], 'UTF-8');
+		foreach( $words as $index => $token ) {
+			if ( $this->mb ) {
+			 	$capped = mb_strtoupper( $token['value'], 'UTF-8' );
 			} else {
-				$capped = strtoupper($token['value']);
+				$capped = strtoupper( $token['value'] );
 			}
-			$lettered = preg_replace($this->regex['htmlLetterConnectors'], '', $token['value']);
-				
-			if( ($abc == -1 && $lettered != $token['value']) && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
-			elseif( ($abc == -1 && $lettered != $token['value']) && $caps == 0 ) $tokens[$index] = $token;
-			elseif( ($abc == -1 && $lettered != $token['value']) && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
-			elseif( $abc == 0 && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
-			elseif( $abc == 0 && $caps == 0 ) $tokens[$index] = $token;
-			elseif( $abc == 0 && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token['value']) && ($caps == -1 && $capped != $token['value']) ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token['value']) && $caps == 0 ) $tokens[$index] = $token;
-			elseif( ($abc == 1 && $lettered == $token['value']) && ($caps == 1 && $capped == $token['value']) ) $tokens[$index] = $token;
+			
+			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token['value'] );
+			
+			if ( ( 'no-all-letters' === $abc && $lettered !== $token['value'] ) ) {
+				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+					 ( 'allow-all-caps'   === $caps ) ||
+					 ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) {
+					$tokens[ $index ] = $token;
+				}				
+			} elseif ( 'allow-all-letters' === $abc) {
+				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+					 ( 'allow-all-caps'   === $caps ) ||
+					 ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) {
+					$tokens[ $index ] = $token;
+				}
+			} elseif ( 'require-all-letters' === $abc && $lettered === $token['value'] ) {
+				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+					 ( 'allow-all-caps'   === $caps ) ||
+					 ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) {
+				 	$tokens[ $index ] = $token;
+				}
+			}
 		}
+		
 		return $tokens;
 	}
 
@@ -565,7 +577,7 @@ class Parse_Text {
 	 * @return array An array of tokens.
 	 */
 	function get_other() {
-		return $this->get_type('other');
+		return $this->get_type( 'other' );
 	}
 
 

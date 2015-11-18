@@ -219,7 +219,7 @@ class PHP_Typography {
 		
 		// set up some arrays for quick HTML5 introspection
 		$this->self_closing_tags = array_filter( array_keys(HTML5\Elements::$html5),
-												 function( &$tag ) { return HTML5\Elements::isA($tag, HTML5\Elements::VOID_TAG); } );		
+												 function( $tag ) { return HTML5\Elements::isA($tag, HTML5\Elements::VOID_TAG); } );		
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 		
 		if ($set_defaults) {
@@ -838,7 +838,7 @@ class PHP_Typography {
 			$tags = preg_split( '/[\s,]+/', $tags, -1, PREG_SPLIT_NO_EMPTY); 
 		}
 		foreach ( $tags as &$tag ){
-			$tag = strtolower( $tag );
+			$tag = strtolower( $tag ); // FIXME
 		}
 		
 		// self closing tags shouldn't be in $tags
@@ -1630,9 +1630,9 @@ class PHP_Typography {
 
 			//break it down for a bit more granularity
 			$this->text_parser->load( $textnode->nodeValue );
-			$parsedMixedWords = $this->text_parser->get_words( -1, 0 ); // prohibit letter only words, allow caps
-			$caps = ( ! empty ( $this->settings['hyphenateAllCaps'] ) ? 0 : -1 );
-			$parsedWords = $this->text_parser->get_words( 1, $caps );  // require letter only words, caps allowance in settingibutes; mutually exclusive with $parsedMixedWords
+			$parsedMixedWords = $this->text_parser->get_words( 'no-all-letters', 'allow-all-caps' ); // prohibit letter only words, allow caps
+			$caps = ( ! empty ( $this->settings['hyphenateAllCaps'] ) ? 'allow-all-caps' : 'no-all-caps' );
+			$parsedWords = $this->text_parser->get_words( 'require-all-letters', $caps );  // require letter only words, caps allowance in setting; mutually exclusive with $parsedMixedWords
 			$parsedOther = $this->text_parser->get_other();
 			
 			// process individual text parts here
