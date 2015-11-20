@@ -463,6 +463,63 @@ class PHP_Typography {
 				)
 				(?![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].']) # negative lookahead assertion
 			'; // required modifiers: x (multiline pattern) u (utf8)
+		
+		
+		// initialize valid top level domains from IANA list
+		$path_to_tld_file = __DIR__ . '/../vendor/IANA/tlds-alpha-by-domain.txt';
+		$domains = array();
+		if ( file_exists( $path_to_tld_file ) ) {
+			$file = new \SplFileObject( $path_to_tld_file );
+			
+			while ( ! $file->eof() ) {
+				$line = $file->fgets();
+				
+				if ( preg_match('#^[a-zA-Z0-9][a-zA-Z0-9-]*$#', $line, $matches ) ) {
+					$domains[] = strtolower( $matches[0] );
+				}
+			}
+				
+		}
+		if ( count( $domains ) > 0 ) {
+			$this->components['validTopLevelDomains'] = implode( '|', $domains );
+		} else {
+			$this->components['validTopLevelDomains'] = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
+		}
+		
+		// valid URL schemes
+		$this->components['urlScheme'] = '(?:https?|ftps?|file|nfs|feed|itms|itpc)';
+		
+		// combined URL pattern
+		$this->components['urlPattern'] = "(?:
+			\A
+			({$this->components['urlScheme']}:\/\/)?			# Subpattern 1: contains _http://_ if it exists
+			(													# Subpattern 2: contains subdomains.domain.tld
+				(?:
+					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
+					[a-z0-9\-]{0,61}							# middle chrs of (sub)domain may be a hyphen;
+																# limit qty of middle chrs so total domain does not exceed 63 chrs
+					[a-z0-9]									# last chr of (sub)domain can not be a hyphen
+					\.											# dot separator
+				)+
+				(?:
+					{$this->components['validTopLevelDomains']}	# validates top level domain
+				)
+				(?:												# optional port numbers
+					:
+					(?:
+						[1-5]?[0-9]{1,4} | 6[0-4][0-9]{3} | 65[0-4][0-9]{2} | 655[0-2][0-9] | 6553[0-5]
+					)
+				)?
+			)
+			(													# Subpattern 3: contains path following domain
+				(?:
+					\/											# marks nested directory
+					[a-z0-9\"\$\-_\.\+!\*\'\(\),;\?:@=&\#]+		# valid characters within directory structure
+				)*
+				[\/]?											# trailing slash if any
+			)
+			\Z
+		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 	}
 	
 	/**
@@ -776,7 +833,7 @@ class PHP_Typography {
 				)
 			/xu";
 		
-		$this->regex['spaceCollapseNormal'] = '/\s+/xu';
+		$this->regex['spaceCollapseNormal']       = '/\s+/xu';
 		$this->regex['spaceCollapseNonBreakable'] = "/(?:\s|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:\s|{$this->components['htmlSpaces']})*/xu";
 		$this->regex['spaceCollapseOther']        = "/(?:\s)*({$this->components['htmlSpaces']})(?:\s|{$this->components['htmlSpaces']})*/xu";
 		$this->regex['spaceCollapseBlockStart']   = "/\A(?:\s|{$this->components['htmlSpaces']})+/xu";
@@ -784,10 +841,13 @@ class PHP_Typography {
 		$this->regex['unitSpacingEscapeSpecialChars'] = "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#";
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );	
 		
-		
 		// wrap_emails
-        $this->regex['wrapEmailsMatchEmails'] = "/{$this->components['wrapEmailsEmailPattern']}/xi";
+        $this->regex['wrapEmailsMatchEmails']   = "/{$this->components['wrapEmailsEmailPattern']}/xi";
         $this->regex['wrapEmailsReplaceEmails'] = '/([^a-zA-Z])/';
+        
+        // wrap_urls
+        $this->regex['wrapUrlsPattern']     = "`{$this->components['urlPattern']}`xi";
+        $this->regex['wrapUrlsDomainParts'] = '#(\-|\.)#';
         
         // style_caps
         $this->regex['styleCaps'] = "/{$this->components['styleCaps']}/xu";
@@ -2378,48 +2438,15 @@ class PHP_Typography {
 		}
 
 		// test for and parse urls 
-		$valid_top_level_domain = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
-		$url_scheme = '(?:https?|ftps?|file|nfs|feed|itms|itpc)';
-		$url_pattern = "(?:
-			\A
-			($url_scheme:\/\/)?									# Subpattern 1: contains _http://_ if it exists
-			(													# Subpattern 2: contains subdomains.domain.tld
-				(?:
-					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
-					[a-z0-9\-]{0,61}							# middle chrs of (sub)domain may be a hyphen;
-																# limit qty of middle chrs so total domain does not exceed 63 chrs
-					[a-z0-9]									# last chr of (sub)domain can not be a hyphen
-					\.											# dot separator
-				)+
-				(?:
-					$valid_top_level_domain									# validates top level domain
-				)
-				(?:												# optional port numbers
-					:
-					(?:
-						[1-5]?[0-9]{1,4} | 6[0-4][0-9]{3} | 65[0-4][0-9]{2} | 655[0-2][0-9] | 6553[0-5]
-					)
-				)?
-			)
-			(													# Subpattern 3: contains path following domain
-				(?:
-					\/											# marks nested directory
-					[a-z0-9\"\$\-_\.\+!\*\'\(\),;\?:@=&\#]+		# valid characters within directory structure
-				)*
-				[\/]?											# trailing slash if any
-			)
-			\Z
-		)"; // required modifiers: x (multiline pattern) i (case insensitive)
-		
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( "`$url_pattern`xi", $text_token['value'], $urlMatch ) ) {
+			if ( preg_match( $this->regex['wrapUrlsPattern'], $text_token['value'], $urlMatch ) ) {
 				// $urlMatch[1] holds "http://"
 				// $urlMatch[2] holds "subdomains.domain.tld"
 				// $urlMatch[3] holds the path after the domain
 	
 				$http = ( $urlMatch[1] ) ? $urlMatch[1].$this->chr['zeroWidthSpace'] : "" ;
 
-				$domain_parts = preg_split( '#(\-|\.)#', $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE );
+				$domain_parts = preg_split( $this->regex['wrapUrlsDomainParts'], $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE );
 
 				// this is a hack, but it works
 				// first, we hyphenate each part
