@@ -60,7 +60,7 @@ require_once( 'class-parse-text.php' );
 /**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
-require_once( __DIR__ . '/../vendor/HTML5.php');
+require_once( __DIR__ . '/../vendor/Masterminds/HTML5.php');
 use Masterminds\HTML5;
 
 /**

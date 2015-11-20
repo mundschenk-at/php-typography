@@ -50,7 +50,7 @@ namespace PHP_Typography;
 /**
  * HTML5 element introspection
  */
-require_once( __DIR__ . '/../vendor/HTML5/Elements.php' );
+require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' );
 
 /**
  * Retrieves intersection of two object arrays using strict comparison.
