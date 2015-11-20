@@ -89,11 +89,6 @@ class PHP_Typography {
 	public $settings = array(); 
 
 	/**
-	 * Allowed encodings.
-	 */
-	static $encodings = array( 'UTF-8', 'ISO-8859-1', 'ASCII' );
-	
-	/**
 	 * An array of ( $tag => true ) for quick checking with `isset`.  
 	 */
 	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
