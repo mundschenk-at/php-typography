@@ -137,6 +137,11 @@ class PHP_Typography {
 	 */
 	private $regex = array();
 	
+	/**
+	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
+	 */
+	private $quote_styles = array();
+	
 	#=======================================================================
 	#=======================================================================
 	#==	METHODS - SET ATTRIBUTES
@@ -188,6 +193,41 @@ class PHP_Typography {
 		$this->chr['leftWhiteCornerBracket']  = uchr(12302);
 		$this->chr['rightWhiteCornerBracket'] = uchr(12303);
 
+		
+		$this->quote_styles = array(
+			'doubleCurled'             => array( 'open'  => uchr(8220),
+			                                     'close' => uchr(8221) ),
+			'doubleCurledReversed'     => array( 'open'  => uchr(8221),
+			                                     'close' => uchr(8221) ),
+			'doubleLow9'               => array( 'open'  => $this->chr['doubleLow9Quote'],
+			                                     'close' => uchr(8221) ),
+			'doubleLow9Reversed'       => array( 'open'  => $this->chr['doubleLow9Quote'],
+			                                     'close' => uchr(8220) ),
+			'singleCurled'             => array( 'open'  => uchr(8216),
+			                                     'close' => uchr(8217) ),
+			'singleCurledReversed'     => array( 'open'  => uchr(8217),
+			                                     'close' => uchr(8217) ),
+			'singleLow9'               => array( 'open'  => $this->chr['singleLow9Quote'],
+			                                     'close' => uchr(8217) ),
+			'singleLow9Reversed'       => array( 'open'  => $this->chr['singleLow9Quote'],
+			                                     'close' => uchr(8216) ),
+			'doubleGuillemetsFrench'   => array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakSpace'],
+			                                     'close' => $this->chr['noBreakSpace'].$this->chr['guillemetClose'] ),
+			'doubleGuillemets'         => array( 'open'  => $this->chr['guillemetOpen'],
+			                                     'close' => $this->chr['guillemetClose'] ),
+			'doubleGuillemetsReversed' => array( 'open'  => $this->chr['guillemetClose'],
+			                                     'close' => $this->chr['guillemetOpen'] ),
+			'singleGuillemets'         => array( 'open'  => $this->chr['singleAngleQuoteOpen'],
+			                                     'close' => $this->chr['singleAngleQuoteClose'] ),
+			'singleGuillemetsReversed' => array( 'open'  => $this->chr['singleAngleQuoteClose'],
+			                                     'close' => $this->chr['singleAngleQuoteOpen'] ),
+			'cornerBrackets'           => array( 'open'  => $this->chr['leftCornerBracket'],
+			                                     'close' => $this->chr['rightCornerBracket'] ),
+			'whiteCornerBracket'       => array( 'open'  => $this->chr['leftWhiteCornerBracket'],
+			                                     'close' => $this->chr['rightWhiteCornerBracket'] ),
+		);
+		
+		
 		// not sure if this is necessary - but error_log seems to have problems with the strings.
 		// used as the default encoding for mb_* functions
 		$encoding_set = mb_internal_encoding('UTF-8');
@@ -959,54 +999,15 @@ class PHP_Typography {
 	 * @param string $style Defaults to 'doubleCurled.
 	 */
 	function set_smart_quotes_primary( $style = 'doubleCurled' ) {
-		if($style == 'doubleCurled') {
-			$this->chr['doubleQuoteOpen'] = uchr(8220);
-			$this->chr['doubleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleCurledReversed') {
-			$this->chr['doubleQuoteOpen'] = uchr(8221);
-			$this->chr['doubleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleLow9') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['doubleLow9Quote'];
-			$this->chr['doubleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleLow9Reversed') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['doubleLow9Quote'];
-			$this->chr['doubleQuoteClose'] = uchr(8220);
-		} elseif ($style == 'singleCurled') {
-			$this->chr['doubleQuoteOpen'] = uchr(8216);
-			$this->chr['doubleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleCurledReversed') {
-			$this->chr['doubleQuoteOpen'] = uchr(8217);
-			$this->chr['doubleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleLow9') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['singleLow9Quote'];
-			$this->chr['doubleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleLow9Reversed') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['singleLow9Quote'];
-			$this->chr['doubleQuoteClose'] = uchr(8216);
-		} elseif ($style == 'doubleGuillemetsFrench') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['guillemetOpen'].$this->chr['noBreakSpace'];
-			$this->chr['doubleQuoteClose'] = $this->chr['noBreakSpace'].$this->chr['guillemetClose'];
-		} elseif ($style == 'doubleGuillemets') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['guillemetOpen'];
-			$this->chr['doubleQuoteClose'] = $this->chr['guillemetClose'];
-		} elseif ($style == 'doubleGuillemetsReversed') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['guillemetClose'];
-			$this->chr['doubleQuoteClose'] = $this->chr['guillemetOpen'];
-		} elseif ($style == 'singleGuillemets') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['singleAngleQuoteOpen'];
-			$this->chr['doubleQuoteClose'] = $this->chr['singleAngleQuoteClose'];
-		} elseif ($style == 'singleGuillemetsReversed') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['singleAngleQuoteClose'];
-			$this->chr['doubleQuoteClose'] = $this->chr['singleAngleQuoteOpen'];
-		} elseif ($style == 'cornerBrackets') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['leftCornerBracket'];
-			$this->chr['doubleQuoteClose'] = $this->chr['rightCornerBracket'];
-		} elseif ($style == 'whiteCornerBracket') {
-			$this->chr['doubleQuoteOpen'] = $this->chr['leftWhiteCornerBracket'];
-			$this->chr['doubleQuoteClose'] = $this->chr['rightWhiteCornerBracket'];
+		if ( isset( $this->quote_styles[ $style ] ) ) {
+			if ( ! empty( $this->quote_style[ $style ]['open'] ) ) {
+				$this->chr['doubleQuoteOpen'] = $this->quote_style[ $style ]['open'];
+			}
+			if ( ! empty( $this->quote_style[ $style ]['close'] ) ) {
+				$this->chr['doubleQuoteClose'] = $this->quote_style[ $style ]['close'];
+			}
 		} else {
-			$this->chr['doubleQuoteOpen'] = uchr(8220);
-			$this->chr['doubleQuoteClose'] = uchr(8221);
+			error_log( "Invalid quote style $style." );
 		}
 	}
 
@@ -1032,58 +1033,19 @@ class PHP_Typography {
 	 *
 	 * @param string $style Defaults to 'singleCurled'.
 	 */
-	function set_smart_quotes_secondary($style = 'singleCurled') {
-		if ($style == 'doubleCurled') {
-			$this->chr['singleQuoteOpen'] = uchr(8220);
-			$this->chr['singleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleCurledReversed') {
-			$this->chr['singleQuoteOpen'] = uchr(8221);
-			$this->chr['singleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleLow9') {
-			$this->chr['singleQuoteOpen'] = $this->chr['doubleLow9Quote'];
-			$this->chr['singleQuoteClose'] = uchr(8221);
-		} elseif ($style == 'doubleLow9Reversed') {
-			$this->chr['singleQuoteOpen'] = $this->chr['doubleLow9Quote'];
-			$this->chr['singleQuoteClose'] = uchr(8220);
-		} elseif ($style == 'singleCurled') {
-			$this->chr['singleQuoteOpen'] = uchr(8216);
-			$this->chr['singleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleCurledReversed') {
-			$this->chr['singleQuoteOpen'] = uchr(8217);
-			$this->chr['singleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleLow9') {
-			$this->chr['singleQuoteOpen'] = $this->chr['singleLow9Quote'];
-			$this->chr['singleQuoteClose'] = uchr(8217);
-		} elseif ($style == 'singleLow9Reversed') {
-			$this->chr['singleQuoteOpen'] = $this->chr['singleLow9Quote'];
-			$this->chr['singleQuoteClose'] = uchr(8216);
-		} elseif ($style == 'doubleGuillemetsFrench') {
-			$this->chr['singleQuoteOpen'] = $this->chr['guillemetOpen'].$this->chr['noBreakSpace'];
-			$this->chr['singleQuoteClose'] = $this->chr['noBreakSpace'].$this->chr['guillemetClose'];
-		} elseif ($style == 'doubleGuillemets') {
-			$this->chr['singleQuoteOpen'] = $this->chr['guillemetOpen'];
-			$this->chr['singleQuoteClose'] = $this->chr['guillemetClose'];
-		} elseif ($style == 'doubleGuillemetsReversed') {
-			$this->chr['singleQuoteOpen'] = $this->chr['guillemetClose'];
-			$this->chr['singleQuoteClose'] = $this->chr['guillemetOpen'];
-		} elseif ($style == 'singleGuillemets') {
-			$this->chr['singleQuoteOpen'] = $this->chr['singleAngleQuoteOpen'];
-			$this->chr['singleQuoteClose'] = $this->chr['singleAngleQuoteClose'];
-		} elseif ($style == 'singleGuillemetsReversed') {
-			$this->chr['singleQuoteOpen'] = $this->chr['singleAngleQuoteClose'];
-			$this->chr['singleQuoteClose'] = $this->chr['singleAngleQuoteOpen'];
-		} elseif ($style == 'cornerBrackets') {
-			$this->chr['singleQuoteOpen'] = $this->chr['leftCornerBracket'];
-			$this->chr['singleQuoteClose'] = $this->chr['rightCornerBracket'];
-		} elseif ($style == 'whiteCornerBracket') {
-			$this->chr['singleQuoteOpen'] = $this->chr['leftWhiteCornerBracket'];
-			$this->chr['singleQuoteClose'] = $this->chr['rightWhiteCornerBracket'];
+	function set_smart_quotes_secondary( $style = 'singleCurled' ) {
+			if ( isset( $this->quote_styles[ $style ] ) ) {
+			if ( ! empty( $this->quote_style[ $style ]['open'] ) ) {
+				$this->chr['singleQuoteOpen'] = $this->quote_style[ $style ]['open'];
+			}
+			if ( ! empty( $this->quote_style[ $style ]['close'] ) ) {
+				$this->chr['singleQuoteClose'] = $this->quote_style[ $style ]['close'];
+			}
 		} else {
-			$this->chr['singleQuoteOpen'] = uchr(8216);
-			$this->chr['singleQuoteClose'] = uchr(8217);
+			error_log( "Invalid quote style $style." );
 		}
 	}
-
+	
 	/**
 	 * Enable/disable replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
 	 * 
