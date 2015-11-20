@@ -89,11 +89,6 @@ class PHP_Typography {
 	public $settings = array(); 
 
 	/**
-	 * An array of ( $tag => true ) for quick checking with `isset`.  
-	 */
-	static $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
-	
-	/**
 	 * A custom parser for \DOMText to separate words, whitespace etc. for HTML injection.
 	 */
 	public $text_parser; 
@@ -112,6 +107,11 @@ class PHP_Typography {
 	 * A array of tags we should never touch.
 	 */
 	private $inappropriate_tags = array();
+	
+	/**
+	 * An array of ( $tag => true ) for quick checking with `isset`.
+	 */
+	private $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
 	
 	/**
 	 * A hash map for string functions according to encoding.
@@ -213,8 +213,8 @@ class PHP_Typography {
 		$this->initialize_patterns();
 		
 		// set up some arrays for quick HTML5 introspection
-		$this->self_closing_tags = array_filter( array_keys(HTML5\Elements::$html5),
-												 function( $tag ) { return HTML5\Elements::isA($tag, HTML5\Elements::VOID_TAG); } );		
+		$this->self_closing_tags = array_filter( array_keys( HTML5\Elements::$html5 ),
+												 function( $tag ) { return HTML5\Elements::isA( $tag, HTML5\Elements::VOID_TAG ); } );		
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 		
 		if ($set_defaults) {
@@ -283,7 +283,7 @@ class PHP_Typography {
 	/**
 	 * Set up our regex components for later use.
 	 * 
-	 * Call before initialize_regex().
+	 * Call before initialize_patterns().
 	 */
 	private function initialize_components() {
 		// various regex components (but not complete patterns)
@@ -878,6 +878,9 @@ class PHP_Typography {
 				)
 				\Z
 			/xu";
+        
+        // utility patern for splitting string parameter lists into arrays
+        $this->regex['parameterSplitting'] = '/[\s,]+/';
 	}
 	
 	/**
@@ -890,7 +893,7 @@ class PHP_Typography {
 												'style', 'textarea', 'title', 'var', 'math',		
 										      ) ) {
 		if ( ! is_array( $tags ) ) {
-			$tags = preg_split( '/[\s,]+/', $tags, -1, PREG_SPLIT_NO_EMPTY); 
+			$tags = preg_split( $this->regex['parameterSplitting'], $tags, -1, PREG_SPLIT_NO_EMPTY); 
 		}
 		foreach ( $tags as &$tag ){
 			$tag = strtolower( $tag ); // FIXME
@@ -907,7 +910,7 @@ class PHP_Typography {
 	 */
 	 function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
 		if ( ! is_array( $classes ) ) { 
-			$classes = preg_split( '/[\s,]+/', $classes, -1, PREG_SPLIT_NO_EMPTY );
+			$classes = preg_split( $this->regex['parameterSplitting'], $classes, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		$this->settings['ignoreClasses'] = $classes;
 	}
@@ -919,7 +922,7 @@ class PHP_Typography {
 	 */
 	function set_ids_to_ignore( $ids = array() ) {
 		if ( ! is_array( $ids ) ) { 
-			$ids = preg_split( '/[\s,]+/', $ids, -1, PREG_SPLIT_NO_EMPTY );
+			$ids = preg_split( $this->regex['parameterSplitting'], $ids, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		$this->settings['ignoreIDs'] = $ids;
 	}
@@ -1135,7 +1138,7 @@ class PHP_Typography {
 	 */
 	function set_diacritic_custom_replacements( $customReplacements = array() ) {
 		if ( ! is_array( $customReplacements ) ) { 
-			$customReplacements = preg_split('/,/', $customReplacements, -1, PREG_SPLIT_NO_EMPTY);
+			$customReplacements = preg_split( '/,/', $customReplacements, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
 		$replacements = array();
@@ -1245,7 +1248,7 @@ class PHP_Typography {
 	 */
 	function set_units( $units = array() ) {
 		if ( ! is_array( $units ) ) {
-			$units = preg_split( '/[\s,]+/', $units, -1, PREG_SPLIT_NO_EMPTY );
+			$units = preg_split( $this->regex['parameterSplitting'], $units, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
 		$this->settings['units'] = $units;
@@ -2679,7 +2682,7 @@ class PHP_Typography {
 			$block_level_parent = get_block_parent( $textnode );
 			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 			
-			if ( $block_level_parent && isset( self::$heading_tags[ $block_level_parent ] ) ) {
+			if ( $block_level_parent && isset( $this->heading_tags[ $block_level_parent ] ) ) {
 				$is_heading = true;
 			}
 		}
