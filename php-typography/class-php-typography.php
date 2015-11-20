@@ -1117,7 +1117,7 @@ class PHP_Typography {
 	 * @param string $lang Defaults to 'en-US'.
 	 */
 	function set_diacritic_language( $lang = 'en-US' ) {
-		if ( isset($this->settings['diacriticLanguage']) && $this->settings['diacriticLanguage'] == $lang ) {
+		if ( isset($this->settings['diacriticLanguage']) && $this->settings['diacriticLanguage'] === $lang ) {
 			return;
 		}
 		
@@ -1134,15 +1134,15 @@ class PHP_Typography {
 	/**
 	 * Set up custom diacritics replacements.
 	 * 
-	 * @param string|array $customReplacements An array formatted array(needle=>replacement, needle=>replacement...), or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...), or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
-	function set_diacritic_custom_replacements( $customReplacements = array() ) {
-		if ( ! is_array( $customReplacements ) ) { 
-			$customReplacements = preg_split( '/,/', $customReplacements, -1, PREG_SPLIT_NO_EMPTY );
+	function set_diacritic_custom_replacements( $custom_replacements = array() ) {
+		if ( ! is_array( $custom_replacements ) ) { 
+			$custom_replacements = preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
 		$replacements = array();
-		foreach ( $customReplacements as $customReplacement ) {
+		foreach ( $custom_replacements as $customReplacement ) {
 			//account for single and double quotes
 			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $customReplacement, $doubleQuoteKeyMatch );
 			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $customReplacement, $singleQuoteKeyMatch );
@@ -1266,9 +1266,9 @@ class PHP_Typography {
 			// escape special chars
 			$units[ $index ] = preg_replace( $this->regex['unitSpacingEscapeSpecialChars'], "\\\\$1", $unit );
 		}
-		$customUnits = implode( '|', $units );
-		$customUnits .= ( $customUnits ) ? '|' : '';
-		$this->components['unitSpacingUnits'] = $customUnits . $this->components['unitSpacingStandardUnits'];
+		$custom_units = implode( '|', $units );
+		$custom_units .= ( $custom_units ) ? '|' : '';
+		$this->components['unitSpacingUnits'] = $custom_units . $this->components['unitSpacingStandardUnits'];
 		$this->regex['unitSpacingUnitPattern'] = "/(\d\.?)\s({$this->components['unitSpacingUnits']})\b/x";
 	}
 	
@@ -1306,7 +1306,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_max_dewidow_length( $length = 5 )	{
-		$length = ($length > 1) ? $length : 5;
+		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->settings['dewidowMaxLength'] = $length;
 	}
@@ -1317,7 +1317,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_max_dewidow_pull( $length = 5 ) {
-		$length = ($length > 1) ? $length : 5;
+		$length = ( $length > 1 ) ? $length : 5;
 		
 		$this->settings['dewidowMaxPull'] = $length;
 	}
@@ -1355,7 +1355,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_min_after_url_wrap( $length = 5 ) {
-		$length = ($length > 0) ? $length : 5;
+		$length = ( $length > 0 ) ? $length : 5;
 		
 		$this->settings['urlMinAfterWrap'] = $length;
 	}
@@ -1457,7 +1457,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_min_length_hyphenation( $length = 5 ) {
-		$length = ($length > 1) ? $length : 5;
+		$length = ( $length > 1 ) ? $length : 5;
 		
 		$this->settings['hyphenMinLength'] = $length;
 	}
@@ -1468,7 +1468,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_before_hyphenation( $length = 3 ) {
-		$length = ($length > 0) ? $length : 3;
+		$length = ( $length > 0 ) ? $length : 3;
 		
 		$this->settings['hyphenMinBefore'] = $length;
 	}
@@ -1479,7 +1479,7 @@ class PHP_Typography {
 	 * @param number $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_after_hyphenation( $length = 2 ) {
-		$length = ($length > 0) ? $length : 2;
+		$length = ( $length > 0 ) ? $length : 2;
 		
 		$this->settings['hyphenMinAfter'] = $length;
 	}
@@ -1522,7 +1522,7 @@ class PHP_Typography {
 			$exceptions = preg_split( '/[^a-zA-Z0-9\-]+/', $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}
 		
-		$exceptionKeys = array();
+		$exception_keys = array();
 		$func = array();
 		foreach ( $exceptions as $key => &$exception ) {
 			$func = $this->str_functions[ detect_encoding( $exception ) ];
@@ -1531,10 +1531,10 @@ class PHP_Typography {
 			}
 						
 			$exception = $func['strtolower']( $exception );
-			$exceptionKeys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );	
+			$exception_keys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );	
 		}
 						
-		$this->settings['hyphenationCustomExceptions'] = array_flip( $exceptionKeys );
+		$this->settings['hyphenationCustomExceptions'] = array_flip( $exception_keys );
 				
 		// make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions
 		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
@@ -1811,12 +1811,12 @@ class PHP_Typography {
 	 * @return string A single character (or the empty string).
 	 */
 	function get_prev_chr( \DOMNode $element ) {
-		$prev_textnode = $this->get_previous_textnode( $element );
+		$previous_textnode = $this->get_previous_textnode( $element );
 		
-		if ( isset( $prev_textnode ) ) {				
+		if ( isset( $previous_textnode ) ) {				
 			// determine encoding
 			$func = $this->str_functions[ detect_encoding( $element->nodeValue ) ];
-			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $prev_textnode->nodeValue, $func['strlen']( $prev_textnode->nodeValue ) - 1, 1 ) );
+			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, $func['strlen']( $previous_textnode->nodeValue ) - 1, 1 ) );
 		} else {			
 			return '';
 		}
@@ -1983,13 +1983,13 @@ class PHP_Typography {
 		
 		// need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text
-		$prevChr = $this->get_prev_chr( $textnode );		
-		if ( '' != $prevChr ) {
-			$textnode->nodeValue = $prevChr.$textnode->nodeValue;		
+		$previous_character = $this->get_prev_chr( $textnode );		
+		if ( '' != $previous_character ) {
+			$textnode->nodeValue = $previous_character.$textnode->nodeValue;		
 		}
-		$nextChr = $this->get_next_chr( $textnode );
-		if ( '' != $nextChr ) {
-			$textnode->nodeValue =  $textnode->nodeValue.$nextChr;
+		$next_character = $this->get_next_chr( $textnode );
+		if ( '' != $next_character ) {
+			$textnode->nodeValue =  $textnode->nodeValue.$next_character;
 		}
 				
 		////Logic			
@@ -2045,10 +2045,10 @@ class PHP_Typography {
 		//if we have adjacent characters remove them from the text
 		$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];
 			
-		if ( '' != $prevChr ) {
+		if ( '' != $previous_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 		}
-		if ( '' != $nextChr ) {
+		if ( '' != $next_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
 		}
 	}
@@ -2267,9 +2267,9 @@ class PHP_Typography {
 		}
 
 		// add $nextChr and $prevChr for context
-		$prev_character = $this->get_prev_chr( $textnode );
-		if ( '' !== $prev_character) {
-			$textnode->nodeValue = $prev_character . $textnode->nodeValue;
+		$previous_character = $this->get_prev_chr( $textnode );
+		if ( '' !== $previous_character) {
+			$textnode->nodeValue = $previous_character . $textnode->nodeValue;
 		}
 		
 		$next_character = $this->get_next_chr( $textnode );
@@ -2282,7 +2282,7 @@ class PHP_Typography {
 		// if we have adjacent characters remove them from the text
 		$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];
 			
-		if ( '' !== $prev_character ) {
+		if ( '' !== $previous_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 		}
 		if ( '' !== $next_character ) {
@@ -2651,13 +2651,13 @@ class PHP_Typography {
 	 */
 	function hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length ) {
 	
-		for ( $numberPosition = $segment_position; 
-			  $numberPosition <= $segment_position + $segment_length; 
-			  $numberPosition++ ) {
+		for ( $number_position = $segment_position; 
+			  $number_position <= $segment_position + $segment_length; 
+			  $number_position++ ) {
 			  	
-			$word_pattern[ $numberPosition ] = 
-				( intval($word_pattern[ $numberPosition ] ) >= intval( $segment_pattern[ $numberPosition - $segment_position ] ) ) ?
-					$word_pattern[ $numberPosition ] : $segment_pattern[ $numberPosition - $segment_position ];
+			$word_pattern[ $number_position ] = 
+				( intval($word_pattern[ $number_position ] ) >= intval( $segment_pattern[ $number_position - $segment_position ] ) ) ?
+					$word_pattern[ $number_position ] : $segment_pattern[ $number_position - $segment_position ];
 		}
 		
 		return $word_pattern;
