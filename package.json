@@ -1,11 +1,18 @@
 {
   "name": "wp-typography",
-  "version": "3.0.0-beta1",
+  "version": "3.0.0-beta2",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
     "grunt-phpunit": "^0.3.6",
+    "grunt-wp-deploy": "~1.1.0",
     "grunt-wp-i18n": "~0.4.7",
-    "load-grunt-tasks": "~0.6.0"
-  }
+    "load-grunt-tasks": "~0.6.0",
+    "grunt-contrib-copy": "^0.8.2"    
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mundschenk-at/wp-typography.git"
+  },
+  "license": "GPL-2.0"
 }
