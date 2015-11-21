@@ -61,7 +61,6 @@ require_once( 'class-parse-text.php' );
  * HTML5-PHP - a DOM-based HTML5 parser
  */
 require_once( __DIR__ . '/../vendor/Masterminds/HTML5.php');
-use Masterminds\HTML5;
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
@@ -253,8 +252,8 @@ class PHP_Typography {
 		$this->initialize_patterns();
 		
 		// set up some arrays for quick HTML5 introspection
-		$this->self_closing_tags = array_filter( array_keys( HTML5\Elements::$html5 ),
-												 function( $tag ) { return HTML5\Elements::isA( $tag, HTML5\Elements::VOID_TAG ); } );		
+		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),
+												 function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG ); } );		
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 		
 		if ($set_defaults) {
@@ -1591,7 +1590,7 @@ class PHP_Typography {
 		
 		// Lazy-load our parsers
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new HTML5( array('disable_html_ns' => true) );
+			$this->html5_parser = new \Masterminds\HTML5( array('disable_html_ns' => true) );
 		}
 		if ( ! isset( $this->text_parser ) ) {
 			$this->text_parser = new Parse_Text();
@@ -1710,7 +1709,7 @@ class PHP_Typography {
 		
 		// Lazy-load our parser (the text parser is not needed for feeds)
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new HTML5( array( 'disable_html_ns' => true ) );
+			$this->html5_parser = new \Masterminds\HTML5( array( 'disable_html_ns' => true ) );
 		}
 	
 		// parse the html
