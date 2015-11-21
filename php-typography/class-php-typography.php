@@ -1799,11 +1799,11 @@ class PHP_Typography {
 		$previous_textnode = null;
 		$node = $element;
 		
-		if ( $node instanceof \DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
+		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
 			return null;
 		}
 			 
-		while ( ( $node = $node->previousSibling ) && ! $previous_textnode ) {			
+		while ( ( $node = $node->previousSibling ) && empty( $previous_textnode ) ) {			
 			$previous_textnode = $this->get_last_textnode( $node );
 		}
 		
@@ -1830,7 +1830,7 @@ class PHP_Typography {
 			return $element;
 		} elseif ( ! $element instanceof \DOMElement ) {
 			return null;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
+		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 		
@@ -1838,7 +1838,7 @@ class PHP_Typography {
 		$children = $element->childNodes;
 		$i = $children->length - 1;
 		
-		while ( $i >= 0 && $last_textnode == null ) {
+		while ( $i >= 0 && empty( $last_textnode ) ) {
 			$last_textnode = $this->get_last_textnode( $children->item( $i ) );
 			$i--;
 		}
@@ -1861,11 +1861,11 @@ class PHP_Typography {
 		$next_textnode = null;
 		$node = $element;
 		
-		if ( $node instanceof \DOMElement && HTML5\Elements::isA( $node->tagName, HTML5\Elements::BLOCK_TAG ) ) {
+		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
 			return null;
 		}
 			 
-		while ( ( $node = $node->nextSibling ) && $next_textnode == null ) {
+		while ( ( $node = $node->nextSibling ) && empty( $next_textnode ) ) {
 			$next_textnode = $this->get_first_textnode( $node );
 		}
 			
@@ -1890,7 +1890,7 @@ class PHP_Typography {
 		
 		if ( $element instanceof \DOMText ) {
 			return $element;
-		} elseif ( HTML5\Elements::isA( $element->tagName, HTML5\Elements::BLOCK_TAG ) ) {
+		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 		
@@ -1900,7 +1900,7 @@ class PHP_Typography {
 			$children = $element->childNodes;
 			$i = 0;
 				
-			while ( $i < $children->length && $first_textnode == false ) {
+			while ( $i < $children->length && empty( $first_textnode ) ) {
 				$first_textnode = $this->get_first_textnode( $children->item( $i ) );
 				$i++;
 			}
