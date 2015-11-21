@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 	                domainPath: '/translations/', // Where to save the POT file.
 	                potFilename: 'wp-typography.pot', // Name of the POT file.
 	                type: 'wp-plugin',
-	                updateTimestamp: true
+	                updateTimestamp: false
 	            }
 	        }
 	    },
