@@ -1,40 +1,40 @@
-<?php 
+<?php
 
 /**
  *  This file is part of wp-Typography.
- *  
+ *
  *  Copyright 2014-2015 Peter Putzer.
- *	
+ *
  *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License, 
+ *	modify it under the terms of the GNU General Public License,
  *	version 2 as published by the Free Software Foundation.
- *	
+ *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
- *	
+ *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+ *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  *
  *  ***
- *  
+ *
  *  Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public
- *  License 2.0. If you use, modify and/or redistribute this software, 
- *  you must leave the KINGdesk, LLC copyright information, the request 
- *  for a link to http://kingdesk.com, and the web design services 
+ *  License 2.0. If you use, modify and/or redistribute this software,
+ *  you must leave the KINGdesk, LLC copyright information, the request
+ *  for a link to http://kingdesk.com, and the web design services
  *  contact information unchanged. If you redistribute this software, or
- *  any derivative, it must be released under the GNU General Public 
+ *  any derivative, it must be released under the GNU General Public
  *  License 2.0.
- *  
- *  This program is distributed without warranty (implied or otherwise) of 
- *  suitability for any particular purpose. See the GNU General Public 
+ *
+ *  This program is distributed without warranty (implied or otherwise) of
+ *  suitability for any particular purpose. See the GNU General Public
  *  License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
- *  
- *  WE DON'T WANT YOUR MONEY: NO TIPS NECESSARY! If you enjoy this plugin, 
- *  a link to http://kingdesk.com from your website would be appreciated. 
+ *
+ *  WE DON'T WANT YOUR MONEY: NO TIPS NECESSARY! If you enjoy this plugin,
+ *  a link to http://kingdesk.com from your website would be appreciated.
  *  For web design services, please contact jeff@kingdesk.com.
  *
  *  ***
@@ -148,12 +148,12 @@ function has_class( \DOMNode $tag, $classnames ) {
  */
 function get_block_parent( \DOMNode $element ) {
 	static $block_tags = null;
-	
+
 	if ( empty( $block_tags ) ) {
 		$block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
 								  + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
 	}
-	
+
 	$parent = $element->parentNode;
 	while ( isset( $parent->tagName ) && ! isset( $block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) ) {
 		$parent = $parent->parentNode;

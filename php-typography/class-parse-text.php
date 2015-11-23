@@ -1,40 +1,40 @@
-<?php 
+<?php
 
 /**
  *  This file is part of wp-Typography.
- *  
+ *
  *  Copyright 2014-2015 Peter Putzer.
- *	
+ *
  *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License, 
+ *	modify it under the terms of the GNU General Public License,
  *	version 2 as published by the Free Software Foundation.
- *	
+ *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
- *	
+ *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+ *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  *
  *  ***
- *  
+ *
  *  Copyright 2009, KINGdesk, LLC. Licensed under the GNU General Public
- *  License 2.0. If you use, modify and/or redistribute this software, 
- *  you must leave the KINGdesk, LLC copyright information, the request 
- *  for a link to http://kingdesk.com, and the web design services 
+ *  License 2.0. If you use, modify and/or redistribute this software,
+ *  you must leave the KINGdesk, LLC copyright information, the request
+ *  for a link to http://kingdesk.com, and the web design services
  *  contact information unchanged. If you redistribute this software, or
- *  any derivative, it must be released under the GNU General Public 
+ *  any derivative, it must be released under the GNU General Public
  *  License 2.0.
- *  
- *  This program is distributed without warranty (implied or otherwise) of 
- *  suitability for any particular purpose. See the GNU General Public 
+ *
+ *  This program is distributed without warranty (implied or otherwise) of
+ *  suitability for any particular purpose. See the GNU General Public
  *  License for full license terms <http://creativecommons.org/licenses/GPL/2.0/>.
- *  
- *  WE DON'T WANT YOUR MONEY: NO TIPS NECESSARY! If you enjoy this plugin, 
- *  a link to http://kingdesk.com from your website would be appreciated. 
+ *
+ *  WE DON'T WANT YOUR MONEY: NO TIPS NECESSARY! If you enjoy this plugin,
+ *  a link to http://kingdesk.com from your website would be appreciated.
  *  For web design services, please contact jeff@kingdesk.com.
  *
  *  ***
@@ -49,35 +49,35 @@ namespace PHP_Typography;
 
 /**
  * A class to parse plain text (such as the nodeValue of DOMText).
- * 
- * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;). 
- * If multibyte characters are passed, they must be encoded as UTF-8. 
+ *
+ * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;).
+ * If multibyte characters are passed, they must be encoded as UTF-8.
  */
 class Parse_Text {
-	
+
 	/**
 	 * An array of encodings to check.
-	 * 
+	 *
 	 * @var array $encodings An array of encoding names.
 	 */
 	private $encodings = array();
-	
+
 	/**
 	 * Do we need multibyte-safe functions?
-	 * 
+	 *
 	 * Changes to this must occur prior to `load`
-	 * 
+	 *
 	 * @var boolean $mb. Default false.
 	 */
 	private $mb = false;
-	
+
 	/**
 	 * The tokenized text.
-	 * 
+	 *
 	 * @var array $text {
 	 * 		@type array $index {
 	 * 			Tokenized text.
-	 * 
+	 *
 	 * 			@type string $type 'space' | 'punctuation' | 'word' | 'other'. Required.
 	 * 			@type string $value Token content. Required.
 	 * 		}
@@ -88,7 +88,7 @@ class Parse_Text {
 				$text structure:
 					ARRAY:
 						index	=> ARRAY: tokenized Text
-				 
+
 				 			// REQUIRED
 							'type' 		=> STRING: 'space' | 'punctuation' | 'word' | 'other'
 							'value'		=> STRING: token content
@@ -96,18 +96,18 @@ class Parse_Text {
 
 	/**
 	 * An array of various regex components (not complete patterns).
-	 * 
+	 *
 	 * @var array $components
 	 */
 	private $components = array();
-	
+
 	/**
 	 * An array of regex patterns.
-	 * 
+	 *
 	 * @var array $regex
 	 */
 	private $regex = array();
-	
+
 	#=======================================================================
 	#=======================================================================
 	#==	METHODS
@@ -116,14 +116,14 @@ class Parse_Text {
 
 	/**
 	 * Creates a new parser object.
-	 *  
+	 *
 	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8', 'ISO-8859-1' ].
 	 */
 	function __construct( $encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
-		$this->encodings = $encodings;	
-		
+		$this->encodings = $encodings;
+
 		# find spacing FIRST (as it is the primary delimiter)
-		
+
 		# find the HTML character representation for the following characters:
 		#		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
 		#		ogham space mark | en quad space | em quad space | en-space | three-per-em space
@@ -135,7 +135,7 @@ class Parse_Text {
 		#		zero-width-space ("&#8203;", "&#x200b;")
 		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
 		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-		
+
 		$this->components['htmlSpacing'] = '
 				(?:
 					(?:										# alpha matches
@@ -162,11 +162,11 @@ class Parse_Text {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		
+
 		$this->components['space'] = "(?:\s|{$this->components['htmlSpacing']})+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8
-		
+
 		# find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
-		
+
 		# see http://www.unicode.org/charts/PDF/U2000.pdf
 		# see http://www.unicode.org/charts/PDF/U2E00.pdf
 		# find punctuation and symbols
@@ -199,8 +199,8 @@ class Parse_Text {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		
-		
+
+
 		$this->components['punctuation'] = "
 		(?:
 		(?:
@@ -213,8 +213,8 @@ class Parse_Text {
 		)+
 		)
 		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-	
-		
+
+
 		// letter connectors allowed in words
 		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
 		#		underscore ("&#95;", "&#x005f;")
@@ -246,8 +246,8 @@ class Parse_Text {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		
-			
+
+
 		// word character html entities
 		// character	0-9__ A-Z__ a-z___ other_special_chrs_____
 		// decimal		48-57 65-90 97-122 192-214,216-246,248-255, 256-383
@@ -300,7 +300,7 @@ class Parse_Text {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		
+
 		$this->components['word'] = "
 		(?:
 		(?<![\w\&])							# negative lookbehind to ensure
@@ -315,10 +315,10 @@ class Parse_Text {
 		)+
 		)
 		"; // required modifiers: x (multiline pattern) u (utf8)
-	
+
 		# find any text
 		$this->components['anyText'] = "{$this->components['space']}|{$this->components['punctuation']}|{$this->components['word']}"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		
+
 		// store compiled regexes for later use
 		// uses S modifier ('study')
 		$this->regex['anyText'] = "/({$this->components['anyText']})/Sixu";
@@ -327,14 +327,14 @@ class Parse_Text {
 		$this->regex['word'] = "/\A{$this->components['word']}\Z/Sxu";
 		$this->regex['htmlLetterConnectors'] = "/{$this->components['htmlLetterConnectors']}|[0-9\-_&#;\/]/Sxu";
 	}
-	
+
 	########################################################################
 	#	( UN | RE )LOAD, UPDATE AND CLEAR METHODS
 	#
-	
+
 	/**
 	 * Tokenize a string and store the tokens in $this->text.
-	 * 
+	 *
 	 * @param string $raw_text A text fragment without any HTML markup.
 	 * @return boolean Returns `true` on successful completion, `false` otherwise.
 	 */
@@ -342,48 +342,48 @@ class Parse_Text {
 		if( ! is_string( $raw_text ) ) {
 			return false; // we have an error, abort
 		}
-		
+
 		// abort if a simple string exceeds 500 characters (security concern)
 		if ( preg_match( '@\w{500}@s', $raw_text ) ) { // FIXME: should be in $this->regex
 			return false;
 		}
 
 		// clear any remains
-		// FIXME: is this necessary?  
+		// FIXME: is this necessary?
 		$this->clear();
 
 		switch ( mb_detect_encoding($raw_text.'a', $this->encodings) ) {
 			case 'UTF-8':
 				$this->mb = true;
 				break;
-				
+
 			case 'ASCII':
 				$this->mb = false;
 				break;
-				
+
 			default:
-				return false; 
+				return false;
 		}
-				
+
 		$tokens = array();
 		$parts = preg_split( $this->regex['anyText'], $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE );
-		
+
 		$index = 0;
 		foreach ( $parts as $part ) {
 			if ( '' !== $part ) {
-		
-				if ( preg_match($this->regex['space'], $part ) ) {					
+
+				if ( preg_match($this->regex['space'], $part ) ) {
 					$tokens[$index] = array(
 									'type'		=> 'space',
 									'value'		=> $part,
 									);
-				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {				
+				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {
 					$tokens[$index] = array(
 									'type'		=> 'punctuation',
 									'value'		=> $part,
 									);
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
-					// make sure that things like email addresses and URLs are not broken up 
+					// make sure that things like email addresses and URLs are not broken up
 					// into words and punctuation not preceeded by an 'other'
 					if ( $index - 1 >= 0 && $tokens[ $index - 1 ]['type'] === 'other' ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
@@ -392,7 +392,7 @@ class Parse_Text {
 									'value'		=> $old_part.$part,
 									);
 						$index = $index - 1;
-						
+
 					// not preceeded by a non-space + punctuation
 					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
@@ -403,14 +403,14 @@ class Parse_Text {
 									);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
-					} else {	
+					} else {
 						$tokens[ $index ] = array(
 									'type'		=> 'word',
 									'value'		=> $part,
 									);
 					}
-				} else {					
-					// make sure that things like email addresses and URLs are not broken up into words 
+				} else {
+					// make sure that things like email addresses and URLs are not broken up into words
 					// and punctuation not preceeded by an 'other' or 'word'
 					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
 						$index = $index - 1;
@@ -429,63 +429,63 @@ class Parse_Text {
 									);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
-					} else {	
+					} else {
 						$tokens[ $index ] = array(
 									'type'		=> 'other',
 									'value'		=> $part,
 									);
 					}
 				}
-								
+
 				$index++;
 			}
 		}
-		
+
 		$this->text = $tokens;
 		return true;
 	}
-	
+
 	/**
 	 * Reloads $this->text (i.e. capture new inserted text, or remove those tokens whose values have been deleted).
-	 * 
+	 *
 	 * Warning: Tokens previously acquired through 'get' methods may not match new tokenization.
-	 * 
+	 *
 	 * @return boolean Returns true on successful completion.
 	 */
 	function reload() {
 		return $this->load($this->unload());
 	}
-	
+
 	/**
 	 * Returns the complete text as a string and clears the parser.
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 */
 	function unload() {
-		
+
 		$reassembledText = '';
 		foreach($this->text as &$token) {
 			$reassembledText .= $token['value'];
 		}
-				
+
 		$this->clear();
 		return $reassembledText;
 	}
-	
+
 	/**
-	 * Clears the currently set text from the parser.  
+	 * Clears the currently set text from the parser.
 	 */
 	function clear() {
 		$this->text = array();
 		$this->mb = false;
 	}
-	
+
 	/**
 	 * Updates the 'value' field for all matching tokens.
-	 * 
+	 *
 	 * @param array $tokens {
 	 * 		An array of tokens.
-	 * 
+	 *
 	 * 		@type string $value
 	 * }
 	 */
@@ -503,7 +503,7 @@ class Parse_Text {
 
 	/**
 	 * Retrieve all tokens of the currently set text.
-	 * 
+	 *
 	 * @return array An array of tokens.
 	 */
 	function get_all() {
@@ -512,7 +512,7 @@ class Parse_Text {
 
 	/**
 	 * Retrieve all tokens of the type "space".
-	 * 
+	 *
 	 * @return array An array of tokens.
 	 */
 	function get_spaces() {
@@ -521,7 +521,7 @@ class Parse_Text {
 
 	/**
 	 * Retrieve all tokens of the type "punctuation".
-	 * 
+	 *
 	 * @return array An array of tokens.
 	 */
 	function get_punctuation() {
@@ -530,29 +530,29 @@ class Parse_Text {
 
 	/**
 	 * Retrieve all tokens of the type "word".
-	 * 
+	 *
 	 * @param string $abc Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Optional. Default 'allow-all-letters'.
 	 * @param string $caps Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Optional. Default 'allow-all-caps'.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps' ) {
 		$words = $this->get_type( 'word' );
 		$tokens = array();
-		
+
 		foreach( $words as $index => $token ) {
 			if ( $this->mb ) {
 			 	$capped = mb_strtoupper( $token['value'], 'UTF-8' );
 			} else {
 				$capped = strtoupper( $token['value'] );
 			}
-			
+
 			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token['value'] );
-			
+
 			if ( ( 'no-all-letters' === $abc && $lettered !== $token['value'] ) ) {
 				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
 					 ( 'allow-all-caps'   === $caps ) ||
 					 ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) {
 					$tokens[ $index ] = $token;
-				}				
+				}
 			} elseif ( 'allow-all-letters' === $abc) {
 				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
 					 ( 'allow-all-caps'   === $caps ) ||
@@ -567,13 +567,13 @@ class Parse_Text {
 				}
 			}
 		}
-		
+
 		return $tokens;
 	}
 
 	/**
 	 * Retrieve all tokens of the type "other".
-	 * 
+	 *
 	 * @return array An array of tokens.
 	 */
 	function get_other() {
@@ -590,18 +590,18 @@ class Parse_Text {
 
 	/**
 	 * Retrieve all tokens of the given type.
-	 * 
+	 *
 	 * @param string $type The type to get.
 	 */
 	function get_type( $type ) {
 		$tokens = array();
-		
+
 		foreach( $this->text as $index => $token ) {
 			if( $token['type'] === $type )
-				$tokens[$index] = $token; 
+				$tokens[$index] = $token;
 		}
-		
-		return $tokens;		
+
+		return $tokens;
 	}
-	
+
 }
