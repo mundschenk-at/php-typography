@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 	            colors: true,
 	            configuration: 'phpunit.xml',
 	        }
-	    }
+	    },
 		copy: {
 			main: {
 				files:[
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
 	            },
 	        }
-	    },
+	    }
 	});
 
 	grunt.registerTask( 'build', [
