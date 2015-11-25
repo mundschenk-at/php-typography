@@ -2760,7 +2760,7 @@ class PHP_Typography {
 
 			$hyphenated_word = '';
 			for ( $i=0; $i < $word_length; $i++ ) {
-				if ( ( is_odd( intval( $word_pattern[ $i ] ) ) ) && ( $i >= $this->settings['hyphenMinBefore']) && ( $i < $word_length - $this->settings['hyphenMinAfter'] ) ) {
+				if ( is_odd( intval( $word_pattern[ $i ] ) ) && ( $i >= $this->settings['hyphenMinBefore']) && ( $i < $word_length - $this->settings['hyphenMinAfter'] ) ) {
 					$hyphenated_word .= $this->chr['softHyphen'] . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];

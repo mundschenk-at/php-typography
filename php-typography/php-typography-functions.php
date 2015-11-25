@@ -202,11 +202,11 @@ function uchr( $codes ) {
 /**
  * Is a number odd?
  *
- * @param number $number
- * @return number 0 if even and 1 if odd
+ * @param integer $number
+ * @return boolean true if $number is odd, false if it is even.
  */
 function is_odd( $number ) {
-	return $number % 2;
+	return (boolean) ( $number % 2 );
 }
 
 /**
