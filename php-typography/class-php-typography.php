@@ -2773,4 +2773,14 @@ class PHP_Typography {
 
 		return $parsed_text_tokens;
 	}
+
+	/**
+	 * Retrieve a unique hash value for the current settings.
+	 *
+	 * @param number $max_length The maximum number of bytes returned.
+	 * @return string An binary hash value for the current settings limited to $max_length.
+	 */
+	public function get_settings_hash( $max_length = 8 ) {
+		return substr( md5( json_encode( $this->settings ), true ), 0, $max_length );
+	}
 }

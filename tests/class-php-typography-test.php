@@ -1244,4 +1244,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
           'This test has not been implemented yet.'
         );
     }
+
+    /**
+     * @covers PHP_Typography::get_settings_hash
+     */
+    public function testGet_settings_hash()
+    {
+    	$typo = $this->object;
+
+    	$typo->set_smart_quotes(true);
+    	$hash1 = $typo->get_settings_hash(10);
+    	$this->assertEquals( 10, strlen( $hash1 ) );
+
+  		$typo->set_smart_quotes(false);
+  		$hash2 = $typo->get_settings_hash(10);
+  		$this->assertEquals( 10, strlen( $hash2 ) );
+
+  		$this->assertNotEquals( $hash1, $hash2 );
+    }
 }
