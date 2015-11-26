@@ -36,13 +36,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * Return encoded HTML string (everything except <>"').
-     * 
+     *
      * @param string $html
      */
     protected function clean_html( $html ) {
-    	return str_replace( array('&lt;', '&gt;'), array('<', '>'), htmlentities( $html, ENT_NOQUOTES, 'utf-8', false ) );    	 
+    	return str_replace( array('&lt;', '&gt;'), array('<', '>'), htmlentities( $html, ENT_NOQUOTES, 'utf-8', false ) );
     }
-    
+
     /**
      * @covers PHP_Typography::set_defaults
      * @todo   Implement testSet_defaults().
@@ -63,7 +63,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$always_ignore = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map',
     							'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
     	$self_closing_tags = array('area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta');
-    	 
+
     	// default tags
 		$this->object->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre',	'samp',
 												  'script',	'noscript',	'noembed', 'select', 'style', 'textarea',
@@ -77,7 +77,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		foreach ( $self_closing_tags as $tag ) {
 			$this->assertNotContains( $tag, $this->object->settings['ignoreTags'] );
 		}
-		
+
 		// auto-close tag and something else
 		$this->object->set_tags_to_ignore( array( 'img', 'foo' ) );
 		$this->assertContains( 'foo', $this->object->settings['ignoreTags'] );
@@ -87,7 +87,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $this->object->settings['ignoreTags'] );
 		}
-		
+
     }
 
     /**
@@ -121,7 +121,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_quotes( true );
 		$this->assertTrue( $this->object->settings['smartQuotes'] );
-        
+
 		$this->object->set_smart_quotes( false );
 		$this->assertFalse( $this->object->settings['smartQuotes'] );
     }
@@ -157,7 +157,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_dashes( true );
 		$this->assertTrue( $this->object->settings['smartDashes'] );
-        
+
 		$this->object->set_smart_dashes( false );
 		$this->assertFalse( $this->object->settings['smartDashes'] );
     }
@@ -169,7 +169,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_ellipses( true );
 		$this->assertTrue( $this->object->settings['smartEllipses'] );
-        
+
 		$this->object->set_smart_ellipses( false );
 		$this->assertFalse( $this->object->settings['smartEllipses'] );
     }
@@ -179,10 +179,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @todo   Implement testSet_smart_diacritics().
      */
     public function testSet_smart_diacritics()
-    {   	
+    {
 		$this->object->set_smart_diacritics( true );
 		$this->assertTrue( $this->object->settings['smartDiacritics'] );
-       		
+
 		$this->object->set_smart_diacritics( false );
 		$this->assertFalse( $this->object->settings['smartDiacritics'] );
     }
@@ -194,10 +194,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_diacritic_language( 'en-US' );
 		$this->assertGreaterThan( 0, count( $this->object->settings['diacriticWords'] ) );
-		
+
 		$this->object->set_diacritic_language( 'foobar' );
 		$this->assertFalse( isset( $this->object->settings['diacriticWords'] ) );
-		
+
 		$this->object->set_diacritic_language( 'de-DE' );
 		$this->assertTrue( isset( $this->object->settings['diacriticWords'] ) );
 		$this->assertGreaterThan( 0, count( $this->object->settings['diacriticWords'] ) );
@@ -222,7 +222,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_marks( true );
 		$this->assertTrue( $this->object->settings['smartMarks'] );
-        
+
 		$this->object->set_smart_marks( false );
 		$this->assertFalse( $this->object->settings['smartMarks'] );
     }
@@ -234,7 +234,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_math( true );
 		$this->assertTrue( $this->object->settings['smartMath'] );
-        
+
 		$this->object->set_smart_math( false );
 		$this->assertFalse( $this->object->settings['smartMath'] );
     }
@@ -246,7 +246,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_exponents( true );
 		$this->assertTrue( $this->object->settings['smartExponents'] );
-        
+
 		$this->object->set_smart_exponents( false );
 		$this->assertFalse( $this->object->settings['smartExponents'] );
     }
@@ -258,7 +258,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_fractions( true );
 		$this->assertTrue( $this->object->settings['smartFractions'] );
-        
+
 		$this->object->set_smart_fractions( false );
 		$this->assertFalse( $this->object->settings['smartFractions'] );
     }
@@ -270,7 +270,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_ordinal_suffix( true );
 		$this->assertTrue( $this->object->settings['smartOrdinalSuffix'] );
-        
+
 		$this->object->set_smart_ordinal_suffix( false );
 		$this->assertFalse( $this->object->settings['smartOrdinalSuffix'] );
     }
@@ -282,7 +282,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_single_character_word_spacing( true );
 		$this->assertTrue( $this->object->settings['singleCharacterWordSpacing'] );
-        
+
 		$this->object->set_single_character_word_spacing( false );
 		$this->assertFalse( $this->object->settings['singleCharacterWordSpacing'] );
     }
@@ -294,7 +294,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_fraction_spacing( true );
 		$this->assertTrue( $this->object->settings['fractionSpacing'] );
-        
+
 		$this->object->set_fraction_spacing( false );
 		$this->assertFalse( $this->object->settings['fractionSpacing'] );
     }
@@ -306,7 +306,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_unit_spacing( true );
 		$this->assertTrue( $this->object->settings['unitSpacing'] );
-        
+
 		$this->object->set_unit_spacing( false );
 		$this->assertFalse( $this->object->settings['unitSpacing'] );
     }
@@ -318,17 +318,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
     	$units_as_array = array( 'foo', 'bar', 'xx/yy');
     	$units_as_string = implode( ', ', $units_as_array );
-    	
+
 		$this->object->set_units( $units_as_array );
 		foreach( $units_as_array as $unit ) {
 			$this->assertContains( $unit, $this->object->settings['units'] );
 		}
-    	
+
 		$this->object->set_units( array() );
 		foreach( $units_as_array as $unit ) {
 			$this->assertNotContains( $unit, $this->object->settings['units'] );
 		}
-		
+
 		$this->object->set_units( $units_as_string );
 		foreach( $units_as_array as $unit ) {
 			$this->assertContains( $unit, $this->object->settings['units'] );
@@ -342,7 +342,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_dash_spacing( true );
 		$this->assertTrue( $this->object->settings['dashSpacing'] );
-        
+
 		$this->object->set_dash_spacing( false );
 		$this->assertFalse( $this->object->settings['dashSpacing'] );
     }
@@ -354,7 +354,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_space_collapse( true );
 		$this->assertTrue( $this->object->settings['spaceCollapse'] );
-        
+
 		$this->object->set_space_collapse( false );
 		$this->assertFalse( $this->object->settings['spaceCollapse'] );
     }
@@ -366,7 +366,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_dewidow( true );
 		$this->assertTrue( $this->object->settings['dewidow'] );
-        
+
 		$this->object->set_dewidow( false );
 		$this->assertFalse( $this->object->settings['dewidow'] );
     }
@@ -381,7 +381,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$this->object->set_max_dewidow_length( 1 );
 		$this->assertSame( 5, $this->object->settings['dewidowMaxLength'] );
-		
+
 		$this->object->set_max_dewidow_length( 2 );
 		$this->assertSame( 2, $this->object->settings['dewidowMaxLength'] );
     }
@@ -396,7 +396,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$this->object->set_max_dewidow_pull( 1 );
 		$this->assertSame( 5, $this->object->settings['dewidowMaxPull'] );
-		
+
 		$this->object->set_max_dewidow_pull( 2 );
 		$this->assertSame( 2, $this->object->settings['dewidowMaxPull'] );
     }
@@ -408,7 +408,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_wrap_hard_hyphens( true );
 		$this->assertTrue( $this->object->settings['hyphenHardWrap'] );
-        
+
 		$this->object->set_wrap_hard_hyphens( false );
 		$this->assertFalse( $this->object->settings['hyphenHardWrap'] );
     }
@@ -420,7 +420,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_url_wrap( true );
 		$this->assertTrue( $this->object->settings['urlWrap'] );
-        
+
 		$this->object->set_url_wrap( false );
 		$this->assertFalse( $this->object->settings['urlWrap'] );
     }
@@ -432,7 +432,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_email_wrap( true );
 		$this->assertTrue( $this->object->settings['emailWrap'] );
-        
+
 		$this->object->set_email_wrap( false );
 		$this->assertFalse( $this->object->settings['emailWrap'] );
     }
@@ -447,7 +447,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$this->object->set_min_after_url_wrap( 0 );
 		$this->assertSame( 5, $this->object->settings['urlMinAfterWrap'] );
-		
+
 		$this->object->set_min_after_url_wrap( 1 );
 		$this->assertSame( 1, $this->object->settings['urlMinAfterWrap'] );
     }
@@ -459,7 +459,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_style_ampersands( true );
 		$this->assertTrue( $this->object->settings['styleAmpersands'] );
-        
+
 		$this->object->set_style_ampersands( false );
 		$this->assertFalse( $this->object->settings['styleAmpersands'] );
     }
@@ -471,7 +471,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_style_caps( true );
 		$this->assertTrue( $this->object->settings['styleCaps'] );
-        
+
 		$this->object->set_style_caps( false );
 		$this->assertFalse( $this->object->settings['styleCaps'] );
     }
@@ -483,7 +483,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_style_initial_quotes( true );
 		$this->assertTrue( $this->object->settings['styleInitialQuotes'] );
-        
+
 		$this->object->set_style_initial_quotes( false );
 		$this->assertFalse( $this->object->settings['styleInitialQuotes'] );
     }
@@ -495,7 +495,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_style_numbers( true );
 		$this->assertTrue( $this->object->settings['styleNumbers'] );
-        
+
 		$this->object->set_style_numbers( false );
 		$this->assertFalse( $this->object->settings['styleNumbers'] );
     }
@@ -507,7 +507,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
        	$tags_as_array = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' );
     	$tags_as_string = implode( ', ', $tags_as_array );
-    	
+
 		$this->object->set_initial_quote_tags( $tags_as_array );
 		foreach( $tags_as_array as $tag ) {
 			$this->assertArrayHasKey( $tag, $this->object->settings['initialQuoteTags'] );
@@ -517,7 +517,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		foreach( $tags_as_array as $tag ) {
 			$this->assertArrayNotHasKey( $tag, $this->object->settings['initialQuoteTags'] );
 		}
-		
+
 		$this->object->set_initial_quote_tags( $tags_as_string );
 		foreach( $tags_as_array as $tag ) {
 			$this->assertArrayHasKey( $tag, $this->object->settings['initialQuoteTags'] );
@@ -531,7 +531,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_hyphenation( true );
 		$this->assertTrue( $this->object->settings['hyphenation'] );
-        
+
 		$this->object->set_hyphenation( false );
 		$this->assertFalse( $this->object->settings['hyphenation'] );
     }
@@ -546,12 +546,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertGreaterThan( 0, count( $this->object->settings['hyphenationPattern'] ) );
 		$this->assertGreaterThan( 0, count( $this->object->settings['hyphenationPatternMaxSegment'] ) );
 		$this->assertGreaterThan( 0, count( $this->object->settings['hyphenationPatternExceptions'] ) );
-		
+
 		$this->object->set_hyphenation_language( 'foobar' );
 		$this->assertFalse( isset( $this->object->settings['hyphenationPattern'] ) );
 		$this->assertFalse( isset( $this->object->settings['hyphenationPatternMaxSegment'] ) );
 		$this->assertFalse( isset( $this->object->settings['hyphenationPatternExceptions'] ) );
-		
+
 		$this->object->set_hyphenation_language( 'de' );
 		$this->assertTrue( isset( $this->object->settings['hyphenationPattern'] ) );
 		$this->assertGreaterThan( 0, count( $this->object->settings['hyphenationPattern'] ) );
@@ -648,16 +648,16 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testGet_languages()
     {
-    	$expected = array( 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el-Mono', 'el-Poly', 'en-GB', 'en-US', 
-    					   'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is', 
-    					   'it', 'la', 'lt', 'mn-Cyrl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn', 
+    	$expected = array( 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el-Mono', 'el-Poly', 'en-GB', 'en-US',
+    					   'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is',
+    					   'it', 'la', 'lt', 'mn-Cyrl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn',
     					   'sk', 'sl', 'sr-Cyrl', 'sv', 'tr', 'uk', 'zh-Latn' );
     	$not_expected = array( 'klingon', 'de-DE' );
-    	
+
     	$actual = $this->object->get_languages();
 		foreach( $expected as $lang_code ) {
 			$this->assertArrayHasKey( $lang_code, $actual );
-		}		
+		}
 		foreach( $not_expected as $lang_code ) {
 			$this->assertArrayNotHasKey( $lang_code, $actual );
 		}
@@ -670,14 +670,14 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_diacritic_languages()
     {
        	$expected = array( 'de-DE', 'en-US' );
-       	$not_expected = array( 'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is', 
-    					       'it', 'la', 'lt', 'mn-Cyrl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn', 
+       	$not_expected = array( 'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is',
+    					       'it', 'la', 'lt', 'mn-Cyrl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn',
     					   	   'sk', 'sl', 'sr-Cyrl', 'sv', 'tr', 'uk', 'zh-Latn' );
-    	
+
        	$actual = $this->object->get_diacritic_languages();
 		foreach( $expected as $lang_code ) {
 			$this->assertArrayHasKey( $lang_code, $actual );
-		}	
+		}
 		foreach( $not_expected as $lang_code ) {
 			$this->assertArrayNotHasKey( $lang_code, $actual );
 		}
@@ -859,11 +859,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		//$html = '<p><em>"I\'m pretty sure,"</em> she said, & "He said \'We are <em>family</em>\'".</p>';
 		//$expected = '<p><em>&ldquo;';
-		
+
     	$this->object->set_smart_quotes( true );
-    	
-		$this->assertSame( "<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>", 
-						   $this->clean_html( $this->object->process( '<span>"Double", \'single\'</span>' ) ) );		
+
+		$this->assertSame( "<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>",
+						   $this->clean_html( $this->object->process( '<span>"Double", \'single\'</span>' ) ) );
     }
 
     /**
@@ -897,8 +897,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$this->object->set_smart_diacritics( true );
 		$this->object->set_diacritic_language( 'en-US' );
-		
-		$this->assertSame( $this->clean_html('<p>crème brûlée</p>'), 
+
+		$this->assertSame( $this->clean_html('<p>crème brûlée</p>'),
 						   $this->clean_html( $this->object->process('<p>creme brulee</p>') ) );
     }
 
@@ -933,18 +933,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testSmart_math()
     {
     	$typo = $this->object;
-    	
+
 		$typo->set_smart_math( true );
-		
+
 		// standard equations
 		$this->assertSame( 'xx 7&minus;3=4 xx', $this->clean_html( $typo->process('xx 7-3=4 xx') ) );
 		$this->assertSame( 'xx 3&times;3=5&divide;2 xx', $this->clean_html( $typo->process('xx 3*3=5/2 xx') ) );
-		
+
 		// some changes should be reversed (not all)
 		$this->assertSame( 'xx 0815-4711 xx', $typo->process( 'xx 0815-4711 xx' ) );
  		$this->assertSame( 'xx 1/2 xx', $typo->process( 'xx 1/2 xx') );
 		$this->assertNotSame( 'xx 2001-13-12 xx', $typo->process( 'xx 2001-13-12 xx' ) ); // not a valid date
-		$this->assertSame( 'xx 2001-12-13 xx', $typo->process('xx 2001-12-13 xx') ); 
+		$this->assertSame( 'xx 2001-12-13 xx', $typo->process('xx 2001-12-13 xx') );
 		$this->assertNotSame( 'xx 2001-13-13 xx', $typo->process('xx 2001-13-13 xx') ); // not a valid date
 		$this->assertSame( 'xx 13-12-2002 xx', $typo->process('xx 13-12-2002 xx') );
 		$this->assertSame( 'xx 12-13-2002 xx', $typo->process('xx 12-13-2002 xx') );
@@ -1188,13 +1188,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->object->set_hyphenate_all_caps( true );
 		$this->object->set_hyphenate_title_case( true ); // added in version 1.5
 		$this->object->set_hyphenation_exceptions( array( 'KING-desk' ) );
-			
+
  	/*	$this->assertSame( "This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness",
  						   $this->clean_html( $this->object->process("This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness") ) );
 		*/
-		
+
     	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->object->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );    	 
+						   $this->clean_html( $this->object->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
     }
 
     /**

@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 /**
  * Performance test suite for wp-Typography. Licensed under the terms of the GNU General Public License 2.0.
- * 
+ *
  * (c) 2015 Peter Putzer
  */
 
@@ -17,11 +17,11 @@ if ( ! function_exists( '__' ) ) {
 
 $testHTML = <<<'EOD'
 <h1>HTML Ipsum Presents</h1>
-	       
+
 <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
 
 <h2>Header Level 2</h2>
-	       
+
 <ol>
    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
    <li>Aliquam tincidunt mauris eu risus.</li>
@@ -35,9 +35,9 @@ $testHTML = <<<'EOD'
    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
    <li>Aliquam tincidunt mauris eu risus.</li>
 </ul>
-	
+
 <h2>Header Level 2</h2>
-	       
+
 <ol>
    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
    <li>Aliquam tincidunt mauris eu risus.</li>
@@ -51,12 +51,12 @@ $testHTML = <<<'EOD'
    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
    <li>Aliquam tincidunt mauris eu risus.</li>
 </ul>
-	
+
 <pre><code>
-#header h1 a { 
-	display: block; 
-	width: 300px; 
-	height: 80px; 
+#header h1 a {
+	display: block;
+	width: 300px;
+	height: 80px;
 }
 </code></pre>
 <form action="#" method="post">
@@ -83,12 +83,12 @@ $testHTML = <<<'EOD'
 			<option value="Choice 3">Choice 3</option>
 		</select>
 	</div>
-	
+
 	<div>
 		<label for="textarea">Textarea:</label>
 		<textarea cols="40" rows="8" name="textarea" id="textarea"></textarea>
 	</div>
-	
+
 	<div>
 	    <label for="checkbox">Checkbox:</label>
 		<input type="checkbox" name="checkbox" id="checkbox" />
@@ -98,7 +98,7 @@ $testHTML = <<<'EOD'
 	    <input type="submit" value="Submit" />
     </div>
 </form>
-	
+
 <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
 <ul>
    <li>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat.</li>
@@ -115,7 +115,7 @@ $testHTML = <<<'EOD'
 		<li><a href="#nowhere" title="Pellentesque fermentum dolor">Pellentesque</a></li>
 	</ul>
 </nav>
-	
+
 EOD;
 
 $php_typo = new \PHP_Typography\PHP_Typography();
