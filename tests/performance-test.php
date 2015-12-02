@@ -119,11 +119,24 @@ $testHTML = <<<'EOD'
 EOD;
 
 $php_typo = new \PHP_Typography\PHP_Typography();
+
+$startTime = microtime( true );
+for ( $i = 0; $i < 100; ++$i ) {
+	$php_typo->process( $testHTML, false );
+}
+$endTime = microtime( true );
+echo "$i iterations took " . ( $endTime - $startTime ) . " seconds.\n";
+
 $startTime = microtime(true);
 
-for ($i = 0; $i < 100; ++$i) {
-	$php_typo->process($testHTML, false);
+for ( $i = 0; $i < 100; ++$i ) {
+	$transient = 'typo_' . base64_encode( md5( $testHTML, true ) . $php_typo->get_settings_hash( 11 ) );
+	$php_typo->process( $testHTML, false );
+	unset( $transient );
 }
-$endTime = microtime(true);
+$endTime = microtime( true );
+echo "$i iterations with hashing took " . ( $endTime - $startTime ) . " seconds.\n";
 
-echo "$i iterations took " . ($endTime - $startTime) . " seconds.\n";
+
+
+
