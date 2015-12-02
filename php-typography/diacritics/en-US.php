@@ -426,3 +426,4 @@ $diacriticWords = array(
 	"Ubermensch"=>"Übermensch",
 	"Zaire"=>"Zaïre",
 );
+
