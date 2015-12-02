@@ -37,6 +37,9 @@ module.exports = function(grunt) {
 				],
 			}
 		},
+	    clean: {
+	    	  build: ["build/*"]//,
+	    },		
 	    wp_deploy: {
 	        deploy: { 
 	            options: {
@@ -51,12 +54,14 @@ module.exports = function(grunt) {
 
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
+		'clean:build',
 		'copy',
   	]);
 
   	grunt.registerTask('deploy' ,[
  	    'phpunit',
 //  		'wp_readme_to_markdown',
+		'clean:build',
   		'copy',
   		'wp_deploy'
   	]);
