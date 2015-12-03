@@ -999,11 +999,11 @@ class PHP_Typography {
 	 */
 	function set_smart_quotes_primary( $style = 'doubleCurled' ) {
 		if ( isset( $this->quote_styles[ $style ] ) ) {
-			if ( ! empty( $this->quote_style[ $style ]['open'] ) ) {
-				$this->chr['doubleQuoteOpen'] = $this->quote_style[ $style ]['open'];
+			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
+				$this->chr['doubleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
 			}
-			if ( ! empty( $this->quote_style[ $style ]['close'] ) ) {
-				$this->chr['doubleQuoteClose'] = $this->quote_style[ $style ]['close'];
+			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
+				$this->chr['doubleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
 		} else {
 			error_log( "Invalid quote style $style." );
@@ -1033,12 +1033,12 @@ class PHP_Typography {
 	 * @param string $style Defaults to 'singleCurled'.
 	 */
 	function set_smart_quotes_secondary( $style = 'singleCurled' ) {
-			if ( isset( $this->quote_styles[ $style ] ) ) {
-			if ( ! empty( $this->quote_style[ $style ]['open'] ) ) {
-				$this->chr['singleQuoteOpen'] = $this->quote_style[ $style ]['open'];
+		if ( isset( $this->quote_styles[ $style ] ) ) {
+			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
+				$this->chr['singleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
 			}
-			if ( ! empty( $this->quote_style[ $style ]['close'] ) ) {
-				$this->chr['singleQuoteClose'] = $this->quote_style[ $style ]['close'];
+			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
+				$this->chr['singleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
 		} else {
 			error_log( "Invalid quote style $style." );
