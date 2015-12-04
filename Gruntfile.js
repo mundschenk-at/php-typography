@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['php-typography/**','templates/**','translations/**','vendor/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['includes/**','php-typography/**','admin/**','translations/**','vendor/**'], dest: 'build/'},
 				],
 			}
 		},
@@ -49,13 +49,48 @@ module.exports = function(grunt) {
 	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
 	            },
 	        }
-	    }
+	    },
+        sass: {
+            dist: {
+                options: {
+                    style: 'compressed',
+                    sourcemap: 'none'
+                },
+                files: [ { expand: true,
+		                   cwd: 'admin/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'build/admin/css',
+		                   ext: '.min.css' },
+	                     { expand: true,
+		                   cwd: 'public/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'build/public/css',
+		                   ext: '.min.css' } ]
+            },
+            dev: {
+                options: {
+                    style: 'expanded',
+                    sourcemap: 'none'
+                },
+                files: [ { expand: true,
+		                   cwd: 'admin/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'admin/css',
+		                   ext: '.css' },
+	                     { expand: true,
+		                   cwd: 'public/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'public/css',
+		                   ext: '.css' } ]
+            }
+        }
 	});
 
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
 		'clean:build',
 		'copy',
+		'sass:dist'
   	]);
 
   	grunt.registerTask('deploy' ,[
@@ -63,11 +98,13 @@ module.exports = function(grunt) {
 //  		'wp_readme_to_markdown',
 		'clean:build',
   		'copy',
+		'sass:dist',
   		'wp_deploy'
   	]);
 
 	grunt.registerTask( 'default', [
 	    'phpunit',
 		'makepot',
+		'sass:dev'
     ]);
 };
