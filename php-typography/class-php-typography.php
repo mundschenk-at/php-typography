@@ -50,17 +50,12 @@ namespace PHP_Typography;
 /**
  * A few utility functions.
  */
-require_once( 'php-typography-functions.php' );
-
-/**
- * A parser for text snippets, tokenizing into punctuation, words etc.
- */
-require_once( 'class-parse-text.php' );
+require_once __DIR__ . '/php-typography-functions.php';
 
 /**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
-require_once( __DIR__ . '/../vendor/Masterminds/HTML5.php');
+require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
