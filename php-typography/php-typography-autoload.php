@@ -17,7 +17,7 @@ function php_typography_autoloader( $class_name ) {
 
 	static $classes_dir;
 	if ( empty( $classes_dir ) ) {
-		$classes_dir = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR;
+		$classes_dir = realpath( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
 	}
 
 	$class_name_parts = explode( '\\', $class_name );
