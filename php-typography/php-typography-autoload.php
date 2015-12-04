@@ -11,8 +11,6 @@ function php_typography_autoloader( $class_name ) {
 		$prefix = 'PHP_Typography\\';
 	}
 
-	error_log("trying to load $class_name" );
-
 	if ( false === strpos( $class_name, $prefix ) ) {
 		return; // abort
 	}
