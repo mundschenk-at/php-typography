@@ -1568,7 +1568,7 @@ class PHP_Typography {
 	 *
 	 * @return array An associative array in the form array( language code => language name )
 	 */
-	function get_languages() {
+	function get_hyphenation_languages() {
 		$languages = array();
 		$langDir = dirname( __FILE__ ) . '/lang/';
 		$handler = opendir( $langDir );
