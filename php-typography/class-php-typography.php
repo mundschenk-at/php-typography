@@ -1612,7 +1612,7 @@ class PHP_Typography {
 			$xpath_ignore_query[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$xpath_ignore_query[] = '//*[@id=\'' . implode( '\'] | //*[@id=\'', $this->settings['ignoreIDs'] ) . '\']';
+			$xpath_ignore_query[] = '//*[@id=\'' . implode( '\' or @id=\'', $this->settings['ignoreIDs'] ) . '\']';
 		}
 
 		$all_textnodes = $xpath->query( '//text()' );
