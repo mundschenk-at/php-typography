@@ -80,7 +80,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		// auto-close tag and something else
 		$this->object->set_tags_to_ignore( array( 'img', 'foo' ) );
-		$this->assertContains( 'foo', $this->object->settings['ignoreTags'] );
+ 		$this->assertContains( 'foo', $this->object->settings['ignoreTags'] );
     	foreach ( $self_closing_tags as $tag ) {
 			$this->assertNotContains( $tag, $this->object->settings['ignoreTags'] );
 		}
@@ -92,14 +92,23 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::set_classes_to_ignore
-     * @todo   Implement testSet_classes_to_ignore().
      */
     public function testSet_classes_to_ignore()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$typo = $this->object;
+
+		$typo->set_classes_to_ignore( 'foo bar' );
+		$this->assertContains( 'foo', $this->object->settings['ignoreClasses'] );
+		$this->assertContains( 'bar', $this->object->settings['ignoreClasses'] );
+
+		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
+			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>"But" not this.</span></p>';
+		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
+			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+		$this->object->set_smart_quotes( true );
+		$this->assertSame( $expected, $this->clean_html( $typo->process( $html ) ) );
     }
 
     /**
