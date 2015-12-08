@@ -229,3 +229,76 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 
 	return $result;
 }
+
+
+/**
+ * Retrieve the supported hyphenation languages.
+ *
+ * @return array An associative array in the form array( language code => language name )
+ */
+function get_hyphenation_languages() {
+	static $hyphenation_language_name_untranslated = '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
+	static $hyphenation_language_name_translated   = '/\$patgenLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/';
+
+	$languages = array();
+	$langDir = dirname( __FILE__ ) . '/lang/';
+	$handler = opendir( $langDir );
+
+	// read all files in directory
+	while ( $file = readdir( $handler ) ) {
+		// we only want the php files
+		if ('.php' == substr( $file, -4 ) ) {
+			$file_content = file_get_contents( $langDir . $file );
+
+			preg_match( $hyphenation_language_name_untranslated, $file_content, $matches );
+			if ( ! isset($matches[1]) ) {
+				// maybe the language name is being translated
+				preg_match( $hyphenation_language_name_translated, $file_content, $matches );
+			}
+			$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
+			// language name in the patgen file already.
+			$language_code = substr( $file, 0, -4 );
+			$languages[ $language_code ] = $language_name;
+		}
+	}
+	closedir( $handler );
+
+	asort( $languages );
+	return $languages;
+}
+
+/**
+ * Retrieve the supported diacritics replacement languages.
+ *
+ * @return array An associative array in the form array( language code => language name )
+ */
+function get_diacritic_languages() {
+	static $diacritic_language_name_untranslated = '/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
+	static $diacritic_language_name_translated   = '/\$diacriticLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/';
+
+	$languages = array();
+	$lang_dir = dirname( __FILE__ ) . '/diacritics/';
+	$handler = opendir( $lang_dir );
+
+	// read all files in directory
+	while ( $file = readdir( $handler ) ) {
+		// we only want the php files
+		if ('.php' == substr( $file, -4 ) ) {
+			$file_content = file_get_contents( $lang_dir.$file );
+			preg_match( $diacritic_language_name_untranslated, $file_content, $matches );
+			if ( ! isset($matches[1]) ) {
+				// maybe the language name is being translated
+				preg_match( $diacritic_language_name_translated, $file_content, $matches );
+			}
+			$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
+			// language name in the patgen file already.
+			$language_code = substr( $file, 0, -4 );
+			$languages[ $language_code ] = $language_name;
+		}
+	}
+	closedir( $handler );
+
+	asort( $languages );
+	return $languages;
+}
+

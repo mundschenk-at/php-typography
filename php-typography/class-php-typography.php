@@ -620,11 +620,6 @@ class PHP_Typography {
 		$this->regex['customDiacriticsDoubleQuoteValue'] = "/(?:=>\s*\")([^\"]+)(?:\")/";
 		$this->regex['customDiacriticsSingleQuoteValue'] = "/(?:=>\s*')([^']+)(?:')/";
 
-		$this->regex['hyphenationLanguageNameUntranslated'] = '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
-		$this->regex['hyphenationLanguageNameTranslated']   = '/\$patgenLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/';
-		$this->regex['diacriticsLanguageNameUntranslated']  = '/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
-		$this->regex['diacriticsLanguageNameTranslated']    = '/\$diacriticLanguage\s*=\s*__\(\s*((".+")|(\'.+\'))\s*,\s*((".+")|(\'.+\'))\s*\)\s*;/';
-
 		$this->regex['controlCharacters'] = '/\p{C}/Su';
 
 		$this->regex['smartQuotesSingleQuotedNumbers']        = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
@@ -1562,71 +1557,6 @@ class PHP_Typography {
 	#==	METHODS - ACTIONS, let's do something!
 	#=======================================================================
 	#=======================================================================
-
-	/**
-	 * Retrieve the supported hyphenation languages.
-	 *
-	 * @return array An associative array in the form array( language code => language name )
-	 */
-	function get_hyphenation_languages() {
-		$languages = array();
-		$langDir = dirname( __FILE__ ) . '/lang/';
-		$handler = opendir( $langDir );
-
-		// read all files in directory
-		while ( $file = readdir( $handler ) ) {
-			// we only want the php files
-			if ('.php' == substr( $file, -4 ) ) {
-				$file_content = file_get_contents( $langDir . $file );
-
-				preg_match( $this->regex['hyphenationLanguageNameUntranslated'], $file_content, $matches );
-				if ( ! isset($matches[1]) ) {
-					// maybe the language name is being translated
-					preg_match( $this->regex['hyphenationLanguageNameTranslated'], $file_content, $matches );
-				}
-				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
-																					  // language name in the patgen file already.
-				$language_code = substr( $file, 0, -4 );
-				$languages[ $language_code ] = $language_name;
-			}
-		}
-		closedir( $handler );
-
-		asort( $languages );
-		return $languages;
-	}
-
-	/**
-	 * Retrieve the supported diacritics replacement languages.
-	 *
-	 * @return array An associative array in the form array( language code => language name )
-	 */
-	function get_diacritic_languages() {
-		$languages = array();
-		$lang_dir = dirname( __FILE__ ) . '/diacritics/';
-		$handler = opendir( $lang_dir );
-
-		// read all files in directory
-		while ( $file = readdir( $handler ) ) {
-			// we only want the php files
-			if ('.php' == substr( $file, -4 ) ) {
-				$file_content = file_get_contents( $lang_dir.$file );
-				preg_match( $this->regex['diacriticsLanguageNameUntranslated'], $file_content, $matches );
-				if ( ! isset($matches[1]) ) {
-					// maybe the language name is being translated
-					preg_match( $this->regex['diacriticsLanguageNameTranslated'], $file_content, $matches );
-				}
-				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
-																					 // language name in the patgen file already.
-				$language_code = substr( $file, 0, -4 );
-				$languages[ $language_code ] = $language_name;
-			}
-		}
-		closedir( $handler );
-
-		asort( $languages );
-		return $languages;
-	}
 
 	/**
 	 * Modifies $html according to the defined settings.
@@ -2834,5 +2764,25 @@ class PHP_Typography {
 	 */
 	public function get_settings_hash( $max_length = 8 ) {
 		return substr( md5( json_encode( $this->settings ), true ), 0, $max_length );
+	}
+
+	/**
+	 * Retrieve the list of valid hyphenation languages.
+	 * The language names are translation-ready but not translated yet.
+	 *
+	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
+	 */
+	static public function get_hyphenation_languages() {
+		return \PHP_Typography\get_hyphenation_languages();
+	}
+
+	/**
+	 * Retrieve the list of valid diacritic replacement languages.
+	 * The language names are translation-ready but not translated yet.
+	 *
+	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
+	 */
+	static public function get_diacritic_languages() {
+		return \PHP_Typography\get_diacritic_languages();
 	}
 }
