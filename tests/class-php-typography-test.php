@@ -117,10 +117,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testSet_ids_to_ignore()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$typo = $this->object;
+
+		$typo->set_ids_to_ignore( 'foobar barfoo' );
+		$this->assertContains( 'foobar', $this->object->settings['ignoreIDs'] );
+		$this->assertContains( 'barfoo', $this->object->settings['ignoreIDs'] );
+
+		$html = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
+			     <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>"But" not this.</span></p>';
+		$expected = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
+			     <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+		$this->object->set_smart_quotes( true );
+		$this->assertSame( $expected, $this->clean_html( $typo->process( $html ) ) );
     }
 
     /**
