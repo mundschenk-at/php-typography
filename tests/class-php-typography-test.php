@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/../php-typography/class-php-typography.php' );
+require_once realpath( __DIR__ . '/../php-typography/php-typography-autoload.php' );
 
 // don't break without translation function
 if ( ! function_exists( '__' ) ) {
@@ -663,9 +663,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers PHP_Typography::get_languages
+     * @covers PHP_Typography::get_hyphenation_languages
      */
-    public function testGet_languages()
+    public function testGet_hyphenation_languages()
     {
     	$expected = array( 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el-Mono', 'el-Poly', 'en-GB', 'en-US',
     					   'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is',
@@ -673,7 +673,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     					   'sk', 'sl', 'sr-Cyrl', 'sv', 'tr', 'uk', 'zh-Latn' );
     	$not_expected = array( 'klingon', 'de-DE' );
 
-    	$actual = $this->object->get_languages();
+    	$actual = $this->object->get_hyphenation_languages();
 		foreach( $expected as $lang_code ) {
 			$this->assertArrayHasKey( $lang_code, $actual );
 		}

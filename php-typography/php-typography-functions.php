@@ -213,7 +213,7 @@ function is_odd( $number ) {
  * Multibyte-safe str_split function.
  *
  * @param string $str
- * @param int    $length Optional Default 1.
+ * @param int    $length Optional. Default 1.
  * @param string $encoding Optional. Default 'UTF-8'.
  */
 function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
@@ -222,7 +222,8 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 	}
 
 	$result = array();
-	for ( $i = 0; $i < mb_strlen( $str, $encoding ); $i += $length ) {
+	$multibyte_length = mb_strlen( $str, $encoding );
+	for ( $i = 0; $i < $multibyte_length; $i += $length ) {
 		$result[] = mb_substr( $str, $i, $length, $encoding );
 	}
 

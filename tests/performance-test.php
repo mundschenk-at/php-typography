@@ -8,7 +8,7 @@
 
 error_reporting( E_ALL & E_STRICT );
 
-require_once( __DIR__ . '/../php-typography/class-php-typography.php' );
+require_once realpath( __DIR__ . '/../php-typography/php-typography-autoload.php' );
 
 // don't break without translation function
 if ( ! function_exists( '__' ) ) {
@@ -128,7 +128,6 @@ $endTime = microtime( true );
 echo "$i iterations took " . ( $endTime - $startTime ) . " seconds.\n";
 
 $startTime = microtime(true);
-
 for ( $i = 0; $i < 100; ++$i ) {
 	$transient = 'typo_' . base64_encode( md5( $testHTML, true ) . $php_typo->get_settings_hash( 11 ) );
 	$php_typo->process( $testHTML, false );
@@ -137,6 +136,13 @@ for ( $i = 0; $i < 100; ++$i ) {
 $endTime = microtime( true );
 echo "$i iterations with hashing took " . ( $endTime - $startTime ) . " seconds.\n";
 
+$startTime = microtime(true);
 
-
-
+$state = $php_typo->save_state();
+for ( $i = 0; $i < 1000	; ++$i ) {
+	$php_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
+	$php_typo->load_state( $state );
+	unset( $php_typo );
+}
+$endTime = microtime( true );
+echo "$i new PHP_Typography objects took " . ( $endTime - $startTime ) . " seconds.\n";

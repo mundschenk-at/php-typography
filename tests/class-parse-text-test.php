@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/../php-typography/class-parse-text.php' );
+require_once realpath( __DIR__ . '/../php-typography/php-typography-autoload.php' );
 
 // don't break without translation function
 if ( ! function_exists( '__' ) ) {

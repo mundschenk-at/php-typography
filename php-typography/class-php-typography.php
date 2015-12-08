@@ -50,17 +50,12 @@ namespace PHP_Typography;
 /**
  * A few utility functions.
  */
-require_once( 'php-typography-functions.php' );
-
-/**
- * A parser for text snippets, tokenizing into punctuation, words etc.
- */
-require_once( 'class-parse-text.php' );
+require_once __DIR__ . '/php-typography-functions.php';
 
 /**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
-require_once( __DIR__ . '/../vendor/Masterminds/HTML5.php');
+require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
@@ -125,9 +120,9 @@ class PHP_Typography {
 	/**
 	 * An array of various regex components (not complete patterns).
 	 *
-	 * @var array $component
+	 * @var array $components
 	 */
-	private $component = array();
+	private $components = array();
 
 	/**
 	 * An array of regex patterns.
@@ -148,14 +143,78 @@ class PHP_Typography {
 	#=======================================================================
 
 	/**
-	 * Set up a new phpTypography object.
+	 * Set up a new PHP_Typography object.
+	 *
+	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
+	 * @param string $init Flag to control initialization. Valid inputs are 'now' and 'lazy'. Optional. Default 'now'.
+	 */
+	function __construct( $set_defaults = true, $init = 'now' )	{
+
+		if ( 'now' === $init ) {
+			$this->init( $set_defaults );
+		}
+	}
+
+	/**
+	 * Load the given state.
+	 *
+	 * @param  array $state
+	 * @return boolean True if successful, false if $state is incomplete.
+	 */
+	function load_state( $state ) {
+		if ( ! isset( $state['chr'] )                ||
+			 ! isset( $state['quote_styles'] )       ||
+			 ! isset( $state['str_functions'] )      ||
+			 ! isset( $state['components'] )         ||
+			 ! isset( $state['regex'] )              ||
+			 ! isset( $state['self_closing_tags'] )  ||
+			 ! isset( $state['inappropriate_tags'] ) ||
+			 ! isset( $state['settings'] ) ) {
+		 	return false;
+		}
+
+		$this->chr                = $state['chr'];
+		$this->quote_styles       = $state['quote_styles'];
+		$this->str_functions      = $state['str_functions'];
+		$this->components         = $state['components'];
+		$this->regex              = $state['regex'];
+		$this->self_closing_tags  = $state['self_closing_tags'];
+		$this->inappropriate_tags = $state['inappropriate_tags'];
+		$this->settings           = $state['settings'];
+
+		return true;
+	}
+
+	/**
+	 * Retrieves to current state of the PHP_Typography object for caching.
+	 *
+	 * @return array The state array.
+	 */
+	function save_state() {
+		return array(
+			'chr'                => $this->chr,
+			'quote_styles'       => $this->quote_styles,
+			'str_functions'      => $this->str_functions,
+			'components'         => $this->components,
+			'regex'              => $this->regex,
+			'self_closing_tags'  => $this->self_closing_tags,
+			'inappropriate_tags' => $this->inappropriate_tags,
+			'settings'           => $this->settings,
+		);
+	}
+
+	/**
+	 * Initialize the PHP_Typography object.
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
-	function __construct( $set_defaults = true )
-	{
+	function init( $set_defaults = true ) {
+		// not sure if this is necessary - but error_log seems to have problems with the strings.
+		// used as the default encoding for mb_* functions
+		$encoding_set = mb_internal_encoding('UTF-8');
+
 		$this->chr['noBreakSpace']            = uchr(160);
-		$this->chr['noBreakNarrowSpace']      = uchr(160);  //should be 8239, but not supported consistently, used in unit spacing
+		$this->chr['noBreakNarrowSpace']      = uchr(160);  // should be 8239, but not supported consistently, used in unit spacing
 		$this->chr['copyright']               = uchr(169);
 		$this->chr['guillemetOpen']           = uchr(171);
 		$this->chr['softHyphen']              = uchr(173);
@@ -166,7 +225,7 @@ class PHP_Typography {
 		$this->chr['figureSpace']             = uchr(8199);
 		$this->chr['thinSpace']               = uchr(8201);
 		$this->chr['zeroWidthSpace']          = uchr(8203);
-		$this->chr['hyphen']                  = '-';               // should be uchr(8208), but IE6 chokes;
+		$this->chr['hyphen']                  = '-';        // should be uchr(8208), but IE6 chokes;
 		$this->chr['noBreakHyphen']           = uchr(8209);
 		$this->chr['enDash']                  = uchr(8211);
 		$this->chr['emDash']                  = uchr(8212);
@@ -192,44 +251,38 @@ class PHP_Typography {
 		$this->chr['leftWhiteCornerBracket']  = uchr(12302);
 		$this->chr['rightWhiteCornerBracket'] = uchr(12303);
 
-
 		$this->quote_styles = array(
 			'doubleCurled'             => array( 'open'  => uchr(8220),
-			                                     'close' => uchr(8221) ),
+				                                 'close' => uchr(8221) ),
 			'doubleCurledReversed'     => array( 'open'  => uchr(8221),
-			                                     'close' => uchr(8221) ),
+				                                 'close' => uchr(8221) ),
 			'doubleLow9'               => array( 'open'  => $this->chr['doubleLow9Quote'],
-			                                     'close' => uchr(8221) ),
+				                                 'close' => uchr(8221) ),
 			'doubleLow9Reversed'       => array( 'open'  => $this->chr['doubleLow9Quote'],
-			                                     'close' => uchr(8220) ),
+				                                 'close' => uchr(8220) ),
 			'singleCurled'             => array( 'open'  => uchr(8216),
-			                                     'close' => uchr(8217) ),
+				                                 'close' => uchr(8217) ),
 			'singleCurledReversed'     => array( 'open'  => uchr(8217),
-			                                     'close' => uchr(8217) ),
+				                                 'close' => uchr(8217) ),
 			'singleLow9'               => array( 'open'  => $this->chr['singleLow9Quote'],
-			                                     'close' => uchr(8217) ),
+				                                 'close' => uchr(8217) ),
 			'singleLow9Reversed'       => array( 'open'  => $this->chr['singleLow9Quote'],
-			                                     'close' => uchr(8216) ),
+				                                 'close' => uchr(8216) ),
 			'doubleGuillemetsFrench'   => array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakSpace'],
-			                                     'close' => $this->chr['noBreakSpace'].$this->chr['guillemetClose'] ),
+				                                 'close' => $this->chr['noBreakSpace'].$this->chr['guillemetClose'] ),
 			'doubleGuillemets'         => array( 'open'  => $this->chr['guillemetOpen'],
-			                                     'close' => $this->chr['guillemetClose'] ),
+				                                 'close' => $this->chr['guillemetClose'] ),
 			'doubleGuillemetsReversed' => array( 'open'  => $this->chr['guillemetClose'],
-			                                     'close' => $this->chr['guillemetOpen'] ),
+				                                 'close' => $this->chr['guillemetOpen'] ),
 			'singleGuillemets'         => array( 'open'  => $this->chr['singleAngleQuoteOpen'],
-			                                     'close' => $this->chr['singleAngleQuoteClose'] ),
+				                                 'close' => $this->chr['singleAngleQuoteClose'] ),
 			'singleGuillemetsReversed' => array( 'open'  => $this->chr['singleAngleQuoteClose'],
-			                                     'close' => $this->chr['singleAngleQuoteOpen'] ),
+				                                 'close' => $this->chr['singleAngleQuoteOpen'] ),
 			'cornerBrackets'           => array( 'open'  => $this->chr['leftCornerBracket'],
-			                                     'close' => $this->chr['rightCornerBracket'] ),
+				                                 'close' => $this->chr['rightCornerBracket'] ),
 			'whiteCornerBracket'       => array( 'open'  => $this->chr['leftWhiteCornerBracket'],
-			                                     'close' => $this->chr['rightWhiteCornerBracket'] ),
+				                                 'close' => $this->chr['rightWhiteCornerBracket'] ),
 		);
-
-
-		// not sure if this is necessary - but error_log seems to have problems with the strings.
-		// used as the default encoding for mb_* functions
-		$encoding_set = mb_internal_encoding('UTF-8');
 
 		// set up both UTF-8 and ASCII string functions
 		// UTF-8 first
@@ -252,11 +305,10 @@ class PHP_Typography {
 		$this->initialize_patterns();
 
 		// set up some arrays for quick HTML5 introspection
-		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),
-												 function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG ); } );
+		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),	function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG ); } );
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 
-		if ($set_defaults) {
+		if ( $set_defaults ) {
 			$this->set_defaults();
 		}
 	}
@@ -1516,7 +1568,7 @@ class PHP_Typography {
 	 *
 	 * @return array An associative array in the form array( language code => language name )
 	 */
-	function get_languages() {
+	function get_hyphenation_languages() {
 		$languages = array();
 		$langDir = dirname( __FILE__ ) . '/lang/';
 		$handler = opendir( $langDir );
