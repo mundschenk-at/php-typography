@@ -67,9 +67,9 @@ class Parse_Text {
 	 *
 	 * Changes to this must occur prior to `load`
 	 *
-	 * @var boolean $mb. Default false.
+	 * @var boolean $multibyte. Default false.
 	 */
-	private $mb = false;
+	private $multibyte = false;
 
 	/**
 	 * The tokenized text.
@@ -354,11 +354,11 @@ class Parse_Text {
 
 		switch ( mb_detect_encoding($raw_text.'a', $this->encodings) ) {
 			case 'UTF-8':
-				$this->mb = true;
+				$this->multibyte = true;
 				break;
 
 			case 'ASCII':
-				$this->mb = false;
+				$this->multibyte = false;
 				break;
 
 			default:
@@ -477,7 +477,7 @@ class Parse_Text {
 	 */
 	function clear() {
 		$this->text = array();
-		$this->mb = false;
+		$this->multibyte = false;
 	}
 
 	/**
@@ -539,7 +539,7 @@ class Parse_Text {
 		$tokens = array();
 
 		foreach( $words as $index => $token ) {
-			if ( $this->mb ) {
+			if ( $this->multibyte ) {
 			 	$capped = mb_strtoupper( $token['value'], 'UTF-8' );
 			} else {
 				$capped = strtoupper( $token['value'] );
