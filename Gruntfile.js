@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['php-typography/**','templates/**','translations/**','vendor/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['php-typography/**','templates/**','vendor/**'], dest: 'build/'},
 				],
 			}
 		},
