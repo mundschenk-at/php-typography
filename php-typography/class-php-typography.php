@@ -864,7 +864,7 @@ class PHP_Typography {
 		$this->regex['smartFractionsReplacement'] = "/
 			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
 			(\d+)
-			(?:\s?\/\s?{$this->chr['zeroWidthSpace']})	# strip out any zero-width spaces inserted by wrap_hard_hyphens
+			(?:\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
 				(\d+)
 				(
 					(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	 # handle ordinals after fractions
