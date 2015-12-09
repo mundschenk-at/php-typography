@@ -2055,12 +2055,12 @@ class PHP_Typography {
 
 		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
 			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
-				$textnode->nodeValue = preg_replace("/\b$needle\b/", $replacement, $textnode->nodeValue );
+				$textnode->nodeValue = preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
 			}
 		}
 		if ( ! empty( $this->settings['diacriticWords'] ) ) {
 	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
-				$textnode->nodeValue =  preg_replace("/\b$needle\b/", $replacement, $textnode->nodeValue );
+				$textnode->nodeValue =  preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
 			}
 		}
 	}
