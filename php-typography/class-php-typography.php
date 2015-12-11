@@ -2198,7 +2198,7 @@ class PHP_Typography {
 
 		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
-		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['fractionSpacing'] ) ) {
+		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->nodeValue );
 		}
 
