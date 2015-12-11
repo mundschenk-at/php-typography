@@ -990,14 +990,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::smart_fractions
-     * @todo   Implement testSmart_fractions().
      */
     public function testSmart_fractions()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$typo = $this->object;
+		$typo->set_smart_fractions( true);
+
+		$origin_one = '1/2 3/300 999/1000';
+		$result_one = '<sup>1</sup>&frasl;<sub>2</sub> <sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>';
+		$this->assertSame( $result_one, $this->clean_html( $typo->process( $origin_one ) ) );
+
+		$origin_two = '1/2 4/2015 1999/2000 999/1000';
+		$result_two = '<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>';
+		$this->assertSame( $result_two, $this->clean_html( $typo->process( $origin_two ) ) );
+
     }
 
     /**
