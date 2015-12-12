@@ -1180,6 +1180,11 @@ class PHP_Typography {
 		$this->update_diacritics_replacement_arrays();
 	}
 
+	/**
+	 * Update the pattern and replacement arrays in $settings['diacriticReplacement'].
+	 * Should be called whenever a new diacritics replacement language is selected or
+	 * when the custom replacements are updated.
+	 */
 	private function update_diacritics_replacement_arrays() {
 		$patterns = array();
 		$replacements = array();
