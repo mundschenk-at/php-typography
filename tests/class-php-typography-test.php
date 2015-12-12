@@ -186,13 +186,15 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testSet_smart_dashes_style()
     {
-    	// Remove the following lines when you implement this test.
-    	$this->markTestIncomplete(
-    		'This test has not been implemented yet.'
-   		);
-
 		$typo = $this->object;
-		//$typo->set_smart_dashes_style();
+
+		$typo->set_smart_dashes_style( 'englishTraditional' );
+		$this->assertEquals( $typo->chr['emDash'], $typo->chr['parentheticalDash'] );
+		$this->assertEquals( $typo->chr['enDash'], $typo->chr['intervalDash'] );
+
+		$typo->set_smart_dashes_style( 'international' );
+		$this->assertEquals( $typo->chr['enDash'], $typo->chr['parentheticalDash'] );
+		$this->assertEquals( $typo->chr['enDash'], $typo->chr['intervalDash'] );
     }
 
     /**
