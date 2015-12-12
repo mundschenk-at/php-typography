@@ -1144,7 +1144,8 @@ class PHP_Typography {
 	/**
 	 * Set up custom diacritics replacements.
 	 *
-	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...), or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...),
+	 * or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
 	function set_diacritic_custom_replacements( $custom_replacements = array() ) {
 		if ( ! is_array( $custom_replacements ) ) {
@@ -1152,23 +1153,27 @@ class PHP_Typography {
 		}
 
 		$replacements = array();
-		foreach ( $custom_replacements as $customReplacement ) {
+		foreach ( $custom_replacements as $custom_key => $custom_replacement ) {
 			//account for single and double quotes
-			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $customReplacement, $doubleQuoteKeyMatch );
-			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $customReplacement, $singleQuoteKeyMatch );
-			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $customReplacement, $doubleQuoteValueMatch );
-			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $customReplacement, $singleQuoteValueMatch );
+			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $custom_replacement, $double_quote_key_match );
+			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $custom_replacement, $single_quote_key_match );
+			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $custom_replacement, $double_quote_value_match );
+			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $custom_replacement, $single_quote_value_match );
 
-			if ( isset( $doubleQuoteKeyMatch[1] ) && ( '' != $doubleQuoteKeyMatch[1] ) ) {
-				$key = $doubleQuoteKeyMatch[1];
-			} elseif ( isset( $singleQuoteKeyMatch[1] ) && ( '' != $singleQuoteKeyMatch[1] ) ) {
-				$key = $singleQuoteKeyMatch[1];
+			if ( ! empty( $double_quote_key_match[1] ) ) {
+				$key = $double_quote_key_match[1];
+			} elseif ( ! empty( $single_quote_key_match[1] ) ) {
+				$key = $single_quote_key_match[1];
+			} else {
+				$key = $custom_key;
 			}
 
-			if (isset( $doubleQuoteValueMatch[1] ) && ( '' != $doubleQuoteValueMatch[1] ) ) {
-				$value = $doubleQuoteValueMatch[1];
-			} elseif ( isset( $singleQuoteValueMatch[1] ) && ( '' != $singleQuoteValueMatch[1] ) ) {
-				$value = $singleQuoteValueMatch[1];
+			if ( ! empty( $double_quote_value_match[1] ) ) {
+				$value = $double_quote_value_match[1];
+			} elseif ( ! empty( $single_quote_value_match[1] ) ) {
+				$value = $single_quote_value_match[1];
+			} else {
+				$value = $custom_replacement;
 			}
 
 			if ( isset( $key ) && isset( $value ) ) {
