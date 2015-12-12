@@ -295,11 +295,11 @@ class PHP_Typography {
 		);
 
 		$this->dash_styles = array(
-			'englishTraditional'    => array(
+			'englishTraditional'   => array(
 				'parenthetical' => $this->chr['emDash'],
 				'interval'      => $this->chr['enDash']
 			),
-			'international'         => array(
+			'international'        => array(
 				'parenthetical' => $this->chr['enDash'],
 				'interval'      => $this->chr['enDash']
 			)
@@ -345,8 +345,8 @@ class PHP_Typography {
 
 		//smart characters
 		$this->set_smart_quotes();
-		$this->set_smart_quotes_primary(); /* added in version 1.15 */
-		$this->set_smart_quotes_secondary(); /* added in version 1.15 */
+		$this->set_smart_quotes_primary();   // added in version 1.15
+		$this->set_smart_quotes_secondary(); // added in version 1.15
 		$this->set_smart_dashes();
 		$this->set_smart_dashes_style();
 		$this->set_smart_ellipses();
@@ -389,7 +389,7 @@ class PHP_Typography {
 		$this->set_min_after_hyphenation();
 		$this->set_hyphenate_headings();
 		$this->set_hyphenate_all_caps();
-		$this->set_hyphenate_title_case(); // added in version 1.5
+		$this->set_hyphenate_title_case();   // added in version 1.5
 		$this->set_hyphenation_exceptions();
 	}
 
@@ -574,7 +574,7 @@ class PHP_Typography {
 
 
 		// initialize valid top level domains from IANA list
-		$path_to_tld_file = __DIR__ . '/../vendor/IANA/tlds-alpha-by-domain.txt';
+		$path_to_tld_file = dirname( __DIR__ ) . '/vendor/IANA/tlds-alpha-by-domain.txt';
 		$domains = array();
 		if ( file_exists( $path_to_tld_file ) ) {
 			$file = new \SplFileObject( $path_to_tld_file );
