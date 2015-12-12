@@ -60,34 +60,41 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testSet_tags_to_ignore()
     {
+    	$typo = $this->object;
     	$always_ignore = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map',
     							'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
     	$self_closing_tags = array('area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta');
 
     	// default tags
-		$this->object->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre',	'samp',
+		$typo->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre',	'samp',
 												  'script',	'noscript',	'noembed', 'select', 'style', 'textarea',
 												  'title',	'var', 'math' ) );
 		$this->assertArraySubset( array( 'code', 'head', 'kbd', 'object', 'option',	'pre', 'samp',
 										 'script', 'noscript', 'noembed', 'select', 'style', 'textarea',
- 								 		 'title', 'var', 'math' ), $this->object->settings['ignoreTags'] );
+ 								 		 'title', 'var', 'math' ), $typo->settings['ignoreTags'] );
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $this->object->settings['ignoreTags'] );
+			$this->assertContains( $tag, $typo->settings['ignoreTags'] );
 		}
 		foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $this->object->settings['ignoreTags'] );
+			$this->assertNotContains( $tag, $typo->settings['ignoreTags'] );
 		}
 
 		// auto-close tag and something else
-		$this->object->set_tags_to_ignore( array( 'img', 'foo' ) );
- 		$this->assertContains( 'foo', $this->object->settings['ignoreTags'] );
+		$typo->set_tags_to_ignore( array( 'img', 'foo' ) );
+ 		$this->assertContains( 'foo', $typo->settings['ignoreTags'] );
     	foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $this->object->settings['ignoreTags'] );
+			$this->assertNotContains( $tag, $typo->settings['ignoreTags'] );
 		}
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $this->object->settings['ignoreTags'] );
+			$this->assertContains( $tag, $typo->settings['ignoreTags'] );
 		}
 
+		$typo->set_tags_to_ignore( "img foo  \    " ); // should not result in an error
+
+		$html = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
+		$expected = '<p><foo>Ignore this "quote",</foo><span class="other"> but not &ldquo;this&rdquo; one.</span></p>';
+		$this->object->set_smart_quotes( true );
+		$this->assertSame( $expected, $this->clean_html( $typo->process( $html ) ) );
     }
 
     /**
@@ -113,7 +120,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::set_ids_to_ignore
-     * @todo   Implement testSet_ids_to_ignore().
      */
     public function testSet_ids_to_ignore()
     {
@@ -131,6 +137,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
 		$this->object->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $typo->process( $html ) ) );
+    }
+
+    /**
+     * Integrate all three "ignore" variants.
+     *
+     * @depends testSet_ids_to_ignore
+     * @depends testSet_classes_to_ignore
+     * @depends testSet_tags_to_ignore
+     */
+    public function testComplete_ignore() {
+    	$typo = $this->object;
+
+    	$typo->set_ids_to_ignore( 'foobar barfoo' );
+    	$typo->set_classes_to_ignore( 'foo bar' );
+    	$typo->set_tags_to_ignore( array( 'img', 'foo' ) );
+
+    	$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
+			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>"But" not this.</span></p>';
+    	$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
+			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
+				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+    	$typo->set_smart_quotes( true );
+    	$this->assertSame( $expected, $this->clean_html( $typo->process( $html ) ) );
     }
 
     /**
