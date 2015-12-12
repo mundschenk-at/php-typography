@@ -302,3 +302,21 @@ function get_diacritic_languages() {
 	return $languages;
 }
 
+/**
+ * Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
+ *
+ * @param string $source
+ * @param string|array $pattern Either a regex pattern or an array of such patterns.
+ * @param array $words A hash in the form "plain word" => "word with diacritics"
+ *
+ * @return string The result string.
+ */
+function translate_words( $source, $patterns, array $words ) {
+	return preg_replace_callback( $patterns, function( $match ) use ( $words ) {
+		if ( isset( $words[ $match[0] ] ) ) {
+			return $words[ $match[0] ];
+		} else {
+			return $match[0];
+		}
+	}, $source );
+}

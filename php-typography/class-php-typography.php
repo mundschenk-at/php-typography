@@ -1137,6 +1137,8 @@ class PHP_Typography {
 		} else {
 			unset( $this->settings['diacriticWords'] );
 		}
+
+		$this->update_diacritics_replacement_arrays();
 	}
 
 	/**
@@ -1175,6 +1177,27 @@ class PHP_Typography {
 		}
 
 		$this->settings['diacriticCustomReplacements'] = $replacements;
+		$this->update_diacritics_replacement_arrays();
+	}
+
+	private function update_diacritics_replacement_arrays() {
+		$patterns = array();
+		$replacements = array();
+
+		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
+			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
+				$patterns[] = "/\b$needle\b/u";
+				$replacements[$needle] = $replacement;
+			}
+		}
+		if ( ! empty( $this->settings['diacriticWords'] ) ) {
+	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
+				$patterns[] = "/\b$needle\b/u";
+				$replacements[$needle] = $replacement;
+	 		}
+		}
+
+		$this->settings['diacriticReplacement'] = array( 'patterns' => $patterns, 'replacements' => $replacements );
 	}
 
 	/**
@@ -2048,39 +2071,14 @@ class PHP_Typography {
 	 */
 	function smart_diacritics( \DOMText $textnode )	{
 		if ( empty( $this->settings['smartDiacritics'] ) ) {
-			return;
+			return; // abort
 		}
 
-		// FIXME create regex arrays when updating
-
-		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
-			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
-				$textnode->nodeValue = preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
-			}
+		if ( ! empty( $this->settings['diacriticReplacement'] ) &&
+			 ! empty( $this->settings['diacriticReplacement']['patterns'] ) &&
+			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
+			$textnode->nodeValue = translate_words( $textnode->nodeValue, $this->settings['diacriticReplacement']['patterns'], $this->settings['diacriticReplacement']['replacements'] );
 		}
-		if ( ! empty( $this->settings['diacriticWords'] ) ) {
-	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
-				$textnode->nodeValue =  preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
-			}
-		}
-	}
-
-	/**
-	 * Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-	 *
-	 * @param string $source
-	 * @param array $words
-	 *
-	 * @return string The result string.
-	 */
-	function translate_words(&$source, array &$words){
-		return (preg_replace_callback("/\b(\w+)\b/u", function($match) use ($words) {
-					if ( isset( $words[$match[0]] ) ) {
-						return ( $words[$match[0]] );
-					} else {
-						return ( $match[0] );
-					}
-				}, $source ) );
 	}
 
 	/**
