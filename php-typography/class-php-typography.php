@@ -662,7 +662,7 @@ class PHP_Typography {
 		$this->regex['smartQuotesDoubleQuoteCloseSpecial']    = "/(?<=\S)\"(?=\s|\Z)/";
 
 		$this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		$this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|\s)/u";
+		$this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
 		$this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
 		$this->regex['smartDashesEnDashPhoneNumbers']         = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
 		$this->regex['smartDashesYYYY-MM-DD']                   = "/
