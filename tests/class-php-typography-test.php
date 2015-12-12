@@ -224,14 +224,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::set_diacritic_custom_replacements
-     * @todo   Implement testSet_diacritic_custom_replacements().
      */
     public function testSet_diacritic_custom_replacements()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->object;
+
+    	$typo->set_diacritic_custom_replacements( '"foo" => "fóò", "bar" => "bâr"' );
+     	$this->assertArrayHasKey( 'foo', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertArrayHasKey( 'bar', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertContains( 'fóò', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertContains( 'bâr', $typo->settings['diacriticCustomReplacements'] );
+
+     	$typo->set_diacritic_custom_replacements( array( 'fööbar' => 'fúbar' ) );
+     	$this->assertArrayNotHasKey( 'foo', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertArrayNotHasKey( 'bar', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertArrayHasKey( 'fööbar', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertContains( 'fúbar', $typo->settings['diacriticCustomReplacements'] );
     }
 
     /**
