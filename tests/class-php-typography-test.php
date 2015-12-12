@@ -182,6 +182,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers PHP_Typography::set_smart_dashes_style
+     */
+    public function testSet_smart_dashes_style()
+    {
+    	// Remove the following lines when you implement this test.
+    	$this->markTestIncomplete(
+    		'This test has not been implemented yet.'
+   		);
+
+		$typo = $this->object;
+		//$typo->set_smart_dashes_style();
+    }
+
+    /**
      * @covers PHP_Typography::set_smart_ellipses
      */
     public function testSet_smart_ellipses()

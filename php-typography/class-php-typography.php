@@ -136,6 +136,11 @@ class PHP_Typography {
 	 */
 	private $quote_styles = array();
 
+	/**
+	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
+	 */
+	private $dash_styles = array();
+
 	#=======================================================================
 	#=======================================================================
 	#==	METHODS - SET ATTRIBUTES
@@ -175,6 +180,7 @@ class PHP_Typography {
 
 		$this->chr                = $state['chr'];
 		$this->quote_styles       = $state['quote_styles'];
+		$this->dash_styles        = $state['dash_styles'];
 		$this->str_functions      = $state['str_functions'];
 		$this->components         = $state['components'];
 		$this->regex              = $state['regex'];
@@ -194,6 +200,7 @@ class PHP_Typography {
 		return array(
 			'chr'                => $this->chr,
 			'quote_styles'       => $this->quote_styles,
+			'dash_styles'        => $this->dash_styles,
 			'str_functions'      => $this->str_functions,
 			'components'         => $this->components,
 			'regex'              => $this->regex,
@@ -224,11 +231,14 @@ class PHP_Typography {
 		$this->chr['division']                = uchr(247);
 		$this->chr['figureSpace']             = uchr(8199);
 		$this->chr['thinSpace']               = uchr(8201);
+		$this->chr['hairSpace']               = uchr(8202);
 		$this->chr['zeroWidthSpace']          = uchr(8203);
 		$this->chr['hyphen']                  = '-';        // should be uchr(8208), but IE6 chokes;
 		$this->chr['noBreakHyphen']           = uchr(8209);
 		$this->chr['enDash']                  = uchr(8211);
 		$this->chr['emDash']                  = uchr(8212);
+		$this->chr['parentheticalDash']       = uchr(8212); // defined separate from emDash so it can be redefined in set_smart_dashes_style
+		$this->chr['intervalDash']            = uchr(8211); // defined separate from enDash so it can be redefined in set_smart_dashes_style
 		$this->chr['singleQuoteOpen']         = uchr(8216);
 		$this->chr['singleQuoteClose']        = uchr(8217);
 		$this->chr['apostrophe']              = uchr(8217); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies
@@ -284,6 +294,17 @@ class PHP_Typography {
 				                                 'close' => $this->chr['rightWhiteCornerBracket'] ),
 		);
 
+		$this->dash_styles = array(
+			'englishTraditional'    => array(
+				'parenthetical' => $this->chr['emDash'],
+				'interval'      => $this->chr['enDash']
+			),
+			'international'         => array(
+				'parenthetical' => $this->chr['enDash'],
+				'interval'      => $this->chr['enDash']
+			)
+		);
+
 		// set up both UTF-8 and ASCII string functions
 		// UTF-8 first
 		$this->str_functions['UTF-8']['strlen']     = 'mb_strlen';
@@ -327,6 +348,7 @@ class PHP_Typography {
 		$this->set_smart_quotes_primary(); /* added in version 1.15 */
 		$this->set_smart_quotes_secondary(); /* added in version 1.15 */
 		$this->set_smart_dashes();
+		$this->set_smart_dashes_style();
 		$this->set_smart_ellipses();
 		$this->set_smart_diacritics();
 		$this->set_diacritic_language();
@@ -628,22 +650,22 @@ class PHP_Typography {
 		$this->regex['smartQuotesDoublePrimeSingleCharacter'] = "/(\b\d+)\"(?=\W|\Z)/u";
 		$this->regex['smartQuotesSinglePrime']                = "/(\b\d+)'(?=\W|\Z)/u";
 		$this->regex['smartQuotesCommaQuote']                 = "/(?<=\s|\A),(?=\S)/";
-		$this->regex['smartQuotesApostropheWords']            = "/(?<=[\w|{{$this->components['nonEnglishWordCharacters']}}])'(?=[\w|{{$this->components['nonEnglishWordCharacters']}}])/u";
+		$this->regex['smartQuotesApostropheWords']            = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartQuotesApostropheDecades']          = "/'(\d\d\b)/";
-		$this->regex['smartQuotesSingleQuoteOpen']            = "/'(?=[\w|{{$this->components['nonEnglishWordCharacters']}}])/u";
-		$this->regex['smartQuotesSingleQuoteClose']           = "/(?<=[\w|{{$this->components['nonEnglishWordCharacters']}}])'/u";
+		$this->regex['smartQuotesSingleQuoteOpen']            = "/'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartQuotesSingleQuoteClose']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'/u";
 		$this->regex['smartQuotesSingleQuoteOpenSpecial']     = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_
 		$this->regex['smartQuotesSingleQuoteCloseSpecial']    = "/(?<=\S)'(?=\s|\Z)/";
-		$this->regex['smartQuotesDoubleQuoteOpen']            = "/\"(?=[\w|{{$this->components['nonEnglishWordCharacters']}}])/u";
-		$this->regex['smartQuotesDoubleQuoteClose']           = "/(?<=[\w|{{$this->components['nonEnglishWordCharacters']}}])\"/u";
+		$this->regex['smartQuotesDoubleQuoteOpen']            = "/\"(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartQuotesDoubleQuoteClose']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])\"/u";
 		$this->regex['smartQuotesDoubleQuoteOpenSpecial']     = "/(?<=\s|\A)\"(?=\S)/";
 		$this->regex['smartQuotesDoubleQuoteCloseSpecial']    = "/(?<=\S)\"(?=\s|\Z)/";
 
-		$this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{{$this->components['nonEnglishWordCharacters']}}])/u";
-		$this->regex['smartDashesEnDashWords']                = "/([\w|{{$this->components['nonEnglishWordCharacters']}}])\-(\Z|\s)/u";
+		$this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|\s)/u";
 		$this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
 		$this->regex['smartDashesEnDashPhoneNumbers']         = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
-		$this->regex['smartDashesYYYYMMDD']                   = "/
+		$this->regex['smartDashesYYYY-MM-DD']                   = "/
 				(
 					(?<=\s|\A|".$this->chr['noBreakSpace'].")
 					[12][0-9]{3}
@@ -659,7 +681,7 @@ class PHP_Typography {
 				)
 			/xu";
 
-		$this->regex['smartDashesMMDDYYYY']                   = "/
+		$this->regex['smartDashesMM-DD-YYYY']                   = "/
 				(?:
 					(?:
 						(
@@ -689,7 +711,7 @@ class PHP_Typography {
 					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|".$this->chr['noBreakSpace'].")
 				)
 			/xu";
-		$this->regex['smartDashesYYYYMM']                   = "/
+		$this->regex['smartDashesYYYY-MM']                   = "/
 				(
 					(?<=\s|\A|".$this->chr['noBreakSpace'].")
 					[12][0-9]{3}
@@ -1102,6 +1124,28 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Sets the typographical conventions used by smart_dashes.
+	 *
+	 * Allowed values for $style:
+	 * - "englishTraditional"
+	 * - "international"
+	 *
+	 * @param string $style Optional. Default "englishTraditional".
+	 */
+	function set_smart_dashes_style( $style = 'englishTraditional' ) {
+		if ( isset( $this->dash_styles[ $style ] ) ) {
+			if ( ! empty( $this->dash_styles[ $style ]['parenthetical'] ) ) {
+				$this->chr['parentheticalDash'] = $this->dash_styles[ $style ]['parenthetical'];
+			}
+			if ( ! empty( $this->dash_styles[ $style ]['interval'] ) ) {
+				$this->chr['intervalDash'] = $this->dash_styles[ $style ]['interval'];
+			}
+		} else {
+			error_log( "Invalid dash style $style." );
+		}
+	}
+
+	/**
 	 * Enable/disable replacement of "..." with "…".
 	 *
 	 * @param boolean $on Defaults to true;
@@ -1279,7 +1323,6 @@ class PHP_Typography {
 		$this->components['unitSpacingUnits'] = $custom_units . $this->components['unitSpacingStandardUnits'];
 		$this->regex['unitSpacingUnitPattern'] = "/(\d\.?)\s({$this->components['unitSpacingUnits']})\b/x";
 	}
-
 
 	/**
 	 * Enable/disable wrapping of Em and En dashes are in thin spaces.
@@ -2006,25 +2049,30 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue =  str_replace('---', $this->chr['emDash'], $textnode->nodeValue);
-		$textnode->nodeValue =  str_replace(' -- ', ' '.$this->chr['emDash'].' ', $textnode->nodeValue);
-		$textnode->nodeValue =  str_replace('--', $this->chr['enDash'], $textnode->nodeValue);
-		$textnode->nodeValue =  str_replace(' - ', ' '.$this->chr['emDash'].' ', $textnode->nodeValue);
+		$textnode->nodeValue = str_replace( '---',  $this->chr['emDash'],                   $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( ' -- ', " {$this->chr['parentheticalDash']} ",  $textnode->nodeValue ); // FIXME: should be regex because of spacing
+		$textnode->nodeValue = str_replace( '--',   $this->chr['enDash'],                   $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( ' - ',  " {$this->chr['parentheticalDash'] } ", $textnode->nodeValue ); // FIXME: should be regex because of spacing
 
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashAll'], '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashWords'] , '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashNumbers'], '$1'.$this->chr['enDash'].'$2', $textnode->nodeValue );
+		// $this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		// $this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|\s)/u";
+		// $this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
+		// $this->regex['smartDashesEnDashPhoneNumbers']         = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
+
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashAll'],          '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashWords'] ,       '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashNumbers'],      '$1'.$this->chr['intervalDash'].'$2',  $textnode->nodeValue );
 		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashPhoneNumbers'], '$1'.$this->chr['noBreakHyphen'].'$2', $textnode->nodeValue ); // phone numbers
-		$textnode->nodeValue =  str_replace( 'xn'.$this->chr['enDash'], 'xn--', $textnode->nodeValue );
+		$textnode->nodeValue =  str_replace( "xn{$this->chr['enDash']}",                    'xn--',                                $textnode->nodeValue ); // revert messed-up punycode
 
 		// revert dates back to original formats
 
 		// YYYY-MM-DD
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYYMMDD'], "$1-$2-$3", $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYY-MM-DD'], "$1-$2-$3",     $textnode->nodeValue );
 		// MM-DD-YYYY or DD-MM-YYYY
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesMMDDYYYY'], "$1$3-$2$4-$5", $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesMM-DD-YYYY'], "$1$3-$2$4-$5", $textnode->nodeValue );
 		// YYYY-MM or YYYY-DDDD next
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYYMM'], "$1-$2", $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYY-MM'],    "$1-$2",        $textnode->nodeValue );
 	}
 
 	/**
@@ -2038,7 +2086,7 @@ class PHP_Typography {
 		}
 
 		$textnode->nodeValue = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '...', '. . .' ), $this->chr['ellipses'], $textnode->nodeValue );
+		$textnode->nodeValue = str_replace( array( '...',  '. . .' ),   $this->chr['ellipses'],       $textnode->nodeValue );
 	}
 
 	/**
