@@ -2440,6 +2440,13 @@ class PHP_Typography {
 			 	return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
 		}
 
+		// never replace thin and hair spaces with &nbsp;
+		switch ( $widow[3] ) {
+			case $this->chr['thinSpace']:
+			case $this->chr['hairSpace']:
+				return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		}
+
 		// lets protect some widows!
 		return $widow[1].$widow[2].$this->chr['noBreakSpace'].$widow[4].$widow[5];
 	}
