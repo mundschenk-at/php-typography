@@ -40,7 +40,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @param string $html
      */
     protected function clean_html( $html ) {
-    	return str_replace( array('&lt;', '&gt;'), array('<', '>'), htmlentities( $html, ENT_NOQUOTES, 'utf-8', false ) );
+    	$convmap = array(0x80, 0x10ffff, 0, 0xffffff);
+
+    	return str_replace( array('&lt;', '&gt;'), array('<', '>'), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap ) );
     }
 
     /**
