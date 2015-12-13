@@ -895,11 +895,34 @@ class PHP_Typography {
 			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
 			(\d+)
 			(?:\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
-				(\d+)
+			(\d+)
+			(
+				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	# handle ordinals after fractions
+				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
+			)
+			/xu";
+		$this->regex['smartFractionsEscapeMM/YYYY'] = "/
+			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
+				(\d\d?)
+			(\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# capture any zero-width spaces inserted by wrap_hard_hyphens
 				(
-					(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	 # handle ordinals after fractions
+					(?:19\d\d)|(?:20\d\d) # handle 4-decimal years in the 20th and 21st centuries
+				)
+				(
 					(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 				)
+			/xu";
+
+		$year_regex = array();
+		for ( $year = 1900; $year < 2100; ++$year ) {
+			$year_regex[] = "(?: ( $year ) (\s?\/\s?{$this->chr['zeroWidthSpace']}?) ( " . ( $year + 1 ) . " ) )";
+		}
+		$this->regex['smartFractionsEscapeYYYY/YYYY'] = "/
+			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
+			(?| " . implode( '|', $year_regex ) . " )
+			(
+				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
+			)
 			/xu";
 
 		$this->regex['smartOrdinalSuffix'] = "/\b(\d+)(st|nd|rd|th)\b/";
@@ -2262,14 +2285,22 @@ class PHP_Typography {
 			return;
 		}
 
-		if ( ! empty( $this->settings['fractionSpacing'] ) && !empty( $this->settings['smartFractions'] ) ) {
+		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
-		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['fractionSpacing'] ) ) {
+		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->nodeValue );
 		}
 
 		if ( !empty($this->settings['smartFractions']) ) {
+			// Escape sequences we don't want fractionified
+ 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->nodeValue );
+ 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->nodeValue );
+
+ 			// Replace fractions
  			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->nodeValue );
+
+ 			// Unescape escaped sequences
+ 			$textnode->nodeValue = str_replace( '_E_S_C_A_P_E_D_', '', $textnode->nodeValue );
 		}
 	}
 
