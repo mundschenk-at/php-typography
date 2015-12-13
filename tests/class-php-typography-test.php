@@ -193,10 +193,14 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo->set_smart_dashes_style( 'englishTraditional' );
 		$this->assertEquals( $typo->chr['emDash'], $typo->chr['parentheticalDash'] );
 		$this->assertEquals( $typo->chr['enDash'], $typo->chr['intervalDash'] );
+		$this->assertEquals( $typo->chr['thinSpace'], $typo->chr['parentheticalDashSpace'] );
+		$this->assertEquals( $typo->chr['thinSpace'], $typo->chr['intervalDashSpace'] );
 
 		$typo->set_smart_dashes_style( 'international' );
 		$this->assertEquals( $typo->chr['enDash'], $typo->chr['parentheticalDash'] );
 		$this->assertEquals( $typo->chr['enDash'], $typo->chr['intervalDash'] );
+		$this->assertEquals( ' ', $typo->chr['parentheticalDashSpace'] );
+		$this->assertEquals( $typo->chr['hairSpace'], $typo->chr['intervalDashSpace'] );
     }
 
     /**
@@ -1063,14 +1067,34 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers PHP_Typography::dash_spacing
-     * @todo   Implement testDash_spacing().
      */
     public function testDash_spacing()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->object;
+    	$typo->set_smart_dashes( true );
+    	$typo->set_dash_spacing( true );
+
+    	$html_none = 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04';
+    	$result_none = $html_none;
+
+    	$html_dashed       = 'Ein - mehr oder weniger - guter Gedanke, 1908-2008';
+    	$result_dashed     = 'Ein&thinsp;&mdash;&thinsp;mehr oder weniger&thinsp;&mdash;&thinsp;guter Gedanke, 1908&thinsp;&ndash;&thinsp;2008';
+    	$result_dashed_int = 'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&#8202;&ndash;&#8202;2008';
+
+    	$html_emdashed       = "We just don't know --- really---, but you know, --";
+    	$result_emdashed     = "We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;";
+    	$result_emdashed_int = "We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;";
+
+    	$typo->set_smart_dashes_style( 'englishTraditional' );
+    	$this->assertSame( $result_none, $typo->process( $html_none ) );
+    	$this->assertSame( $result_dashed,   $this->clean_html( $typo->process( $html_dashed ) ) );
+    	$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
+
+    	$typo->set_smart_dashes_style( 'international' );
+    	$this->assertSame( $result_none, $typo->process( $html_none ) );
+    	$this->assertSame( $result_dashed_int, $this->clean_html( $typo->process( $html_dashed ) ) );
+    	$this->assertSame( $result_emdashed_int,   $this->clean_html( $typo->process( $html_emdashed ) ) );
+
     }
 
     /**
