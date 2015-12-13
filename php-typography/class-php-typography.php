@@ -667,6 +667,8 @@ class PHP_Typography {
 		$this->regex['smartQuotesDoubleQuoteOpenSpecial']     = "/(?<=\s|\A)\"(?=\S)/";
 		$this->regex['smartQuotesDoubleQuoteCloseSpecial']    = "/(?<=\S)\"(?=\s|\Z)/";
 
+		$this->regex['smartDashesParentheticalDoubleDash']    = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- ';
+		$this->regex['smartDashesParentheticalSingleDash']    = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - ';
 		$this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
 		$this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
@@ -2079,10 +2081,12 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = str_replace( '---',  $this->chr['emDash'],                   $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( ' -- ', " {$this->chr['parentheticalDash']} ",  $textnode->nodeValue ); // FIXME: should be regex because of spacing
-		$textnode->nodeValue = str_replace( '--',   $this->chr['enDash'],                   $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( ' - ',  " {$this->chr['parentheticalDash'] } ", $textnode->nodeValue ); // FIXME: should be regex because of spacing
+		$textnode->nodeValue = str_replace( '---', $this->chr['emDash'], $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalDoubleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
+		//$textnode->nodeValue = str_replace( ' -- ', " {$this->chr['parentheticalDash']} ",  $textnode->nodeValue ); // FIXME: should be regex because of spacing
+		$textnode->nodeValue = str_replace( '--', $this->chr['enDash'], $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalSingleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
+		//$textnode->nodeValue = str_replace( ' - ',  " {$this->chr['parentheticalDash'] } ", $textnode->nodeValue ); // FIXME: should be regex because of spacing
 
 		// $this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		// $this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|\s)/u";
