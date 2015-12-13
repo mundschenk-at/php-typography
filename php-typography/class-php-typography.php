@@ -297,7 +297,7 @@ class PHP_Typography {
 		);
 
 		$this->dash_styles = array(
-			'englishTraditional'   => array(
+			'traditionalUS'        => array(
 				'parenthetical'      => $this->chr['emDash'],
 				'interval'           => $this->chr['enDash'],
 				'parentheticalSpace' => $this->chr['thinSpace'],
@@ -1136,12 +1136,12 @@ class PHP_Typography {
 	 * Sets the typographical conventions used by smart_dashes.
 	 *
 	 * Allowed values for $style:
-	 * - "englishTraditional"
+	 * - "traditionalUS"
 	 * - "international"
 	 *
 	 * @param string $style Optional. Default "englishTraditional".
 	 */
-	function set_smart_dashes_style( $style = 'englishTraditional' ) {
+	function set_smart_dashes_style( $style = 'traditionalUS' ) {
 		if ( isset( $this->dash_styles[ $style ] ) ) {
 			if ( ! empty( $this->dash_styles[ $style ]['parenthetical'] ) ) {
 				$this->chr['parentheticalDash'] = $this->dash_styles[ $style ]['parenthetical'];

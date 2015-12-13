@@ -190,7 +190,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$typo = $this->object;
 
-		$typo->set_smart_dashes_style( 'englishTraditional' );
+		$typo->set_smart_dashes_style( 'traditionalUS' );
 		$this->assertEquals( $typo->chr['emDash'], $typo->chr['parentheticalDash'] );
 		$this->assertEquals( $typo->chr['enDash'], $typo->chr['intervalDash'] );
 		$this->assertEquals( $typo->chr['thinSpace'], $typo->chr['parentheticalDashSpace'] );
@@ -929,7 +929,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$result_special      = "Here we are now&nbsp;&mdash; we're&thinsp;&mdash;&thinsp;";
 		$result_special_int  = "Here we are now&nbsp;&ndash; we're&thinsp;&ndash;&thinsp;";
 
-		$typo->set_smart_dashes_style( 'englishTraditional' );
+		$typo->set_smart_dashes_style( 'traditionalUS' );
 		$this->assertSame( $result_none, $typo->process( $html_none ) );
 		$this->assertSame( $result_dashed, $this->clean_html( $typo->process( $html_dashed ) ) );
 		$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
@@ -1089,7 +1089,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$result_emdashed     = "We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;";
     	$result_emdashed_int = "We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;";
 
-    	$typo->set_smart_dashes_style( 'englishTraditional' );
+    	$typo->set_smart_dashes_style( 'traditionalUS' );
     	$this->assertSame( $result_none, $typo->process( $html_none ) );
     	$this->assertSame( $result_dashed,   $this->clean_html( $typo->process( $html_dashed ) ) );
     	$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
