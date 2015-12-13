@@ -925,17 +925,21 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$html_emdashed   = "We just don't know --- really---, but you know, --";
 		$result_emdashed = "We just don't know &mdash; really&mdash;, but you know, &ndash;";
 
+		$html_special        = "Here we are now&nbsp;-- we're&thinsp;-&thinsp;";
+		$result_special      = "Here we are now&nbsp;&mdash; we're&thinsp;&mdash;&thinsp;";
+		$result_special_int  = "Here we are now&nbsp;&ndash; we're&thinsp;&ndash;&thinsp;";
+
 		$typo->set_smart_dashes_style( 'englishTraditional' );
 		$this->assertSame( $result_none, $typo->process( $html_none ) );
 		$this->assertSame( $result_dashed, $this->clean_html( $typo->process( $html_dashed ) ) );
 		$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
-
+		$this->assertSame( $result_special, $this->clean_html( $typo->process( $html_special ) ) );
 
 		$typo->set_smart_dashes_style( 'international' );
 		$this->assertSame( $result_none, $typo->process( $html_none ) );
 		$this->assertSame( $result_dashed_int, $this->clean_html( $typo->process( $html_dashed ) ) );
 		$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
-
+		$this->assertSame( $result_special_int, $this->clean_html( $typo->process( $html_special ) ) );
     }
 
     /**
@@ -1094,6 +1098,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $result_none, $typo->process( $html_none ) );
     	$this->assertSame( $result_dashed_int, $this->clean_html( $typo->process( $html_dashed ) ) );
     	$this->assertSame( $result_emdashed_int,   $this->clean_html( $typo->process( $html_emdashed ) ) );
+
 
     }
 
