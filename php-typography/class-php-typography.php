@@ -239,6 +239,8 @@ class PHP_Typography {
 		$this->chr['emDash']                  = uchr(8212);
 		$this->chr['parentheticalDash']       = uchr(8212); // defined separate from emDash so it can be redefined in set_smart_dashes_style
 		$this->chr['intervalDash']            = uchr(8211); // defined separate from enDash so it can be redefined in set_smart_dashes_style
+		$this->chr['parentheticalDashSpace']  = uchr(8201);
+		$this->chr['intervalDashSpace']       = uchr(8201);
 		$this->chr['singleQuoteOpen']         = uchr(8216);
 		$this->chr['singleQuoteClose']        = uchr(8217);
 		$this->chr['apostrophe']              = uchr(8217); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies
@@ -296,12 +298,16 @@ class PHP_Typography {
 
 		$this->dash_styles = array(
 			'englishTraditional'   => array(
-				'parenthetical' => $this->chr['emDash'],
-				'interval'      => $this->chr['enDash']
+				'parenthetical'      => $this->chr['emDash'],
+				'interval'           => $this->chr['enDash'],
+				'parentheticalSpace' => $this->chr['thinSpace'],
+				'intervalSpace'      => $this->chr['thinSpace'],
 			),
 			'international'        => array(
-				'parenthetical' => $this->chr['enDash'],
-				'interval'      => $this->chr['enDash']
+				'parenthetical'      => $this->chr['enDash'],
+				'interval'           => $this->chr['enDash'],
+				'parentheticalSpace' => ' ',
+				'intervalSpace'      => $this->chr['hairSpace'],
 			)
 		);
 
@@ -922,13 +928,14 @@ class PHP_Typography {
 					(?=\S)							# lookahead assertion
 				)
 			/xu";
-		$this->regex['dashSpacingEnDash'] = "/
+		$this->regex['dashSpacingParentheticalDash'] = "/
 				(?:
 					\s
 					({$this->chr['enDash']})
 					\s
 				)
-				|
+			/xu";
+		$this->regex['dashSpacingIntervalDash'] = "/
 				(?:
 					(?<=\S)							# lookbehind assertion
 					({$this->chr['enDash']})
@@ -1140,6 +1147,29 @@ class PHP_Typography {
 			if ( ! empty( $this->dash_styles[ $style ]['interval'] ) ) {
 				$this->chr['intervalDash'] = $this->dash_styles[ $style ]['interval'];
 			}
+			if ( ! empty( $this->dash_styles[ $style ]['parentheticalSpace'] ) ) {
+				$this->chr['parentheticalDashSpace'] = $this->dash_styles[ $style ]['parentheticalSpace'];
+			}
+			if ( ! empty( $this->dash_styles[ $style ]['intervalSpace'] ) ) {
+				$this->chr['intervalDashSpace'] = $this->dash_styles[ $style ]['intervalSpace'];
+			}
+
+			// Update dash spacing regex
+			$this->regex['dashSpacingParentheticalDash'] = "/
+				(?:
+					\s
+					({$this->chr['parentheticalDash']})
+					\s
+				)
+				/xu";
+			$this->regex['dashSpacingIntervalDash'] = "/
+				(?:
+					(?<=\S)							# lookbehind assertion
+					({$this->chr['intervalDash']})
+					(?=\S)							# lookahead assertion
+				)
+				/xu";
+
 		} else {
 			error_log( "Invalid dash style $style." );
 		}
@@ -2291,8 +2321,9 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingEmDash'], $this->chr['thinSpace'] . '$1$2' . $this->chr['thinSpace'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingEnDash'], $this->chr['thinSpace'] . '$1$2' . $this->chr['thinSpace'], $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingEmDash'],            $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingParentheticalDash'], $this->chr['parentheticalDashSpace'] . '$1$2' . $this->chr['parentheticalDashSpace'], $textnode->nodeValue );
+		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingIntervalDash'],      $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->nodeValue );
 	}
 
 	/**
