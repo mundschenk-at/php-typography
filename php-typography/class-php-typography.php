@@ -2083,15 +2083,8 @@ class PHP_Typography {
 
 		$textnode->nodeValue = str_replace( '---', $this->chr['emDash'], $textnode->nodeValue );
 		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalDoubleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
-		//$textnode->nodeValue = str_replace( ' -- ', " {$this->chr['parentheticalDash']} ",  $textnode->nodeValue ); // FIXME: should be regex because of spacing
 		$textnode->nodeValue = str_replace( '--', $this->chr['enDash'], $textnode->nodeValue );
 		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalSingleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
-		//$textnode->nodeValue = str_replace( ' - ',  " {$this->chr['parentheticalDash'] } ", $textnode->nodeValue ); // FIXME: should be regex because of spacing
-
-		// $this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		// $this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|\s)/u";
-		// $this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
-		// $this->regex['smartDashesEnDashPhoneNumbers']         = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
 
 		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashAll'],          '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
 		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashWords'] ,       '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
