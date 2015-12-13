@@ -1213,12 +1213,15 @@ class PHP_Typography {
 		} else {
 			unset( $this->settings['diacriticWords'] );
 		}
+
+		$this->update_diacritics_replacement_arrays();
 	}
 
 	/**
 	 * Set up custom diacritics replacements.
 	 *
-	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...), or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...),
+	 * or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
 	function set_diacritic_custom_replacements( $custom_replacements = array() ) {
 		if ( ! is_array( $custom_replacements ) ) {
@@ -1226,23 +1229,27 @@ class PHP_Typography {
 		}
 
 		$replacements = array();
-		foreach ( $custom_replacements as $customReplacement ) {
+		foreach ( $custom_replacements as $custom_key => $custom_replacement ) {
 			//account for single and double quotes
-			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $customReplacement, $doubleQuoteKeyMatch );
-			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $customReplacement, $singleQuoteKeyMatch );
-			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $customReplacement, $doubleQuoteValueMatch );
-			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $customReplacement, $singleQuoteValueMatch );
+			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $custom_replacement, $double_quote_key_match );
+			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $custom_replacement, $single_quote_key_match );
+			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $custom_replacement, $double_quote_value_match );
+			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $custom_replacement, $single_quote_value_match );
 
-			if ( isset( $doubleQuoteKeyMatch[1] ) && ( '' != $doubleQuoteKeyMatch[1] ) ) {
-				$key = $doubleQuoteKeyMatch[1];
-			} elseif ( isset( $singleQuoteKeyMatch[1] ) && ( '' != $singleQuoteKeyMatch[1] ) ) {
-				$key = $singleQuoteKeyMatch[1];
+			if ( ! empty( $double_quote_key_match[1] ) ) {
+				$key = $double_quote_key_match[1];
+			} elseif ( ! empty( $single_quote_key_match[1] ) ) {
+				$key = $single_quote_key_match[1];
+			} else {
+				$key = $custom_key;
 			}
 
-			if (isset( $doubleQuoteValueMatch[1] ) && ( '' != $doubleQuoteValueMatch[1] ) ) {
-				$value = $doubleQuoteValueMatch[1];
-			} elseif ( isset( $singleQuoteValueMatch[1] ) && ( '' != $singleQuoteValueMatch[1] ) ) {
-				$value = $singleQuoteValueMatch[1];
+			if ( ! empty( $double_quote_value_match[1] ) ) {
+				$value = $double_quote_value_match[1];
+			} elseif ( ! empty( $single_quote_value_match[1] ) ) {
+				$value = $single_quote_value_match[1];
+			} else {
+				$value = $custom_replacement;
 			}
 
 			if ( isset( $key ) && isset( $value ) ) {
@@ -1251,6 +1258,32 @@ class PHP_Typography {
 		}
 
 		$this->settings['diacriticCustomReplacements'] = $replacements;
+		$this->update_diacritics_replacement_arrays();
+	}
+
+	/**
+	 * Update the pattern and replacement arrays in $settings['diacriticReplacement'].
+	 * Should be called whenever a new diacritics replacement language is selected or
+	 * when the custom replacements are updated.
+	 */
+	private function update_diacritics_replacement_arrays() {
+		$patterns = array();
+		$replacements = array();
+
+		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
+			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
+				$patterns[] = "/\b$needle\b/u";
+				$replacements[$needle] = $replacement;
+			}
+		}
+		if ( ! empty( $this->settings['diacriticWords'] ) ) {
+	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
+				$patterns[] = "/\b$needle\b/u";
+				$replacements[$needle] = $replacement;
+	 		}
+		}
+
+		$this->settings['diacriticReplacement'] = array( 'patterns' => $patterns, 'replacements' => $replacements );
 	}
 
 	/**
@@ -2129,39 +2162,14 @@ class PHP_Typography {
 	 */
 	function smart_diacritics( \DOMText $textnode )	{
 		if ( empty( $this->settings['smartDiacritics'] ) ) {
-			return;
+			return; // abort
 		}
 
-		// FIXME create regex arrays when updating
-
-		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
-			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
-				$textnode->nodeValue = preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
-			}
+		if ( ! empty( $this->settings['diacriticReplacement'] ) &&
+			 ! empty( $this->settings['diacriticReplacement']['patterns'] ) &&
+			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
+			$textnode->nodeValue = translate_words( $textnode->nodeValue, $this->settings['diacriticReplacement']['patterns'], $this->settings['diacriticReplacement']['replacements'] );
 		}
-		if ( ! empty( $this->settings['diacriticWords'] ) ) {
-	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
-				$textnode->nodeValue =  preg_replace("/\b$needle\b/u", $replacement, $textnode->nodeValue );
-			}
-		}
-	}
-
-	/**
-	 * Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-	 *
-	 * @param string $source
-	 * @param array $words
-	 *
-	 * @return string The result string.
-	 */
-	function translate_words(&$source, array &$words){
-		return (preg_replace_callback("/\b(\w+)\b/u", function($match) use ($words) {
-					if ( isset( $words[$match[0]] ) ) {
-						return ( $words[$match[0]] );
-					} else {
-						return ( $match[0] );
-					}
-				}, $source ) );
 	}
 
 	/**
