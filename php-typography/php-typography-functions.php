@@ -322,34 +322,11 @@ function translate_words( $source, $patterns, array $words ) {
 }
 
 /**
- * Some debugging helpers
+ * Include debugging helpers
  */
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 	define( 'WP_TYPOGRAPHY_DEBUG', true );
 }
-
 if ( defined( 'WP_TYPOGRAPHY_DEBUG' ) && WP_TYPOGRAPHY_DEBUG ) {
-	if ( ! function_exists( 'clean_html' ) ) {
-		/**
-		 * Return encoded HTML string (everything except <>"').
-		 *
-		 * @param string $html
-		 */
-		function clean_html( $html ) {
-			static $convmap = array(0x80, 0x10ffff, 0, 0xffffff);
-
-			return str_replace( array('&lt;', '&gt;'), array('<', '>'), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
-		}
-	}
-
-	// don't break without translation function
-	if ( ! function_exists( '__' ) ) {
-		/**
-		 * Noop "translation" function for debugging.
-		 *
-		 * @param string $string
-		 * @param string $domain
-		 */
-		function &__( $string, $domain = null ) { return $string; }
-	}
+	include_once 'php-typography-debug.php';
 }
