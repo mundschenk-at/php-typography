@@ -1385,4 +1385,68 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
   		$this->assertNotEquals( $hash1, $hash2 );
     }
 
+    /**
+     *  @covers \PHP_Typography\PHP_Typography::save_state
+     */
+    public function testSave_state()
+    {
+    	$this->typo->set_defaults();
+    	$state = $this->typo->save_state();
+
+    	$this->assertArrayHasKey( 'chr', $state );
+    	$this->assertArrayHasKey( 'quote_styles', $state );
+    	$this->assertArrayHasKey( 'str_functions', $state );
+    	$this->assertArrayHasKey( 'components', $state );
+    	$this->assertArrayHasKey( 'regex', $state );
+    	$this->assertArrayHasKey( 'self_closing_tags', $state );
+    	$this->assertArrayHasKey( 'inappropriate_tags', $state );
+    	$this->assertArrayHasKey( 'settings', $state );
+
+    	return $state;
+    }
+
+    /**
+     * @covers ::load_state
+     * @depends testSave_state
+     */
+    public function testLoad_state_OK( array $state )
+    {
+    	$this->typo->set_defaults(); // same as in testSave_state
+    	$second_typo = new \PHP_Typography\PHP_Typography( false );
+
+    	$this->assertTrue( $second_typo->load_state( $state ) );
+    	$this->assertEquals( serialize( $this->typo ), serialize( $second_typo ) );
+    }
+
+    /**
+     * @covers ::load_state
+     * @depends testSave_state
+     */
+    public function testLoad_state_NOK( array $state )
+    {
+    	// set up imperfect states
+    	$states = array();
+
+    	for ( $i = 0; $i < 7; ++$i ) {
+    		$states[ $i ] = $state;
+    	}
+    	unset( $states[0]['chr'] );
+    	unset( $states[1]['quote_styles'] );
+    	unset( $states[2]['str_functions'] );
+    	unset( $states[3]['components'] );
+    	unset( $states[4]['regex'] );
+    	unset( $states[5]['self_closing_tags'] );
+    	unset( $states[6]['settings'] );
+
+    	// new, uninitialized PHP_Typography
+    	$second_typo = new \PHP_Typography\PHP_Typography( false );
+
+    	// load fixture with state
+    	$this->assertTrue( $this->typo->load_state( $state ) );
+
+    	foreach ( $states as $broken_state ) {
+    		$this->assertFalse( $second_typo->load_state( $broken_state ) );
+    		$this->assertNotEquals( serialize( $this->typo ), serialize( $second_typo ) );
+    	}
+    }
 }
