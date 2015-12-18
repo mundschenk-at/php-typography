@@ -141,12 +141,6 @@ class PHP_Typography {
 	 */
 	private $dash_styles = array();
 
-	#=======================================================================
-	#=======================================================================
-	#==	METHODS - SET ATTRIBUTES
-	#=======================================================================
-	#=======================================================================
-
 	/**
 	 * Set up a new PHP_Typography object.
 	 *
@@ -427,17 +421,19 @@ class PHP_Typography {
 					\x{017c}|\x{017d}|\x{017e}|\x{017f}
 					";
 
-		# find the HTML character representation for the following characters:
-		#		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
-		#		ogham space mark | en quad space | em quad space | en-space | three-per-em space
-		#		four-per-em space | six-per-em space | figure space | punctuation space | em-space
-		#		thin space | hair space | narrow no-break space
-		#		medium mathematical space | ideographic space
-		# Some characters are used inside words, we will not count these as a space for the purpose
-		# of finding word boundaries:
-		#		zero-width-space ("&#8203;", "&#x200b;")
-		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		/**
+		 * Find the HTML character representation for the following characters:
+		 *		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
+		 *		ogham space mark | en quad space | em quad space | en-space | three-per-em space
+		 *		four-per-em space | six-per-em space | figure space | punctuation space | em-space
+		 *		thin space | hair space | narrow no-break space
+		 *		medium mathematical space | ideographic space
+		 * Some characters are used inside words, we will not count these as a space for the purpose
+		 * of finding word boundaries:
+		 *		zero-width-space ("&#8203;", "&#x200b;")
+		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 */
 		$this->components['htmlSpaces'] = '
 			\x{00a0}		# no-break space
 			|
@@ -1681,14 +1677,6 @@ class PHP_Typography {
 		}
 	}
 
-
-
-	#=======================================================================
-	#=======================================================================
-	#==	METHODS - ACTIONS, let's do something!
-	#=======================================================================
-	#=======================================================================
-
 	/**
 	 * Modifies $html according to the defined settings.
 	 *
@@ -2044,12 +2032,6 @@ class PHP_Typography {
 			return '';
 		}
 	}
-
-	#=======================================================================
-	#=======================================================================
-	#==	OTHER METHODS
-	#=======================================================================
-	#=======================================================================
 
 	/**
 	 * Apply smart quotes (if enabled).

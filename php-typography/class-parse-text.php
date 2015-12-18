@@ -108,12 +108,6 @@ class Parse_Text {
 	 */
 	private $regex = array();
 
-	#=======================================================================
-	#=======================================================================
-	#==	METHODS
-	#=======================================================================
-	#=======================================================================
-
 	/**
 	 * Creates a new parser object.
 	 *
@@ -122,20 +116,21 @@ class Parse_Text {
 	function __construct( $encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
 		$this->encodings = $encodings;
 
-		# find spacing FIRST (as it is the primary delimiter)
-
-		# find the HTML character representation for the following characters:
-		#		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
-		#		ogham space mark | en quad space | em quad space | en-space | three-per-em space
-		#		four-per-em space | six-per-em space | figure space | punctuation space | em-space
-		#		thin space | hair space | narrow no-break space
-		#		medium mathematical space | ideographic space
-		# Some characters are used inside words, we will not count these as a space for the purpose
-		# of finding word boundaries:
-		#		zero-width-space ("&#8203;", "&#x200b;")
-		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-
+		/**
+		 * Find spacing FIRST (as it is the primary delimiter)
+		 *
+		 * Find the HTML character representation for the following characters:
+		 *		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
+		 *		ogham space mark | en quad space | em quad space | en-space | three-per-em space
+		 *		four-per-em space | six-per-em space | figure space | punctuation space | em-space
+		 *		thin space | hair space | narrow no-break space
+		 *		medium mathematical space | ideographic space
+		 * Some characters are used inside words, we will not count these as a space for the purpose
+		 * of finding word boundaries:
+		 *		zero-width-space ("&#8203;", "&#x200b;")
+		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 */
 		$this->components['htmlSpacing'] = '
 				(?:
 					(?:										# alpha matches
@@ -162,22 +157,23 @@ class Parse_Text {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
 		$this->components['space'] = "(?:\s|{$this->components['htmlSpacing']})+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8
 
-		# find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
-
-		# see http://www.unicode.org/charts/PDF/U2000.pdf
-		# see http://www.unicode.org/charts/PDF/U2E00.pdf
-		# find punctuation and symbols
-		#	dec matches =   33-44|46-47|58-60|62-64|91-94|96|123-126|161-172|174-191|215|247|710|732|977-978|982|8211-8231|8240-8286|8289-8292|8352-8399|8448-8527|8592-9215|9632-9983|11776-11903
-		# 	hex matches = 	0021-002c|002e-002f|003a-003c|003e-0040|005b-e|0060|007b-007e|00a1-00ac|00ae-00bf|00d7|00f7|02c6|02dc|03d1-03d2|
-		# 					03d6|2013-2027|2030-205e|2061-2064|20a0-20cf|2100-214f|2190-23ff|25a0-26ff|2e00-2e7f
-		#
-		# Some characters are used inside words, we will not count these as a space for the purpose
-		# of finding word boundaries:
-		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
-		#		underscore ("&#95;", "&#x005f;")
+		/**
+		 * Find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
+		 *
+		 * @see http://www.unicode.org/charts/PDF/U2000.pdf
+		 *
+		 * Find punctuation and symbols
+		 *	dec matches =   33-44|46-47|58-60|62-64|91-94|96|123-126|161-172|174-191|215|247|710|732|977-978|982|8211-8231|8240-8286|8289-8292|8352-8399|8448-8527|8592-9215|9632-9983|11776-11903
+		 * 	hex matches = 	0021-002c|002e-002f|003a-003c|003e-0040|005b-e|0060|007b-007e|00a1-00ac|00ae-00bf|00d7|00f7|02c6|02dc|03d1-03d2|
+		 *					03d6|2013-2027|2030-205e|2061-2064|20a0-20cf|2100-214f|2190-23ff|25a0-26ff|2e00-2e7f
+		 *
+		 * Some characters are used inside words, we will not count these as a space for the purpose
+		 * of finding word boundaries:
+		 * 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
+	 	 *		underscore ("&#95;", "&#x005f;")
+	 	 */
 		$this->components['htmlPunctuation'] = '
 				(?:
 					(?:										# alpha matches
@@ -199,28 +195,28 @@ class Parse_Text {
 					)
 				)
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
-
 		$this->components['punctuation'] = "
 		(?:
-		(?:
-		[^\w\s\&\/\@]			# assume characters that are not word spaces or whitespace are punctuation
-		# exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
-		# exclude slash \/as to not include the last slash in a URL
-		# exclude @ as to keep twitter names together
-		|
-		{$this->components['htmlPunctuation']}			# catch any HTML reps of punctuation
-		)+
+			(?:
+				[^\w\s\&\/\@]			# assume characters that are not word spaces or whitespace are punctuation
+				# exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
+				# exclude slash \/as to not include the last slash in a URL
+				# exclude @ as to keep twitter names together
+				|
+				{$this->components['htmlPunctuation']}			# catch any HTML reps of punctuation
+			)+
 		)
 		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
 
-		// letter connectors allowed in words
-		# 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
-		#		underscore ("&#95;", "&#x005f;")
-		#		zero-width-space ("&#8203;", "&#x200b;")
-		#		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		#		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		/**
+		 * Letter connectors allowed in words
+		 * 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
+		 *		underscore ("&#95;", "&#x005f;")
+		 *		zero-width-space ("&#8203;", "&#x200b;")
+		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 */
 		$this->components['htmlLetterConnectors'] = '
 			(?:
 				(?:												# alpha matches
@@ -247,11 +243,12 @@ class Parse_Text {
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
-
-		// word character html entities
-		// character	0-9__ A-Z__ a-z___ other_special_chrs_____
-		// decimal		48-57 65-90 97-122 192-214,216-246,248-255, 256-383
-		// hex			31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
+		/**
+		 * Word character html entities
+		 *   characters  0-9__ A-Z__ a-z___ other_special_chrs_____
+		 *   decimal	 48-57 65-90 97-122 192-214,216-246,248-255, 256-383
+		 *   hex		 31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
+		 */
 		$this->components['htmlLetters'] = '
 			(?:
 				(?:												# alpha matches
@@ -303,34 +300,29 @@ class Parse_Text {
 
 		$this->components['word'] = "
 		(?:
-		(?<![\w\&])							# negative lookbehind to ensure
-		#	1) we are proceeded by a non-word-character, and
-		#	2) we are not inside an HTML character def
-		(?:
-		[\w\-\_\/]
-		|
-		{$this->components['htmlLetters']}
-		|
-		{$this->components['htmlLetterConnectors']}
-		)+
+			(?<![\w\&])	 # negative lookbehind to ensure
+		                 #	1) we are proceeded by a non-word-character, and
+			             #	2) we are not inside an HTML character def
+			(?:
+				[\w\-\_\/]
+				|
+				{$this->components['htmlLetters']}
+				|
+				{$this->components['htmlLetterConnectors']}
+			)+
 		)
 		"; // required modifiers: x (multiline pattern) u (utf8)
 
-		# find any text
+		// Find any text
 		$this->components['anyText'] = "{$this->components['space']}|{$this->components['punctuation']}|{$this->components['word']}"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 
-		// store compiled regexes for later use
-		// uses S modifier ('study')
-		$this->regex['anyText'] = "/({$this->components['anyText']})/Sixu";
-		$this->regex['space'] = "/\A{$this->components['space']}\Z/Sxiu";
-		$this->regex['punctuation'] = "/\A{$this->components['punctuation']}\Z/Ssxiu";
-		$this->regex['word'] = "/\A{$this->components['word']}\Z/Sxu";
+		// Store compiled regexes for later use & use S modifier ('study')
+		$this->regex['anyText']              = "/({$this->components['anyText']})/Sixu";
+		$this->regex['space']                = "/\A{$this->components['space']}\Z/Sxiu";
+		$this->regex['punctuation']          = "/\A{$this->components['punctuation']}\Z/Ssxiu";
+		$this->regex['word']                 = "/\A{$this->components['word']}\Z/Sxu";
 		$this->regex['htmlLetterConnectors'] = "/{$this->components['htmlLetterConnectors']}|[0-9\-_&#;\/]/Sxu";
 	}
-
-	########################################################################
-	#	( UN | RE )LOAD, UPDATE AND CLEAR METHODS
-	#
 
 	/**
 	 * Tokenize a string and store the tokens in $this->text.
@@ -495,12 +487,6 @@ class Parse_Text {
 		}
 	}
 
-
-	########################################################################
-	#	GET METHODS
-	#
-	#   Returns:    ARRAY of sought tokens
-
 	/**
 	 * Retrieve all tokens of the currently set text.
 	 *
@@ -579,14 +565,6 @@ class Parse_Text {
 	function get_other() {
 		return $this->get_type( 'other' );
 	}
-
-
-
-	#=======================================================================
-	#=======================================================================
-	#==	MISC. METHODS
-	#=======================================================================
-	#=======================================================================
 
 	/**
 	 * Retrieve all tokens of the given type.
