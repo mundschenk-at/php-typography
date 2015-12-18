@@ -780,54 +780,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::array_intersection
-     * @todo   Implement testArray_intersection().
-     */
-    public function testArray_intersection()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::nodelist_to_array
-     * @todo   Implement testNodelist_to_array().
-     */
-    public function testNodelist_to_array()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::get_ancestors
-     * @todo   Implement testGet_ancestors().
-     */
-    public function testGet_ancestors()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::has_class
-     * @todo   Implement testHas_class().
-     */
-    public function testHas_class()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
      * @covers \PHP_Typography\PHP_Typography::process_feed
      * @todo   Implement testProcess_feed().
      */
@@ -904,30 +856,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @todo   Implement testGet_next_chr().
      */
     public function testGet_next_chr()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::get_block_parent
-     * @todo   Implement testGet_block_parent().
-     */
-    public function testGet_block_parent()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::detect_encoding
-     * @todo   Implement testDetect_encoding().
-     */
-    public function testDetect_encoding()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
@@ -1336,30 +1264,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @todo   Implement testDo_hyphenate().
      */
     public function testDo_hyphenate()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::uchr
-     * @todo   Implement testUchr().
-     */
-    public function testUchr()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::is_odd
-     * @todo   Implement testIs_odd().
-     */
-    public function testIs_odd()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
