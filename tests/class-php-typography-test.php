@@ -149,6 +149,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * Integrate all three "ignore" variants.
      *
+	 * @covers \PHP_Typography\PHP_Typography::set_classes_to_ignore
+     * @covers \PHP_Typography\PHP_Typography::set_ids_to_ignore
+     * @covers \PHP_Typography\PHP_Typography::set_tags_to_ignore
+     *
      * @depends testSet_ids_to_ignore
      * @depends testSet_classes_to_ignore
      * @depends testSet_tags_to_ignore
@@ -264,7 +268,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_diacritic_language
+     * @covers ::set_diacritic_language
+	 * @covers ::update_diacritics_replacement_arrays
      */
     public function testSet_diacritic_language()
     {
@@ -277,20 +282,28 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_diacritic_language( 'de-DE' );
 		$this->assertTrue( isset( $this->typo->settings['diacriticWords'] ) );
 		$this->assertGreaterThan( 0, count( $this->typo->settings['diacriticWords'] ) );
+
+		// nothing changed since the last call
+		$this->typo->set_diacritic_language( 'de-DE' );
+		$this->assertTrue( isset( $this->typo->settings['diacriticWords'] ) );
+		$this->assertGreaterThan( 0, count( $this->typo->settings['diacriticWords'] ) );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_diacritic_custom_replacements
+     * @covers ::set_diacritic_custom_replacements
+     * @covers ::update_diacritics_replacement_arrays
      */
     public function testSet_diacritic_custom_replacements()
     {
     	$typo = $this->typo;
 
-    	$typo->set_diacritic_custom_replacements( '"foo" => "fóò", "bar" => "bâr"' );
+    	$typo->set_diacritic_custom_replacements( '"foo" => "fóò", "bar" => "bâr"' . ", 'ha' => 'hä'" );
      	$this->assertArrayHasKey( 'foo', $typo->settings['diacriticCustomReplacements'] );
      	$this->assertArrayHasKey( 'bar', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertArrayHasKey( 'ha', $typo->settings['diacriticCustomReplacements'] );
      	$this->assertContains( 'fóò', $typo->settings['diacriticCustomReplacements'] );
      	$this->assertContains( 'bâr', $typo->settings['diacriticCustomReplacements'] );
+     	$this->assertContains( 'hä', $typo->settings['diacriticCustomReplacements'] );
 
      	$typo->set_diacritic_custom_replacements( array( 'fööbar' => 'fúbar' ) );
      	$this->assertArrayNotHasKey( 'foo', $typo->settings['diacriticCustomReplacements'] );
@@ -396,7 +409,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_units
+     * @covers ::set_units
+     * @covers ::update_unit_pattern
      */
     public function testSet_units()
     {
