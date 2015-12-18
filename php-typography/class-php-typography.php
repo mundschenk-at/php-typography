@@ -1109,7 +1109,7 @@ class PHP_Typography {
 				$this->chr['doubleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
 		} else {
-			error_log( "Invalid quote style $style." );
+			trigger_error( "Invalid quote style $style.", E_USER_WARNING );
 		}
 	}
 
@@ -1144,7 +1144,7 @@ class PHP_Typography {
 				$this->chr['singleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
 		} else {
-			error_log( "Invalid quote style $style." );
+			trigger_error( "Invalid quote style $style.", E_USER_WARNING );
 		}
 	}
 
@@ -1198,7 +1198,7 @@ class PHP_Typography {
 				/xu";
 
 		} else {
-			error_log( "Invalid dash style $style." );
+			trigger_error( "Invalid dash style $style.", E_USER_WARNING );
 		}
 	}
 
@@ -1729,7 +1729,7 @@ class PHP_Typography {
 			if ( false !== ( $nodelist = $xpath->query( $ignore_query, $body_node ) ) ) {
 				$tags_to_ignore = nodelist_to_array( $nodelist );
 			} else {
-				error_log("Invalid XPath ignore query: $ignore_query" );
+				trigger_error( "Invalid XPath ignore query: $ignore_query", E_USER_WARNING );
 			}
 		}
 
