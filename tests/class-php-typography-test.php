@@ -243,6 +243,19 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::set_smart_dashes_style
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
+     */
+    public function testSet_smart_dashes_style_invalid()
+    {
+    	$typo = $this->typo;
+
+    	$typo->set_smart_dashes_style( 'invalidStyleName' );
+    }
+
+    /**
      * @covers \PHP_Typography\PHP_Typography::set_smart_ellipses
      */
     public function testSet_smart_ellipses()
