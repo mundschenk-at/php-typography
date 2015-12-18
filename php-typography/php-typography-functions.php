@@ -163,24 +163,6 @@ function get_block_parent( \DOMNode $element ) {
 }
 
 /**
- * Check whether a given string is UTF-8 or ASCII.
- *
- * @param string $string.
- *
- * @return string The detected encoding (defaults to 'ASCII').
- */
-function detect_encoding( $string ) {
-	// .'a' is a hack; see http://www.php.net/manual/en/function.mb-detect-encoding.php#81936
-	// probbably not needed anymore with $strict set to true
-	$encoding = mb_detect_encoding( $string . 'a', array( 'UTF-8', 'ISO-8859-1', 'ASCII' ), true );
-	if ( empty($encoding) ) {
-		$encoding = 'ASCII';
-	}
-
-	return $encoding;
-}
-
-/**
  * Convert decimal value to unicode character.
  *
  * @param string|array $codes Decimal value(s) coresponding to unicode character(s).

@@ -111,9 +111,9 @@ class Parse_Text {
 	/**
 	 * Creates a new parser object.
 	 *
-	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8', 'ISO-8859-1' ].
+	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8' ].
 	 */
-	function __construct( $encodings = array( 'ASCII','UTF-8', 'ISO-8859-1' ) ) {
+	function __construct( $encodings = array( 'ASCII','UTF-8' ) ) {
 		$this->encodings = $encodings;
 
 		/**

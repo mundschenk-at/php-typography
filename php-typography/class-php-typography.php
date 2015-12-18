@@ -108,13 +108,18 @@ class PHP_Typography {
 	private $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
 
 	/**
+	 * An array of encodings in detection order.
+	 */
+	private $encodings = array( 'ASCII', 'UTF-8' );
+
+	/**
 	 * A hash map for string functions according to encoding.
 	 *
 	 * $encoding => array( 'strlen' => $function_name, ... )
 	 */
 	private $str_functions = array( 'UTF-8' => array(),
 									'ASCII' => array(),
-									'ISO-8859-1' => array(),
+									false   => array(),
 	);
 
 	/**
@@ -148,6 +153,8 @@ class PHP_Typography {
 	 * @param string $init Flag to control initialization. Valid inputs are 'now' and 'lazy'. Optional. Default 'now'.
 	 */
 	function __construct( $set_defaults = true, $init = 'now' )	{
+		// ASCII has to be first to have chance at detection
+		mb_detect_order( $this->encodings );
 
 		if ( 'now' === $init ) {
 			$this->init( $set_defaults );
@@ -318,8 +325,7 @@ class PHP_Typography {
 		$this->str_functions['ASCII']['strtolower'] = 'strtolower';
 		$this->str_functions['ASCII']['substr']     = 'substr';
 		$this->str_functions['ASCII']['u']			= ''; // no regex flag needed
-		// we don't care about ISO-8859-1
-		// it is just used to make the code cleaner
+		// all other encodings get the empty array
 
 		// set up regex patterns
 		$this->initialize_components();
@@ -1660,7 +1666,7 @@ class PHP_Typography {
 		$exception_keys = array();
 		$func = array();
 		foreach ( $exceptions as $key => &$exception ) {
-			$func = $this->str_functions[ detect_encoding( $exception ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort
 			}
@@ -1694,7 +1700,7 @@ class PHP_Typography {
 			$this->html5_parser = new \Masterminds\HTML5( array('disable_html_ns' => true) );
 		}
 		if ( ! isset( $this->text_parser ) ) {
-			$this->text_parser = new Parse_Text();
+			$this->text_parser = new Parse_Text( $this->encodings );
 		}
 
 		// parse the html
@@ -1883,7 +1889,7 @@ class PHP_Typography {
 
 		if ( isset( $previous_textnode ) ) {
 			// determine encoding
-			$func = $this->str_functions[ detect_encoding( $element->nodeValue ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
 			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, $func['strlen']( $previous_textnode->nodeValue ) - 1, 1 ) );
 		} else {
 			return '';
@@ -2026,7 +2032,7 @@ class PHP_Typography {
 		$next_textnode = $this->get_next_textnode($element);
 
 		if ( isset( $next_textnode ) ) {
-			$func = $this->str_functions[ detect_encoding( $element->nodeValue ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
 			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
 		} else {
 			return '';
@@ -2105,7 +2111,7 @@ class PHP_Typography {
 		$textnode->nodeValue = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->nodeValue );
 
 		//if we have adjacent characters remove them from the text
-		$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];
+		$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
 
 		if ( '' != $previous_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
@@ -2325,7 +2331,7 @@ class PHP_Typography {
 		$textnode->nodeValue = preg_replace( $this->regex['singleCharacterWordSpacing'], '$1$2' . $this->chr['noBreakSpace'], $textnode->nodeValue );
 
 		// if we have adjacent characters remove them from the text
-		$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];
+		$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
 
 		if ( '' !== $previous_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
@@ -2444,7 +2450,7 @@ class PHP_Typography {
 			return $widow[0];
 		}
 
-		$func = $this->str_functions[ detect_encoding( $widow[0] ) ];
+		$func = $this->str_functions[ mb_detect_encoding( $widow[0], $this->encodings, true ) ];
 
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
@@ -2658,7 +2664,7 @@ class PHP_Typography {
 
 		if ( '' === $this->get_prev_chr( $textnode )) { // we have the first text in a block level element
 
-			$func = $this->str_functions[ detect_encoding( $textnode->nodeValue ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
 			$first_character = $func['substr']( $textnode->nodeValue, 0, 1 );
 
 			if ( $first_character === "'" ||
@@ -2780,7 +2786,7 @@ class PHP_Typography {
 
 		$func = array(); // quickly reference string functions according to encoding
 		foreach ($parsed_text_tokens as &$text_token) {
-			$func = $this->str_functions[ detect_encoding( $text_token['value'] ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort
 			}
