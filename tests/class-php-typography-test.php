@@ -187,27 +187,179 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_smart_quotes_primary
-     * @todo   Implement testSet_smart_quotes_primary().
+     * @covers ::set_smart_quotes_primary
      */
     public function testSet_smart_quotes_primary()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $typo = $this->typo;
+    	$quote_styles = array(
+    		'doubleCurled',
+    		'doubleCurledReversed',
+    		'doubleLow9',
+    		'doubleLow9Reversed',
+    		'singleCurled',
+    		'singleCurledReversed',
+    		'singleLow9',
+    		'singleLow9Reversed',
+    		'doubleGuillemetsFrench',
+    		'doubleGuillemets',
+    		'doubleGuillemetsReversed',
+    		'singleGuillemets',
+    		'singleGuillemetsReversed',
+    		'cornerBrackets',
+    		'whiteCornerBracket'
+    	);
+
+    	foreach ( $quote_styles as $style ) {
+    		$typo->set_smart_quotes_primary( $style );
+    		$this->assertSmartQuotesStyle( $style, $typo->chr['doubleQuoteOpen'], $typo->chr['doubleQuoteClose'] );
+    	}
+    }
+
+    /**
+     * @covers ::set_smart_quotes_primary
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
+     */
+    public function testSet_smart_quotes_primary_invalid()
+    {
+    	$typo = $this->typo;
+
+    	$typo->set_smart_quotes_primary( 'invalidStyleName' );
     }
 
     /**
      * @covers \PHP_Typography\PHP_Typography::set_smart_quotes_secondary
-     * @todo   Implement testSet_smart_quotes_secondary().
      */
     public function testSet_smart_quotes_secondary()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$quote_styles = array(
+    		'doubleCurled',
+    		'doubleCurledReversed',
+    		'doubleLow9',
+    		'doubleLow9Reversed',
+    		'singleCurled',
+    		'singleCurledReversed',
+    		'singleLow9',
+    		'singleLow9Reversed',
+    		'doubleGuillemetsFrench',
+    		'doubleGuillemets',
+    		'doubleGuillemetsReversed',
+    		'singleGuillemets',
+    		'singleGuillemetsReversed',
+    		'cornerBrackets',
+    		'whiteCornerBracket'
+    	);
+
+    	foreach ( $quote_styles as $style ) {
+    		$typo->set_smart_quotes_secondary( $style );
+    		$this->assertSmartQuotesSTyle( $style, $typo->chr['singleQuoteOpen'], $typo->chr['singleQuoteClose'] );
+    	}
+    }
+
+    /**
+     * Assert that the given quote styles match
+     *
+     * @param string $style
+     * @param string $open
+     * @param string $close
+     */
+	private function assertSmartQuotesStyle( $style, $open, $close ) {
+    	switch ( $style ) {
+    		case 'doubleCurled':
+    			$this->assertSame( \PHP_Typography\uchr(8220), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8221), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleCurledReversed':
+    			$this->assertSame( \PHP_Typography\uchr(8221), $open,  "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8221), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleLow9':
+    			$this->assertSame( \PHP_Typography\uchr(8222), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8221), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleLow9Reversed':
+    			$this->assertSame( \PHP_Typography\uchr(8222), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8220), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'singleCurled':
+    			$this->assertSame( \PHP_Typography\uchr(8216), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8217), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'singleCurledReversed':
+    			$this->assertSame( \PHP_Typography\uchr(8217), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8217), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'singleLow9':
+    			$this->assertSame( \PHP_Typography\uchr(8218), $open,  "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8217), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'singleLow9Reversed':
+    			$this->assertSame( \PHP_Typography\uchr(8218), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8216), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleGuillemetsFrench':
+    			$this->assertSame( \PHP_Typography\uchr(171) . \PHP_Typography\uchr(160), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(160) . \PHP_Typography\uchr(187), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleGuillemets':
+    			$this->assertSame( \PHP_Typography\uchr(171), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(187), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'doubleGuillemetsReversed':
+    			$this->assertSame( \PHP_Typography\uchr(187), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(171), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+    		case 'singleGuillemets':
+    			$this->assertSame( \PHP_Typography\uchr(8249), $open, "Opening quote $open did not match quote style $style." );
+    			$this->assertSame( \PHP_Typography\uchr(8250), $close, "Closeing quote $close did not match quote style $style." );
+    			break;
+
+   			case 'singleGuillemetsReversed':
+   				$this->assertSame( \PHP_Typography\uchr(8250), $open, "Opening quote $open did not match quote style $style." );
+   				$this->assertSame( \PHP_Typography\uchr(8249), $close, "Closeing quote $close did not match quote style $style." );
+   				break;
+
+   			case 'cornerBrackets':
+   				$this->assertSame( \PHP_Typography\uchr(12300), $open, "Opening quote $open did not match quote style $style." );
+   				$this->assertSame( \PHP_Typography\uchr(12301), $close, "Closeing quote $close did not match quote style $style." );
+   				break;
+
+   			case 'whiteCornerBracket':
+   				$this->assertSame( \PHP_Typography\uchr(12302), $open, "Opening quote $open did not match quote style $style." );
+   				$this->assertSame( \PHP_Typography\uchr(12303), $close, "Closeing quote $close did not match quote style $style." );
+   				break;
+
+    		default:
+    			$this->assertTrue( false, "Invalid quote style $style." );
+    	}
+    }
+
+
+    /**
+     * @covers ::set_smart_quotes_secondary
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
+     */
+    public function testSet_smart_quotes_secondary_invalid()
+    {
+    	$typo = $this->typo;
+
+    	$typo->set_smart_quotes_secondary( 'invalidStyleName' );
     }
 
     /**
@@ -1263,12 +1415,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::hyphenate
-     * @todo   Implement testHyphenate().
+     * @covers ::hyphenate
      */
-    public function testHyphenate()
+    public function testHyphenate_disabled()
     {
-		$this->typo->set_hyphenation( true );
+		$this->typo->set_hyphenation( false );
 		$this->typo->set_hyphenation_language( 'en-US' );
 		$this->typo->set_min_length_hyphenation(2);
 		$this->typo->set_min_before_hyphenation(2);
@@ -1278,12 +1429,51 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
 		$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
 
- 	/*	$this->assertSame( "This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness",
- 						   $this->clean_html( $this->object->process("This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness") ) );
-		*/
+		$html = 'A few words to hyphenate, like KINGdesk. Really, there should be no hyphenation here!';
+    	$this->assertSame( $html, $this->clean_html( $this->typo->process( $html ) ) );
+    }
+
+    /**
+     * @covers ::hyphenate
+     * @covers ::do_hyphenate
+     */
+    public function testHyphenate()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( true );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
+    	$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+
+    	/*	$this->assertSame( "This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness",
+    	 $this->clean_html( $this->object->process("This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness") ) );
+    	*/
 
     	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
+    		$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
+    }
+
+    /**
+     * @covers ::hyphenate
+     */
+    public function testHyphenate_headings_disabled()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( false );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
+    	$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+
+    	$html = '<h2>A few words to hyphenate, like KINGdesk. Really, there should be no hyphenation here!</h2>';
+    	$this->assertSame( $html, $this->clean_html( $this->typo->process( $html ) ) );
     }
 
     /**
@@ -1296,6 +1486,46 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
+    }
+
+    /**
+     * @covers ::hyphenate
+     * @covers ::do_hyphenate
+     */
+    public function testHyphenate_no_custom_exceptions()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( true );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
+
+    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
+    					   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
+    }
+
+    /**
+     * @covers ::hyphenate
+     * @covers ::do_hyphenate
+     */
+    public function testHyphenate_no_exceptions_at_all()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( true );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
+		$this->typo->settings['hyphenationPatternExceptions'] = array();
+		unset( $this->typo->settings['hyphenationExceptions'] );
+
+    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
+    					   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
     }
 
     /**
