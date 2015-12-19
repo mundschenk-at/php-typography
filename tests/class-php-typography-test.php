@@ -814,6 +814,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertFalse( isset( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
 		$this->assertFalse( isset( $this->typo->settings['hyphenationPatternExceptions'] ) );
 
+		$this->typo->set_hyphenation_language( 'no' );
+		$this->assertTrue( isset( $this->typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
+		$this->assertNotEmpty( $this->typo->settings['hyphenationPatternExceptions'] ); // Norwegian has exceptions
+
 		$this->typo->set_hyphenation_language( 'de' );
 		$this->assertTrue( isset( $this->typo->settings['hyphenationPattern'] ) );
 		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
@@ -838,75 +844,85 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_min_length_hyphenation
-     * @todo   Implement testSet_min_length_hyphenation().
+     * @covers ::set_min_length_hyphenation
      */
     public function testSet_min_length_hyphenation()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$this->typo->set_min_length_hyphenation( 1 ); // too low, resets to default 5
+		$this->assertSame( 5, $this->typo->settings['hyphenMinLength'] );
+
+		$this->typo->set_min_length_hyphenation( 2 );
+		$this->assertSame( 2, $this->typo->settings['hyphenMinLength'] );
+
+		$this->typo->set_min_length_hyphenation( 66 );
+		$this->assertSame( 66, $this->typo->settings['hyphenMinLength'] );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_min_before_hyphenation
-     * @todo   Implement testSet_min_before_hyphenation().
+     * @covers ::set_min_before_hyphenation
      */
     public function testSet_min_before_hyphenation()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$this->typo->set_min_before_hyphenation( 0 ); // too low, resets to default 3
+		$this->assertSame( 3, $this->typo->settings['hyphenMinBefore'] );
+
+		$this->typo->set_min_before_hyphenation( 1 );
+		$this->assertSame( 1, $this->typo->settings['hyphenMinBefore'] );
+
+		$this->typo->set_min_before_hyphenation( 66 );
+		$this->assertSame( 66, $this->typo->settings['hyphenMinBefore'] );
+
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_min_after_hyphenation
-     * @todo   Implement testSet_min_after_hyphenation().
+     * @covers ::set_min_after_hyphenation
      */
     public function testSet_min_after_hyphenation()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$this->typo->set_min_after_hyphenation( 0 ); // too low, resets to default 2
+		$this->assertSame( 2, $this->typo->settings['hyphenMinAfter'] );
+
+		$this->typo->set_min_after_hyphenation( 1 );
+		$this->assertSame( 1, $this->typo->settings['hyphenMinAfter'] );
+
+		$this->typo->set_min_after_hyphenation( 66 );
+		$this->assertSame( 66, $this->typo->settings['hyphenMinAfter'] );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_hyphenate_headings
-     * @todo   Implement testSet_hyphenate_headings().
+     * @covers ::set_hyphenate_headings
      */
     public function testSet_hyphenate_headings()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$this->typo->set_hyphenate_headings( true );
+		$this->assertTrue( $this->typo->settings['hyphenateTitle'] );
+
+		$this->typo->set_hyphenate_headings( false );
+		$this->assertFalse( $this->typo->settings['hyphenateTitle'] );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_hyphenate_all_caps
-     * @todo   Implement testSet_hyphenate_all_caps().
+     * @covers ::set_hyphenate_all_caps
      */
     public function testSet_hyphenate_all_caps()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$this->typo->set_hyphenate_all_caps( true );
+		$this->assertTrue( $this->typo->settings['hyphenateAllCaps'] );
+
+		$this->typo->set_hyphenate_all_caps( false );
+		$this->assertFalse( $this->typo->settings['hyphenateAllCaps'] );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_hyphenate_title_case
-     * @todo   Implement testSet_hyphenate_title_case().
+     * @covers ::set_hyphenate_title_case
      */
     public function testSet_hyphenate_title_case()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$this->typo->set_hyphenate_title_case( true );
+		$this->assertTrue( $this->typo->settings['hyphenateTitleCase'] );
+
+		$this->typo->set_hyphenate_title_case( false );
+		$this->assertFalse( $this->typo->settings['hyphenateTitleCase'] );
     }
 
     /**
@@ -1565,6 +1581,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::save_state
      * @covers ::__construct
      * @covers ::init
+     * @covers ::initialize_components
+     * @covers ::initialize_patterns
      * @covers ::set_defaults
      */
     public function testSave_state()
