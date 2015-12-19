@@ -2703,19 +2703,19 @@ class PHP_Typography {
 	/**
 	 * Inject the PatGen segments pattern into the PatGen words pattern.
 	 *
-	 * @param unknown $word_pattern
-	 * @param unknown $segment_pattern
-	 * @param unknown $segment_position
-	 * @param unknown $segment_length
+	 * @param array  $word_pattern
+	 * @param array  $segment_pattern
+	 * @param number $segment_position
+	 * @param number $segment_length
 	 */
-	function hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length ) {
+	function hyphenation_pattern_injection( array $word_pattern, array $segment_pattern, $segment_position, $segment_length ) {
 
 		for ( $number_position = $segment_position;
 			  $number_position <= $segment_position + $segment_length;
 			  $number_position++ ) {
 
 			$word_pattern[ $number_position ] =
-				( intval($word_pattern[ $number_position ] ) >= intval( $segment_pattern[ $number_position - $segment_position ] ) ) ?
+				( intval( $word_pattern[ $number_position ] ) >= intval( $segment_pattern[ $number_position - $segment_position ] ) ) ?
 					$word_pattern[ $number_position ] : $segment_pattern[ $number_position - $segment_position ];
 		}
 
