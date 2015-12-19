@@ -2785,26 +2785,26 @@ class PHP_Typography {
 		}
 
 		$func = array(); // quickly reference string functions according to encoding
-		foreach ($parsed_text_tokens as &$text_token) {
+		foreach ( $parsed_text_tokens as &$text_token ) {
 			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort
 			}
 
 			$word_length = $func['strlen']( $text_token['value'] );
-			$the_key = $func['strtolower']( $text_token['value'] );
+			$the_key     = $func['strtolower']( $text_token['value'] );
 
 			if ( $word_length < $this->settings['hyphenMinLength'] ) continue;
 
-			// if this is a capitalized word, and settings do not allow hyphenation of such, abort!
-			// note. this is different than uppercase words, where we are looking for title case
-			if ( empty( $this->settings['hyphenateTitleCase'] ) && substr( $the_key , 0 , 1 ) != substr( $text_token['value'], 0, 1 ) ) continue;
+			// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
+			// Note: This is different than uppercase words, where we are looking for title case
+			if ( empty( $this->settings['hyphenateTitleCase'] ) && substr( $the_key , 0 , 1 ) !== substr( $text_token['value'], 0, 1 ) ) continue;
 
 			// give exceptions preference
 			if ( isset($this->settings['hyphenationExceptions'][ $the_key ] ) ) {
-				//Set the wordPattern - this method keeps any contextually important capitalization
-				$lowercase_hyphened_word = $this->settings['hyphenationExceptions'][ $the_key ];
-				$lowercase_hyphened_word_parts = $func['str_split']( $lowercase_hyphened_word, 1 );
+				// Set the word_pattern - this method keeps any contextually important capitalization
+				$lowercase_hyphened_word        = $this->settings['hyphenationExceptions'][ $the_key ];
+				$lowercase_hyphened_word_parts  = $func['str_split']( $lowercase_hyphened_word, 1 );
 				$lowercase_hyphened_word_length = $func['strlen']( $lowercase_hyphened_word );
 
 				$word_pattern = array();
@@ -2831,14 +2831,14 @@ class PHP_Typography {
 					for ( $segment_position = 0; $segment_position + $segment_length <= $word_length; $segment_position++ ) {
 						$segment = $func['strtolower']( $func['substr']( $text_token['value'], $segment_position, $segment_length ) );
 
-						if ( 0 == $segment_position ) {
+						if ( 0 === $segment_position ) {
 							if( isset($this->settings['hyphenationPattern']['begin'][ $segment ] ) ) {
 								$segment_pattern = $func['str_split']( $this->settings['hyphenationPattern']['begin'][ $segment ], 1 );
 								$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
 							}
 						}
 
-						if ( $segment_position + $segment_length == $word_length ) {
+						if ( $segment_position + $segment_length === $word_length ) {
 							if ( isset($this->settings['hyphenationPattern']['end'][ $segment ] ) ) {
 								$segment_pattern = $func['str_split']( $this->settings['hyphenationPattern']['end'][ $segment ], 1 );
 								$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
