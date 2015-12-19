@@ -2052,11 +2052,11 @@ class PHP_Typography {
 		// need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text
 		$previous_character = $this->get_prev_chr( $textnode );
-		if ( '' != $previous_character ) {
+		if ( '' !== $previous_character ) {
 			$textnode->nodeValue = $previous_character.$textnode->nodeValue;
 		}
 		$next_character = $this->get_next_chr( $textnode );
-		if ( '' != $next_character ) {
+		if ( '' !== $next_character ) {
 			$textnode->nodeValue =  $textnode->nodeValue.$next_character;
 		}
 
@@ -2113,10 +2113,10 @@ class PHP_Typography {
 		//if we have adjacent characters remove them from the text
 		$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
 
-		if ( '' != $previous_character ) {
+		if ( '' !== $previous_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
 		}
-		if ( '' != $next_character ) {
+		if ( '' !== $next_character ) {
 			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
 		}
 	}
