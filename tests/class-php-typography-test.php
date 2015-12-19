@@ -800,8 +800,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_hyphenation_language
-     * @todo   Implement testSet_hyphenation_language().
+     * @covers ::set_hyphenation_language
      */
     public function testSet_hyphenation_language()
     {
@@ -820,6 +819,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
 		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
 		$this->assertEmpty( $this->typo->settings['hyphenationPatternExceptions'] ); // no exceptions in the German pattern file
+    }
+
+    /**
+     * @covers ::set_hyphenation_language
+     */
+    public function testSet_same_hyphenation_language()
+    {
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternExceptions'] ) );
+
+    	$this->typo->set_hyphenation_language( 'en-US' );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
+    	$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternExceptions'] ) );
     }
 
     /**
