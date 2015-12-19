@@ -1547,7 +1547,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     *  @covers \PHP_Typography\PHP_Typography::save_state
+     * @covers ::save_state
+     * @covers ::__construct
+     * @covers ::init
+     * @covers ::set_defaults
      */
     public function testSave_state()
     {
@@ -1568,12 +1571,14 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::load_state
+     * @covers ::__construct
+     * @covers ::set_defaults
      * @depends testSave_state
      */
     public function testLoad_state_OK( array $state )
     {
     	$this->typo->set_defaults(); // same as in testSave_state
-    	$second_typo = new \PHP_Typography\PHP_Typography( false );
+    	$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
 
     	$this->assertTrue( $second_typo->load_state( $state ) );
     	$this->assertEquals( serialize( $this->typo ), serialize( $second_typo ) );
