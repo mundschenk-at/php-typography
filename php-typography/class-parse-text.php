@@ -344,7 +344,7 @@ class Parse_Text {
 		// FIXME: is this necessary?
 		$this->clear();
 
-		switch ( mb_detect_encoding($raw_text.'a', $this->encodings) ) {
+		switch ( mb_detect_encoding( $raw_text.'a', $this->encodings, true ) ) {
 			case 'UTF-8':
 				$this->multibyte = true;
 				break;
