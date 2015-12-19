@@ -2780,7 +2780,7 @@ class PHP_Typography {
 
 				$this->settings['hyphenationExceptions'] = $exceptions;
 			} else {
-				$this->settings['hyphenationExceptions']=array();
+				$this->settings['hyphenationExceptions'] = array();
 			}
 		}
 
@@ -2857,7 +2857,7 @@ class PHP_Typography {
 			$word_parts = $func['str_split']( $text_token['value'], 1 );
 
 			$hyphenated_word = '';
-			for ( $i=0; $i < $word_length; $i++ ) {
+			for ( $i = 0; $i < $word_length; $i++ ) {
 				if ( is_odd( intval( $word_pattern[ $i ] ) ) && ( $i >= $this->settings['hyphenMinBefore']) && ( $i < $word_length - $this->settings['hyphenMinAfter'] ) ) {
 					$hyphenated_word .= $this->chr['softHyphen'] . $word_parts[ $i ];
 				} else {
