@@ -1021,12 +1021,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_prev_chr
+     * @covers ::get_previous_textnode
      */
     public function testGet_prev_chr()
     {
-    	$typo = new \PHP_Typography\PHP_Typography( true, 'now' );
+    	$typo = $this->typo;
     	$typo->process('');
-
 
     	$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
     	$doc = $typo->html5_parser->loadHTML( $html );
@@ -1042,39 +1042,25 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_previous_textnode
-     * @todo   Implement testGet_previous_textnode().
+     * @covers ::get_next_chr
+     * @covers ::get_next_textnode
      */
-    public function testGet_previous_textnode()
+    public function testGet_next_chr()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+    	$typo = $this->typo;
+    	$typo->process('');
 
-    /**
-     * @covers \PHP_Typography\PHP_Typography::get_last_textnode
-     * @todo   Implement testGet_last_textnode().
-     */
-    public function testGet_last_textnode()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+    	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
 
-    /**
-     * @covers \PHP_Typography\PHP_Typography::get_next_textnode
-     * @todo   Implement testGet_next_textnode().
-     */
-    public function testGet_next_textnode()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
+    	$prev_char = $typo->get_next_chr( $textnodes->item(0) );
+    	$this->assertSame( 'n', $prev_char );
+
+    	$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one
+    	$prev_char = $typo->get_next_chr( $textnodes->item(0) );
+    	$this->assertSame( '', $prev_char );
     }
 
     /**
@@ -1083,17 +1069,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testGet_first_textnode()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	// Remove the following lines when you implement this test.
+    	$this->markTestIncomplete(
+    		'This test has not been implemented yet.'
+    		);
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_next_chr
-     * @todo   Implement testGet_next_chr().
+     * @covers \PHP_Typography\PHP_Typography::get_last_textnode
+     * @todo   Implement testGet_last_textnode().
      */
-    public function testGet_next_chr()
+    public function testGet_last_textnode()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
