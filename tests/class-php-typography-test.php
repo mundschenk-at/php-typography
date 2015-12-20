@@ -1659,6 +1659,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_defaults();
     	$state = $this->typo->save_state();
 
+    	$this->assertArrayHasKey( 'block_tags', $state );
     	$this->assertArrayHasKey( 'chr', $state );
     	$this->assertArrayHasKey( 'quote_styles', $state );
     	$this->assertArrayHasKey( 'str_functions', $state );
@@ -1695,7 +1696,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	// set up imperfect states
     	$states = array();
 
-    	for ( $i = 0; $i < 7; ++$i ) {
+    	for ( $i = 0; $i < 8; ++$i ) {
     		$states[ $i ] = $state;
     	}
     	unset( $states[0]['chr'] );
@@ -1705,6 +1706,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	unset( $states[4]['regex'] );
     	unset( $states[5]['self_closing_tags'] );
     	unset( $states[6]['settings'] );
+    	unset( $states[7]['block_tags'] );
 
     	// new, uninitialized PHP_Typography
     	$second_typo = new \PHP_Typography\PHP_Typography( false );
