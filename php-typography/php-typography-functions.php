@@ -140,29 +140,6 @@ function has_class( \DOMNode $tag, $classnames ) {
 }
 
 /**
- * Returns the nearest block-level parent.
- *
- * @param \DOMNode $element The node to get the containing block-level tag.
- *
- * @return \DOMNode
- */
-function get_block_parent( \DOMNode $element ) {
-	static $block_tags = null;
-
-	if ( empty( $block_tags ) ) {
-		$block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
-								  + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
-	}
-
-	$parent = $element->parentNode;
-	while ( isset( $parent->tagName ) && ! isset( $block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) ) {
-		$parent = $parent->parentNode;
-	}
-
-	return $parent;
-}
-
-/**
  * Convert decimal value to unicode character.
  *
  * @param string|array $codes Decimal value(s) coresponding to unicode character(s).

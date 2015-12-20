@@ -147,6 +147,11 @@ class PHP_Typography {
 	private $dash_styles = array();
 
 	/**
+	 * An array in the form of [ '$tag' => true ]
+	 */
+	private $block_Tags = array();
+
+	/**
 	 * Set up a new PHP_Typography object.
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
@@ -168,7 +173,8 @@ class PHP_Typography {
 	 * @return boolean True if successful, false if $state is incomplete.
 	 */
 	function load_state( $state ) {
-		if ( ! isset( $state['chr'] )                ||
+		if ( ! isset( $state['block_tags'] )         ||
+			 ! isset( $state['chr'] )                ||
 			 ! isset( $state['quote_styles'] )       ||
 			 ! isset( $state['str_functions'] )      ||
 			 ! isset( $state['components'] )         ||
@@ -179,6 +185,7 @@ class PHP_Typography {
 		 	return false;
 		}
 
+		$this->block_tags         = $state['block_tags'];
 		$this->chr                = $state['chr'];
 		$this->quote_styles       = $state['quote_styles'];
 		$this->dash_styles        = $state['dash_styles'];
@@ -199,6 +206,7 @@ class PHP_Typography {
 	 */
 	function save_state() {
 		return array(
+			'block_tags'         => $this->block_tags,
 			'chr'                => $this->chr,
 			'quote_styles'       => $this->quote_styles,
 			'dash_styles'        => $this->dash_styles,
@@ -220,6 +228,9 @@ class PHP_Typography {
 		// not sure if this is necessary - but error_log seems to have problems with the strings.
 		// used as the default encoding for mb_* functions
 		$encoding_set = mb_internal_encoding('UTF-8');
+
+		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
+										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
 
 		$this->chr['noBreakSpace']            = uchr(160);
 		$this->chr['noBreakNarrowSpace']      = uchr(160);  // should be 8239, but not supported consistently, used in unit spacing
@@ -2679,7 +2690,7 @@ class PHP_Typography {
 
 				$block_level_parent = false;
 				if ( ! empty( $textnode->parentNode ) ) {
-					$block_level_parent = get_block_parent( $textnode );
+					$block_level_parent = $this->get_block_parent( $textnode );
 					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 				} elseif ( $is_title ) {
 					// assume page title is h2
@@ -2738,7 +2749,7 @@ class PHP_Typography {
 
 		$is_heading = false;
 		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
-			$block_level_parent = get_block_parent( $textnode );
+			$block_level_parent = $this->get_block_parent( $textnode );
 			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 
 			if ( $block_level_parent && isset( $this->heading_tags[ $block_level_parent ] ) ) {
@@ -2873,6 +2884,23 @@ class PHP_Typography {
 		}
 
 		return $parsed_text_tokens;
+	}
+
+	/**
+	 * Returns the nearest block-level parent.
+	 *
+	 * @param \DOMNode $element The node to get the containing block-level tag.
+	 *
+	 * @return \DOMNode
+	 */
+	function get_block_parent( \DOMNode $element ) {
+		$parent = $element->parentNode;
+
+		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) ) {
+			$parent = $parent->parentNode;
+		}
+
+		return $parent;
 	}
 
 	/**
