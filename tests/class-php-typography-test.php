@@ -927,14 +927,32 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers \PHP_Typography\PHP_Typography::set_hyphenation_exceptions
-     * @todo   Implement testSet_hyphenation_exceptions().
      */
-    public function testSet_hyphenation_exceptions()
+    public function testSet_hyphenation_exceptions_array()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$typo = $this->typo;
+		$exceptions = array( "Hu-go", "Fö-ba-ß" );
+
+		$typo->set_hyphenation_exceptions( $exceptions );
+		$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
+		$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $typo->settings['hyphenationCustomExceptions'] );
+		$this->assertArraySubset( array( 'föbaß' => 'fö-ba-ß' ), $typo->settings['hyphenationCustomExceptions'] );
+		$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
+    }
+
+    /**
+     * @covers \PHP_Typography\PHP_Typography::set_hyphenation_exceptions
+     */
+    public function testSet_hyphenation_exceptions_string()
+    {
+    	$typo = $this->typo;
+    	$exceptions = "Hu-go, Fö-ba-ß";
+
+    	$typo->set_hyphenation_exceptions( $exceptions );
+    	$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertArraySubset( array( 'föbaß' => 'fö-ba-ß' ), $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
     }
 
     /**
