@@ -1526,15 +1526,66 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::do_hyphenate
-     * @todo   Implement testDo_hyphenate().
+     * @covers ::do_hyphenate
      */
     public function testDo_hyphenate()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'de' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( false );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
+
+    	$tokens = array( array( 'value' => mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) ) );
+    	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+	   	$this->assertEquals( $hyphenated, $tokens );
+
+	   	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+	   	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+	   	$this->assertNotEquals( $hyphenated, $tokens );
+    }
+
+    /**
+     * @covers ::do_hyphenate
+     */
+    public function testDo_hyphenate_no_title_case()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'de' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( false );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( false ); // added in version 1.5
+
+    	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+    	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+    	$this->assertEquals( $tokens, $hyphenated);
+    }
+
+    /**
+     * @covers ::do_hyphenate
+     */
+    public function testDo_hyphenate_invalid()
+    {
+    	$this->typo->set_hyphenation( true );
+    	$this->typo->set_hyphenation_language( 'de' );
+    	$this->typo->set_min_length_hyphenation(2);
+    	$this->typo->set_min_before_hyphenation(2);
+    	$this->typo->set_min_after_hyphenation(2);
+    	$this->typo->set_hyphenate_headings( false );
+    	$this->typo->set_hyphenate_all_caps( true );
+    	$this->typo->set_hyphenate_title_case( false ); // added in version 1.5
+
+    	$this->typo->settings['hyphenMinBefore'] = 0; // invalid value
+
+    	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+    	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+    	$this->assertEquals( $tokens, $hyphenated);
     }
 
     /**
