@@ -2802,7 +2802,7 @@ class PHP_Typography {
 
 			// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
 			// Note: This is different than uppercase words, where we are looking for title case
-			if ( empty( $this->settings['hyphenateTitleCase'] ) && substr( $the_key , 0 , 1 ) !== substr( $text_token['value'], 0, 1 ) ) {
+			if ( empty( $this->settings['hyphenateTitleCase'] ) && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $text_token['value'], 0, 1 ) ) {
 				continue;
 			}
 
