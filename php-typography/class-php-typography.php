@@ -1907,6 +1907,26 @@ class PHP_Typography {
 		}
 	}
 
+
+	/**
+	 * Retrieve the first character of the next \DOMText sibling (if there is one).
+	 *
+	 * @param \DOMNode $element
+	 *
+	 * @return string A single character (or the empty string).
+	 */
+	function get_next_chr( \DOMNode $element ) {
+		$next_textnode = $this->get_next_textnode($element);
+
+		if ( isset( $next_textnode ) ) {
+			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
+			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
+		} else {
+			return '';
+		}
+	}
+
+
 	/**
 	 * Retrieve the previous \DOMText sibling (if there is one).
 	 *
@@ -1937,37 +1957,6 @@ class PHP_Typography {
 		return $previous_textnode;
 	}
 
-	/**
-	 * Retrieve the last \DOMText child of the element.
-	 *
-	 * @param \DOMNode $element
-	 *
-	 * @return \DOMNode The last child of type \DOMText, the element itself if it is of type \DOMText or null.
-	 */
-	function get_last_textnode( \DOMNode $element = null ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		if ( $element instanceof \DOMText ) {
-			return $element;
-		} elseif ( ! $element instanceof \DOMElement ) {
-			return null;
-		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
-			return null;
-		}
-
-		$last_textnode = null;
-		$children = $element->childNodes;
-		$i = $children->length - 1;
-
-		while ( $i >= 0 && empty( $last_textnode ) ) {
-			$last_textnode = $this->get_last_textnode( $children->item( $i ) );
-			$i--;
-		}
-
-		return $last_textnode;
-	}
 
 	/**
 	 * Retrieve the next \DOMText sibling (if there is one).
@@ -1998,6 +1987,7 @@ class PHP_Typography {
 
 		return $next_textnode;
 	}
+
 
 	/**
 	 * Retrieve the first \DOMText child of the element.
@@ -2032,23 +2022,39 @@ class PHP_Typography {
 		return $first_textnode;
 	}
 
+
 	/**
-	 * Retrieve the first character of the next \DOMText sibling (if there is one).
+	 * Retrieve the last \DOMText child of the element.
 	 *
 	 * @param \DOMNode $element
 	 *
-	 * @return string A single character (or the empty string).
+	 * @return \DOMNode The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	function get_next_chr( \DOMNode $element ) {
-		$next_textnode = $this->get_next_textnode($element);
-
-		if ( isset( $next_textnode ) ) {
-			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
-			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
-		} else {
-			return '';
+	function get_last_textnode( \DOMNode $element = null ) {
+		if ( ! isset( $element ) ) {
+			return null;
 		}
+
+		if ( $element instanceof \DOMText ) {
+			return $element;
+		} elseif ( ! $element instanceof \DOMElement ) {
+			return null;
+		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
+			return null;
+		}
+
+		$last_textnode = null;
+		$children = $element->childNodes;
+		$i = $children->length - 1;
+
+		while ( $i >= 0 && empty( $last_textnode ) ) {
+			$last_textnode = $this->get_last_textnode( $children->item( $i ) );
+			$i--;
+		}
+
+		return $last_textnode;
 	}
+
 
 	/**
 	 * Apply smart quotes (if enabled).
