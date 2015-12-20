@@ -1021,7 +1021,7 @@ class PHP_Typography {
 				\Z
 			/xu";
 
-        // utility patern for splitting string parameter lists into arrays
+        // utility patterns for splitting string parameter lists into arrays
         $this->regex['parameterSplitting'] = '/[\s,]+/';
 	}
 
@@ -1660,12 +1660,12 @@ class PHP_Typography {
 	 */
 	function set_hyphenation_exceptions( $exceptions = array() ) {
 		if ( ! is_array( $exceptions ) ) {
-			$exceptions = preg_split( '/[^a-zA-Z0-9\-]+/', $exceptions, -1, PREG_SPLIT_NO_EMPTY );
+			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		$exception_keys = array();
 		$func = array();
-		foreach ( $exceptions as $key => &$exception ) {
+		foreach ( $exceptions as $exception ) {
 			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
 				continue; // unknown encoding, abort
