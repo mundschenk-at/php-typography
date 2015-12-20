@@ -1020,15 +1020,25 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_prev_chr
-     * @todo   Implement testGet_prev_chr().
+     * @covers ::get_prev_chr
      */
     public function testGet_prev_chr()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = new \PHP_Typography\PHP_Typography( true, 'now' );
+    	$typo->process('');
+
+
+    	$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
+		$prev_char = $typo->get_prev_chr( $textnodes->item(0) );
+		$this->assertSame( 'A', $prev_char );
+
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one
+		$prev_char = $typo->get_prev_chr( $textnodes->item(0) );
+		$this->assertSame( '', $prev_char );
     }
 
     /**
@@ -1485,6 +1495,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::hyphenate
      * @covers ::do_hyphenate
+     * @covers ::hyphenation_pattern_injection
      */
     public function testHyphenate()
     {
@@ -1527,6 +1538,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::do_hyphenate
+     * @covers ::hyphenation_pattern_injection
      */
     public function testDo_hyphenate()
     {
