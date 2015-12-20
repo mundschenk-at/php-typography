@@ -2757,8 +2757,9 @@ class PHP_Typography {
 	/**
 	 * Really hyphenate given text fragment.
 	 *
-	 * @param array $parsed_text_tokens Filtered to words.
-	*/
+	 * @param  array $parsed_text_tokens Filtered to words.
+	 * @return array The hyphenated text token.
+	 */
 	function do_hyphenate( array $parsed_text_tokens ) {
 
 		if ( empty( $this->settings['hyphenMinLength'] )              ||
