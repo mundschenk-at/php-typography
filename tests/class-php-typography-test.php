@@ -1069,10 +1069,37 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testGet_first_textnode()
     {
-    	// Remove the following lines when you implement this test.
-    	$this->markTestIncomplete(
-    		'This test has not been implemented yet.'
-    		);
+    	$typo = $this->typo;
+    	$typo->process('');
+
+    	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
+    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'A', $node->nodeValue );
+
+    	$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one
+    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'A', $node->nodeValue );
+
+    	$textnodes = $xpath->query( "//p" ); // really only one
+		$node = $typo->get_first_textnode( $textnodes->item(0) );
+		$this->assertNull( $node );
+
+    	$this->assertTrue(false);
+    }
+
+    /**
+     * @covers ::get_first_textnode
+     */
+    public function testGet_first_textnode_null()
+    {
+    	$typo = $this->typo;
+    	$typo->process('');
+
+		$this->assertNull( $typo->get_first_textnode( null ) );
     }
 
     /**
@@ -1085,6 +1112,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
+    }
+
+    /**
+     * @covers ::get_last_textnode
+     */
+    public function testGet_last_textnode_null()
+    {
+    	$typo = $this->typo;
+    	$typo->process('');
+
+		$this->assertNull( $typo->get_last_textnode( null ) );
     }
 
     /**
