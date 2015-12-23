@@ -1898,13 +1898,14 @@ class PHP_Typography {
 	function get_prev_chr( \DOMNode $element ) {
 		$previous_textnode = $this->get_previous_textnode( $element );
 
-		if ( isset( $previous_textnode ) ) {
-			// determine encoding
-			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
-			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, $func['strlen']( $previous_textnode->nodeValue ) - 1, 1 ) );
-		} else {
-			return '';
+		if ( isset( $previous_textnode ) && isset( $previous_textnode->nodeValue ) ) {
+			// first determine encoding
+			if ( ! empty( $func = $this->str_functions[ mb_detect_encoding( $previous_textnode->nodeValue, $this->encodings, true ) ] ) ) {
+				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, - 1 ) );
+			}
 		}
+
+		return '';
 	}
 
 
@@ -1918,12 +1919,14 @@ class PHP_Typography {
 	function get_next_chr( \DOMNode $element ) {
 		$next_textnode = $this->get_next_textnode($element);
 
-		if ( isset( $next_textnode ) ) {
-			$func = $this->str_functions[ mb_detect_encoding( $element->nodeValue, $this->encodings, true ) ];
-			return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
-		} else {
-			return '';
+		if ( isset( $next_textnode ) && isset( $next_textnode->nodeValue ) ) {
+			// first determine encoding
+			if ( ! empty( $func = $this->str_functions[ mb_detect_encoding( $next_textnode->nodeValue, $this->encodings, true ) ] ) ) {
+				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
+			}
 		}
+
+		return '';
 	}
 
 
