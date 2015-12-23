@@ -1900,7 +1900,9 @@ class PHP_Typography {
 
 		if ( isset( $previous_textnode ) && isset( $previous_textnode->nodeValue ) ) {
 			// first determine encoding
-			if ( ! empty( $func = $this->str_functions[ mb_detect_encoding( $previous_textnode->nodeValue, $this->encodings, true ) ] ) ) {
+			$func = $this->str_functions[ mb_detect_encoding( $previous_textnode->nodeValue, $this->encodings, true ) ];
+
+			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
 				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, - 1 ) );
 			}
 		}
@@ -1921,7 +1923,9 @@ class PHP_Typography {
 
 		if ( isset( $next_textnode ) && isset( $next_textnode->nodeValue ) ) {
 			// first determine encoding
-			if ( ! empty( $func = $this->str_functions[ mb_detect_encoding( $next_textnode->nodeValue, $this->encodings, true ) ] ) ) {
+			$func = $this->str_functions[ mb_detect_encoding( $next_textnode->nodeValue, $this->encodings, true ) ];
+
+			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
 				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
 			}
 		}
