@@ -1276,16 +1276,36 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+    public function provide_smart_ellipses_data() {
+    	return array(
+    		array( 'Where are we going... Really....?', 'Where are we going&hellip; Really.&hellip;?' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_ellipses
-     * @todo   Implement testSmart_ellipses().
+     * @covers ::smart_ellipses
+     *
+     * @dataProvider provide_smart_ellipses_data
      */
-    public function testSmart_ellipses()
+    public function testSmart_ellipses( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+		$typo->set_smart_ellipses( true );
+
+		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_ellipses
+     *
+     * @dataProvider provide_smart_ellipses_data
+     */
+    public function testSmart_ellipses_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_ellipses( false );
+
+    	$this->assertSame( $input, $this->clean_html( $this->typo->process( $input ) ) );
     }
 
     /**
@@ -1326,17 +1346,47 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers \PHP_Typography\PHP_Typography::smart_marks
-     * @todo   Implement testSmart_marks().
-     */
-    public function testSmart_marks()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    public function provide_smart_marks_data() {
+    	return array(
+    		array( '(c)',  '&copy;' ),
+    		array( '(C)',  '&copy;' ),
+    		array( '(r)',  '&reg;' ),
+    		array( '(R)',  '&reg;' ),
+    		array( '(p)',  '&#8471;' ),
+    		array( '(P)',  '&#8471;' ),
+    		array( '(sm)', '&#8480;' ),
+    		array( '(SM)', '&#8480;' ),
+    		array( '(tm)', '&trade;' ),
+    		array( '(TM)', '&trade;' ),
+    	);
     }
+
+    /**
+     * @covers ::smart_marks
+     *
+     * @dataProvider provide_smart_marks_data
+     */
+    public function testSmart_marks( $input, $result )
+    {
+    	$typo = $this->typo;
+		$typo->set_smart_marks( true );
+
+		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_marks
+     *
+     * @dataProvider provide_smart_marks_data
+     */
+    public function testSmart_marks_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_marks( false );
+
+    	$this->assertSame( $input, $this->clean_html( $this->typo->process( $input ) ) );
+    }
+
 
     /**
      * Data provider for smarth_math test.
@@ -1395,15 +1445,25 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_exponents
-     * @todo   Implement testSmart_exponents().
+     * @covers ::smart_exponents
      */
     public function testSmart_exponents()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_smart_exponents( true );
+
+   		$this->assertSame( '10<sup>12</sup>', $typo->process( '10^12' ) );
+    }
+
+    /**
+     * @covers ::smart_exponents
+     */
+    public function testSmart_exponents_off()
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_exponents( false );
+
+   		$this->assertSame( '10^12', $typo->process( '10^12' ) );
     }
 
     public function provide_smart_fractions_data() {
