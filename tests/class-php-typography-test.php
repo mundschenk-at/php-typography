@@ -1424,37 +1424,87 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function provide_dash_spacing_data() {
+    	return array(
+    		array( 'Ein - mehr oder weniger - guter Gedanke, 1908-2008',
+    		   	   'Ein&thinsp;&mdash;&thinsp;mehr oder weniger&thinsp;&mdash;&thinsp;guter Gedanke, 1908&thinsp;&ndash;&thinsp;2008',
+    		       'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&#8202;&ndash;&#8202;2008' ),
+    		array( "We just don't know --- really---, but you know, --",
+    			   "We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;",
+    			   "We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;" ),
+
+    	);
+    }
+
+    public function provide_dash_spacing_off_data() {
+    	return array(
+    		array( 'Ein - mehr oder weniger - guter Gedanke, 1908-2008',
+    			   'Ein &mdash; mehr oder weniger &mdash; guter Gedanke, 1908&ndash;2008',
+    			   'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&ndash;2008' ),
+   			array( "We just don't know --- really---, but you know, --",
+     			   "We just don't know &mdash; really&mdash;, but you know, &ndash;",
+    			   "We just don't know &mdash; really&mdash;, but you know, &ndash;" ),
+    	);
+    }
+
+    public function provide_dash_spacing_unchanged_data() {
+    	return array(
+    		array( 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::dash_spacing
+     * @covers ::dash_spacing
+     *
+     * @dataProvider provide_dash_spacing_data
      */
-    public function testDash_spacing()
+    public function testDash_spacing( $input, $result_us, $result_int )
     {
     	$typo = $this->typo;
     	$typo->set_smart_dashes( true );
     	$typo->set_dash_spacing( true );
 
-    	$html_none = 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04';
-    	$result_none = $html_none;
-
-    	$html_dashed       = 'Ein - mehr oder weniger - guter Gedanke, 1908-2008';
-    	$result_dashed     = 'Ein&thinsp;&mdash;&thinsp;mehr oder weniger&thinsp;&mdash;&thinsp;guter Gedanke, 1908&thinsp;&ndash;&thinsp;2008';
-    	$result_dashed_int = 'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&#8202;&ndash;&#8202;2008';
-
-    	$html_emdashed       = "We just don't know --- really---, but you know, --";
-    	$result_emdashed     = "We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;";
-    	$result_emdashed_int = "We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;";
-
     	$typo->set_smart_dashes_style( 'traditionalUS' );
-    	$this->assertSame( $result_none, $typo->process( $html_none ) );
-    	$this->assertSame( $result_dashed,   $this->clean_html( $typo->process( $html_dashed ) ) );
-    	$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
+    	$this->assertSame( $result_us, $this->clean_html( $typo->process( $input ) ) );
 
     	$typo->set_smart_dashes_style( 'international' );
-    	$this->assertSame( $result_none, $typo->process( $html_none ) );
-    	$this->assertSame( $result_dashed_int, $this->clean_html( $typo->process( $html_dashed ) ) );
-    	$this->assertSame( $result_emdashed_int,   $this->clean_html( $typo->process( $html_emdashed ) ) );
+    	$this->assertSame( $result_int, $this->clean_html( $typo->process( $input ) ) );
+    }
 
+    /**
+     * @covers ::dash_spacing
+     *
+     * @dataProvider provide_dash_spacing_unchanged_data
+     */
+    public function testDash_spacing_unchanged( $input )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_dashes( true );
+    	$typo->set_dash_spacing( true );
 
+    	$typo->set_smart_dashes_style( 'traditionalUS' );
+    	$this->assertSame( $input, $typo->process( $input ) );
+
+    	$typo->set_smart_dashes_style( 'international' );
+    	$this->assertSame( $input, $typo->process( $input ) );
+    }
+
+    /**
+     * @covers ::dash_spacing
+     *
+     * @dataProvider provide_dash_spacing_off_data
+     */
+    public function testDash_spacing_off( $input, $result_us, $result_int )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_dashes( true );
+    	$typo->set_dash_spacing( false );
+
+    	$typo->set_smart_dashes_style( 'traditionalUS' );
+    	$this->assertSame( $result_us, $this->clean_html( $typo->process( $input ) ) );
+
+    	$typo->set_smart_dashes_style( 'international' );
+    	$this->assertSame( $result_int, $this->clean_html( $typo->process( $input ) ) );
     }
 
     /**
