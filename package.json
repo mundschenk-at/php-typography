@@ -6,10 +6,11 @@
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-sass": "^0.9.2",
+    "grunt-curl": "^2.2.0",
     "grunt-phpunit": "^0.3.6",
     "grunt-wp-deploy": "^1.1.0",
     "grunt-wp-i18n": "^0.5.3",
-    "load-grunt-tasks": "^3.3.0"
+    "load-grunt-tasks": "^3.4.0"
   },
   "repository": {
     "type": "git",

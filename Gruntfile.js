@@ -83,6 +83,12 @@ module.exports = function(grunt) {
 		                   dest: 'public/css',
 		                   ext: '.css' } ]
             }
+        },
+        curl: {
+        	'update-iana': {
+        		src: 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt',
+        		dest: 'vendor/IANA/tlds-alpha-by-domain.txt'
+        	}
         }
 	});
 
