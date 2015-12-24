@@ -1033,11 +1033,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
-		$prev_char = $typo->get_prev_chr( $textnodes->item(0) );
+		$prev_char = $typo->get_prev_chr( $textnodes->item( 0 ) );
 		$this->assertSame( 'A', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one
-		$prev_char = $typo->get_prev_chr( $textnodes->item(0) );
+		$prev_char = $typo->get_prev_chr( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
     }
 
@@ -1055,11 +1055,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
-    	$prev_char = $typo->get_next_chr( $textnodes->item(0) );
+    	$prev_char = $typo->get_next_chr( $textnodes->item( 0 ) );
     	$this->assertSame( 'n', $prev_char );
 
     	$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one
-    	$prev_char = $typo->get_next_chr( $textnodes->item(0) );
+    	$prev_char = $typo->get_next_chr( $textnodes->item( 0 ) );
     	$this->assertSame( '', $prev_char );
     }
 
@@ -1076,19 +1076,19 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
-    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'A', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one
-    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'A', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one
-    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'new hope.', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//p" ); // really only one
-		$node = $typo->get_first_textnode( $textnodes->item(0) );
+		$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'A', $node->nodeValue );
     }
 
@@ -1100,8 +1100,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo = $this->typo;
     	$typo->process('');
 
+    	// passing null returns null
 		$this->assertNull( $typo->get_first_textnode( null ) );
+
+		// passing a DOMNode that is not a DOMElement or a DOMText returns null as well
+		$this->assertNull( $typo->get_first_textnode( new DOMDocument() ) );
     }
+
+    /**
+     * @covers ::get_first_textnode
+     */
+    public function testGet_first_textnode_only_block_level()
+    {
+       	$typo = $this->typo;
+    	$typo->process('');
+
+    	$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$textnodes = $xpath->query( "//div" ); // really only one
+    	$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
+    	$this->assertNull( $node );
+    }
+
 
     /**
      * @covers ::get_last_textnode
@@ -1116,19 +1138,19 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
-    	$node = $typo->get_last_textnode( $textnodes->item(0) );
+    	$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'A', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one
-    	$node = $typo->get_last_textnode( $textnodes->item(0) );
+    	$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'A', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one
-    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( 'new hope.', $node->nodeValue );
 
     	$textnodes = $xpath->query( "//p" ); // really only one
-		$node = $typo->get_last_textnode( $textnodes->item(0) );
+		$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
     	$this->assertSame( ' Really.', $node->nodeValue );
     }
 
@@ -1140,7 +1162,28 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo = $this->typo;
     	$typo->process('');
 
-		$this->assertNull( $typo->get_last_textnode( null ) );
+    	// passing null returns null
+    	$this->assertNull( $typo->get_last_textnode( null ) );
+
+    	// passing a DOMNode that is not a DOMElement or a DOMText returns null as well
+		$this->assertNull( $typo->get_last_textnode( new DOMDocument() ) );
+    }
+
+    /**
+     * @covers ::get_last_textnode
+     */
+    public function testGet_last_textnode_only_block_level()
+    {
+    	$typo = $this->typo;
+    	$typo->process('');
+
+    	$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$textnodes = $xpath->query( "//div" ); // really only one
+    	$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
+    	$this->assertNull( $node );
     }
 
     /**
