@@ -2013,6 +2013,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::init
      * @covers ::initialize_components
+     * @covers ::get_top_level_domains_from_file
      * @covers ::initialize_patterns
      * @covers ::set_defaults
      */
