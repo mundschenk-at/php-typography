@@ -1187,8 +1187,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_quotes
-     * @todo   Implement testSmart_quotes().
+     * @covers ::smart_quotes
      */
     public function testSmart_quotes()
     {
@@ -1203,6 +1202,19 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 						   $this->clean_html( $typo->process( '<span>"Double", \'single\'</span>' ) ) );
 		$this->assertSame( "<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>",
 						   $this->clean_html( $typo->process('<p>"<em>This is nuts.</em>"</p>') ) );
+    }
+
+    /**
+     * @covers ::smart_quotes
+     */
+    public function testSmart_quotes_off()
+    {
+    	$typo = $this->typo;
+       	$typo->set_smart_quotes( false );
+
+       	$html = '<p>"<em>This is nuts.</em>"</p>';
+
+    	$this->assertSame( $html, $typo->process( '<p>"<em>This is nuts.</em>"</p>') );
     }
 
     /**
@@ -1253,7 +1265,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_diacritics
+     * @covers ::smart_diacritics
      */
     public function testSmart_diacritics()
     {
@@ -1263,6 +1275,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertSame( $this->clean_html('<p>crème brûlée</p>'),
 						   $this->clean_html( $this->typo->process('<p>creme brulee</p>') ) );
     }
+
+    /**
+     * @covers ::smart_diacritics
+     */
+    public function testSmart_diacritics_off()
+    {
+    	$this->typo->set_smart_diacritics( false );
+    	$this->typo->set_diacritic_language( 'en-US' );
+
+    	$html = '<p>creme brulee</p>';
+
+    	$this->assertSame( $html, $this->typo->process( $html ) );
+    }
+
 
     /**
      * @covers \PHP_Typography\PHP_Typography::translate_words
@@ -1289,34 +1315,59 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_math
-     * @covers \PHP_Typography\PHP_Typography::_smart_math_callback
+     * Data provider for smarth_math test.
      */
-    public function testSmart_math()
+    public function provide_smart_math_data() {
+    	return array(
+    		array( 'xx 7&minus;3=4 xx',              'xx 7-3=4 xx',      true ),
+    		array( 'xx 3&times;3=5&divide;2 xx',     'xx 3*3=5/2 xx',    true ),
+    		array( 'xx 0815-4711 xx',                'xx 0815-4711 xx',  true ),
+    		array( 'xx 1/2 xx',                      'xx 1/2 xx',        true ),
+    		array( 'xx 2001-13-12 xx',               'xx 2001-13-12 xx', false ), // not a valid date
+    		array( 'xx 2001-12-13 xx',               'xx 2001-12-13 xx', true ),
+    		array( 'xx 2001-13-13 xx',               'xx 2001-13-13 xx', false ), // not a valid date
+    		array( 'xx 13-12-2002 xx',               'xx 13-12-2002 xx', true ),
+    		array( 'xx 12-13-2002 xx',               'xx 12-13-2002 xx', true ),
+    		array( 'xx 13-13-2002 xx',               'xx 13-13-2002 xx', false ), // not a valid date
+    		array( 'xx 2001-12 xx',                  'xx 2001-12 xx',    true ),
+    		array( 'xx 2001-13 xx',                  'xx 2001-13 xx',    true ), // apparently a valid day count
+    		array( 'xx 2001-100 xx',                 'xx 2001-100 xx',   true ),
+    		array( 'xx 12/13/2010 xx',               'xx 12/13/2010 xx', true ),
+    		array( 'xx 13/12/2010 xx',               'xx 13/12/2010 xx', true ),
+    		array( 'xx 13&divide;13&divide;2010 xx', 'xx 13/13/2010 xx', true ), // not a valid date
+
+    	);
+    }
+
+    /**
+     * @covers ::smart_math
+     * @covers ::_smart_math_callback
+     *
+     * @dataProvider provide_smart_math_data
+     */
+    public function testSmart_math( $result, $input, $same )
     {
     	$typo = $this->typo;
-
 		$typo->set_smart_math( true );
 
-		// standard equations
-		$this->assertSame( 'xx 7&minus;3=4 xx', $this->clean_html( $typo->process('xx 7-3=4 xx') ) );
-		$this->assertSame( 'xx 3&times;3=5&divide;2 xx', $this->clean_html( $typo->process('xx 3*3=5/2 xx') ) );
+		if ( $same ) {
+			$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+		} else {
+			$this->assertNotSame( $result, $this->clean_html( $typo->process( $input ) ) );
+		}
+    }
 
-		// some changes should be reversed (not all)
-		$this->assertSame( 'xx 0815-4711 xx', $typo->process( 'xx 0815-4711 xx' ) );
- 		$this->assertSame( 'xx 1/2 xx', $typo->process( 'xx 1/2 xx') );
-		$this->assertNotSame( 'xx 2001-13-12 xx', $typo->process( 'xx 2001-13-12 xx' ) ); // not a valid date
-		$this->assertSame( 'xx 2001-12-13 xx', $typo->process('xx 2001-12-13 xx') );
-		$this->assertNotSame( 'xx 2001-13-13 xx', $typo->process('xx 2001-13-13 xx') ); // not a valid date
-		$this->assertSame( 'xx 13-12-2002 xx', $typo->process('xx 13-12-2002 xx') );
-		$this->assertSame( 'xx 12-13-2002 xx', $typo->process('xx 12-13-2002 xx') );
-		$this->assertNotSame( 'xx 13-13-2002 xx', $typo->process('xx 13-13-2002 xx') ); // not a valid date
-		$this->assertSame( 'xx 2001-12 xx', $typo->process('xx 2001-12 xx') );
-		$this->assertSame( 'xx 2001-13 xx', $typo->process('xx 2001-13 xx') ); // apparently a valid day count
-		$this->assertSame( 'xx 2001-100 xx', $typo->process('xx 2001-100 xx') );
-		$this->assertSame( 'xx 12/13/2010 xx', $typo->process('xx 12/13/2010 xx') );
-		$this->assertSame( 'xx 13/12/2010 xx', $typo->process('xx 13/12/2010 xx') );
-		$this->assertSame( 'xx 13&divide;13&divide;2010 xx', $this->clean_html( $typo->process('xx 13/13/2010 xx') ) ); // not a valid date
+    /**
+     * @covers ::smart_math
+     *
+     * @dataProvider provide_smart_math_data
+     */
+    public function testSmart_math_off( $result, $input, $same )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_math( false );
+
+   		$this->assertSame( $input, $typo->process( $input ) );
     }
 
     /**
