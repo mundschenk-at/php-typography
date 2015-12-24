@@ -1997,20 +1997,21 @@ class PHP_Typography {
 
 
 	/**
-	 * Retrieve the first \DOMText child of the element.
+	 * Retrieve the first \DOMText child of the element. Block-level child elements are ignored.
 	 *
-	 * @param \DOMNode $element
+	 * @param \DOMNode $element   Optional. Default null.
+	 * @param boolean  $recursive Should be set to true on recursive calls. Optional. Default false.
 	 *
-	 * @return \DOMNode The first child of tpye \DOMText, the element itself if it is of type \DOMText or null.
+	 * @return \DOMNode The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	function get_first_textnode( \DOMNode $element = null ) {
+	function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
 
 		if ( $element instanceof \DOMText ) {
 			return $element;
-		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
+		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
@@ -2021,7 +2022,7 @@ class PHP_Typography {
 			$i = 0;
 
 			while ( $i < $children->length && empty( $first_textnode ) ) {
-				$first_textnode = $this->get_first_textnode( $children->item( $i ) );
+				$first_textnode = $this->get_first_textnode( $children->item( $i ), true );
 				$i++;
 			}
 		}
@@ -2031,13 +2032,14 @@ class PHP_Typography {
 
 
 	/**
-	 * Retrieve the last \DOMText child of the element.
+	 * Retrieve the last \DOMText child of the element. Block-level child elements are ignored.
 	 *
-	 * @param \DOMNode $element
+	 * @param \DOMNode $element   Optional. Default null.
+	 * @param boolean  $recursive Should be set to true on recursive calls. Optional. Default false.
 	 *
 	 * @return \DOMNode The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	function get_last_textnode( \DOMNode $element = null ) {
+	function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -2046,7 +2048,7 @@ class PHP_Typography {
 			return $element;
 		} elseif ( ! $element instanceof \DOMElement ) {
 			return null;
-		} elseif ( isset( $this->block_tags[ $element->tagName ] ) ) {
+		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
@@ -2055,7 +2057,7 @@ class PHP_Typography {
 		$i = $children->length - 1;
 
 		while ( $i >= 0 && empty( $last_textnode ) ) {
-			$last_textnode = $this->get_last_textnode( $children->item( $i ) );
+			$last_textnode = $this->get_last_textnode( $children->item( $i ), true );
 			$i--;
 		}
 
