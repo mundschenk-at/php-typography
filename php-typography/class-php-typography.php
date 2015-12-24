@@ -1905,7 +1905,7 @@ class PHP_Typography {
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
 				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, - 1 ) );
 			}
-		}
+		} // @codeCoverageIgnore
 
 		return '';
 	}
@@ -1928,7 +1928,7 @@ class PHP_Typography {
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
 				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
 			}
-		}
+		} // @codeCoverageIgnore
 
 		return '';
 	}
