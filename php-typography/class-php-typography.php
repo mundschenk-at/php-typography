@@ -161,6 +161,10 @@ class PHP_Typography {
 		// ASCII has to be first to have chance at detection
 		mb_detect_order( $this->encodings );
 
+		// not sure if this is necessary - but error_log seems to have problems with the strings.
+		// used as the default encoding for mb_* functions
+		$encoding_set = mb_internal_encoding('UTF-8');
+
 		if ( 'now' === $init ) {
 			$this->init( $set_defaults );
 		}
@@ -225,10 +229,6 @@ class PHP_Typography {
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	function init( $set_defaults = true ) {
-		// not sure if this is necessary - but error_log seems to have problems with the strings.
-		// used as the default encoding for mb_* functions
-		$encoding_set = mb_internal_encoding('UTF-8');
-
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
 										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
 
