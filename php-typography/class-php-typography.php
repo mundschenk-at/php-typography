@@ -233,7 +233,7 @@ class PHP_Typography {
 										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
 
 		$this->chr['noBreakSpace']            = uchr(160);
-		$this->chr['noBreakNarrowSpace']      = uchr(160);  // should be 8239, but not supported consistently, used in unit spacing
+		$this->chr['noBreakNarrowSpace']      = uchr(8239);  // used in unit spacing
 		$this->chr['copyright']               = uchr(169);
 		$this->chr['guillemetOpen']           = uchr(171);
 		$this->chr['softHyphen']              = uchr(173);
