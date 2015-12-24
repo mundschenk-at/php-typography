@@ -804,27 +804,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function testSet_hyphenation_language()
     {
-		$this->typo->set_hyphenation_language( 'en-US' );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternExceptions'] ) );
+    	$typo = $this->typo;
+    	$typo->settings['hyphenationExceptions'] = array(); // necessary for full coverage
 
-		$this->typo->set_hyphenation_language( 'foobar' );
-		$this->assertFalse( isset( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertFalse( isset( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
-		$this->assertFalse( isset( $this->typo->settings['hyphenationPatternExceptions'] ) );
+		$typo->set_hyphenation_language( 'en-US' );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPatternMaxSegment'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPatternExceptions'] ) );
 
-		$this->typo->set_hyphenation_language( 'no' );
-		$this->assertTrue( isset( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
-		$this->assertNotEmpty( $this->typo->settings['hyphenationPatternExceptions'] ); // Norwegian has exceptions
+		$typo->set_hyphenation_language( 'foobar' );
+		$this->assertFalse( isset( $typo->settings['hyphenationPattern'] ) );
+		$this->assertFalse( isset( $typo->settings['hyphenationPatternMaxSegment'] ) );
+		$this->assertFalse( isset( $typo->settings['hyphenationPatternExceptions'] ) );
 
-		$this->typo->set_hyphenation_language( 'de' );
-		$this->assertTrue( isset( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPattern'] ) );
-		$this->assertGreaterThan( 0, count( $this->typo->settings['hyphenationPatternMaxSegment'] ) );
-		$this->assertEmpty( $this->typo->settings['hyphenationPatternExceptions'] ); // no exceptions in the German pattern file
+		$typo->set_hyphenation_language( 'no' );
+		$this->assertTrue( isset( $typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPatternMaxSegment'] ) );
+		$this->assertNotEmpty( $typo->settings['hyphenationPatternExceptions'] ); // Norwegian has exceptions
+
+		$typo->set_hyphenation_language( 'de' );
+		$this->assertTrue( isset( $typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPattern'] ) );
+		$this->assertGreaterThan( 0, count( $typo->settings['hyphenationPatternMaxSegment'] ) );
+		$this->assertEmpty( $typo->settings['hyphenationPatternExceptions'] ); // no exceptions in the German pattern file
     }
 
     /**
