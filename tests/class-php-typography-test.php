@@ -931,6 +931,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testSet_hyphenation_exceptions_array()
     {
 		$typo = $this->typo;
+		$typo->settings['hyphenationExceptions'] = array(); // necessary for full coverage
 		$exceptions = array( "Hu-go", "Fö-ba-ß" );
 
 		$typo->set_hyphenation_exceptions( $exceptions );
@@ -938,6 +939,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $typo->settings['hyphenationCustomExceptions'] );
 		$this->assertArraySubset( array( 'föbaß' => 'fö-ba-ß' ), $typo->settings['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
+    }
+
+    /**
+     * @covers \PHP_Typography\PHP_Typography::set_hyphenation_exceptions
+     */
+    public function testSet_hyphenation_exceptions_unknown_encoding()
+    {
+    	$typo = $this->typo;
+    	$typo->settings['hyphenationExceptions'] = array(); // necessary for full coverage
+    	$exceptions = array( "Hu-go", mb_convert_encoding( "Fö-ba-ß" , 'ISO-8859-2' ) );
+
+    	$typo->set_hyphenation_exceptions( $exceptions );
+    	$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertArrayNotHasKey( 'föbaß', $typo->settings['hyphenationCustomExceptions'] );
+    	$this->assertCount( 1, $typo->settings['hyphenationCustomExceptions'] );
     }
 
     /**
