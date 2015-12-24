@@ -1700,15 +1700,26 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::style_caps
-     * @todo   Implement testStyle_caps().
+     * @covers ::style_caps
      */
     public function testStyle_caps()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_style_caps( true );
+
+    	$this->assertSame( 'foo <span class="caps">FUBAR</span> bar', $this->clean_html( $typo->process( 'foo FUBAR bar' ) ) );
+    }
+
+
+    /**
+     * @covers ::style_caps
+     */
+    public function testStyle_caps_off()
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_caps( false );
+
+    	$this->assertSame( 'foo FUBAR bar', $this->clean_html( $typo->process( 'foo FUBAR bar' ) ) );
     }
 
     /**
@@ -1724,28 +1735,49 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::style_numbers
-     * @todo   Implement testStyle_numbers().
+     * @covers ::style_numbers
      */
     public function testStyle_numbers()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_style_numbers( true );
+
+    	$this->assertSame( 'foo <span class="numbers">123</span> bar', $this->clean_html( $typo->process( 'foo 123 bar' ) ) );
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::style_ampersands
-     * @todo   Implement testStyle_ampersands().
+     * @covers ::style_numbers
+     */
+    public function testStyle_numbers_off()
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_numbers( false );
+
+    	$this->assertSame( 'foo 123 bar', $this->clean_html( $typo->process( 'foo 123 bar' ) ) );
+    }
+
+    /**
+     * @covers ::style_ampersands
      */
     public function testStyle_ampersands()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_style_ampersands( true );
+
+    	$this->assertSame( 'foo <span class="amp">&amp;</span> bar', $this->clean_html( $typo->process( 'foo & bar' ) ) );
     }
+
+    /**
+     * @covers ::style_ampersands
+     */
+    public function testStyle_ampersands_off()
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_ampersands( false );
+
+    	$this->assertSame( 'foo &amp; bar', $this->clean_html( $typo->process( 'foo & bar' ) ) );
+    }
+
 
     /**
      * @covers \PHP_Typography\PHP_Typography::style_initial_quotes
