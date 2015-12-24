@@ -1042,6 +1042,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::get_previous_textnode
+     */
+    public function testGet_previous_textnode_null() {
+    	$typo = $this->typo;
+    	$typo->process('');
+
+    	$node = $typo->get_previous_textnode( null );
+    	$this->assertNull( $node );
+    }
+
+    /**
      * @covers ::get_next_chr
      * @covers ::get_next_textnode
      */
@@ -1061,6 +1072,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one
     	$prev_char = $typo->get_next_chr( $textnodes->item( 0 ) );
     	$this->assertSame( '', $prev_char );
+    }
+
+    /**
+     * @covers ::get_next_textnode
+     */
+    public function testGet_next_textnode_null() {
+    	$typo = $this->typo;
+    	$typo->process('');
+
+    	$node = $typo->get_next_textnode( null );
+    	$this->assertNull( $node );
     }
 
     /**
@@ -1218,38 +1240,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_dashes
+     * @covers ::smart_dashes
+     * @covers ::dash_spacing
+     *
+     * @dataProvider provide_smart_dashes_data
      */
-    public function testSmart_dashes()
+    public function testSmart_dashes_with_dash_spacing_off( $input, $result_us, $result_int )
     {
 		$typo = $this->typo;
 		$typo->set_smart_dashes( true );
-
-		$html_none = 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04';
-		$result_none = $html_none;
-
-		$html_dashed       = 'Ein - mehr oder weniger - guter Gedanke, 1908-2008';
-		$result_dashed     = 'Ein &mdash; mehr oder weniger &mdash; guter Gedanke, 1908&ndash;2008';
-		$result_dashed_int = 'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&ndash;2008';
-
-		$html_emdashed   = "We just don't know --- really---, but you know, --";
-		$result_emdashed = "We just don't know &mdash; really&mdash;, but you know, &ndash;";
-
-		$html_special        = "Here we are now&nbsp;-- we're&thinsp;-&thinsp;";
-		$result_special      = "Here we are now&nbsp;&mdash; we're&thinsp;&mdash;&thinsp;";
-		$result_special_int  = "Here we are now&nbsp;&ndash; we're&thinsp;&ndash;&thinsp;";
+		$typo->set_dash_spacing( false );
 
 		$typo->set_smart_dashes_style( 'traditionalUS' );
-		$this->assertSame( $result_none, $typo->process( $html_none ) );
-		$this->assertSame( $result_dashed, $this->clean_html( $typo->process( $html_dashed ) ) );
-		$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
-		$this->assertSame( $result_special, $this->clean_html( $typo->process( $html_special ) ) );
+		$this->assertSame( $result_us, $this->clean_html( $typo->process( $input ) ) );
 
 		$typo->set_smart_dashes_style( 'international' );
-		$this->assertSame( $result_none, $typo->process( $html_none ) );
-		$this->assertSame( $result_dashed_int, $this->clean_html( $typo->process( $html_dashed ) ) );
-		$this->assertSame( $result_emdashed, $this->clean_html( $typo->process( $html_emdashed ) ) );
-		$this->assertSame( $result_special_int, $this->clean_html( $typo->process( $html_special ) ) );
+		$this->assertSame( $result_int, $this->clean_html( $typo->process( $input ) ) );
     }
 
     /**
@@ -1436,7 +1442,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	);
     }
 
-    public function provide_dash_spacing_off_data() {
+    public function provide_smart_dashes_data() {
     	return array(
     		array( 'Ein - mehr oder weniger - guter Gedanke, 1908-2008',
     			   'Ein &mdash; mehr oder weniger &mdash; guter Gedanke, 1908&ndash;2008',
@@ -1487,24 +1493,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$typo->set_smart_dashes_style( 'international' );
     	$this->assertSame( $input, $typo->process( $input ) );
-    }
-
-    /**
-     * @covers ::dash_spacing
-     *
-     * @dataProvider provide_dash_spacing_off_data
-     */
-    public function testDash_spacing_off( $input, $result_us, $result_int )
-    {
-    	$typo = $this->typo;
-    	$typo->set_smart_dashes( true );
-    	$typo->set_dash_spacing( false );
-
-    	$typo->set_smart_dashes_style( 'traditionalUS' );
-    	$this->assertSame( $result_us, $this->clean_html( $typo->process( $input ) ) );
-
-    	$typo->set_smart_dashes_style( 'international' );
-    	$this->assertSame( $result_int, $this->clean_html( $typo->process( $input ) ) );
     }
 
     /**
