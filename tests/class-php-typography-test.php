@@ -1064,8 +1064,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_first_textnode
-     * @todo   Implement testGet_first_textnode().
+     * @covers ::get_first_textnode
      */
     public function testGet_first_textnode()
     {
@@ -1084,11 +1083,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$node = $typo->get_first_textnode( $textnodes->item(0) );
     	$this->assertSame( 'A', $node->nodeValue );
 
+    	$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one
+    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'new hope.', $node->nodeValue );
+
     	$textnodes = $xpath->query( "//p" ); // really only one
 		$node = $typo->get_first_textnode( $textnodes->item(0) );
-		$this->assertNull( $node );
-
-    	$this->assertTrue(false);
+    	$this->assertSame( 'A', $node->nodeValue );
     }
 
     /**
@@ -1103,15 +1104,32 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_last_textnode
-     * @todo   Implement testGet_last_textnode().
+     * @covers ::get_last_textnode
      */
     public function testGet_last_textnode()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->process('');
+
+    	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
+    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
+    	$node = $typo->get_last_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'A', $node->nodeValue );
+
+    	$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one
+    	$node = $typo->get_last_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'A', $node->nodeValue );
+
+    	$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one
+    	$node = $typo->get_first_textnode( $textnodes->item(0) );
+    	$this->assertSame( 'new hope.', $node->nodeValue );
+
+    	$textnodes = $xpath->query( "//p" ); // really only one
+		$node = $typo->get_last_textnode( $textnodes->item(0) );
+    	$this->assertSame( ' Really.', $node->nodeValue );
     }
 
     /**
@@ -1134,10 +1152,14 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		//$html = '<p><em>"I\'m pretty sure,"</em> she said, & "He said \'We are <em>family</em>\'".</p>';
 		//$expected = '<p><em>&ldquo;';
 
-    	$this->typo->set_smart_quotes( true );
+    	$typo = $this->typo;
+
+    	$typo->set_smart_quotes( true );
 
 		$this->assertSame( "<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>",
-						   $this->clean_html( $this->typo->process( '<span>"Double", \'single\'</span>' ) ) );
+						   $this->clean_html( $typo->process( '<span>"Double", \'single\'</span>' ) ) );
+		$this->assertSame( "<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>",
+						   $this->clean_html( $typo->process('<p>"<em>This is nuts.</em>"</p>') ) );
     }
 
     /**
