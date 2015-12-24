@@ -1259,6 +1259,24 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::smart_dashes
+     *
+     * @dataProvider provide_smart_dashes_data
+     */
+    public function testSmart_dashes_off( $input, $result_us, $result_int )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_dashes( false );
+    	$typo->set_dash_spacing( false );
+
+    	$typo->set_smart_dashes_style( 'traditionalUS' );
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+
+    	$typo->set_smart_dashes_style( 'international' );
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
      * @covers \PHP_Typography\PHP_Typography::smart_ellipses
      * @todo   Implement testSmart_ellipses().
      */
@@ -1388,23 +1406,65 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function provide_smart_fractions_data() {
+    	return array(
+    		array(
+    			'1/2 3/300 999/1000',
+    			'<sup>1</sup>&frasl;<sub>2</sub> <sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
+    			'<sup>1</sup>&frasl;<sub>2</sub>&#8239;<sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
+    		),
+    		array(
+    			'1/2 4/2015 1999/2000 999/1000',
+    			'<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>',
+    			'<sup>1</sup>&frasl;<sub>2</sub>&#8239;4/2015 1999/2000&#8239;<sup>999</sup>&frasl;<sub>1000</sub>',
+    		),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_fractions
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_data
      */
-    public function testSmart_fractions()
+    public function testSmart_fractions( $input, $result, $result_spacing )
     {
 		$typo = $this->typo;
-		$typo->set_smart_fractions( true);
+		$typo->set_smart_fractions( true );
 
-		$origin_one = '1/2 3/300 999/1000';
-		$result_one = '<sup>1</sup>&frasl;<sub>2</sub> <sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>';
-		$this->assertSame( $result_one, $this->clean_html( $typo->process( $origin_one ) ) );
+		$typo->set_fraction_spacing( false );
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
 
-		$origin_two = '1/2 4/2015 1999/2000 999/1000';
-		$result_two = '<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>';
-		$this->assertSame( $result_two, $this->clean_html( $typo->process( $origin_two ) ) );
-
+		$typo->set_fraction_spacing( true );
+		$this->assertSame( $result_spacing, $this->clean_html( $typo->process( $input ) ) );
     }
+
+    public function provide_fraction_spacing_data() {
+    	return array(
+    		array(
+    			'1/2 3/300 999/1000',
+    			'1/2&nbsp;3/300 999/1000',
+    		),
+    		array(
+    			'1/2 4/2015 1999/2000 999/1000',
+    			'1/2&nbsp;4/2015 1999/2000&nbsp;999/1000',
+    		),
+    	);
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_fraction_spacing_data
+     */
+    public function testSmart_fractions_only_spacing( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_fractions( false );
+    	$typo->set_fraction_spacing( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
 
     /**
      * @covers \PHP_Typography\PHP_Typography::smart_ordinal_suffix
