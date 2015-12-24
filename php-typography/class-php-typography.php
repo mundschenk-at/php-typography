@@ -2011,6 +2011,9 @@ class PHP_Typography {
 
 		if ( $element instanceof \DOMText ) {
 			return $element;
+		} elseif ( ! $element instanceof \DOMElement ) {
+			// return null if $element is neither \DOMText nor \DOMElement
+			return null;
 		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
@@ -2047,18 +2050,22 @@ class PHP_Typography {
 		if ( $element instanceof \DOMText ) {
 			return $element;
 		} elseif ( ! $element instanceof \DOMElement ) {
+			// return null if $element is neither \DOMText nor \DOMElement
 			return null;
 		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
 		$last_textnode = null;
-		$children = $element->childNodes;
-		$i = $children->length - 1;
 
-		while ( $i >= 0 && empty( $last_textnode ) ) {
-			$last_textnode = $this->get_last_textnode( $children->item( $i ), true );
-			$i--;
+		if ( $element->hasChildNodes() ) {
+			$children = $element->childNodes;
+			$i = $children->length - 1;
+
+			while ( $i >= 0 && empty( $last_textnode ) ) {
+				$last_textnode = $this->get_last_textnode( $children->item( $i ), true );
+				$i--;
+			}
 		}
 
 		return $last_textnode;
