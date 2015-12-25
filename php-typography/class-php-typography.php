@@ -34,12 +34,12 @@ namespace PHP_Typography;
 /**
  * A few utility functions.
  */
-require_once __DIR__ . '/php-typography-functions.php';
+require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
 
 /**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
-require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';
+require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php'; // @codeCoverageIgnore
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
