@@ -524,7 +524,8 @@ class PHP_Typography {
 		\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 
-		$this->components['hyphens'] = array_unique( array( '-', $this->chr['hyphen'] ) );
+		$this->components['hyphensArray'] = array_unique( array( '-', $this->chr['hyphen'] ) );
+		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
 
 		/*
 		 // \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
@@ -983,6 +984,9 @@ class PHP_Typography {
 
 		$this->regex['unitSpacingEscapeSpecialChars'] = "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#";
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
+
+		// wrap_hard_hyphens
+		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";
 
 		// wrap_emails
         $this->regex['wrapEmailsMatchEmails']   = "/{$this->components['wrapEmailsEmailPattern']}/xi";
@@ -2433,9 +2437,11 @@ class PHP_Typography {
 			foreach ( $parsed_text_tokens as &$text_token ) {
 
 				if ( isset( $this->settings['hyphenHardWrap'] ) && $this->settings['hyphenHardWrap'] ) {
-					$text_token['value'] = str_replace( $this->components['hyphens'], '-' . $this->chr['zeroWidthSpace'], $text_token['value'] );
+					$text_token['value'] = str_replace( $this->components['hyphensArray'], '-' . $this->chr['zeroWidthSpace'], $text_token['value'] );
 					$text_token['value'] = str_replace( '_', '_' . $this->chr['zeroWidthSpace'], $text_token['value'] );
 					$text_token['value'] = str_replace( '/', '/' . $this->chr['zeroWidthSpace'], $text_token['value'] );
+
+					$text_token['value'] = preg_replace( $this->regex['wrapHardHyphensRemoveEndingSpace'], '$1', $text_token['value'] );
 				}
 
 				if ( ! empty( $this->settings['smartDashes'] ) ) {
