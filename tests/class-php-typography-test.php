@@ -1693,6 +1693,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function provide_wrap_hard_hyphens_data() {
     	return array(
 			array( 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ),
+    		array( 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-' ),
+
     	);
     }
 
