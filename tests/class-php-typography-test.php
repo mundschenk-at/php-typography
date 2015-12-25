@@ -51,6 +51,37 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Helper function to generate a valid token list from strings.
+     *
+     * @param string $value
+     * @param string $type Optional. Default 'word'.
+     *
+     * @return array
+     */
+    protected function tokenize( $value, $type = 'word' ) {
+    	return array(
+    		array(
+	    		'type'  => $type,
+	    		'value' => $value
+    		)
+    	);
+    }
+
+    /**
+     *
+     * @param string $expected_value
+     * @param array $actual_tokens
+     * @param string $message
+     */
+    protected function assertTokenSame( $expected_value, $actual_tokens, $message = '' ) {
+    	foreach ( $actual_tokens as &$actual ) {
+    		$actual['value'] = $this->clean_html( $actual['value'] );
+    	}
+
+    	return $this->assertSame( $this->tokenize( $expected_value ) , $actual_tokens, $message );
+    }
+
+    /**
      * @covers \PHP_Typography\PHP_Typography::set_defaults
      * @todo   Implement testSet_defaults().
      */
@@ -1659,16 +1690,39 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function provide_wrap_hard_hyphens_data() {
+    	return array(
+			array( 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::wrap_hard_hyphens
-     * @todo   Implement testWrap_hard_hyphens().
+     * @covers ::wrap_hard_hyphens
+     *
+     * @dataProvider provide_wrap_hard_hyphens_data
      */
-    public function testWrap_hard_hyphens()
+    public function testWrap_hard_hyphens( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$typo = $this->typo;
+		$typo->process( '' );
+		$typo->set_wrap_hard_hyphens( true );
+
+		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
+
+    }
+
+    /**
+     * @covers ::wrap_hard_hyphens
+     *
+     * @dataProvider provide_wrap_hard_hyphens_data
+     */
+    public function testWrap_hard_hyphens_off( $input, $result )
+    {
+		$typo = $this->typo;
+		$typo->process( '' );
+		$typo->set_wrap_hard_hyphens( false );
+
+		$this->assertTokenSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
     }
 
     /**
@@ -1901,11 +1955,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
 
-    	$tokens = array( array( 'value' => mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) ) );
+    	$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
     	$hyphenated  = $this->typo->do_hyphenate( $tokens );
 	   	$this->assertEquals( $hyphenated, $tokens );
 
-	   	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+	   	$tokens = $this->tokenize( 'Änderungsmeldung' );
 	   	$hyphenated  = $this->typo->do_hyphenate( $tokens );
 	   	$this->assertNotEquals( $hyphenated, $tokens );
     }
@@ -1924,7 +1978,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( false ); // added in version 1.5
 
-    	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+    	$tokens = $this->tokenize( 'Änderungsmeldung' );
     	$hyphenated  = $this->typo->do_hyphenate( $tokens );
     	$this->assertEquals( $tokens, $hyphenated);
     }
@@ -1945,7 +1999,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$this->typo->settings['hyphenMinBefore'] = 0; // invalid value
 
-    	$tokens = array( array( 'value' => 'Änderungsmeldung' ) );
+    	$tokens = $this->tokenize( 'Änderungsmeldung' );
     	$hyphenated  = $this->typo->do_hyphenate( $tokens );
     	$this->assertEquals( $tokens, $hyphenated);
     }
