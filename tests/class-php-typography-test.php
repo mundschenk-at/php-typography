@@ -1666,16 +1666,38 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $typo->process( $input ) );
     }
 
+    public function provide_space_collapse_data() {
+    	return array(
+    		array( 'A  new hope&nbsp;  arises.', 'A new hope&nbsp;arises.' ),
+    		array( 'A &thinsp;new hope &nbsp;  arises.', 'A&thinsp;new hope&nbsp;arises.' ),
+    		array( '<p>  &nbsp;A  new hope&nbsp;  arises.</p>', '<p>A new hope&nbsp;arises.</p>' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::space_collapse
-     * @todo   Implement testSpace_collapse().
+     * @covers ::space_collapse
+     *
+     * @dataProvider provide_space_collapse_data
      */
-    public function testSpace_collapse()
+    public function testSpace_collapse( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+	    $typo = $this->typo;
+	    $typo->set_space_collapse( true );
+
+	    $this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::space_collapse
+     *
+     * @dataProvider provide_space_collapse_data
+     */
+    public function testSpace_collapse_off( $input, $result )
+    {
+	    $typo = $this->typo;
+	    $typo->set_space_collapse( false );
+
+	    $this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
     /**
@@ -1710,6 +1732,22 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo->set_wrap_hard_hyphens( true );
 
 		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
+
+    }
+
+    /**
+     * @covers ::wrap_hard_hyphens
+     *
+     * @dataProvider provide_wrap_hard_hyphens_data
+     */
+    public function testWrap_hard_hyphens_with_smart_dashes( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->process( '' );
+    	$typo->set_wrap_hard_hyphens( true );
+    	$typo->set_smart_dashes( true );
+
+    	$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
 
     }
 
