@@ -19,11 +19,17 @@ module.exports = function(grunt) {
 	        }
 	    },
 	    phpunit: {
-	        classes: {
+	        default: {
 	            options: {
 	            	testsuite: 'wpTypography',
 	            }
 	        },
+	        coverage: {
+	            options: {
+	            	testsuite: 'wpTypography',
+	            	coverageHtml: 'tests/coverage/',
+	            }
+	        },   
 	        options: {
 	            colors: true,
 	            configuration: 'phpunit.xml',
@@ -100,7 +106,7 @@ module.exports = function(grunt) {
   	]);
 
   	grunt.registerTask('deploy' ,[
- 	    'phpunit',
+ 	    'phpunit:default',
 //  		'wp_readme_to_markdown',
 		'clean:build',
   		'copy',
@@ -109,7 +115,7 @@ module.exports = function(grunt) {
   	]);
 
 	grunt.registerTask( 'default', [
-	    'phpunit',
+	    'phpunit:default',
 		'makepot',
 		'sass:dev'
     ]);
