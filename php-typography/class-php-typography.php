@@ -474,6 +474,7 @@ class PHP_Typography {
 			|
 			\x{3000}		# ideographic space
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+		$this->components['normalSpaces'] = '[ \f\n\r\t\v]'; // equivalent to \s in non-Unicode mode
 
 		$this->components['unitSpacingStandardUnits'] = '
 			### Temporal units
@@ -977,10 +978,10 @@ class PHP_Typography {
 				)
 			/xu";
 
-		$this->regex['spaceCollapseNormal']       = '/\s+/xu';
-		$this->regex['spaceCollapseNonBreakable'] = "/(?:\s|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:\s|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseOther']        = "/(?:\s)*({$this->components['htmlSpaces']})(?:\s|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseBlockStart']   = "/\A(?:\s|{$this->components['htmlSpaces']})+/xu";
+		$this->regex['spaceCollapseNormal']       = "/{$this->components['normalSpaces']}+/xu";
+		$this->regex['spaceCollapseNonBreakable'] = "/(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*/xu";
+		$this->regex['spaceCollapseOther']        = "/(?:{$this->components['normalSpaces']})*({$this->components['htmlSpaces']})(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*/xu";
+		$this->regex['spaceCollapseBlockStart']   = "/\A(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})+/xu";
 
 		$this->regex['unitSpacingEscapeSpecialChars'] = "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#";
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
