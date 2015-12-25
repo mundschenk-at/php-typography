@@ -524,7 +524,7 @@ class PHP_Typography {
 		\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 
-		$this->components['hyphens'] = array( '-', $this->chr['hyphen'] );
+		$this->components['hyphens'] = array_unique( array( '-', $this->chr['hyphen'] ) );
 
 		/*
 		 // \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
