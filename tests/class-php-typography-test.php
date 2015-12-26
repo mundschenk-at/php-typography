@@ -2220,4 +2220,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $parser1, $parser2 );
     	$this->assertAttributeInstanceOf( '\PHP_Typography\Parse_Text', 'text_parser', $typo );
     }
+
+    /**
+     * @covers ::get_block_parent
+     */
+    public function testGet_block_parent() {
+    	$typo = $this->typo;
+
+    	$html = '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>';
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
+    	$xpath = new DOMXPath( $doc );
+
+    	$outer_div  = $xpath->query( "//*[@id='outer']" )->item( 0 ); // really only one
+    	$paragraph  = $xpath->query( "//*[@id='para']" )->item( 0 );  // really only one
+		$span_foo   = $xpath->query( "//*[@id='foo']" )->item( 0 );   // really only one
+    	$span_bar   = $xpath->query( "//*[@id='bar']" )->item( 0 );   // really only one
+    	$textnode_a = $xpath->query( "//*[@id='para']//text()" )->item( 0 ); // we don't care which one
+    	$textnode_b = $xpath->query( "//*[@id='bar']//text()" )->item( 0 );  // we don't care which one
+    	$textnode_c = $xpath->query( "//*[@id='foo']//text()" )->item( 0 );  // we don't care which one
+
+		$this->assertSame( $paragraph, $typo->get_block_parent( $span_foo ) );
+		$this->assertSame( $paragraph, $typo->get_block_parent( $textnode_a ) );
+		$this->assertSame( $outer_div, $typo->get_block_parent( $paragraph ) );
+		$this->assertSame( $outer_div, $typo->get_block_parent( $span_bar ) );
+		$this->assertSame( $outer_div, $typo->get_block_parent( $textnode_b ) );
+		$this->assertSame( $paragraph, $typo->get_block_parent( $textnode_c ) );
+    }
 }
