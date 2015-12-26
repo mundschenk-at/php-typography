@@ -69,12 +69,12 @@ class PHP_Typography {
 	/**
 	 * A custom parser for \DOMText to separate words, whitespace etc. for HTML injection.
 	 */
-	public $text_parser;
+	private $text_parser;
 
 	/**
 	 * A DOM-based HTML5 parser.
 	 */
-	public $html5_parser;
+	private $html5_parser;
 
 	/**
 	 * An array containing all self-closing HTML5 tags.
@@ -1707,15 +1707,11 @@ class PHP_Typography {
 		}
 
 		// Lazy-load our parsers
-		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( array('disable_html_ns' => true) );
-		}
-		if ( ! isset( $this->text_parser ) ) {
-			$this->text_parser = new Parse_Text( $this->encodings );
-		}
+		$html5_parser = $this->get_html5_parser();
+		$text_parser  = $this->get_text_parser();
 
 		// parse the html
-		$dom = $this->html5_parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom = $html5_parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
 		$xpath = new \DOMXPath( $dom );
 
@@ -1771,11 +1767,11 @@ class PHP_Typography {
 			$this->unit_spacing( $textnode );
 
 			// break it down for a bit more granularity
-			$this->text_parser->load( $textnode->nodeValue );
-			$parsed_mixed_words = $this->text_parser->get_words( 'no-all-letters', 'allow-all-caps' ); // prohibit letter only words, allow caps
-			$parsed_words = $this->text_parser->get_words( 'require-all-letters',  // require letter only words, caps allowance in setting; mutually exclusive with $parsed_mixed_words
+			$text_parser->load( $textnode->nodeValue );
+			$parsed_mixed_words = $text_parser->get_words( 'no-all-letters', 'allow-all-caps' ); // prohibit letter only words, allow caps
+			$parsed_words = $text_parser->get_words( 'require-all-letters',  // require letter only words, caps allowance in setting; mutually exclusive with $parsed_mixed_words
 														   ( ! empty ( $this->settings['hyphenateAllCaps'] ) ) ? 'allow-all-caps' : 'no-all-caps' );
-			$parsed_other = $this->text_parser->get_other();
+			$parsed_other = $text_parser->get_other();
 
 			// process individual text parts here
 			$parsed_mixed_words = $this->wrap_hard_hyphens( $parsed_mixed_words );
@@ -1784,8 +1780,8 @@ class PHP_Typography {
 			$parsed_other = $this->wrap_emails( $parsed_other );
 
 			// apply updates to unlockedText
-			$this->text_parser->update( $parsed_mixed_words + $parsed_words + $parsed_other );
-			$textnode->nodeValue = $this->text_parser->unload();
+			$text_parser->update( $parsed_mixed_words + $parsed_words + $parsed_other );
+			$textnode->nodeValue = $text_parser->unload();
 
 			// some final space manipulation
 			$this->dewidow( $textnode );
@@ -1814,7 +1810,7 @@ class PHP_Typography {
 			$this->set_inner_html( $textnode, $textnode->nodeValue );
 		}
 
-		return $this->html5_parser->saveHTML( $body_node->childNodes );;
+		return $html5_parser->saveHTML( $body_node->childNodes );;
 	}
 
 
@@ -1832,12 +1828,10 @@ class PHP_Typography {
 		}
 
 		// Lazy-load our parser (the text parser is not needed for feeds)
-		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( array( 'disable_html_ns' => true ) );
-		}
+		$html5_parser = $this->get_html5_parser();
 
 		// parse the html
-		$dom = $this->html5_parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom = $html5_parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
 		$xpath = new \DOMXPath( $dom );
 
@@ -1884,7 +1878,7 @@ class PHP_Typography {
 			$this->set_inner_html( $textnode, $textnode->nodeValue );
 		}
 
-		return $this->html5_parser->saveHTML( $body_node->childNodes );;
+		return $html5_parser->saveHTML( $body_node->childNodes );;
 	}
 
 
@@ -2633,7 +2627,7 @@ class PHP_Typography {
 			return $node;
 		}
 
-		$inner_html_fragment = $this->html5_parser->loadHTMLFragment( $content );
+		$inner_html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! isset( $inner_html_fragment ) ) {
 			return $node;
 		}
@@ -2935,6 +2929,34 @@ class PHP_Typography {
 	 */
 	public function get_settings_hash( $max_length = 8 ) {
 		return substr( md5( json_encode( $this->settings ), true ), 0, $max_length );
+	}
+
+	/**
+	 * Retrieve the HTML5 parser instance.
+	 *
+	 * @return \Mastermind\HTML5
+	 */
+	public function get_html5_parser() {
+		// Lazy-load HTML5 parser
+		if ( ! isset( $this->html5_parser ) ) {
+			$this->html5_parser = new \Masterminds\HTML5( array( 'disable_html_ns' => true ) );
+		}
+
+		return $this->html5_parser;
+	}
+
+	/**
+	 * Retrieve the text parser instance.
+	 *
+	 * @return \PHP_Typography\Parse_Text
+	 */
+	public function get_text_parser() {
+		// Lazy-load text parser
+		if ( ! isset( $this->text_parser ) ) {
+			$this->text_parser = new Parse_Text( $this->encodings );
+		}
+
+		return $this->text_parser;
 	}
 
 	/**

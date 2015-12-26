@@ -1077,10 +1077,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_prev_chr()
     {
     	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
@@ -1110,10 +1109,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_next_chr()
     {
     	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
@@ -1142,10 +1140,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_first_textnode()
     {
     	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
@@ -1186,10 +1183,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_first_textnode_only_block_level()
     {
        	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//div" ); // really only one
@@ -1204,10 +1200,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_last_textnode()
     {
     	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one
@@ -1248,10 +1243,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function testGet_last_textnode_only_block_level()
     {
     	$typo = $this->typo;
-    	$typo->process('');
 
     	$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-    	$doc = $typo->html5_parser->loadHTML( $html );
+    	$doc = $typo->get_html5_parser()->loadHTML( $html );
     	$xpath = new DOMXPath( $doc );
 
     	$textnodes = $xpath->query( "//div" ); // really only one
