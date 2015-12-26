@@ -1549,6 +1549,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertSame( $result_spacing, $this->clean_html( $typo->process( $input ) ) );
     }
 
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_data
+     */
+    public function testSmart_fractions_off( $input, $result, $result_spacing )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_fractions( false );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
     public function provide_fraction_spacing_data() {
     	return array(
     		array(
