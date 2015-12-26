@@ -2184,4 +2184,40 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		$this->assertNotEquals( serialize( $this->typo ), serialize( $second_typo ) );
     	}
     }
+
+    /**
+     * @covers ::get_html5_parser
+     */
+    public function testGet_html5_parser() {
+    	$typo = $this->typo;
+
+    	$this->assertAttributeEmpty( 'html5_parser', $typo );
+
+    	$parser1 = $typo->get_html5_parser();
+		$this->assertInstanceOf( '\Masterminds\HTML5', $parser1 );
+
+		$parser2 = $typo->get_html5_parser();
+		$this->assertInstanceOf( '\Masterminds\HTML5', $parser2 );
+
+    	$this->assertSame( $parser1, $parser2 );
+    	$this->assertAttributeInstanceOf( '\Masterminds\HTML5', 'html5_parser', $typo );
+    }
+
+    /**
+     * @covers ::get_text_parser
+     */
+    public function testGet_text_parser() {
+    	$typo = $this->typo;
+
+    	$this->assertAttributeEmpty( 'text_parser', $typo );
+
+    	$parser1 = $typo->get_text_parser();
+    	$this->assertInstanceOf( '\PHP_Typography\Parse_Text', $parser1 );
+
+    	$parser2 = $typo->get_text_parser();
+    	$this->assertInstanceOf( '\PHP_Typography\Parse_Text', $parser2 );
+
+    	$this->assertSame( $parser1, $parser2 );
+    	$this->assertAttributeInstanceOf( '\PHP_Typography\Parse_Text', 'text_parser', $typo );
+    }
 }
