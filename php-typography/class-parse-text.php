@@ -47,13 +47,23 @@ class Parse_Text {
 	private $encodings = array();
 
 	/**
-	 * Do we need multibyte-safe functions?
+	 * A hash map for string functions according to encoding.
 	 *
-	 * Changes to this must occur prior to `load`
-	 *
-	 * @var boolean $multibyte. Default false.
+	 * @var array $str_functions {
+	 * 		@type string $encoding The name of the strtoupper function to use.
+	 * }
 	 */
-	private $multibyte = false;
+	private $str_functions = array( 'UTF-8' => 'mb_strtoupper',
+					  			    'ASCII' => 'strtoupper',
+								    false   => false,
+	);
+
+	/**
+	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
+	 *
+	 * @var string
+	 */
+	private $current_strtoupper = false;
 
 	/**
 	 * The tokenized text.
@@ -324,21 +334,10 @@ class Parse_Text {
 			return false;
 		}
 
-		// clear any remains
-		// FIXME: is this necessary?
-		$this->clear();
-
-		switch ( mb_detect_encoding( $raw_text.'a', $this->encodings, true ) ) {
-			case 'UTF-8':
-				$this->multibyte = true;
-				break;
-
-			case 'ASCII':
-				$this->multibyte = false;
-				break;
-
-			default:
-				return false;
+		// detect encoding
+		$this->current_strtoupper = $this->str_functions[ mb_detect_encoding( $raw_text, $this->encodings, true ) ];
+		if ( ! $this->current_strtoupper ) {
+			return false; // unknown encoding
 		}
 
 		$tokens = array();
@@ -348,42 +347,42 @@ class Parse_Text {
 		foreach ( $parts as $part ) {
 			if ( '' !== $part ) {
 
-				if ( preg_match($this->regex['space'], $part ) ) {
-					$tokens[$index] = array(
-									'type'		=> 'space',
-									'value'		=> $part,
-									);
+				if ( preg_match( $this->regex['space'], $part ) ) {
+					$tokens[ $index ] = array(
+						'type'	=> 'space',
+						'value'	=> $part,
+					);
 				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {
-					$tokens[$index] = array(
-									'type'		=> 'punctuation',
-									'value'		=> $part,
-									);
+					$tokens[ $index ] = array(
+						'type'	=> 'punctuation',
+						'value'	=> $part,
+					);
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
 					// make sure that things like email addresses and URLs are not broken up
 					// into words and punctuation not preceeded by an 'other'
-					if ( $index - 1 >= 0 && $tokens[ $index - 1 ]['type'] === 'other' ) {
+					if ( $index - 1 >= 0 && 'other' === $tokens[ $index - 1 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
 						$tokens[ $index - 1 ] = array(
-									'type'		=> 'other',
-									'value'		=> $old_part.$part,
-									);
+							'type'	=> 'other',
+							'value'	=> $old_part . $part,
+						);
 						$index = $index - 1;
 
 					// not preceeded by a non-space + punctuation
 					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
-						$old_part = $tokens[ $index - 1 ]['value'];
+						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
-									'type'		=> 'other',
-									'value'		=> $older_part.$old_part.$part,
-									);
+							'type'	=> 'other',
+							'value'	=> $older_part . $old_part . $part,
+						);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
 						$tokens[ $index ] = array(
-									'type'		=> 'word',
-									'value'		=> $part,
-									);
+							'type'	=> 'word',
+							'value'	=> $part,
+						);
 					}
 				} else {
 					// make sure that things like email addresses and URLs are not broken up into words
@@ -392,24 +391,24 @@ class Parse_Text {
 						$index = $index - 1;
 						$old_part = $tokens[ $index ]['value'];
 						$tokens[ $index ] = array(
-									'type'		=> 'other',
-									'value'		=> $old_part.$part,
-									);
+							'type'	=> 'other',
+							'value'	=> $old_part . $part,
+						);
 					// not preceeded by a non-space + punctuation
 					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
-						$old_part = $tokens[ $index - 1 ]['value'];
+						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
-									'type'		=> 'other',
-									'value'		=> $older_part.$old_part.$part,
-									);
+							'type'	=> 'other',
+							'value'	=> $older_part . $old_part . $part,
+						);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
 						$tokens[ $index ] = array(
-									'type'		=> 'other',
-									'value'		=> $part,
-									);
+							'type'	=> 'other',
+							'value'	=> $part,
+						);
 					}
 				}
 
@@ -418,6 +417,7 @@ class Parse_Text {
 		}
 
 		$this->text = $tokens;
+
 		return true;
 	}
 
@@ -429,7 +429,7 @@ class Parse_Text {
 	 * @return boolean Returns true on successful completion.
 	 */
 	function reload() {
-		return $this->load($this->unload());
+		return $this->load( $this->unload() );
 	}
 
 	/**
@@ -438,14 +438,15 @@ class Parse_Text {
 	 * @return string
 	 */
 	function unload() {
+		$reassembled_text = '';
 
-		$reassembledText = '';
-		foreach($this->text as &$token) {
-			$reassembledText .= $token['value'];
+		foreach( $this->text as $token ) {
+			$reassembled_text .= $token['value'];
 		}
 
 		$this->clear();
-		return $reassembledText;
+
+		return $reassembled_text;
 	}
 
 	/**
@@ -453,7 +454,7 @@ class Parse_Text {
 	 */
 	function clear() {
 		$this->text = array();
-		$this->multibyte = false;
+		$this->current_strtoupper = false;
 	}
 
 	/**
@@ -466,8 +467,8 @@ class Parse_Text {
 	 * }
 	 */
 	function update( $tokens ) {
-		foreach($tokens as $index => $token) {
-			$this->text[$index]['value'] = $token['value'];
+		foreach( $tokens as $index => $token ) {
+			$this->text[ $index ]['value'] = $token['value'];
 		}
 	}
 
@@ -505,16 +506,12 @@ class Parse_Text {
 	 * @param string $caps Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Optional. Default 'allow-all-caps'.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps' ) {
-		$words = $this->get_type( 'word' );
 		$tokens = array();
+		$strtoupper = $this->current_strtoupper; // cannot call class properties
 
+		$words = $this->get_type( 'word' );
 		foreach( $words as $index => $token ) {
-			if ( $this->multibyte ) {
-			 	$capped = mb_strtoupper( $token['value'], 'UTF-8' );
-			} else {
-				$capped = strtoupper( $token['value'] );
-			}
-
+			$capped   = $strtoupper( $token['value'] );
 			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token['value'] );
 
 			if ( ( 'no-all-letters' === $abc && $lettered !== $token['value'] ) ) {
@@ -559,8 +556,9 @@ class Parse_Text {
 		$tokens = array();
 
 		foreach( $this->text as $index => $token ) {
-			if( $token['type'] === $type )
-				$tokens[$index] = $token;
+			if( $token['type'] === $type ) {
+				$tokens[ $index ] = $token;
+			}
 		}
 
 		return $tokens;
