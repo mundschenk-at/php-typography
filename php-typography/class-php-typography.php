@@ -1715,31 +1715,12 @@ class PHP_Typography {
 		$dom->encoding = 'UTF-8';
 		$xpath = new \DOMXPath( $dom );
 
-		$tags_to_ignore = array(); // actually replaced by \DOMNodeList
+		// query some nodes
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
-
-		$xpath_ignore_query = array();
-		if ( ! empty( $this->settings['ignoreTags'] ) ) {
-			$xpath_ignore_query[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );
-		}
-		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
-			$xpath_ignore_query[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
-		}
-		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$xpath_ignore_query[] = '//*[@id=\'' . implode( '\' or @id=\'', $this->settings['ignoreIDs'] ) . '\']';
-		}
-
 		$all_textnodes = $xpath->query( '//text()' );
-		if ( ! empty( $xpath_ignore_query ) ) {
-			$ignore_query = implode(' | ', $xpath_ignore_query );
+		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
 
-			if ( false !== ( $nodelist = $xpath->query( $ignore_query, $body_node ) ) ) {
-				$tags_to_ignore = nodelist_to_array( $nodelist );
-			} else {
-				trigger_error( "Invalid XPath ignore query: $ignore_query", E_USER_WARNING );
-			}
-		}
-
+		// start processing
 		foreach ( $all_textnodes as $textnode ) {
 			if ( array_intersection( $tags_to_ignore, get_ancestors( $textnode ) ) ) {
 				continue;
@@ -1835,25 +1816,12 @@ class PHP_Typography {
 		$dom->encoding = 'UTF-8';
 		$xpath = new \DOMXPath( $dom );
 
-		$tags_to_ignore = array(); // actually replaced by \DOMNodeList
+		// query some nodes in the DOM
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
-
-		$xpath_ignore_query = array();
-		if ( ! empty( $this->settings['ignoreTags'] ) ) {
-			$xpath_ignore_query[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );
-		}
-		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
-			$xpath_ignore_query[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
-		}
-		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$xpath_ignore_query[] = '//*[@id=\'' . implode( '\'] | //*[@id=\'', $this->settings['ignoreIDs'] ) . '\']';
-		}
-
 		$all_textnodes = $xpath->query( '//text()' );
-		if ( count( $xpath_ignore_query ) > 0 ) {
-			$tags_to_ignore = nodelist_to_array( $xpath->query( implode( ' | ', $xpath_ignore_query ), $body_node ) );
-		}
+		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
 
+		// start processing
 		foreach ( $all_textnodes as $textnode ) {
 			if ( array_intersection( $tags_to_ignore, get_ancestors( $textnode ) ) ) {
 				continue;
@@ -1881,6 +1849,38 @@ class PHP_Typography {
 		return $html5_parser->saveHTML( $body_node->childNodes );;
 	}
 
+	/**
+	 * Retrieve an array of nodes that should be skipped during processing.
+	 *
+	 * @param \DOMXPath $xpath A valid XPath instance for the DOM to be queried.
+	 * @param \DOMNode  $initial_node The starting node of the XPath query.
+	 * @return array An array of \DOMNode (can be empty).
+	 */
+	function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node ) {
+		$elements = array();
+		$query_parts = array();
+		if ( ! empty( $this->settings['ignoreTags'] ) ) {
+			$query_parts[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );
+		}
+		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
+		}
+		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
+			$query_parts[] = '//*[@id=\'' . implode( '\' or @id=\'', $this->settings['ignoreIDs'] ) . '\']';
+		}
+
+		if ( ! empty( $query_parts ) ) {
+			$ignore_query = implode(' | ', $query_parts );
+
+			if ( false !== ( $nodelist = $xpath->query( $ignore_query, $initial_node ) ) ) {
+				$elements = nodelist_to_array( $nodelist );
+			} else {
+				trigger_error( "Invalid XPath ignore query: $ignore_query", E_USER_WARNING );
+			}
+		}
+
+		return $elements;
+	}
 
 	/**
 	 * Retrieve the last character of the previous \DOMText sibling (if there is one).
