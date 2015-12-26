@@ -32,7 +32,7 @@
 namespace PHP_Typography;
 
 /**
- * A class to parse plain text (such as the nodeValue of DOMText).
+ * A class to parse plain text (such as the data of DOMText).
  *
  * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;).
  * If multibyte characters are passed, they must be encoded as UTF-8.

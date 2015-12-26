@@ -1748,7 +1748,7 @@ class PHP_Typography {
 			$this->unit_spacing( $textnode );
 
 			// break it down for a bit more granularity
-			$text_parser->load( $textnode->nodeValue );
+			$text_parser->load( $textnode->data );
 			$parsed_mixed_words = $text_parser->get_words( 'no-all-letters', 'allow-all-caps' ); // prohibit letter only words, allow caps
 			$parsed_words = $text_parser->get_words( 'require-all-letters',  // require letter only words, caps allowance in setting; mutually exclusive with $parsed_mixed_words
 														   ( ! empty ( $this->settings['hyphenateAllCaps'] ) ) ? 'allow-all-caps' : 'no-all-caps' );
@@ -1762,7 +1762,7 @@ class PHP_Typography {
 
 			// apply updates to unlockedText
 			$text_parser->update( $parsed_mixed_words + $parsed_words + $parsed_other );
-			$textnode->nodeValue = $text_parser->unload();
+			$textnode->data = $text_parser->unload();
 
 			// some final space manipulation
 			$this->dewidow( $textnode );
@@ -1788,7 +1788,7 @@ class PHP_Typography {
 
 			// Until now, we've only been working on a textnode.
 			// HTMLify result
-			$this->set_inner_html( $textnode, $textnode->nodeValue );
+			$this->set_inner_html( $textnode, $textnode->data );
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
@@ -1843,7 +1843,7 @@ class PHP_Typography {
 
 			// Until now, we've only been working on a textnode.
 			// HTMLify result
-			$this->set_inner_html( $textnode, $textnode->nodeValue );
+			$this->set_inner_html( $textnode, $textnode->data );
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
@@ -1892,12 +1892,12 @@ class PHP_Typography {
 	function get_prev_chr( \DOMNode $element ) {
 		$previous_textnode = $this->get_previous_textnode( $element );
 
-		if ( isset( $previous_textnode ) && isset( $previous_textnode->nodeValue ) ) {
+		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
 			// first determine encoding
-			$func = $this->str_functions[ mb_detect_encoding( $previous_textnode->nodeValue, $this->encodings, true ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $previous_textnode->data, $this->encodings, true ) ];
 
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
-				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->nodeValue, - 1 ) );
+				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->data, - 1 ) );
 			}
 		} // @codeCoverageIgnore
 
@@ -1915,12 +1915,12 @@ class PHP_Typography {
 	function get_next_chr( \DOMNode $element ) {
 		$next_textnode = $this->get_next_textnode($element);
 
-		if ( isset( $next_textnode ) && isset( $next_textnode->nodeValue ) ) {
+		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
 			// first determine encoding
-			$func = $this->str_functions[ mb_detect_encoding( $next_textnode->nodeValue, $this->encodings, true ) ];
+			$func = $this->str_functions[ mb_detect_encoding( $next_textnode->data, $this->encodings, true ) ];
 
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
-				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->nodeValue, 0, 1 ) );
+				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->data, 0, 1 ) );
 			}
 		} // @codeCoverageIgnore
 
@@ -2080,71 +2080,71 @@ class PHP_Typography {
 		// if we have adjacent characters add them to the text
 		$previous_character = $this->get_prev_chr( $textnode );
 		if ( '' !== $previous_character ) {
-			$textnode->nodeValue = $previous_character.$textnode->nodeValue;
+			$textnode->data = $previous_character.$textnode->data;
 		}
 		$next_character = $this->get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
-			$textnode->nodeValue =  $textnode->nodeValue.$next_character;
+			$textnode->data =  $textnode->data.$next_character;
 		}
 
 		////Logic
 
 		// before primes, handle quoted numbers
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSingleQuotedNumbers'], $this->chr['singleQuoteOpen'].'$1'.$this->chr['singleQuoteClose'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoubleQuotedNumbers'], $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuotedNumbers'], $this->chr['singleQuoteOpen'].'$1'.$this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuotedNumbers'], $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $textnode->data );
 
 		// guillemets
-		$textnode->nodeValue = str_replace( "<<", $this->chr['guillemetOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( "&lt;&lt;", $this->chr['guillemetOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( ">>", $this->chr['guillemetClose'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( "&gt;&gt;", $this->chr['guillemetClose'], $textnode->nodeValue );
+		$textnode->data = str_replace( "<<", $this->chr['guillemetOpen'], $textnode->data );
+		$textnode->data = str_replace( "&lt;&lt;", $this->chr['guillemetOpen'], $textnode->data );
+		$textnode->data = str_replace( ">>", $this->chr['guillemetClose'], $textnode->data );
+		$textnode->data = str_replace( "&gt;&gt;", $this->chr['guillemetClose'], $textnode->data );
 
 		// primes
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoublePrime'], '$1'.$this->chr['doublePrime'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoublePrimeSingleCharacter'], '$1'.$this->chr['doublePrime'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSinglePrime'], '$1'.$this->chr['singlePrime'], $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'], '$1'.$this->chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeSingleCharacter'], '$1'.$this->chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'], '$1'.$this->chr['singlePrime'], $textnode->data );
 
 		// backticks
-		$textnode->nodeValue = str_replace( "``", $this->chr['doubleQuoteOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( "`", $this->chr['singleQuoteOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( "''", $this->chr['doubleQuoteClose'], $textnode->nodeValue );
+		$textnode->data = str_replace( "``", $this->chr['doubleQuoteOpen'], $textnode->data );
+		$textnode->data = str_replace( "`", $this->chr['singleQuoteOpen'], $textnode->data );
+		$textnode->data = str_replace( "''", $this->chr['doubleQuoteClose'], $textnode->data );
 
 		// comma quotes
-		$textnode->nodeValue = str_replace( ",,", $this->chr['doubleLow9Quote'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesCommaQuote'], $this->chr['singleLow9Quote'], $textnode->nodeValue ); //like _,¿hola?'_
+		$textnode->data = str_replace( ",,", $this->chr['doubleLow9Quote'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesCommaQuote'], $this->chr['singleLow9Quote'], $textnode->data ); //like _,¿hola?'_
 
 		// apostrophes
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesApostropheWords'], $this->chr['apostrophe'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesApostropheDecades'], $this->chr['apostrophe'].'$1', $textnode->nodeValue ); // decades: '98
+		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheWords'], $this->chr['apostrophe'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheDecades'], $this->chr['apostrophe'].'$1', $textnode->data ); // decades: '98
 		$exceptions = array("'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
 		$replacements = array($this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin');
-		$textnode->nodeValue = str_replace( $exceptions, $replacements, $textnode->nodeValue );
+		$textnode->data = str_replace( $exceptions, $replacements, $textnode->data );
 
 		// quotes
 		$quoteRules = array("['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"");
 		$quoteRulesReplace = array("[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose']);
-		$textnode->nodeValue = str_replace( $quoteRules, $quoteRulesReplace, $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'], $this->chr['singleQuoteOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSingleQuoteClose'], $this->chr['singleQuoteClose'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'], $this->chr['singleQuoteOpen'], $textnode->nodeValue ); //like _'¿hola?'_
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesSingleQuoteCloseSpecial'] , $this->chr['singleQuoteClose'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoubleQuoteOpen'], $this->chr['doubleQuoteOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoubleQuoteClose'], $this->chr['doubleQuoteClose'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'], $this->chr['doubleQuoteOpen'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartQuotesDoubleQuoteCloseSpecial'], $this->chr['doubleQuoteClose'], $textnode->nodeValue );
+		$textnode->data = str_replace( $quoteRules, $quoteRulesReplace, $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'], $this->chr['singleQuoteOpen'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteClose'], $this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'], $this->chr['singleQuoteOpen'], $textnode->data ); //like _'¿hola?'_
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteCloseSpecial'] , $this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpen'], $this->chr['doubleQuoteOpen'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteClose'], $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'], $this->chr['doubleQuoteOpen'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteCloseSpecial'], $this->chr['doubleQuoteClose'], $textnode->data );
 
 		//quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
-		$textnode->nodeValue = str_replace( "'", $this->chr['singleQuoteClose'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->nodeValue );
+		$textnode->data = str_replace( "'", $this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->data );
 
 		//if we have adjacent characters remove them from the text
-		$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
+		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
 
 		if ( '' !== $previous_character ) {
-			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
+			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 		}
 		if ( '' !== $next_character ) {
-			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
+			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
 		}
 	}
 
@@ -2158,25 +2158,25 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = str_replace( '---', $this->chr['emDash'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalDoubleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( '--', $this->chr['enDash'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesParentheticalSingleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->nodeValue );
+		$textnode->data = str_replace( '---', $this->chr['emDash'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartDashesParentheticalDoubleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->data );
+		$textnode->data = str_replace( '--', $this->chr['enDash'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartDashesParentheticalSingleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->data );
 
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashAll'],          '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashWords'] ,       '$1'.$this->chr['enDash'].'$2',        $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashNumbers'],      '$1'.$this->chr['intervalDash'].'$2',  $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesEnDashPhoneNumbers'], '$1'.$this->chr['noBreakHyphen'].'$2', $textnode->nodeValue ); // phone numbers
-		$textnode->nodeValue =  str_replace( "xn{$this->chr['enDash']}",                    'xn--',                                $textnode->nodeValue ); // revert messed-up punycode
+		$textnode->data = preg_replace( $this->regex['smartDashesEnDashAll'],          '$1'.$this->chr['enDash'].'$2',        $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartDashesEnDashWords'] ,       '$1'.$this->chr['enDash'].'$2',        $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartDashesEnDashNumbers'],      '$1'.$this->chr['intervalDash'].'$2',  $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartDashesEnDashPhoneNumbers'], '$1'.$this->chr['noBreakHyphen'].'$2', $textnode->data ); // phone numbers
+		$textnode->data =  str_replace( "xn{$this->chr['enDash']}",                    'xn--',                                $textnode->data ); // revert messed-up punycode
 
 		// revert dates back to original formats
 
 		// YYYY-MM-DD
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYY-MM-DD'], "$1-$2-$3",     $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartDashesYYYY-MM-DD'], "$1-$2-$3",     $textnode->data );
 		// MM-DD-YYYY or DD-MM-YYYY
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesMM-DD-YYYY'], "$1$3-$2$4-$5", $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartDashesMM-DD-YYYY'], "$1$3-$2$4-$5", $textnode->data );
 		// YYYY-MM or YYYY-DDDD next
-		$textnode->nodeValue = preg_replace( $this->regex['smartDashesYYYY-MM'],    "$1-$2",        $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartDashesYYYY-MM'],    "$1-$2",        $textnode->data );
 	}
 
 	/**
@@ -2189,8 +2189,8 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '...',  '. . .' ),   $this->chr['ellipses'],       $textnode->nodeValue );
+		$textnode->data = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $textnode->data );
+		$textnode->data = str_replace( array( '...',  '. . .' ),   $this->chr['ellipses'],       $textnode->data );
 	}
 
 	/**
@@ -2206,7 +2206,7 @@ class PHP_Typography {
 		if ( ! empty( $this->settings['diacriticReplacement'] ) &&
 			 ! empty( $this->settings['diacriticReplacement']['patterns'] ) &&
 			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
-			$textnode->nodeValue = translate_words( $textnode->nodeValue, $this->settings['diacriticReplacement']['patterns'], $this->settings['diacriticReplacement']['replacements'] );
+			$textnode->data = translate_words( $textnode->data, $this->settings['diacriticReplacement']['patterns'], $this->settings['diacriticReplacement']['replacements'] );
 		}
 	}
 
@@ -2220,11 +2220,11 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '(sm)', '(SM)' ), $this->chr['serviceMark'],    $textnode->nodeValue );
-		$textnode->nodeValue = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $textnode->nodeValue );
+		$textnode->data = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $textnode->data );
+		$textnode->data = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $textnode->data );
+		$textnode->data = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $textnode->data );
+		$textnode->data = str_replace( array( '(sm)', '(SM)' ), $this->chr['serviceMark'],    $textnode->data );
+		$textnode->data = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $textnode->data );
 	}
 
 	/**
@@ -2238,24 +2238,24 @@ class PHP_Typography {
 		}
 
 		//first, let's find math equations
-		$textnode->nodeValue = preg_replace_callback( $this->regex['smartMathEquation'], array($this, '_smart_math_callback'), $textnode->nodeValue );
+		$textnode->data = preg_replace_callback( $this->regex['smartMathEquation'], array($this, '_smart_math_callback'), $textnode->data );
 
 		// revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50)
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertRange'], '$1-$2', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertRange'], '$1-$2', $textnode->data );
 
 		// revert fractions to basic slash
 		// we'll leave styling fractions to smart_fractions
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertFraction'], '$1/$2', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertFraction'], '$1/$2', $textnode->data );
 
 		// revert date back to original formats
 		// YYYY-MM-DD
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertDateYYYY-MM-DD'], '$1-$2-$3', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertDateYYYY-MM-DD'], '$1-$2-$3', $textnode->data );
 		// MM-DD-YYYY or DD-MM-YYYY
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertDateMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertDateMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
 		// YYYY-MM or YYYY-DDD next
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertDateYYYY-MM'], '$1-$2', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertDateYYYY-MM'], '$1-$2', $textnode->data );
 		// MM/DD/YYYY or DD/MM/YYYY
-		$textnode->nodeValue = preg_replace( $this->regex['smartMathRevertDateMM/DD/YYYY'], '$1$3/$2$4/$5', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartMathRevertDateMM/DD/YYYY'], '$1$3/$2$4/$5', $textnode->data );
 	}
 
 	/**
@@ -2284,7 +2284,7 @@ class PHP_Typography {
 		}
 
 		// handle exponents (ie. 4^2)
-		$textnode->nodeValue = preg_replace( $this->regex['smartExponents'], '$1<sup>$2</sup>', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartExponents'], '$1<sup>$2</sup>', $textnode->data );
 	}
 
 	/**
@@ -2301,21 +2301,21 @@ class PHP_Typography {
 		}
 
 		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
-			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->data );
 		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
-			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->nodeValue );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->data );
 		}
 
 		if ( !empty($this->settings['smartFractions']) ) {
 			// Escape sequences we don't want fractionified
- 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->nodeValue );
- 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->nodeValue );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->data );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->data );
 
  			// Replace fractions
- 			$textnode->nodeValue = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->nodeValue );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->data );
 
  			// Unescape escaped sequences
- 			$textnode->nodeValue = str_replace( '_E_S_C_A_P_E_D_', '', $textnode->nodeValue );
+ 			$textnode->data = str_replace( '_E_S_C_A_P_E_D_', '', $textnode->data );
 		}
 	}
 
@@ -2331,7 +2331,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['smartOrdinalSuffix'], '$1'.'<sup>$2</sup>', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1'.'<sup>$2</sup>', $textnode->data );
 	}
 
 	/**
@@ -2347,24 +2347,24 @@ class PHP_Typography {
 		// add $nextChr and $prevChr for context
 		$previous_character = $this->get_prev_chr( $textnode );
 		if ( '' !== $previous_character) {
-			$textnode->nodeValue = $previous_character . $textnode->nodeValue;
+			$textnode->data = $previous_character . $textnode->data;
 		}
 
 		$next_character = $this->get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
-			$textnode->nodeValue = $textnode->nodeValue . $next_character;
+			$textnode->data = $textnode->data . $next_character;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['singleCharacterWordSpacing'], '$1$2' . $this->chr['noBreakSpace'], $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['singleCharacterWordSpacing'], '$1$2' . $this->chr['noBreakSpace'], $textnode->data );
 
 		// if we have adjacent characters remove them from the text
-		$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
+		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
 
 		if ( '' !== $previous_character ) {
-			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
+			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 		}
 		if ( '' !== $next_character ) {
-			$textnode->nodeValue = $func['substr']( $textnode->nodeValue, 0, $func['strlen']( $textnode->nodeValue ) - 1 );
+			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
 		}
 	}
 
@@ -2378,9 +2378,9 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingEmDash'],            $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingParentheticalDash'], $this->chr['parentheticalDashSpace'] . '$1$2' . $this->chr['parentheticalDashSpace'], $textnode->nodeValue );
-		$textnode->nodeValue = preg_replace( $this->regex['dashSpacingIntervalDash'],      $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['dashSpacingEmDash'],            $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->data );
+		$textnode->data = preg_replace( $this->regex['dashSpacingParentheticalDash'], $this->chr['parentheticalDashSpace'] . '$1$2' . $this->chr['parentheticalDashSpace'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['dashSpacingIntervalDash'],      $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->data );
 	}
 
 	/**
@@ -2394,17 +2394,17 @@ class PHP_Typography {
 		}
 
 		// normal spacing
-		$textnode->nodeValue = preg_replace( $this->regex['spaceCollapseNormal'], ' ', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['spaceCollapseNormal'], ' ', $textnode->data );
 
 		// nbsp get's priority.  if nbsp exists in a string of spaces, it collapses to nbsp
-		$textnode->nodeValue = preg_replace( $this->regex['spaceCollapseNonBreakable'], $this->chr['noBreakSpace'], $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['spaceCollapseNonBreakable'], $this->chr['noBreakSpace'], $textnode->data );
 
 		// for any other spaceing, replace with the first occurance of an unusual space character
-		$textnode->nodeValue = preg_replace( $this->regex['spaceCollapseOther'], '$1', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['spaceCollapseOther'], '$1', $textnode->data );
 
 		// remove all spacing at beginning of block level elements
 		if( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element
-			$textnode->nodeValue = preg_replace( $this->regex['spaceCollapseBlockStart'], '', $textnode->nodeValue );
+			$textnode->data = preg_replace( $this->regex['spaceCollapseBlockStart'], '', $textnode->data );
 		}
 	}
 
@@ -2418,7 +2418,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['unitSpacingUnitPattern'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['unitSpacingUnitPattern'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->data );
 	}
 
 	/**
@@ -2464,7 +2464,7 @@ class PHP_Typography {
 		if ( '' === $this->get_next_chr( $textnode ) ) {
 			// we have the last type "text" child of a block level element
 
-			$textnode->nodeValue = preg_replace_callback( $this->regex['dewidow'], array( $this, '_dewidow_callback' ), $textnode->nodeValue );
+			$textnode->data = preg_replace_callback( $this->regex['dewidow'], array( $this, '_dewidow_callback' ), $textnode->data );
 		}
 	}
 
@@ -2610,7 +2610,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['styleCaps'], '<span class="caps">$1</span>', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="caps">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -2659,7 +2659,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['styleNumbers'], '<span class="numbers">$1</span>', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="numbers">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -2677,7 +2677,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->nodeValue = preg_replace( $this->regex['styleAmpersands'], '<span class="amp">$1</span>', $textnode->nodeValue );
+		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="amp">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -2693,8 +2693,8 @@ class PHP_Typography {
 
 		if ( '' === $this->get_prev_chr( $textnode )) { // we have the first text in a block level element
 
-			$func = $this->str_functions[ mb_detect_encoding( $textnode->nodeValue, $this->encodings, true ) ];
-			$first_character = $func['substr']( $textnode->nodeValue, 0, 1 );
+			$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+			$first_character = $func['substr']( $textnode->data, 0, 1 );
 
 			if ( $first_character === "'" ||
 				 $first_character === $this->chr['singleQuoteOpen'] ||
@@ -2720,9 +2720,9 @@ class PHP_Typography {
 						 $first_character === $this->chr['singleQuoteOpen'] ||
 						 $first_character === $this->chr['singleLow9Quote'] ||
 						 $first_character === ",") {
-						$textnode->nodeValue =  '<span class="quo">'.$first_character.'</span>'. $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
+						$textnode->data =  '<span class="quo">'.$first_character.'</span>'. $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 					} else { // double quotes or guillemets
-						$textnode->nodeValue =  '<span class="dquo">'.$first_character.'</span>'. $func['substr']( $textnode->nodeValue, 1, $func['strlen']( $textnode->nodeValue ) );
+						$textnode->data =  '<span class="dquo">'.$first_character.'</span>'. $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 					}
 				}
 			}
