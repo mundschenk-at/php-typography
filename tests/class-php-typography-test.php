@@ -1584,17 +1584,39 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
     }
 
+	public function provide_smart_ordinal_suffix() {
+		return array(
+			array( 'in the 1st instance', 'in the 1<sup>st</sup> instance' ),
+			array( 'in the 2nd degree',   'in the 2<sup>nd</sup> degree' ),
+			array( 'a 3rd party',         'a 3<sup>rd</sup> party' ),
+			array( '12th Night',          '12<sup>th</sup> Night' ),
+		);
+	}
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::smart_ordinal_suffix
-     * @todo   Implement testSmart_ordinal_suffix().
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix
      */
-    public function testSmart_ordinal_suffix()
+    public function testSmart_ordinal_suffix( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_smart_ordinal_suffix( true );
+
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix
+     */
+    public function testSmart_ordinal_suffix_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_ordinal_suffix( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
     /**
@@ -1708,16 +1730,39 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 	    $this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+    public function provide_unit_spacing_data() {
+    	return array(
+    		array( 'It was 2 m from', 'It was 2&#8239;m from' ),
+    		array( '3 km/h', '3&#8239;km/h' ),
+    		array( '5 sg 44 kg', '5 sg 44&#8239;kg' ),
+    		array( '100 &deg;C', '100&#8239;&deg;C' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::unit_spacing
-     * @todo   Implement testUnit_spacing().
+     * @covers ::unit_spacing
+     *
+     * @dataProvider provide_unit_spacing_data
      */
-    public function testUnit_spacing()
+    public function testUnit_spacing( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_unit_spacing( true );
+
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::unit_spacing
+     *
+     * @dataProvider provide_unit_spacing_data
+     */
+    public function testUnit_spacing_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_unit_spacing( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
     public function provide_wrap_hard_hyphens_data() {
