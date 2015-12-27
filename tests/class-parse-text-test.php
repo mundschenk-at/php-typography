@@ -17,7 +17,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @var Parse_Text
      */
-    protected $object;
+    protected $parser;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -25,7 +25,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new \PHP_Typography\Parse_Text;
+        $this->parser = new \PHP_Typography\Parse_Text;
     }
 
     /**
@@ -37,6 +37,21 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function test__construct()
+    {
+    	$parser = new \PHP_Typography\Parse_Text( array( 'UTF-8' ) );
+
+    	$this->assertAttributeContains( 'UTF-8', 'encodings', $parser );
+    	$this->assertAttributeCount( 1, 'encodings', $parser );
+    	$this->assertAttributeCount( 0, 'text', $parser );
+    	$this->assertAttributeCount( 5, 'regex', $parser );
+    	$this->assertAttributeCount( 8, 'components', $parser );
+    	$this->assertAttributeEmpty( 'current_strtoupper', $parser );
+    }
+
+    /**
      * @covers ::load
      */
     public function testLoad()
@@ -45,42 +60,127 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     	$still_too_long = 'A really long string with a word that is aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalmost too long.';
     	$almost_too_long = 'A really long string with a word that is aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalmost too long.';
 
-    	$typo = $this->object;
+    	$parser = $this->parser;
 
     	// security check
-    	$this->assertFalse( $typo->load( $too_long ) );
-    	$this->assertFalse( $typo->load( $still_too_long ) );
-    	$this->assertTrue( $typo->load( $almost_too_long ) );
+    	$this->assertFalse( $parser->load( $too_long ) );
+    	$this->assertFalse( $parser->load( $still_too_long ) );
+    	$this->assertTrue( $parser->load( $almost_too_long ) );
 
     	$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
-    	$this->assertTrue( $typo->load( $interesting ) );
+    	$this->assertTrue( $parser->load( $interesting ) );
 
-    	$tokens = $typo->get_all();
+    	$tokens = $parser->get_all();
     	$this->assertCount(13, $tokens);
     	$this->assertArraySubset( array( 0 => array( 'type' => 'word', 'value' => 'Quoth' ) ), $tokens );
     	$this->assertArraySubset( array( 5 => array( 'type' => 'punctuation', 'value' => ',' ) ), $tokens );
     	$this->assertArraySubset( array( 11 => array( 'type' => 'word', 'value' => 'Äöüß' ) ), $tokens );
 
-    	return $typo;
+    	return $parser;
+    }
+
+    /**
+     * @covers ::load
+     */
+    public function testLoad_email()
+    {
+    	$parser = $this->parser;
+
+    	$string = 'Quoth the raven, "nevermore"! Please mail to someone@example.org.';
+    	$this->assertTrue( $parser->load( $string ) );
+
+    	$tokens = $parser->get_all();
+    	$this->assertCount( 19, $tokens );
+
+    	$this->assertArraySubset( array( 0 => array( 'type' => 'word', 'value' => 'Quoth' ) ), $tokens );
+    	$this->assertArraySubset( array( 5 => array( 'type' => 'punctuation', 'value' => ',' ) ), $tokens );
+    	$this->assertArraySubset( array( 17 => array( 'type' => 'other', 'value' => 'someone@example.org' ) ), $tokens );
+
+    	return $parser;
+    }
+
+    /**
+     * @covers ::load
+     */
+    public function testLoad_url()
+    {
+    	$parser = $this->parser;
+
+    	$string = 'Quoth the raven, "nevermore"! Please open http://example.org or wordpress:wordpress or wordpress:w@rdpress or @example or @:@:@:risk.';
+    	$this->assertTrue( $parser->load( $string ) );
+
+    	$tokens = $parser->get_all();
+    	$this->assertCount( 33, $tokens );
+
+    	$this->assertArraySubset( array( 0 => array( 'type' => 'word', 'value' => 'Quoth' ) ), $tokens );
+    	$this->assertArraySubset( array( 5 => array( 'type' => 'punctuation', 'value' => ',' ) ), $tokens );
+    	$this->assertArraySubset( array( 15 => array( 'type' => 'other', 'value' => 'http://example.org' ) ), $tokens );
+    	$this->assertArraySubset( array( 19 => array( 'type' => 'other', 'value' => 'wordpress:wordpress' ) ), $tokens );
+    	$this->assertArraySubset( array( 23 => array( 'type' => 'other', 'value' => 'wordpress:w@rdpress' ) ), $tokens );
+    	$this->assertArraySubset( array( 27 => array( 'type' => 'other', 'value' => '@example' ) ), $tokens );
+    	$this->assertArraySubset( array( 31 => array( 'type' => 'other', 'value' => '@:@:@:risk' ) ), $tokens );
+
+    	return $parser;
+    }
+
+    /**
+     * @covers ::load
+     */
+    public function testLoad_compound_word()
+    {
+    	$parser = $this->parser;
+
+    	$string = 'Some don\'t trust the captain-owner.';
+    	$this->assertTrue( $parser->load( $string ) );
+
+    	$tokens = $parser->get_all();
+    	$this->assertCount( 10, $tokens );
+
+    	$this->assertArraySubset( array( 0 => array( 'type' => 'word', 'value' => 'Some' ) ), $tokens );
+    	$this->assertArraySubset( array( 2 => array( 'type' => 'other', 'value' => "don't" ) ), $tokens );
+    	$this->assertArraySubset( array( 8 => array( 'type' => 'word', 'value' => 'captain-owner' ) ), $tokens );
+
+    	return $parser;
+    }
+
+    /**
+     * @covers ::load
+     */
+    public function testLoad_invalid_encoding()
+    {
+    	$string = mb_convert_encoding( 'Ein längerer String im falschen Zeichensatz', 'ISO-8859-2' );
+    	$parser = $this->parser;
+
+    	$this->assertFalse( $parser->load( $string ) );
+    }
+
+    /**
+     * @covers ::load
+     */
+    public function testLoad_not_a_string()
+    {
+    	$parser = $this->parser;
+
+    	$this->assertFalse( $parser->load( array() ) );
     }
 
     /**
      * @covers ::reload
      * @depends testLoad
      */
-    public function testReload( \PHP_Typography\Parse_Text $typo )
+    public function testReload( \PHP_Typography\Parse_Text $parser )
     {
-    	$tokens = $typo->get_all();
+    	$tokens = $parser->get_all();
     	$tokens[12]['value'] = ''; // ?
     	$tokens[11]['value'] = ''; // Äöüß
     	$tokens[10]['value'] = ''; //
     	$tokens[9]['value'] .= '!';
-    	$typo->update($tokens);
+    	$parser->update($tokens);
 
-    	$this->assertTrue( $typo->reload() );
-    	$this->assertSame( 'Quoth the raven, "nevermore"!!', $typo->unload() );
+    	$this->assertTrue( $parser->reload() );
+    	$this->assertSame( 'Quoth the raven, "nevermore"!!', $parser->unload() );
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
@@ -89,14 +189,14 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     public function testUnload()
     {
     	$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
-    	$typo = $this->object;
+    	$parser = $this->parser;
 
-    	$this->assertTrue( $typo->load( $interesting ) );
+    	$this->assertTrue( $parser->load( $interesting ) );
 
-    	$result = $typo->unload();
+    	$result = $parser->unload();
 
     	$this->assertSame( $interesting, $result );
-    	$this->assertNotSame( $result, $typo->unload() ); // the parser is empty now.
+    	$this->assertNotSame( $result, $parser->unload() ); // the parser is empty now.
     }
 
     /**
@@ -104,14 +204,14 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-    	$typo = $this->object;
+    	$parser = $this->parser;
     	$interesting = 'Quoth the raven, "nevermore"!';
 
-    	$this->assertTrue( $typo->load( $interesting ) );
-		$this->assertGreaterThan( 0, count( $typo->get_all() ) );
+    	$this->assertTrue( $parser->load( $interesting ) );
+		$this->assertGreaterThan( 0, count( $parser->get_all() ) );
 
-		$typo->clear();
-		$this->assertCount( 0, $typo->get_all() );
+		$parser->clear();
+		$this->assertCount( 0, $parser->get_all() );
     }
 
     /**
@@ -119,20 +219,20 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdate()
     {
-    	$typo = $this->object;
+    	$parser = $this->parser;
     	$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
-    	$this->assertTrue( $typo->load( $interesting ) );
+    	$this->assertTrue( $parser->load( $interesting ) );
 
-    	$tokens = $typo->get_all();
+    	$tokens = $parser->get_all();
     	$tokens[12]['value'] = ''; // ?
     	$tokens[11]['value'] = ''; // Äöüß
     	$tokens[10]['value'] = ''; //
     	$tokens[9]['value'] .= '!';
-    	$typo->update($tokens);
+    	$parser->update($tokens);
 
-    	$this->assertSame( 'Quoth the raven, "nevermore"!!', $typo->unload() );
+    	$this->assertSame( 'Quoth the raven, "nevermore"!!', $parser->unload() );
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
@@ -141,89 +241,89 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     public function testGet_all()
     {
     	$interesting = 'Quoth the raven, "nevermore"!';
-    	$typo = $this->object;
-    	$this->assertTrue( $typo->load( $interesting ) );
+    	$parser = $this->parser;
+    	$this->assertTrue( $parser->load( $interesting ) );
 
-    	$tokens = $typo->get_all();
+    	$tokens = $parser->get_all();
     	$this->assertCount(10, $tokens);
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
      * @covers ::get_spaces
      * @depends testGet_all
      */
-    public function testGet_spaces( $typo )
+    public function testGet_spaces( $parser )
     {
-    	$tokens = $typo->get_spaces();
+    	$tokens = $parser->get_spaces();
     	$this->assertCount(3, $tokens);
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
      * @covers ::get_punctuation
      * @depends testGet_all
      */
-    public function testGet_punctuation( $typo )
+    public function testGet_punctuation( $parser )
     {
-    	$tokens = $typo->get_punctuation();
+    	$tokens = $parser->get_punctuation();
     	$this->assertCount(3, $tokens);
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
      * @covers ::get_words
      * @depends testGet_all
      */
-    public function testGet_words( $typo )
+    public function testGet_words( $parser )
     {
-    	$tokens = $typo->get_words();
+    	$tokens = $parser->get_words();
     	$this->assertCount(4, $tokens);
 
-    	$typo->load( 'A few m1xed W0RDS.' );
-    	$tokens = $typo->get_words( 'require-all-letters', 'no-all-caps' );
+    	$parser->load( 'A few m1xed W0RDS.' );
+    	$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
     	$this->assertCount( 1, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
 
-    	$tokens = $typo->get_words( 'allow-all-letters', 'no-all-caps' );
+    	$tokens = $parser->get_words( 'allow-all-letters', 'no-all-caps' );
     	$this->assertCount( 2, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
 
-    	$tokens = $typo->get_words( 'no-all-letters', 'no-all-caps' );
+    	$tokens = $parser->get_words( 'no-all-letters', 'no-all-caps' );
     	$this->assertCount( 1, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
 
-    	$tokens = $typo->get_words( 'require-all-letters', 'allow-all-caps' );
+    	$tokens = $parser->get_words( 'require-all-letters', 'allow-all-caps' );
     	$this->assertCount( 2, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
 
-    	$tokens = $typo->get_words( 'allow-all-letters', 'allow-all-caps' );
+    	$tokens = $parser->get_words( 'allow-all-letters', 'allow-all-caps' );
     	$this->assertCount( 4, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'few' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
 
-    	$tokens = $typo->get_words( 'no-all-letters', 'allow-all-caps' );
+    	$tokens = $parser->get_words( 'no-all-letters', 'allow-all-caps' );
     	$this->assertCount( 2, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'm1xed' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
 
-    	$tokens = $typo->get_words( 'require-all-letters', 'require-all-caps' );
+    	$tokens = $parser->get_words( 'require-all-letters', 'require-all-caps' );
     	$this->assertCount( 1, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
 
-    	$tokens = $typo->get_words( 'allow-all-letters', 'require-all-caps' );
+    	$tokens = $parser->get_words( 'allow-all-letters', 'require-all-caps' );
     	$this->assertCount( 2, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'A' ), $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
 
-    	$tokens = $typo->get_words( 'no-all-letters', 'require-all-caps' );
+    	$tokens = $parser->get_words( 'no-all-letters', 'require-all-caps' );
     	$this->assertCount( 1, $tokens );
     	$this->assertContains( array( 'type' => 'word', 'value' => 'W0RDS' ), $tokens );
     }
@@ -232,28 +332,28 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
      * @covers ::get_other
      * @depends testGet_all
      */
-    public function testGet_other( $typo )
+    public function testGet_other( $parser )
     {
-    	$tokens = $typo->get_other();
+    	$tokens = $parser->get_other();
     	$this->assertCount(0, $tokens);
 
-    	return $typo;
+    	return $parser;
     }
 
     /**
      * @covers ::get_type
      * @depends testGet_all
      */
-    public function testGet_type( $typo )
+    public function testGet_type( $parser )
     {
 		$words = array();
-		$tokens = $typo->get_all();
+		$tokens = $parser->get_all();
 		foreach ( $tokens as $token ) {
 			if ( 'word' === $token['value'] ) {
 				$words[] = $token;
 			}
 		}
 
-		$this->assertArraySubset( $words, $typo->get_type('word') );
+		$this->assertArraySubset( $words, $parser->get_type('word') );
     }
 }
