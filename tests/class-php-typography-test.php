@@ -1078,6 +1078,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( E_USER_WARNING, "Fake error message", "/some/path/DOMTreeBuilder.php", '666', array(), true ),
     		array( E_USER_ERROR,   "Fake error message", "/some/path/DOMTreeBuilder.php", '666', array(), false ),
     		array( E_USER_WARNING, "Fake error message", "/some/path/SomeFile.php",       '666', array(), false ),
+    		array( E_USER_NOTICE,  "Fake error message", "/some/path/DOMTreeBuilder.php", '666', array(), false ),
     	);
     }
 
@@ -1092,7 +1093,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	} else {
     		$this->assertFalse( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
     	}
+
+    	// try again when we are not interested
+    	$old_level = error_reporting( 0 );
+    	$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+    	error_reporting( $old_level );
     }
+
 
     /**
      * @covers ::get_prev_chr
