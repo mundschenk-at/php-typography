@@ -1711,8 +1711,7 @@ class PHP_Typography {
 		$text_parser  = $this->get_text_parser();
 
 		// parse the html
-		$dom = $html5_parser->loadHTML( '<body>' . $html . '</body>' );
-		$dom->encoding = 'UTF-8';
+		$dom = $this->parse_html( $html5_parser, $html );
 		$xpath = new \DOMXPath( $dom );
 
 		// query some nodes
@@ -1812,8 +1811,7 @@ class PHP_Typography {
 		$html5_parser = $this->get_html5_parser();
 
 		// parse the html
-		$dom = $html5_parser->loadHTML( '<body>' . $html . '</body>' );
-		$dom->encoding = 'UTF-8';
+		$dom = $this->parse_html( $html5_parser, $html );
 		$xpath = new \DOMXPath( $dom );
 
 		// query some nodes in the DOM
@@ -1848,6 +1846,54 @@ class PHP_Typography {
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
 	}
+
+	/**
+	 * Parse HTML5 fragment while ignoring certain warnings for invalid HTML code (e.g. duplicate IDs).
+	 *
+	 * @param \Masterminds\HTML5 $parser An intialized parser object.
+	 * @param string             $html The HTML fragment to parse (not a complete document).
+	 *
+	 * @return \DOMDocument The encoding has already been set to UTF-8.
+	 */
+	function parse_html( \Masterminds\HTML5 $parser, $html ) {
+		// silence some parsing errors for invalid HTML
+		set_error_handler( array( $this, 'handle_parsing_errors' ) );
+
+		// do the actual parsing
+		$dom = $parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom->encoding = 'UTF-8';
+
+		// restor original error handling
+		restore_error_handler();
+
+		return $dom;
+	}
+
+	/**
+	 * Silently handle certain HTML parsing errors.
+	 *
+	 * @param int    $errno
+	 * @param string $errstr
+	 * @param string $errfile
+	 * @param int    $errline
+	 * @param array  $errcontext
+	 *
+	 * @return boolean Returns true if the error was handled, false otherwise.
+	 */
+	public function handle_parsing_errors( $errno, $errstr, $errfile, $errline, array $errcontext ) {
+		if ( ! ( error_reporting() & $errno ) ) {
+			return true; // not interesting
+		}
+
+		if ( $errno & E_USER_WARNING && 0 === substr_compare( $errfile, 'DOMTreeBuilder.php', -18 ) ) {
+			// ignore warnings from parser
+			return true;
+		}
+
+		// let PHP handle the rest
+		return false;
+	}
+
 
 	/**
 	 * Retrieve an array of nodes that should be skipped during processing.
@@ -2619,29 +2665,30 @@ class PHP_Typography {
 	 * @param \DOMNode $node The node to replace.
 	 * @param string  $content The HTML fragment used to replace the node.
 	 *
-	 * @return \DOMNode The new DOMFragment (or the old DO if the replacement failed).
+	 * @return \DOMNode The new DOMFragment (or the old DOMNode if the replacement failed).
 	 */
 	function set_inner_html( \DOMNode $node, $content ) {
+		$result_node = $node;
+
 		$parent = $node->parentNode;
-		if ( ! $parent ) {
-			return $node;
+		if ( empty( $parent ) ) {
+			return $node; // abort early to save cycles
 		}
 
-		$inner_html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
-		if ( ! isset( $inner_html_fragment ) ) {
-			return $node;
-		}
+		set_error_handler( array( $this, 'handle_parsing_errors' ) );
 
-		$imported_node = $node->ownerDocument->importNode( $inner_html_fragment, true );
-		if ( ! isset( $imported_node ) ) {
-			return $node;
-		}
+ 		if ( ! empty( $inner_html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content ) ) ) {
+ 			if ( ! empty( $imported_node = $node->ownerDocument->importNode( $inner_html_fragment, true ) ) ) {
+ 				if ( $parent->replaceChild( $imported_node, $node ) ) {
+				 	// success!
+				 	$result_node = $imported_node;
+ 				}
+ 			}
+ 		}
 
-		if ( $parent->replaceChild( $imported_node, $node ) ) {
-			return $imported_node;
-		} else {
-			return $node;
-		}
+ 		restore_error_handler();
+
+		return $result_node;
 	}
 
 	/**

@@ -1071,6 +1071,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return array( $errno, $errstr, $errfile, $errline, $errcontext, $result )
+     */
+    public function provide_handle_parsing_errors() {
+    	return array(
+    		array( E_USER_WARNING, "Fake error message", "/some/path/DOMTreeBuilder.php", '666', array(), true ),
+    		array( E_USER_ERROR,   "Fake error message", "/some/path/DOMTreeBuilder.php", '666', array(), false ),
+    		array( E_USER_WARNING, "Fake error message", "/some/path/SomeFile.php",       '666', array(), false ),
+    	);
+    }
+
+    /**
+     * @covers ::handle_parsing_errors
+     *
+     * @dataProvider provide_handle_parsing_errors
+     */
+    public function testHandle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext, $result ) {
+    	if ( $result ) {
+    		$this->assertTrue( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+    	} else {
+    		$this->assertFalse( $this->typo->handle_parsing_errors( $errno, $errstr, $errfile, $errline, $errcontext ) );
+    	}
+    }
+
+    /**
      * @covers ::get_prev_chr
      * @covers ::get_previous_textnode
      */
