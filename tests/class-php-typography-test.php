@@ -180,9 +180,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * Integrate all three "ignore" variants.
      *
-	 * @covers \PHP_Typography\PHP_Typography::set_classes_to_ignore
-     * @covers \PHP_Typography\PHP_Typography::set_ids_to_ignore
-     * @covers \PHP_Typography\PHP_Typography::set_tags_to_ignore
+	 * @covers ::set_classes_to_ignore
+     * @covers ::set_ids_to_ignore
+     * @covers ::set_tags_to_ignore
+     * @covers ::query_tags_to_ignore
      *
      * @depends test_set_ids_to_ignore
      * @depends test_set_classes_to_ignore
@@ -1650,16 +1651,39 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+    public function provide_single_character_word_spacing_data() {
+    	return array(
+    		array( 'A cat in a tree', 'A cat in a&nbsp;tree' ),
+    		array( 'Works with strange characters like ä too. But not Ä or does it?', 'Works with strange characters like &auml;&nbsp;too. But not &Auml;&nbsp;or does it?' ),
+    		array( 'Should work even here: <span>a word</span> does not want to be alone.', 'Should work even here: <span>a&nbsp;word</span> does not want to be alone.' ),
+    		array( 'And here:<span> </span>a word does not want to be alone.', 'And here:<span> </span>a&nbsp;word does not want to be alone.' ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::single_character_word_spacing
-     * @todo   Implement test_single_character_word_spacing().
+     * @covers ::single_character_word_spacing
+     *
+     * @dataProvider provide_single_character_word_spacing_data
      */
-    public function test_single_character_word_spacing()
+    public function test_single_character_word_spacing( $input, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_single_character_word_spacing( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::single_character_word_spacing
+     *
+     * @dataProvider provide_single_character_word_spacing_data
+     */
+    public function test_single_character_word_spacing_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_single_character_word_spacing( false );
+
+    	$this->assertSame( $input, $typo->process( $input ) );
     }
 
     public function provide_dash_spacing_data() {
