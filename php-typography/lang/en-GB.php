@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 /*
 	Project: wp-Typography
@@ -8626,3 +8626,4 @@ $patgen = array(
 	),
 );
 
+	

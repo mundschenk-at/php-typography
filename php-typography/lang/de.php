@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 /*
 	Project: wp-Typography
@@ -51,14 +51,13 @@
 
 $patgenLanguage = __( 'German', 'wp-typography' );
 
-$patgenExceptions = array(
-	);
+$patgenExceptions = array();
 
-$patgenMaxSeg = 11;
+$patgenMaxSeg = 10;
 
 $patgen = array(
 	'begin' => array(
-			'aba'	=>	'0010',
+		'aba'	=>	'0010',
 		'abi'	=>	'0004',
 		'abl'	=>	'0030',
 		'abo'	=>	'0002',
@@ -402,7 +401,7 @@ $patgen = array(
 	),
 
 	'end' => array(
-			'able'	=>	'00400',
+		'able'	=>	'00400',
 		'abo'	=>	'0200',
 		'abs'	=>	'2000',
 		'abst'	=>	'20000',
@@ -963,7 +962,7 @@ $patgen = array(
 	),
 
 	'all' => array(
-			'aab'	=>	'0100',
+		'aab'	=>	'0100',
 		'aabe'	=>	'00200',
 		'aac'	=>	'0010',
 		'aagr'	=>	'00200',
@@ -15273,3 +15272,4 @@ $patgen = array(
 	),
 );
 
+	
