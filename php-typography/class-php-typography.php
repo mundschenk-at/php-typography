@@ -945,7 +945,7 @@ class PHP_Typography {
 				(?:
 					(\s)
 					(\w)
-					\s
+					{$this->components['normalSpaces']}
 					(?=\w)
 				)
 			/xu";
