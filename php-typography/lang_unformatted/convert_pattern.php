@@ -141,8 +141,8 @@ class Pattern_Converter {
 
 $patgenLanguage = __( <?= $this->quote . $this->language . $this->quote ?>, <?= $this->quote ?>wp-typography<?= $this->quote ?> );
 
-$patgenExceptions = array(<?php if ( count($exceptions) > 0 ) echo ""; ?>
-<?php
+$patgenExceptions = array(<?php if ( count( $exceptions ) > 0 ) echo "\n";
+
 		foreach ( $exceptions as $exception ) {
 			echo "\t{$this->quote}" . mb_strtolower( str_replace( '-', '', $exception ) ) . "{$this->quote}\t=>\t{$this->quote}" . mb_strtolower( $exception ) . "{$this->quote},\n";
 		}
@@ -152,8 +152,8 @@ $patgenExceptions = array(<?php if ( count($exceptions) > 0 ) echo ""; ?>
 $patgenMaxSeg = <?= max( array_map( 'strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ) ?>;
 
 $patgen = array(
-	<?= $this->quote ?>begin<?= $this->quote ?> => array(
-<?php
+	<?= $this->quote ?>begin<?= $this->quote ?> => array(<?php if ( count( $begin_patterns ) > 0 ) echo "\n";
+
 		foreach ( $begin_patterns as $key => $pat ) {
 			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
@@ -161,16 +161,16 @@ $patgen = array(
 ?>
 	),
 
-	<?= $this->quote ?>end<?= $this->quote ?> => array(
-<?php
+	<?= $this->quote ?>end<?= $this->quote ?> => array(<?php if ( count( $end_patterns ) > 0 ) echo "\n";
+
 		foreach ( $end_patterns as $key => $pat ) {
 			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 ?>
 	),
 
-	<?= $this->quote ?>all<?= $this->quote ?> => array(
-<?php
+	<?= $this->quote ?>all<?= $this->quote ?> => array(<?php if ( count( $all_patterns ) > 0 ) echo "\n";
+
 		foreach ( $all_patterns as $key => $pat ) {
 			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
