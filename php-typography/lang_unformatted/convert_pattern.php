@@ -220,7 +220,7 @@ $patgen = array(
 					$reading_patterns = false;
 				} elseif ( preg_match( '/^\s*([\w.]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 					$patterns[] = $matches[1];
-				} elseif ( preg_match( '/^\s*(?:([\w.]+)\s*)+(?:%.*)?$/u',  $line, $matches ) ) {
+				} elseif ( preg_match( '/^\s*((?:[\w.]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 					// sometimes there are multiple patterns on a single line
 					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 						$patterns[] = $match;
@@ -239,7 +239,12 @@ $patgen = array(
 					$reading_exceptions = false;
 				} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 					$exceptions[] = $matches[1];
-				} elseif ( preg_match( '/^\s(?:*%.*)$/u', $line, $matches ) ) {
+				} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+					// sometimes there are multiple exceptions on a single line
+					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+						$exceptions[] = $match;
+					}
+				} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
 					// ignore comments and whitespace in exceptions
 				} else {
 					echo "Error: unknown line $line\n";
