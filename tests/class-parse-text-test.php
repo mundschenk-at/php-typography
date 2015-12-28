@@ -39,7 +39,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function test__construct()
+    public function test_constructor()
     {
     	$parser = new \PHP_Typography\Parse_Text( array( 'UTF-8' ) );
 
@@ -54,7 +54,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad()
+    public function test_load()
     {
     	$too_long = 'A really long string with a word that is wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwway too long.';
     	$still_too_long = 'A really long string with a word that is aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalmost too long.';
@@ -82,7 +82,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad_email()
+    public function test_load_email()
     {
     	$parser = $this->parser;
 
@@ -102,7 +102,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad_url()
+    public function test_load_url()
     {
     	$parser = $this->parser;
 
@@ -126,7 +126,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad_compound_word()
+    public function test_load_compound_word()
     {
     	$parser = $this->parser;
 
@@ -146,7 +146,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad_invalid_encoding()
+    public function test_load_invalid_encoding()
     {
     	$string = mb_convert_encoding( 'Ein längerer String im falschen Zeichensatz', 'ISO-8859-2' );
     	$parser = $this->parser;
@@ -157,7 +157,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::load
      */
-    public function testLoad_not_a_string()
+    public function test_load_not_a_string()
     {
     	$parser = $this->parser;
 
@@ -166,7 +166,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::reload
-     * @depends testLoad
+     * @depends test_load
      */
     public function testReload( \PHP_Typography\Parse_Text $parser )
     {
@@ -186,7 +186,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::unload
      */
-    public function testUnload()
+    public function test_unload()
     {
     	$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
     	$parser = $this->parser;
@@ -202,7 +202,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::clear
      */
-    public function testClear()
+    public function test_clear()
     {
     	$parser = $this->parser;
     	$interesting = 'Quoth the raven, "nevermore"!';
@@ -217,7 +217,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::update
      */
-    public function testUpdate()
+    public function test_update()
     {
     	$parser = $this->parser;
     	$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
@@ -238,7 +238,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::get_all
      */
-    public function testGet_all()
+    public function test_get_all()
     {
     	$interesting = 'Quoth the raven, "nevermore"!';
     	$parser = $this->parser;
@@ -252,9 +252,9 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_spaces
-     * @depends testGet_all
+     * @depends test_get_all
      */
-    public function testGet_spaces( $parser )
+    public function test_get_spaces( $parser )
     {
     	$tokens = $parser->get_spaces();
     	$this->assertCount(3, $tokens);
@@ -264,9 +264,9 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_punctuation
-     * @depends testGet_all
+     * @depends test_get_all
      */
-    public function testGet_punctuation( $parser )
+    public function test_get_punctuation( $parser )
     {
     	$tokens = $parser->get_punctuation();
     	$this->assertCount(3, $tokens);
@@ -276,9 +276,9 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_words
-     * @depends testGet_all
+     * @depends test_get_all
      */
-    public function testGet_words( $parser )
+    public function test_get_words( $parser )
     {
     	$tokens = $parser->get_words();
     	$this->assertCount(4, $tokens);
@@ -330,9 +330,9 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_other
-     * @depends testGet_all
+     * @depends test_get_all
      */
-    public function testGet_other( $parser )
+    public function test_get_other( $parser )
     {
     	$tokens = $parser->get_other();
     	$this->assertCount(0, $tokens);
@@ -342,9 +342,9 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get_type
-     * @depends testGet_all
+     * @depends test_get_all
      */
-    public function testGet_type( $parser )
+    public function test_get_type( $parser )
     {
 		$words = array();
 		$tokens = $parser->get_all();
