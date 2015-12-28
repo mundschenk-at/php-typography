@@ -1,30 +1,51 @@
 <?php
 
 /**
- * Multibyte-safe str_split function.
+ *  This file is part of wp-Typography.
  *
- * @param string $str
- * @param int    $length Optional. Default 1.
- * @param string $encoding Optional. Default 'UTF-8'.
+ *	Copyright 2015 Peter Putzer.
+ *
+ *	This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ *  ***
+ *
+ *  @package wpTypography/PHPTypography/Converter
+ *  @author Peter Putzer <github@mundschenk.at>
+ *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
-function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
-	if ( $length < 1 ) {
-		return false;
-	}
 
-	$result = array();
-	$multibyte_length = mb_strlen( $str, $encoding );
-	for ( $i = 0; $i < $multibyte_length; $i += $length ) {
-		$result[] = mb_substr( $str, $i, $length, $encoding );
-	}
+namespace PHP_Typography;
 
-	return $result;
-}
+require_once( dirname( __DIR__ ) . '/php-typography-functions.php' );
 
+/**
+ * Retrieve patgen segment from TeX hyphenation pattern.
+ *
+ * @param string $pattern
+ * @return string
+ */
 function get_segment( $pattern ) {
 	return preg_replace( '/[0-9]/', '', str_replace( '.', '', $pattern ) );
 }
 
+/**
+ * Calculate patgen sequence from TeX hyphenation pattern.
+ *
+ * @param string $pattern
+ * @return string
+ */
 function get_sequence( $pattern ) {
 	$characters = mb_str_split( str_replace( '.', '', $pattern ) );
 	$result = array();
@@ -55,18 +76,35 @@ function get_sequence( $pattern ) {
 	return implode( $result );
 }
 
-function write_results( array $patterns, array $exceptions, array $comments, $language ) {
+/**
+ * Echo hyphenation pattern file for wp-Typography.
+ *
+ * @param array  $patterns
+ * @param array  $exceptions
+ * @param array  $comments
+ * @param string $language
+ */
+function write_results( array $patterns, array $exceptions, array $comments, $language, $filename ) {
 	$begin_patterns = array();
 	$end_patterns   = array();
 	$all_patterns   = array();
 
 	foreach ( $patterns as $pattern ) {
 		if ( preg_match( '/^\.(.+)$/', $pattern, $matches ) ) {
-			$begin_patterns[ get_segment( $matches[1] ) ] = get_sequence( $matches[1] );
+			$segment = get_segment( $matches[1] );
+			if ( ! isset( $begin_patterns[ $segment ] ) ) {
+				$begin_patterns[ $segment ] = get_sequence( $matches[1] );
+			}
 		} elseif ( preg_match( '/^(.+)\.$/', $pattern, $matches ) ) {
-			$end_patterns[ get_segment( $matches[1] ) ]   = get_sequence( $matches[1] );
+			$segment = get_segment( $matches[1] );
+			if ( ! isset( $end_patterns[ $segment ] ) ) {
+				$end_patterns[ $segment ] = get_sequence( $matches[1] );
+			}
 		} else {
-			$all_patterns[ get_segment( $pattern ) ]      = get_sequence( $pattern );
+			$segment = get_segment( $pattern );
+			if ( ! isset( $all_patterns[ $segment ] ) ) {
+				$all_patterns[ $segment ] = get_sequence( $pattern );
+			}
 		}
 	}
 
@@ -79,7 +117,7 @@ function write_results( array $patterns, array $exceptions, array $comments, $la
 	File modified to place pattern and exceptions in arrays that can be understood in php files.
 	This file is released under the same copyright as the below referenced original file
 	Original unmodified file is available at: http://mirror.unl.edu/ctan/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
-	Original file name: hyph-_______________.tex
+	Original file name: <?php echo basename( $filename ); ?>
 
 //============================================================================================================
 	ORIGINAL FILE INFO
@@ -89,6 +127,7 @@ function write_results( array $patterns, array $exceptions, array $comments, $la
 		echo $comment;
 	}
 ?>
+
 
 //============================================================================================================
 
@@ -104,10 +143,10 @@ $patgenExceptions = array(
 ?>
 );
 
-$patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( 'get_segment', $patterns ) ) ); ?>;
+$patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( '\PHP_Typography\get_segment', $patterns ) ) ); ?>;
 
 $patgen = array(
-	'begin' => array(
+	"begin" => array(
 <?php
 	foreach ( $begin_patterns as $key => $pat ) {
 		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
@@ -115,16 +154,14 @@ $patgen = array(
 
 ?>
 	),
-
-	'end' => array(
+	"end" => array(
 <?php
 	foreach ( $end_patterns as $key => $pat ) {
 		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
 	}
 ?>
 	),
-
-	'all' => array(
+	"all" => array(
 <?php
 	foreach ( $all_patterns as $key => $pat ) {
 		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
@@ -136,6 +173,12 @@ $patgen = array(
 <?php
 }
 
+/**
+ * Parse the given TeX file.
+ *
+ * @param string $filename
+ * @param string $language
+ */
 function convert_pattern( $filename, $language ) {
 	if ( file_exists( $filename ) ) {
 		// results
@@ -199,7 +242,7 @@ function convert_pattern( $filename, $language ) {
 			}
 		}
 
-		write_results( $patterns, $exceptions, $comments, $language );
+		write_results( $patterns, $exceptions, $comments, $language, $filename );
 
 	} else {
 		echo "Error: unknown pattern file '$filename'\n";
