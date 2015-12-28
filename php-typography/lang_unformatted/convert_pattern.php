@@ -30,94 +30,100 @@ namespace PHP_Typography;
 
 require_once( dirname( __DIR__ ) . '/php-typography-functions.php' );
 
-/**
- * Retrieve patgen segment from TeX hyphenation pattern.
- *
- * @param string $pattern
- * @return string
- */
-function get_segment( $pattern ) {
-	return preg_replace( '/[0-9]/', '', str_replace( '.', '', $pattern ) );
-}
+class Pattern_Converter {
 
-/**
- * Calculate patgen sequence from TeX hyphenation pattern.
- *
- * @param string $pattern
- * @return string
- */
-function get_sequence( $pattern ) {
-	$characters = mb_str_split( str_replace( '.', '', $pattern ) );
-	$result = array();
+	private $url;
+	private $language;
+	private $quote;
 
-	foreach ( $characters as $index => $chr ) {
-		if ( ctype_digit( $chr ) ) {
-			$result[] = $chr;
-		} else {
-			if ( ! isset( $characters[ $index - 1 ] ) || ! ctype_digit( $characters[ $index - 1 ] ) ) {
-				$result[] = '0';
-			}
+	/**
+	 * Retrieve patgen segment from TeX hyphenation pattern.
+	 *
+	 * @param string $pattern
+	 * @return string
+	 */
+	function get_segment( $pattern ) {
+		return preg_replace( '/[0-9]/', '', str_replace( '.', '', $pattern ) );
+	}
 
-			if ( ! isset( $characters[ $index + 1 ] ) && ! ctype_digit( $characters[ $index ] ) ) {
-				$result[] = '0';
+	/**
+	 * Calculate patgen sequence from TeX hyphenation pattern.
+	 *
+	 * @param string $pattern
+	 * @return string
+	 */
+	function get_sequence( $pattern ) {
+		$characters = mb_str_split( str_replace( '.', '', $pattern ) );
+		$result = array();
+
+		foreach ( $characters as $index => $chr ) {
+			if ( ctype_digit( $chr ) ) {
+				$result[] = $chr;
+			} else {
+				if ( ! isset( $characters[ $index - 1 ] ) || ! ctype_digit( $characters[ $index - 1 ] ) ) {
+					$result[] = '0';
+				}
+
+				if ( ! isset( $characters[ $index + 1 ] ) && ! ctype_digit( $characters[ $index ] ) ) {
+					$result[] = '0';
+				}
 			}
 		}
+
+		// error checking
+		$count = count( $result );
+		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
+		if ( $count !== $count_seg + 1 ) {
+			error_log("Invalid segment length $count for pattern $pattern (result sequence " . implode( $result ) . ")" );
+
+			die( -3000 );
+		}
+
+		return implode( $result );
 	}
 
-	// error checking
-	$count = count( $result );
-	$count_seg = mb_strlen( get_segment( $pattern ) );
-	if ( $count !== $count_seg + 1 ) {
-		error_log("Invalid segment length $count for pattern $pattern (result sequence " . implode( $result ) . ")" );
+	/**
+	 * Echo hyphenation pattern file for wp-Typography.
+	 *
+	 * @param array  $patterns
+	 * @param array  $exceptions
+	 * @param array  $comments
+	 * @param string $language
+	 */
+	function write_results( array $patterns, array $exceptions, array $comments ) {
+		$begin_patterns = array();
+		$end_patterns   = array();
+		$all_patterns   = array();
 
-		die( -3000 );
-	}
-
-	return implode( $result );
-}
-
-/**
- * Echo hyphenation pattern file for wp-Typography.
- *
- * @param array  $patterns
- * @param array  $exceptions
- * @param array  $comments
- * @param string $language
- */
-function write_results( array $patterns, array $exceptions, array $comments, $language, $filename ) {
-	$begin_patterns = array();
-	$end_patterns   = array();
-	$all_patterns   = array();
-
-	foreach ( $patterns as $pattern ) {
-		if ( preg_match( '/^\.(.+)$/', $pattern, $matches ) ) {
-			$segment = get_segment( $matches[1] );
-			if ( ! isset( $begin_patterns[ $segment ] ) ) {
-				$begin_patterns[ $segment ] = get_sequence( $matches[1] );
-			}
-		} elseif ( preg_match( '/^(.+)\.$/', $pattern, $matches ) ) {
-			$segment = get_segment( $matches[1] );
-			if ( ! isset( $end_patterns[ $segment ] ) ) {
-				$end_patterns[ $segment ] = get_sequence( $matches[1] );
-			}
-		} else {
-			$segment = get_segment( $pattern );
-			if ( ! isset( $all_patterns[ $segment ] ) ) {
-				$all_patterns[ $segment ] = get_sequence( $pattern );
+		foreach ( $patterns as $pattern ) {
+			if ( preg_match( '/^\.(.+)$/', $pattern, $matches ) ) {
+				$segment = $this->get_segment( $matches[1] );
+				if ( ! isset( $begin_patterns[ $segment ] ) ) {
+					$begin_patterns[ $segment ] = $this->get_sequence( $matches[1] );
+				}
+			} elseif ( preg_match( '/^(.+)\.$/', $pattern, $matches ) ) {
+				$segment = $this->get_segment( $matches[1] );
+				if ( ! isset( $end_patterns[ $segment ] ) ) {
+					$end_patterns[ $segment ] = $this->get_sequence( $matches[1] );
+				}
+			} else {
+				$segment = $this->get_segment( $pattern );
+				if ( ! isset( $all_patterns[ $segment ] ) ) {
+					$all_patterns[ $segment ] = $this->get_sequence( $pattern );
+				}
 			}
 		}
-	}
 
-	echo "<?php \n\n";
-?>
+		echo "<?php \n\n";
+	?>
 /*
 	Project: wp-Typography
 	Project URI: https://code.mundschenk.at/wp-typography/
 
 	File modified to place pattern and exceptions in arrays that can be understood in php files.
 	This file is released under the same copyright as the below referenced original file
-	Original unmodified file is available at: http://mirror.unl.edu/ctan/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
-	Original file name: <?php echo basename( $filename ); ?>
+	Original unmodified file is available at: <?php echo dirname( $this->url ); ?>
+	Original file name: <?php echo basename( $this->url ); ?>
 
 //============================================================================================================
 	ORIGINAL FILE INFO
@@ -131,56 +137,66 @@ function write_results( array $patterns, array $exceptions, array $comments, $la
 
 //============================================================================================================
 
- */
+*/
 
-$patgenLanguage = __( '<?php echo $language ?>', 'wp-typography' );
+$patgenLanguage = __( '<?php echo $this->language ?>', 'wp-typography' );
 
 $patgenExceptions = array(
-<?php
-	foreach ( $exceptions as $exception ) {
-		echo "\t\"" . mb_strtolower( str_replace( '-', '', $exception ) ) . "\"\t=>\t\"" . mb_strtolower( $exception ) . "\",\n";
-	}
-?>
+	<?php
+		foreach ( $exceptions as $exception ) {
+			echo "\t\"" . mb_strtolower( str_replace( '-', '', $exception ) ) . "\"\t=>\t\"" . mb_strtolower( $exception ) . "\",\n";
+		}
+	?>
 );
 
-$patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( '\PHP_Typography\get_segment', $patterns ) ) ); ?>;
+$patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ); ?>;
 
 $patgen = array(
 	"begin" => array(
-<?php
-	foreach ( $begin_patterns as $key => $pat ) {
-		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
-	}
+	<?php
+		foreach ( $begin_patterns as $key => $pat ) {
+			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+		}
 
-?>
+	?>
 	),
 	"end" => array(
-<?php
-	foreach ( $end_patterns as $key => $pat ) {
-		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
-	}
-?>
+	<?php
+		foreach ( $end_patterns as $key => $pat ) {
+			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+		}
+	?>
 	),
 	"all" => array(
-<?php
-	foreach ( $all_patterns as $key => $pat ) {
-		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
-	}
-?>
+	<?php
+		foreach ( $all_patterns as $key => $pat ) {
+			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+		}
+	?>
 	),
 );
 
-<?php
-}
+	<?php
+	}
 
-/**
- * Parse the given TeX file.
- *
- * @param string $filename
- * @param string $language
- */
-function convert_pattern( $filename, $language ) {
-	if ( file_exists( $filename ) ) {
+	function __construct( $url, $language, $quote = '"' ) {
+		$this->url      = $url;
+		$this->language = $language;
+		$this->quote    = $quote;
+	}
+
+	/**
+	 * Parse the given TeX file.
+	 */
+	function convert() {
+		if ( ! file_exists( $this->url ) ) {
+			$file_headers = @get_headers( $this->url );
+			if ( $file_headers[0] === 'HTTP/1.0 404 Not Found' ) {
+				echo "Error: unknown pattern file '{$this->url}'\n";
+				die(-3);
+			}
+		}
+
 		// results
 		$comments   = array();
 		$patterns   = array();
@@ -190,33 +206,33 @@ function convert_pattern( $filename, $language ) {
 		$reading_patterns   = false;
 		$reading_exceptions = false;
 
-		$file = new \SplFileObject( $filename );
+		$file = new \SplFileObject( $this->url );
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();
 
 			if ( $reading_patterns ) {
 				if ( preg_match( '/^\s*([\w.]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_patterns = false;
- 					$patterns[] = $matches[1];
+					$patterns[] = $matches[1];
 				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_patterns = false;
 				} elseif ( preg_match( '/^\s*([\w.]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
- 					$patterns[] = $matches[1];
+					$patterns[] = $matches[1];
 				} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
 					// ignore comments and whitespace in patterns
 				} else {
 					echo "Error: unknown line $line\n";
 					die(-1000);
 				}
- 			} elseif ( $reading_exceptions ) {
- 				if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
- 					$reading_exceptions = false;
- 					$exceptions[] = $matches[1];
- 				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			} elseif ( $reading_exceptions ) {
+				if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+					$reading_exceptions = false;
+					$exceptions[] = $matches[1];
+				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_exceptions = false;
 				} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
- 					$exceptions[] = $matches[1];
- 				} elseif ( preg_match( '/^\s(?:*%.*)$/u', $line, $matches ) ) {
+					$exceptions[] = $matches[1];
+				} elseif ( preg_match( '/^\s(?:*%.*)$/u', $line, $matches ) ) {
 					// ignore comments and whitespace in exceptions
 				} else {
 					echo "Error: unknown line $line\n";
@@ -226,13 +242,16 @@ function convert_pattern( $filename, $language ) {
 				// something else
 
 				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
-					// comment line
 					$comments[] = $line;
-
 				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_patterns = true;
 				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_exceptions = true;
+				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
+					// ignore this line completely
+				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
+					// treat other commands as comments unless we are matching exceptions or patterns
+					$comments[] = $line;
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
 					// do nothing
 				} else {
@@ -242,12 +261,7 @@ function convert_pattern( $filename, $language ) {
 			}
 		}
 
-		write_results( $patterns, $exceptions, $comments, $language, $filename );
-
-	} else {
-		echo "Error: unknown pattern file '$filename'\n";
-
-		die(-3);
+		$this->write_results( $patterns, $exceptions, $comments );
 	}
 }
 
@@ -293,4 +307,5 @@ if ( empty( $language ) ) {
 	die( -2 );
 }
 
-convert_pattern( $filename, $language );
+$converter = new Pattern_Converter( $filename, $language, $quote = '"' );
+$converter->convert();
