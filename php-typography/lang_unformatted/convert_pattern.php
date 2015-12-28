@@ -149,7 +149,7 @@ $patgenExceptions = array(<?php if ( count( $exceptions ) > 0 ) echo "\n";
 ?>
 );
 
-$patgenMaxSeg = <?= max( array_map( 'strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ) ?>;
+$patgenMaxSeg = <?= max( array_map( 'mb_strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ) ?>;
 
 $patgen = array(
 	<?= $this->quote ?>begin<?= $this->quote ?> => array(<?php if ( count( $begin_patterns ) > 0 ) echo "\n";
