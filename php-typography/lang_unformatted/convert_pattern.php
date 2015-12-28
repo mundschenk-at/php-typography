@@ -123,7 +123,7 @@ class Pattern_Converter {
 	File modified to place pattern and exceptions in arrays that can be understood in php files.
 	This file is released under the same copyright as the below referenced original file
 	Original unmodified file is available at: <?php echo dirname( $this->url ); ?>
-	Original file name: <?php echo basename( $this->url ); ?>
+	Original file name: <?= basename( $this->url ) ?>
 
 //============================================================================================================
 	ORIGINAL FILE INFO
@@ -139,12 +139,12 @@ class Pattern_Converter {
 
 */
 
-$patgenLanguage = __( '<?php echo $this->language ?>', 'wp-typography' );
+$patgenLanguage = __( <?= $this->quote . $this->language . $this->quote ?>, <?= $this->quote ?>wp-typography<?= $this->quote ?> );
 
 $patgenExceptions = array(
 	<?php
 		foreach ( $exceptions as $exception ) {
-			echo "\t\"" . mb_strtolower( str_replace( '-', '', $exception ) ) . "\"\t=>\t\"" . mb_strtolower( $exception ) . "\",\n";
+			echo "\t{$this->quote}" . mb_strtolower( str_replace( '-', '', $exception ) ) . "{$this->quote}\t=>\t{$this->quote}" . mb_strtolower( $exception ) . "{$this->quote},\n";
 		}
 	?>
 );
@@ -152,25 +152,27 @@ $patgenExceptions = array(
 $patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ); ?>;
 
 $patgen = array(
-	"begin" => array(
+	<?= $this->quote ?>begin<?= $this->quote ?> => array(
 	<?php
 		foreach ( $begin_patterns as $key => $pat ) {
-			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 
 	?>
 	),
-	"end" => array(
+
+	<?= $this->quote ?>end<?= $this->quote ?> => array(
 	<?php
 		foreach ( $end_patterns as $key => $pat ) {
-			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 	?>
 	),
-	"all" => array(
+
+	<?= $this->quote ?>all<?= $this->quote ?> => array(
 	<?php
 		foreach ( $all_patterns as $key => $pat ) {
-			echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
+			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 	?>
 	),
@@ -265,8 +267,8 @@ $patgen = array(
 	}
 }
 
-$shortopts = "l:f:hv";
-$longopts = array( "lang:", "file:", "help", "version" );
+$shortopts = "l:f:hvs";
+$longopts = array( "lang:", "file:", "help", "version", "single-quotes" );
 
 $options = getopt( $shortopts, $longopts );
 
@@ -279,8 +281,8 @@ if ( isset( $options['v'] ) || isset( $options['version'] ) ) {
 // print help
 if ( isset( $options['h'] ) || isset( $options['help'] ) ) {
 	echo "Usage: convert_pattern [arguments]\n";
-	echo "convert_pattern -l <language> -f <filename>\t\tconvert <filename>\n";
-	echo "convert_pattern --lang <language> --file <filename>\tconvert <filename>\n";
+	echo "convert_pattern -l <language> -f <filename>\t\tconvert <filename> -s\n";
+	echo "convert_pattern --lang <language> --file <filename>\tconvert <filename> --single-quotes\n";
 	echo "convert_pattern -v|--version\t\t\t\tprint version\n";
 	echo "convert_pattern -h|--help\t\t\t\tprint help\n";
 	die( 0 );
@@ -307,5 +309,10 @@ if ( empty( $language ) ) {
 	die( -2 );
 }
 
-$converter = new Pattern_Converter( $filename, $language, $quote = '"' );
+$quote = '"';
+if ( isset( $options['l'] ) || isset( $options['single-quote'] ) ) {
+	$quote = "'";
+}
+
+$converter = new Pattern_Converter( $filename, $language, $quote );
 $converter->convert();
