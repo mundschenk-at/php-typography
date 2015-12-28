@@ -1787,7 +1787,7 @@ class PHP_Typography {
 
 			// Until now, we've only been working on a textnode.
 			// HTMLify result
-			$this->set_inner_html( $textnode, $textnode->data );
+			$this->replace_node_with_html( $textnode, $textnode->data );
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
@@ -1841,7 +1841,7 @@ class PHP_Typography {
 
 			// Until now, we've only been working on a textnode.
 			// HTMLify result
-			$this->set_inner_html( $textnode, $textnode->data );
+			$this->replace_node_with_html( $textnode, $textnode->data );
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
@@ -2660,15 +2660,15 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Set "innerHTML" for any \DOMNode. Uses the HTML5 parser.
+	 * Replace the given node with HTML content. Uses the HTML5 parser.
 	 *
-	 * @param \DOMNode $node The node to replace.
-	 * @param string  $content The HTML fragment used to replace the node.
+	 * @param \DOMNode $node    The node to replace.
+	 * @param string   $content The HTML fragment used to replace the node.
 	 *
-	 * @return \DOMNode The new DOMFragment (or the old DOMNode if the replacement failed).
+	 * @return \DOMNode|array An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
 	 */
-	function set_inner_html( \DOMNode $node, $content ) {
-		$result_node = $node;
+	function replace_node_with_html( \DOMNode $node, $content ) {
+		$result = $node;
 
 		$parent = $node->parentNode;
 		if ( empty( $parent ) ) {
@@ -2677,18 +2677,22 @@ class PHP_Typography {
 
 		set_error_handler( array( $this, 'handle_parsing_errors' ) );
 
- 		if ( ! empty( $inner_html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content ) ) ) {
- 			if ( ! empty( $imported_node = $node->ownerDocument->importNode( $inner_html_fragment, true ) ) ) {
- 				if ( $parent->replaceChild( $imported_node, $node ) ) {
-				 	// success!
-				 	$result_node = $imported_node;
- 				}
- 			}
- 		}
+		if ( ! empty( $html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content ) ) ) {
+			if ( ! empty( $imported_fragment = $node->ownerDocument->importNode( $html_fragment, true ) ) ) {
+				// save the children of the imported DOMDocumentFragment before replacement
+				$children = nodelist_to_array( $imported_fragment->childNodes );
+
+				if ( false !== $parent->replaceChild( $imported_fragment, $node ) ) {
+				 	// Success! We return the saved array of DOMNodes as
+				 	// $imported_fragment is just an empty DOMDocumentFragment now.
+				 	$result = $children;
+				}
+			}
+		}
 
  		restore_error_handler();
 
-		return $result_node;
+		return $result;
 	}
 
 	/**
