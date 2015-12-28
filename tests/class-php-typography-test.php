@@ -1921,15 +1921,37 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_inner_html
-     * @todo   Implement test_set_inner_html().
+     * @covers ::replace_node_with_html
      */
-    public function test_set_inner_html()
+    public function test_replace_node_with_html()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$dom = $typo->parse_html( $typo->get_html5_parser(), '<p>foo</p>' );
+
+    	$this->assertInstanceOf( '\DOMDocument', $dom );
+    	$original_node = $dom->getElementsByTagName( 'p' )->item( 0 );
+    	$parent = $original_node->parentNode;
+    	$new_nodes = $typo->replace_node_with_html( $original_node, '<div><span>bar</span></div>' );
+
+    	$this->assertTrue( is_array( $new_nodes ) );
+		$this->assertContainsOnlyInstancesOf( '\DOMNode', $new_nodes );
+    	foreach ( $new_nodes as $node ) {
+    		$this->assertSame( $parent, $node->parentNode );
+    	}
+    }
+
+    /**
+     * @covers ::replace_node_with_html
+     */
+    public function test_replace_node_with_html_invalid()
+    {
+    	$typo = $this->typo;
+
+    	$node = new \DOMText( 'foo' );
+    	$new_node = $typo->replace_node_with_html( $node, 'bar' );
+
+    	// without a parent node, it's not possible to replace anything
+    	$this->assertSame( $node, $new_node );
     }
 
     /**
@@ -2310,6 +2332,16 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertAttributeInstanceOf( '\PHP_Typography\Parse_Text', 'text_parser', $typo );
     }
 
+    /**
+     * @covers ::parse_html
+     */
+    public function test_parse_html() {
+    	$typo = $this->typo;
+    	$dom = $typo->parse_html( $typo->get_html5_parser(), '<p>some text</p>' );
+
+    	$this->assertInstanceOf( '\DOMDocument', $dom );
+    	$this->assertEquals( 1, $dom->getElementsByTagName( 'p' )->length );
+    }
 
     /**
      * @covers ::get_block_parent
