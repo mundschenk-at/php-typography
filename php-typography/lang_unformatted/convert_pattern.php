@@ -220,6 +220,11 @@ $patgen = array(
 					$reading_patterns = false;
 				} elseif ( preg_match( '/^\s*([\w.]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 					$patterns[] = $matches[1];
+				} elseif ( preg_match( '/^\s*(?:([\w.]+)\s*)+(?:%.*)?$/u',  $line, $matches ) ) {
+					// sometimes there are multiple patterns on a single line
+					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+						$patterns[] = $match;
+					}
 				} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
 					// ignore comments and whitespace in patterns
 				} else {
