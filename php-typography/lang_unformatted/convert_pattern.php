@@ -70,63 +70,67 @@ function write_results( array $patterns, array $exceptions, array $comments, $la
 		}
 	}
 
+	echo "<?php \n\n";
 ?>
-/**
- * Project: PHP Typography
- * Project URI: http://kingdesk.com/projects/php-typography/
- *
- * File modified to place pattern and exceptions in arrays that can be understood in php files.
- * This file is released under the same copyright as the below referenced original file
- * Original unmodified file is available at: http://mirror.unl.edu/ctan/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
- * Original file name: hyph-_______________.tex
- *
- * ============================================================================================================
- *
+/*
+	Project: wp-Typography
+	Project URI: https://code.mundschenk.at/wp-typography/
+
+	File modified to place pattern and exceptions in arrays that can be understood in php files.
+	This file is released under the same copyright as the below referenced original file
+	Original unmodified file is available at: http://mirror.unl.edu/ctan/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
+	Original file name: hyph-_______________.tex
+
+//============================================================================================================
+	ORIGINAL FILE INFO
+
 <?php
 	foreach ( $comments as $comment ) {
-		echo " * " . $comment;
+		echo $comment;
 	}
 ?>
 
-$patgenLanguage = __( '<?php echo $language ?>', 'wp-Typography' );
+//============================================================================================================
 
-$patgenExceptions = array(<?php
+ */
 
+$patgenLanguage = __( '<?php echo $language ?>', 'wp-typography' );
+
+$patgenExceptions = array(
+<?php
 	foreach ( $exceptions as $exception ) {
-		echo "\t'" . mb_strtolower( str_replace( '-', '', $exception ) ) . "'\t=>\t'" . $exception . "',\n";
+		echo "\t\"" . mb_strtolower( str_replace( '-', '', $exception ) ) . "\"\t=>\t\"" . mb_strtolower( $exception ) . "\",\n";
 	}
-
-?>);
+?>
+);
 
 $patgenMaxSeg = <?php echo max( array_map( 'strlen', array_map( 'get_segment', $patterns ) ) ); ?>;
 
 $patgen = array(
-	'begin' => array(<?php
-
+	'begin' => array(
+<?php
 	foreach ( $begin_patterns as $key => $pat ) {
-		echo "\t'" . $key . "'\t=>\t'" . $pat . "',\n";
+		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
 	}
 
 ?>
-	);
+	),
 
-	'end'	=> array(<?php
-
+	'end' => array(
+<?php
 	foreach ( $end_patterns as $key => $pat ) {
-		echo "\t'" . $key . "'\t=>\t'" . $pat . "',\n";
+		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
 	}
-
 ?>
-	);
+	),
 
-	'all'	=> array(<?php
-
+	'all' => array(
+<?php
 	foreach ( $all_patterns as $key => $pat ) {
-		echo "\t'" . $key . "'\t=>\t'" . $pat . "',\n";
+		echo "\t\t\"" . $key . "\"\t=>\t\"" . $pat . "\",\n";
 	}
-
 ?>
-	);
+	),
 );
 
 <?php
@@ -134,8 +138,6 @@ $patgen = array(
 
 function convert_pattern( $filename, $language ) {
 	if ( file_exists( $filename ) ) {
-		echo "Converting file $filename for language $language\n";
-
 		// results
 		$comments   = array();
 		$patterns   = array();
