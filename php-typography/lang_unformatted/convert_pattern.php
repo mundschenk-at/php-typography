@@ -206,6 +206,7 @@ $patgen = array(
 			"\p{Kannada}" .
 			"\p{Telugu}" .
 			"\p{Malayalam}" .
+			"\p{Thai}" .
 			"-";
 //  2366, 2367, 2368, 2369, 2370, 2371, 2372, 2402 ) .
 	}
