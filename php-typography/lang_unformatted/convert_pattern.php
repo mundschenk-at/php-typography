@@ -73,13 +73,15 @@ class Pattern_Converter {
 		// error checking
 		$count = count( $result );
 		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
+		$sequence = implode( $result );
+
 		if ( $count !== $count_seg + 1 ) {
-			error_log("Invalid segment length $count for pattern $pattern (result sequence " . implode( $result ) . ")" );
+			error_log("Invalid segment length $count for pattern $pattern (result sequence $sequence)" );
 
 			die( -3000 );
 		}
 
-		return implode( $result );
+		return $sequence;
 	}
 
 	/**
@@ -130,7 +132,7 @@ class Pattern_Converter {
 
 <?php
 	foreach ( $comments as $comment ) {
-		echo "\t" . $comment;
+		echo "\t\t" . $comment;
 	}
 ?>
 
@@ -155,7 +157,7 @@ $patgen = array(
 	<?= $this->quote ?>begin<?= $this->quote ?> => array(<?php if ( count( $begin_patterns ) > 0 ) echo "\n";
 
 		foreach ( $begin_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
 		}
 
 ?>
@@ -164,7 +166,7 @@ $patgen = array(
 	<?= $this->quote ?>end<?= $this->quote ?> => array(<?php if ( count( $end_patterns ) > 0 ) echo "\n";
 
 		foreach ( $end_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 ?>
 	),
@@ -172,7 +174,7 @@ $patgen = array(
 	<?= $this->quote ?>all<?= $this->quote ?> => array(<?php if ( count( $all_patterns ) > 0 ) echo "\n";
 
 		foreach ( $all_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . $key . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
 		}
 ?>
 	),
@@ -213,14 +215,14 @@ $patgen = array(
 			$line = $file->fgets();
 
 			if ( $reading_patterns ) {
-				if ( preg_match( '/^\s*([\w.]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+				if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_patterns = false;
 					$patterns[] = $matches[1];
 				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 					$reading_patterns = false;
-				} elseif ( preg_match( '/^\s*([\w.]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+				} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 					$patterns[] = $matches[1];
-				} elseif ( preg_match( '/^\s*((?:[\w.]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+				} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 					// sometimes there are multiple patterns on a single line
 					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 						$patterns[] = $match;
@@ -320,7 +322,7 @@ if ( empty( $language ) ) {
 }
 
 $quote = '"';
-if ( isset( $options['l'] ) || isset( $options['single-quote'] ) ) {
+if ( isset( $options['s'] ) || isset( $options['single-quote'] ) ) {
 	$quote = "'";
 }
 
