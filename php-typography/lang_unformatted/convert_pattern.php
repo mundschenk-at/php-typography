@@ -28,6 +28,8 @@
 
 namespace PHP_Typography;
 
+define( 'WP_TYPOGRAPHY_DEBUG', true );
+
 require_once( dirname( __DIR__ ) . '/php-typography-functions.php' );
 
 class Pattern_Converter {
@@ -35,6 +37,7 @@ class Pattern_Converter {
 	private $url;
 	private $language;
 	private $quote;
+	private $word_characters;
 
 	/**
 	 * Retrieve patgen segment from TeX hyphenation pattern.
@@ -187,6 +190,17 @@ $patgen = array(
 		$this->url      = $url;
 		$this->language = $language;
 		$this->quote    = $quote;
+
+		$this->word_characters = "\w.'ʼ᾽ʼ᾿’" .
+			uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ) .
+			"\p{Devanagari}" . uchr( 2385, 2386 ) .
+			"\p{Bengali}" .
+			"\p{Gujarati}" .
+			"\p{Kannada}" .
+			"\p{Telugu}" .
+			"\p{Malayalam}" .
+			"-";
+//  2366, 2367, 2368, 2369, 2370, 2371, 2372, 2402 ) .
 	}
 
 	function match_exceptions( $line, array &$exceptions ) {
@@ -216,14 +230,14 @@ $patgen = array(
 	}
 
 	function match_patterns( $line, array &$patterns ) {
-		if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
 		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters .  ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// sometimes there are multiple patterns on a single line
 			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 				$patterns[] = $match;
@@ -231,7 +245,7 @@ $patgen = array(
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// ignore comments and whitespace in patterns
 		} else {
-			echo "Error: unknown pattern line $line\n";
+			echo "Error: unknown pattern line " . clean_html( $line ) . "\n";
 			die(-1000);
 		}
 
