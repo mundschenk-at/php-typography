@@ -205,7 +205,7 @@ $patgen = array(
 			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 				$exceptions[] = $match;
 			}
-		} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// ignore comments and whitespace in exceptions
 		} else {
 			echo "Error: unknown exception line $line\n";
@@ -228,7 +228,7 @@ $patgen = array(
 			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 				$patterns[] = $match;
 			}
-		} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// ignore comments and whitespace in patterns
 		} else {
 			echo "Error: unknown pattern line $line\n";
