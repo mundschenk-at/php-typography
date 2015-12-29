@@ -180,7 +180,7 @@ $patgen = array(
 	),
 );
 
-	<?php
+<?php
 	}
 
 	function __construct( $url, $language, $quote = '"' ) {
