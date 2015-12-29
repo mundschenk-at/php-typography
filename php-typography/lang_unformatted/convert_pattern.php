@@ -189,6 +189,55 @@ $patgen = array(
 		$this->quote    = $quote;
 	}
 
+	function match_exceptions( $line, array &$exceptions ) {
+		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			$exceptions[] = $matches[1];
+			return false;
+		} if ( preg_match( '/^\s*((?:[\w-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			$this->match_exceptions( $matches[1], $exceptions );
+			return false;
+		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			return false;
+		} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+			$exceptions[] = $matches[1];
+		} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+			// sometimes there are multiple exceptions on a single line
+			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+				$exceptions[] = $match;
+			}
+		} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
+			// ignore comments and whitespace in exceptions
+		} else {
+			echo "Error: unknown exception line $line\n";
+			die(-1000);
+		}
+
+		return true;
+	}
+
+	function match_patterns( $line, array &$patterns ) {
+		if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			$patterns[] = $matches[1];
+			return false;
+		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			return false;
+		} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+			$patterns[] = $matches[1];
+		} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+			// sometimes there are multiple patterns on a single line
+			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+				$patterns[] = $match;
+			}
+		} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
+			// ignore comments and whitespace in patterns
+		} else {
+			echo "Error: unknown pattern line $line\n";
+			die(-1000);
+		}
+
+		return true;
+	}
+
 	/**
 	 * Parse the given TeX file.
 	 */
@@ -215,52 +264,17 @@ $patgen = array(
 			$line = $file->fgets();
 
 			if ( $reading_patterns ) {
-				if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_patterns = false;
-					$patterns[] = $matches[1];
-				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_patterns = false;
-				} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
-					$patterns[] = $matches[1];
-				} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
-					// sometimes there are multiple patterns on a single line
-					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
-						$patterns[] = $match;
-					}
-				} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
-					// ignore comments and whitespace in patterns
-				} else {
-					echo "Error: unknown line $line\n";
-					die(-1000);
-				}
+				$reading_patterns = $this->match_patterns( $line, $patterns );
 			} elseif ( $reading_exceptions ) {
-				if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_exceptions = false;
-					$exceptions[] = $matches[1];
-				} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_exceptions = false;
-				} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
-					$exceptions[] = $matches[1];
-				} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
-					// sometimes there are multiple exceptions on a single line
-					foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
-						$exceptions[] = $match;
-					}
-				} elseif ( preg_match( '/^\s*(?:%.*)$/u', $line, $matches ) ) {
-					// ignore comments and whitespace in exceptions
-				} else {
-					echo "Error: unknown line $line\n";
-					die(-1000);
-				}
+				$reading_exceptions = $this->match_exceptions( $line, $exceptions );
 			} else {
 				// something else
-
 				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
 					$comments[] = $line;
-				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_patterns = true;
-				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(?:%.*)?$/u', $line, $matches ) ) {
-					$reading_exceptions = true;
+				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
+					$reading_patterns = $this->match_patterns( $matches[1], $patterns );
+				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
+					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions );
 				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// ignore this line completely
 				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
