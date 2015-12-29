@@ -38,6 +38,7 @@ class Pattern_Converter {
 	private $language;
 	private $quote;
 	private $word_characters;
+	private $escape_list;
 
 	/**
 	 * Retrieve patgen segment from TeX hyphenation pattern.
@@ -160,7 +161,7 @@ $patgen = array(
 	<?= $this->quote ?>begin<?= $this->quote ?> => array(<?php if ( count( $begin_patterns ) > 0 ) echo "\n";
 
 		foreach ( $begin_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addcslashes( $key, $this->escape_list ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
 		}
 
 ?>
@@ -169,7 +170,7 @@ $patgen = array(
 	<?= $this->quote ?>end<?= $this->quote ?> => array(<?php if ( count( $end_patterns ) > 0 ) echo "\n";
 
 		foreach ( $end_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addcslashes( $key, $this->escape_list ) . "{$this->quote}\t=>\t{$this->quote}" . $pat . "{$this->quote},\n";
 		}
 ?>
 	),
@@ -177,7 +178,7 @@ $patgen = array(
 	<?= $this->quote ?>all<?= $this->quote ?> => array(<?php if ( count( $all_patterns ) > 0 ) echo "\n";
 
 		foreach ( $all_patterns as $key => $pat ) {
-			echo "\t\t{$this->quote}" . addslashes( $key ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
+			echo "\t\t{$this->quote}" . addcslashes( $key, $this->escape_list ) . "{$this->quote}\t=>\t{$this->quote}" . $pat. "{$this->quote},\n";
 		}
 ?>
 	),
@@ -190,6 +191,12 @@ $patgen = array(
 		$this->url      = $url;
 		$this->language = $language;
 		$this->quote    = $quote;
+
+		if ( "'" === $quote ) {
+			$this->escape_list = "'\\";
+		} else {
+			$this->escape_list = '"\\';
+		}
 
 		$this->word_characters = "\w.'ʼ᾽ʼ᾿’" .
 			uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ) .
