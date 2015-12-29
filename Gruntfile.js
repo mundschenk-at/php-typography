@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['includes/**','php-typography/**','admin/**','vendor/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['includes/**','php-typography/*.php','php-typography/lang/*.php','php-typography/diacritics/*.php','admin/**','vendor/**'], dest: 'build/'},
 				],
 			}
 		},
@@ -47,14 +47,29 @@ module.exports = function(grunt) {
 	    	  build: ["build/*"]//,
 	    },		
 	    wp_deploy: {
-	        deploy: { 
-	            options: {
-	                plugin_slug: 'wp-typography',
-	                // svn_user: 'your-wp-repo-username',  
-	                build_dir: 'build', //relative path to your build directory
-	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
-	            },
-	        }
+            options: {
+                plugin_slug: 'wp-typography',
+                // svn_user: 'your-wp-repo-username',  
+                build_dir: 'build', //relative path to your build directory
+                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
+            },
+            release: {
+            	// nothing
+	        },
+	        trunk: {
+	        	options: {
+	            	deploy_trunk: true,
+	            	deploy_assets: true,
+	            	deploy_release: false,
+	        	}
+            },
+            assets: {
+            	options: { 
+            		deploy_assets: true,
+            		deploy_trunk: false,
+            		deploy_release: false,
+            	}
+            }            
 	    },
         sass: {
             dist: {
@@ -95,7 +110,7 @@ module.exports = function(grunt) {
         		src: 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt',
         		dest: 'vendor/IANA/tlds-alpha-by-domain.txt'
         	}
-        }
+        },
 	});
 
 	grunt.registerTask( 'build', [
@@ -105,15 +120,26 @@ module.exports = function(grunt) {
 		'sass:dist'
   	]);
 
-  	grunt.registerTask('deploy' ,[
+  	grunt.registerTask('deploy', [
  	    'phpunit:default',
-//  		'wp_readme_to_markdown',
 		'clean:build',
   		'copy',
 		'sass:dist',
-  		'wp_deploy'
+  		'wp_deploy:release'
   	]);
-
+  	grunt.registerTask('trunk', [
+  	                     	    'phpunit:default',
+  	                    		'clean:build',
+  	                      		'copy',
+  	                    		'sass:dist',
+  	                      		'wp_deploy:trunk'
+  	]);
+  	grunt.registerTask('assets', [
+  	                    		'clean:build',
+  	                      		'copy',
+  	                      		'wp_deploy:assets'
+	]);	
+  	
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
 		'makepot',
