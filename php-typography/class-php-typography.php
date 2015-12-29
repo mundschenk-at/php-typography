@@ -2677,8 +2677,11 @@ class PHP_Typography {
 
 		set_error_handler( array( $this, 'handle_parsing_errors' ) );
 
-		if ( ! empty( $html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content ) ) ) {
-			if ( ! empty( $imported_fragment = $node->ownerDocument->importNode( $html_fragment, true ) ) ) {
+		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
+		if ( ! empty( $html_fragment ) ) {
+			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
+
+			if ( ! empty( $imported_fragment ) ) {
 				// save the children of the imported DOMDocumentFragment before replacement
 				$children = nodelist_to_array( $imported_fragment->childNodes );
 
