@@ -216,14 +216,14 @@ $patgen = array(
 	}
 
 	function match_patterns( $line, array &$patterns ) {
-		if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
 		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*([\w.\'ʼ᾽ʼ᾿’-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:[\w.\'ʼ᾽ʼ᾿’-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// sometimes there are multiple patterns on a single line
 			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 				$patterns[] = $match;
