@@ -124,7 +124,7 @@ class Pattern_Converter {
 
 	File modified to place pattern and exceptions in arrays that can be understood in php files.
 	This file is released under the same copyright as the below referenced original file
-	Original unmodified file is available at: <?= dirname( $this->url ) . "\n" ?>
+	Original unmodified file is available at: <?= dirname( $this->url ) . "/\n" ?>
 	Original file name: <?= basename( $this->url ) . "\n" ?>
 
 //============================================================================================================
