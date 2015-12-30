@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 	                potFilename: 'wp-typography.pot', // Name of the POT file.
 	                type: 'wp-plugin',
 	                exclude: ['build/.*'],
-	                updateTimestamp: false
+	                updateTimestamp: false,
+	                updatePoFiles: true
 	            }
 	        }
 	    },
@@ -119,13 +120,13 @@ module.exports = function(grunt) {
         		options: {
         			regex: 'Language\\s*=\\s*.*(("|\')[\\w() ]+\\2)',
         			modifiers: 'g',
-        			output: '<?php __( $1 ); ?>',
+        			output: '<?php __( $1, \'wp-typography\' ); ?>',
         			verbose: false,
         			includePath: false
         		},
             	files: {
             		
-		            "build/php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
+		            "php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
             	}
         	}
         },
@@ -134,24 +135,24 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
 		'clean:build',
-		'copy',
 		'regex_extract:language_names',
+		'copy',
 		'sass:dist'
   	]);
 
   	grunt.registerTask('deploy', [
  	    'phpunit:default',
 		'clean:build',
-  		'copy',
 		'regex_extract:language_names',
+  		'copy',
 		'sass:dist',
   		'wp_deploy:release'
   	]);
   	grunt.registerTask('trunk', [
   	                     	    'phpunit:default',
   	                    		'clean:build',
-  	                      		'copy',
   	                      		'regex_extract:language_names',
+  	                      		'copy',
   	                    		'sass:dist',
   	                      		'wp_deploy:trunk'
   	]);
