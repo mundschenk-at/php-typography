@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -105,7 +105,7 @@
 
 */
 
-$patgenLanguage = __( 'Czech', 'wp-typography' );
+$patgenLanguage = 'Czech';
 
 $patgenExceptions = array(
 	'koeficient'	=>	'koe-fi-ci-ent',
@@ -3764,4 +3764,3 @@ $patgen = array(
 	),
 );
 
-	

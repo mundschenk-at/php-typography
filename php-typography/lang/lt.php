@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -63,7 +63,7 @@
 
 */
 
-$patgenLanguage = __( 'Lithuanian', 'wp-typography' );
+$patgenLanguage = 'Lithuanian';
 
 $patgenExceptions = array();
 

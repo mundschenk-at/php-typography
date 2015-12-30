@@ -2,12 +2,12 @@
 
 /**
  *	Language: German
- *	
+ *
  *	An array of all words containing diacritics (and their non-diacritic
  *	alternatives that should be replaced), provided a legitimate English
  *	word does not exist without such diacritic characters (i.e.
  *	divorcé & divorce, exposé & expose, résumé & resume ).
- *	
+ *
  *	In the form of $diacriticWords = array( key => value );
  *	where "key" is the needle and "value" is the replacement
  *
@@ -15,7 +15,7 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-$diacriticLanguage = __( 'German', 'wp-typography' );
+$diacriticLanguage = 'German';
 
 $diacriticWords = array(
 	"a bas"=>"à bas",

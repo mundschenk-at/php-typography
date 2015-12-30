@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -38,17 +38,17 @@
 		% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		% SOFTWARE.
-		% 
+		%
 		% For further info, bug reports and comments:
 		%
 		%       http://www.tex-tipografia.com/spanish_hyphen.html
-		% 
+		%
 		% I would like to thanks Francesc Carmona for his permission
 		% to steal parts of his work without restrictions. For his
 		% patterns, (c) by Francesc Carmona
-		% 
+		%
 		% 2015-11-12
-		% 
+		%
 		% _____________________________________________________________
 		% Javier Bezos                | http://www.cervantex.es/
 		% .............................................................
@@ -59,7 +59,7 @@
 
 */
 
-$patgenLanguage = __( 'Spanish', 'wp-typography' );
+$patgenLanguage = 'Spanish';
 
 $patgenExceptions = array();
 

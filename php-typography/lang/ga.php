@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -119,7 +119,7 @@
 
 */
 
-$patgenLanguage = __( 'Irish', 'wp-typography' );
+$patgenLanguage = 'Irish';
 
 $patgenExceptions = array(
 	'bhrachtaí'	=>	'bhrachtaí',

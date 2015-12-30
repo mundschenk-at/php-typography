@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -53,7 +53,7 @@
 
 */
 
-$patgenLanguage = __( 'Greek (Modern Monotonic)', 'wp-typography' );
+$patgenLanguage = 'Greek (Modern Monotonic)';
 
 $patgenExceptions = array();
 
@@ -643,4 +643,3 @@ $patgen = array(
 	),
 );
 
-	

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -104,7 +104,7 @@
 
 */
 
-$patgenLanguage = __( 'Chinese pinyin (Latin)', 'wp-typography' );
+$patgenLanguage = 'Chinese pinyin (Latin)';
 
 $patgenExceptions = array();
 

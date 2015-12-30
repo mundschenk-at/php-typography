@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -46,7 +46,7 @@
 
 */
 
-$patgenLanguage = __( 'Afrikaans', 'wp-typography' );
+$patgenLanguage = 'Afrikaans';
 
 $patgenExceptions = array(
 	'sandaal'	=>	'sandaal',

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -36,7 +36,7 @@
 
 */
 
-$patgenLanguage = __( "Galician", "wp-typography" );
+$patgenLanguage = "Galician";
 
 $patgenExceptions = array();
 

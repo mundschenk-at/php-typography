@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -93,7 +93,7 @@
 
 */
 
-$patgenLanguage = __( 'Russian', 'wp-typography' );
+$patgenLanguage = 'Russian';
 
 $patgenExceptions = array(
 	'асбест'	=>	'ас-бест',

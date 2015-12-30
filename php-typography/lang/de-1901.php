@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -49,7 +49,7 @@
 
 */
 
-$patgenLanguage = __( 'German (Traditional)', 'wp-typography' );
+$patgenLanguage = 'German (Traditional)';
 
 $patgenExceptions = array();
 
@@ -15689,4 +15689,3 @@ $patgen = array(
 	),
 );
 
-	

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -109,7 +109,7 @@
 
 */
 
-$patgenLanguage = __( 'Interlingua', 'wp-typography' );
+$patgenLanguage = 'Interlingua';
 
 $patgenExceptions = array(
 	'alcun'	=>	'alc-un',

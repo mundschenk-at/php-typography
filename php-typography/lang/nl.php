@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -181,7 +181,7 @@
 
 */
 
-$patgenLanguage = __( 'Dutch', 'wp-typography' );
+$patgenLanguage = 'Dutch';
 
 $patgenExceptions = array(
 	'aandachtstrekker'	=>	'aan-dachts-trek-ker',

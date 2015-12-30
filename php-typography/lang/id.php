@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -130,7 +130,7 @@
 
 */
 
-$patgenLanguage = __( 'Indonesian', 'wp-typography' );
+$patgenLanguage = 'Indonesian';
 
 $patgenExceptions = array(
 	'berabe'	=>	'be-ra-be',

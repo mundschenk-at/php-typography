@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -77,7 +77,7 @@
 
 */
 
-$patgenLanguage = __( "Serbocroatian (Cyrillic)", "wp-typography" );
+$patgenLanguage = "Serbocroatian (Cyrillic)";
 
 $patgenExceptions = array(
 	"надно"	=>	"на-дно",

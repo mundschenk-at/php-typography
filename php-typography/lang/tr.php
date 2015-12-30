@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -45,14 +45,14 @@
 		% Changes:
 		% - 2008-06-25/27/28 - create this file by adapting Ottoman rules for modern Turkish
 		% - 2011-08-10 - add LPPL licence with permission of Pierre A. MacKay
-		% 
+		%
 
 
 //============================================================================================================
 
 */
 
-$patgenLanguage = __( 'Turkish', 'wp-typography' );
+$patgenLanguage = 'Turkish';
 
 $patgenExceptions = array();
 

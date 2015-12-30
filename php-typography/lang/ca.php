@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -142,7 +142,7 @@
 
 */
 
-$patgenLanguage = __( 'Catalan', 'wp-typography' );
+$patgenLanguage = 'Catalan';
 
 $patgenExceptions = array(
 	'curie'	=>	'cu-rie',
@@ -1055,4 +1055,3 @@ $patgen = array(
 	),
 );
 
-	

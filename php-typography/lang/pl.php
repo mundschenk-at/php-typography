@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -102,7 +102,7 @@
 
 */
 
-$patgenLanguage = __( 'Polish', 'wp-typography' );
+$patgenLanguage = 'Polish';
 
 $patgenExceptions = array(
 	'bezach'	=>	'be-zach',

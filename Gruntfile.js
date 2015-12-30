@@ -111,12 +111,31 @@ module.exports = function(grunt) {
         		dest: 'vendor/IANA/tlds-alpha-by-domain.txt'
         	}
         },
+        regex_extract: {
+        	options: {
+        		
+        	},
+        	language_names: {
+        		options: {
+        			regex: 'Language\\s*=\\s*.*(("|\')[\\w() ]+\\2)',
+        			modifiers: 'g',
+        			output: '<?php __( $1 ); ?>',
+        			verbose: false,
+        			includePath: false
+        		},
+            	files: {
+            		
+		            "build/php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
+            	}
+        	}
+        },
 	});
 
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
 		'clean:build',
 		'copy',
+		'regex_extract:language_names',
 		'sass:dist'
   	]);
 
@@ -124,6 +143,7 @@ module.exports = function(grunt) {
  	    'phpunit:default',
 		'clean:build',
   		'copy',
+		'regex_extract:language_names',
 		'sass:dist',
   		'wp_deploy:release'
   	]);
@@ -131,6 +151,7 @@ module.exports = function(grunt) {
   	                     	    'phpunit:default',
   	                    		'clean:build',
   	                      		'copy',
+  	                      		'regex_extract:language_names',
   	                    		'sass:dist',
   	                      		'wp_deploy:trunk'
   	]);
@@ -142,6 +163,7 @@ module.exports = function(grunt) {
   	
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
+		'regex_extract:language_names',
 		'makepot',
 		'sass:dev'
     ]);

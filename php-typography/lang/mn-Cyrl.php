@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -102,7 +102,7 @@
 
 */
 
-$patgenLanguage = __( 'Mongolian (Cyrillic)', 'wp-typography' );
+$patgenLanguage = 'Mongolian (Cyrillic)';
 
 $patgenExceptions = array();
 

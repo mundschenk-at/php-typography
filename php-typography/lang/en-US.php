@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -56,7 +56,7 @@
 
 */
 
-$patgenLanguage = __( 'English (United States)', 'wp-typography' );
+$patgenLanguage = 'English (United States)';
 
 $patgenExceptions = array(
 	'associate'	=>	'as-so-ciate',
@@ -5026,4 +5026,3 @@ $patgen = array(
 	),
 );
 
-	

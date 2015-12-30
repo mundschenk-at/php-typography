@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -34,7 +34,7 @@
 
 */
 
-$patgenLanguage = __( 'Turkmen', 'wp-typography' );
+$patgenLanguage = 'Turkmen';
 
 $patgenExceptions = array();
 

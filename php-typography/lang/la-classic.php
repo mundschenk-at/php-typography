@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -37,7 +37,7 @@
 		%              e-mail claudio dot beccari at gmail dot com
 		%
 		% Aknowledgements: This file has been substantially upgraded with
-		% the contributions of Francisco Gracia. 
+		% the contributions of Francisco Gracia.
 		%
 		% \versionnumber{1.2}   \versiondate{2014/10/06}
 		%
@@ -53,7 +53,7 @@
 
 */
 
-$patgenLanguage = __( 'Latin (Classical)', 'wp-typography' );
+$patgenLanguage = 'Latin (Classical)';
 
 $patgenExceptions = array();
 

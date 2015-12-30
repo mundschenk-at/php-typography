@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -73,7 +73,7 @@
 
 */
 
-$patgenLanguage = __( 'English (United Kingdom)', 'wp-typography' );
+$patgenLanguage = 'English (United Kingdom)';
 
 $patgenExceptions = array(
 	'university'	=>	'uni-ver-sity',
@@ -8626,4 +8626,3 @@ $patgen = array(
 	),
 );
 
-	

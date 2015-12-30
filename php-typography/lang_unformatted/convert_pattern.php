@@ -145,7 +145,7 @@ class Pattern_Converter {
 
 */
 
-$patgenLanguage = __( <?= $this->quote . $this->language . $this->quote ?>, <?= $this->quote ?>wp-typography<?= $this->quote ?> );
+$patgenLanguage = <?= $this->quote . $this->language . $this->quote ?>;
 
 $patgenExceptions = array(<?php if ( count( $exceptions ) > 0 ) echo "\n";
 

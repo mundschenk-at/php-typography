@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
 	Project: wp-Typography
@@ -104,7 +104,7 @@
 
 */
 
-$patgenLanguage = __( 'Slovak', 'wp-typography' );
+$patgenLanguage = 'Slovak';
 
 $patgenExceptions = array(
 	'dosť'	=>	'dosť',
