@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
+<phpunit bootstrap="tests/bootstrap.php">
 	<testsuites>
 	    <testsuite name="wpTypography">
 			<file>tests/class-parse-text-test.php</file>
@@ -8,7 +8,10 @@
 	</testsuites>
 	<filter>
 		<whitelist processUncoveredFilesFromWhitelist="true">
-	    	<directory suffix=".php">php-typography/</directory>
+	    	<directory suffix=".php">php-typography</directory>
+	    	<exclude>
+	    		<directory>php-typography/lang_unformatted</directory>
+	    	</exclude>
 		</whitelist>
 	</filter>
 </phpunit>
