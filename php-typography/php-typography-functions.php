@@ -96,7 +96,7 @@ function get_ancestors( \DOMNode $node ) {
  * @param \DOMNode $tag An element or textnode.
  * @param string|array $classnames A single classname or an array of classnames.
  *
- * @return boolean True if the element has the given class(es).
+ * @return boolean True if the element has any of the given class(es).
  */
 function has_class( \DOMNode $tag, $classnames ) {
 	if ( $tag instanceof \DOMText ) {
