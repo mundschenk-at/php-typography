@@ -103,19 +103,21 @@ function has_class( \DOMNode $tag, $classnames ) {
 		$tag = $tag->parentNode;
 	}
 
-	if ( ! ( is_null( $tag ) && is_object( $tag ) ) ) {
+	// bail if we are not working with a tag or if there is no classname
+	if ( ! ( $tag instanceof \DOMElement ) || empty( $classnames ) ) {
 		return false;
 	}
 
+	// ensure we always have an array of classnames
 	if ( ! is_array( $classnames ) ) {
 		$classnames = array( $classnames );
 	}
 
 	if ( $tag->hasAttribute( 'class' ) ) {
-		$tag_classes = array_flip( explode(' ', $tag->getAttribute('class') ) );
+		$tag_classes = array_flip( explode(' ', $tag->getAttribute( 'class' ) ) );
 
-		foreach ( $classnames as &$classname ) {
-			if ( isset($tag_classes[ $classname ] ) ) {
+		foreach ( $classnames as $classname ) {
+			if ( isset( $tag_classes[ $classname ] ) ) {
 				return true;
 			}
 		}
