@@ -2252,7 +2252,15 @@ class PHP_Typography {
 		if ( ! empty( $this->settings['diacriticReplacement'] ) &&
 			 ! empty( $this->settings['diacriticReplacement']['patterns'] ) &&
 			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
-			$textnode->data = translate_words( $textnode->data, $this->settings['diacriticReplacement']['patterns'], $this->settings['diacriticReplacement']['replacements'] );
+
+			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
+			$textnode->data = preg_replace_callback( $this->settings['diacriticReplacement']['patterns'], function( $match ) {
+		 		if ( isset( $this->settings['diacriticReplacement']['replacements'][ $match[0] ] ) ) {
+		 			return $this->settings['diacriticReplacement']['replacements'][ $match[0] ];
+		 		} else {
+		 			return $match[0];
+		 		}
+		 	}, $textnode->data );
 		}
 	}
 
