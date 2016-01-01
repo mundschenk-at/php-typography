@@ -66,7 +66,7 @@ function array_intersection( array $array1, array $array2 ) {
 function nodelist_to_array( \DOMNodeList $list ) {
 	$out = array();
 
-	foreach ($list as $node) {
+	foreach ( $list as $node ) {
 		$out[] = $node;
 	}
 
@@ -82,7 +82,7 @@ function nodelist_to_array( \DOMNodeList $list ) {
 function get_ancestors( \DOMNode $node ) {
 	$result = array();
 
-	while ($node = $node->parentNode) {
+	while ( $node = $node->parentNode ) {
 		$result[] = $node;
 	}
 
