@@ -2,8 +2,7 @@
 <phpunit bootstrap="tests/bootstrap.php">
 	<testsuites>
 	    <testsuite name="wpTypography">
-			<file>tests/class-parse-text-test.php</file>
-			<file>tests/class-php-typography-test.php</file>
+			<directory suffix="-test.php">tests</directory>
 	    </testsuite>
 	</testsuites>
 	<filter>

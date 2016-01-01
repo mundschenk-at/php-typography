@@ -35,7 +35,7 @@ namespace PHP_Typography;
 /**
  * HTML5 element introspection
  */
-require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' );
+require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' ); // @codeCoverageIgnore
 
 /**
  * Retrieves intersection of two object arrays using strict comparison.
@@ -268,9 +268,9 @@ function translate_words( $source, $patterns, array $words ) {
 /**
  * Include debugging helpers
  */
-if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) { // @codeCoverageIgnoreStart
 	define( 'WP_TYPOGRAPHY_DEBUG', true );
 }
 if ( defined( 'WP_TYPOGRAPHY_DEBUG' ) && WP_TYPOGRAPHY_DEBUG ) {
 	include_once 'php-typography-debug.php';
-}
+} // @codeCoverageIgnoreEnd
