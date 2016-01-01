@@ -82,7 +82,7 @@ function nodelist_to_array( \DOMNodeList $list ) {
 function get_ancestors( \DOMNode $node ) {
 	$result = array();
 
-	while ( $node = $node->parentNode ) {
+	while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) {
 		$result[] = $node;
 	}
 
