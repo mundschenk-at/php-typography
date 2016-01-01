@@ -3020,7 +3020,7 @@ class PHP_Typography {
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	static public function get_hyphenation_languages() {
-		return \PHP_Typography\get_hyphenation_languages();
+		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/lang/', 'patgenLanguage' );
 	}
 
 	/**
@@ -3030,6 +3030,6 @@ class PHP_Typography {
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	static public function get_diacritic_languages() {
-		return \PHP_Typography\get_diacritic_languages();
+		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/diacritics/', 'diacriticLanguage' );
 	}
 }

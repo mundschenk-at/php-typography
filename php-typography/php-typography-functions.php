@@ -176,28 +176,27 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 	return $result;
 }
 
-
 /**
- * Retrieve the supported hyphenation languages.
+ * Retrieve the list of valid language plugins in the given directory.
  *
- * @return array An associative array in the form array( language code => language name )
+ * @param string $path The path in which to look for language plugin files.
+ * @param string $language_name_variable The variable used for the language name in the plugin files.
+ *
+ * @return array An array in the form ( $language_code => $translated_language_name ).
  */
-function get_hyphenation_languages() {
-	static $hyphenation_language_name_untranslated = '/\$patgenLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
-
+function get_language_plugin_list( $path, $language_name_variable ) {
+	$language_name_pattern = '/\$' . $language_name_variable . '\s*=\s*((".+")|(\'.+\'))\s*;/';
 	$languages = array();
-	$langDir = dirname( __FILE__ ) . '/lang/';
-	$handler = opendir( $langDir );
+	$handler = opendir( $path );
 
 	// read all files in directory
 	while ( $file = readdir( $handler ) ) {
 		// we only want the php files
 		if ('.php' == substr( $file, -4 ) ) {
-			$file_content = file_get_contents( $langDir . $file );
-
-			if ( preg_match( $hyphenation_language_name_untranslated, $file_content, $matches ) ) {
+			$file_content = file_get_contents( $path . $file );
+			if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
 				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
-															 						  // language name in the patgen file already.
+			 																	      // language name in the patgen file already.
 				$language_code = substr( $file, 0, -4 );
 				$languages[ $language_code ] = $language_name;
 			}
@@ -205,38 +204,9 @@ function get_hyphenation_languages() {
 	}
 	closedir( $handler );
 
+	// sort translated language names according to current locale
 	asort( $languages );
-	return $languages;
-}
 
-/**
- * Retrieve the supported diacritics replacement languages.
- *
- * @return array An associative array in the form array( language code => language name )
- */
-function get_diacritic_languages() {
-	static $diacritic_language_name_untranslated = '/\$diacriticLanguage\s*=\s*((".+")|(\'.+\'))\s*;/';
-
-	$languages = array();
-	$lang_dir = dirname( __FILE__ ) . '/diacritics/';
-	$handler = opendir( $lang_dir );
-
-	// read all files in directory
-	while ( $file = readdir( $handler ) ) {
-		// we only want the php files
-		if ('.php' == substr( $file, -4 ) ) {
-			$file_content = file_get_contents( $lang_dir.$file );
-			if ( preg_match( $diacritic_language_name_untranslated, $file_content, $matches ) ) {
-				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
-																					  // language name in the patgen file already.
-				$language_code = substr( $file, 0, -4 );
-				$languages[ $language_code ] = $language_name;
-			}
-		}
-	}
-	closedir( $handler );
-
-	asort( $languages );
 	return $languages;
 }
 
