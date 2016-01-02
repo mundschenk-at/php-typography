@@ -1920,8 +1920,6 @@ class PHP_Typography {
 
 			if ( false !== ( $nodelist = $xpath->query( $ignore_query, $initial_node ) ) ) {
 				$elements = nodelist_to_array( $nodelist );
-			} else {
-				trigger_error( "Invalid XPath ignore query: $ignore_query", E_USER_WARNING );
 			}
 		}
 
