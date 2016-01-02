@@ -72,7 +72,6 @@ function nodelist_to_array( \DOMNodeList $list ) {
 	return $out;
 }
 
-
 /**
  * Retrieve an array containing all the ancestors of the node. This could be done
  * via an XPath query for "ancestor::*", but DOM walking is in all likelyhood faster.
