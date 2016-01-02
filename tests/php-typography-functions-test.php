@@ -21,22 +21,42 @@ class PHP_Typography_Functions_Test extends PHPUnit_Framework_TestCase {
 	{
 	}
 
-	public function provide_array_intersection_data() {
+	public function provide_arrays_intersect_data() {
 		return array(
-			array( array(), array(), array() ),
-			array( array( 'a', 'b', 'c' ), array( 'b', 'B', 'a'), array( 'a', 'b' ) ),
-			array( array( 1, 2, 3 ), array(), array() ),
-			array( array(), array( 1, 2, 3 ), array() ),
-			array( array( 'a', 1, array() ), array( array() ), array( array() ) ),
+			array( array(), array(), false ),
+			array( array( 1, 2, 3 ), array( 2, 4, 1 ), true ),
+			array( array( 1, 2, 3 ), array(), false ),
+			array( array(), array( 1, 2, 3 ), false ),
 		);
 	}
 
 	/**
-	 * @covers \PHP_Typography\array_intersection
-	 * @dataProvider provide_array_intersection_data
+	 * $a1 and $a2 need to be arrays of object indexes < 10
+	 *
+	 * @covers \PHP_Typography\arrays_intersect
+	 * @dataProvider provide_arrays_intersect_data
 	 */
-	public function test_array_intersection( array $a1, array $a2, array $result ) {
-		$this->assertSame( $result, \PHP_Typography\array_intersection( $a1, $a2 ) );
+	public function test_arrays_intersect( array $a1, array $a2, $result ) {
+		$nodes = array();
+		for ( $i = 0; $i < 10; ++$i ) {
+			$nodes[] = new \DOMText( "foo $i" );
+		}
+
+		$array1 = array();
+		foreach ( $a1 as $index ) {
+			if ( isset( $nodes[ $index ] ) ) {
+				$array1[] = $nodes[ $index ];
+			}
+		}
+
+		$array2 = array();
+		foreach ( $a2 as $index ) {
+			if ( isset( $nodes[ $index ] ) ) {
+				$array2[ spl_object_hash( $nodes[ $index ] ) ] = $nodes[ $index ];
+			}
+		}
+
+		$this->assertSame( $result, \PHP_Typography\arrays_intersect( $array1, $array2 ) );
 	}
 
 	/**

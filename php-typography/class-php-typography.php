@@ -1721,7 +1721,7 @@ class PHP_Typography {
 
 		// start processing
 		foreach ( $all_textnodes as $textnode ) {
-			if ( array_intersection( $tags_to_ignore, get_ancestors( $textnode ) ) ) {
+			if ( arrays_intersect( get_ancestors( $textnode ), $tags_to_ignore ) ) {
 				continue;
 			}
 
@@ -1821,7 +1821,7 @@ class PHP_Typography {
 
 		// start processing
 		foreach ( $all_textnodes as $textnode ) {
-			if ( array_intersection( $tags_to_ignore, get_ancestors( $textnode ) ) ) {
+			if ( arrays_intersect( get_ancestors( $textnode ), $tags_to_ignore ) ) {
 				continue;
 			}
 

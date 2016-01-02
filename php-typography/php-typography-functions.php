@@ -37,41 +37,41 @@ namespace PHP_Typography;
  */
 require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' ); // @codeCoverageIgnore
 
-/**
- * Retrieves intersection of two object arrays using strict comparison.
- *
- * @param array $array1
- * @param array $array2
- * @return array An array that contains the common elements of the two input arrays.
- */
-function array_intersection( array $array1, array $array2 ) {
-	$max = count( $array1 );
 
-	$out = array();
-	for ( $i = 0; $i < $max; ++$i ) {
-		if ( in_array( $array1[ $i ], $array2, true ) ) {
-			$out[] = $array1[ $i ];
+/**
+ * Determines whether two object arrays intersect. The second array is expected
+ * to use the spl_object_hash for its keys.
+ *
+ * @param array $array1 The keys are ignored.
+ * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
+ * @return boolean
+ */
+function arrays_intersect( array $array1, array $array2 ) {
+	foreach( $array1 as $value ) {
+		if ( isset( $array2[ spl_object_hash( $value ) ] ) ) {
+			return true;
 		}
 	}
 
-	return $out;
+	return false;
 }
 
 /**
  * Convert \DOMNodeList to array;
  *
  * @param \DOMNodeList $list
- * @return array An array of \DOMNodes.
+ * @return array An associative array in the form ( $spl_object_hash => $node ).
  */
 function nodelist_to_array( \DOMNodeList $list ) {
 	$out = array();
 
 	foreach ( $list as $node ) {
-		$out[] = $node;
+		$out[ spl_object_hash( $node ) ] = $node;
 	}
 
 	return $out;
 }
+
 
 /**
  * Retrieve an array containing all the ancestors of the node. This could be done
