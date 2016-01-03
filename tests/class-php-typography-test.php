@@ -1863,17 +1863,52 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertTokenSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
     }
 
-    /**
-     * @covers \PHP_Typography\PHP_Typography::dewidow
-     * @todo   Implement test_dewidow().
-     */
-    public function test_dewidow()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    public function provide_dewidow_data() {
+    	return array(
+    		array( 'bla foo b', 'bla foo&nbsp;b', 3, 2 ),
+    		array( 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2 ), // don't replace thin space...
+    		array( 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2 ),   // ... or hair space
+    		array( 'bla foo bar', 'bla foo bar', 2, 2 ),
+    		array( 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ),
+    		array( 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ),
+    		array( 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2 ),
+    		array( 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2 ),
+    		array( 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3 ), // &shy; not matched
+    		array( 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3 ), // &shy; not matched, but syllable after is
+    		array( 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3 ),
+    		array( 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3 ), // widow not replaced because the &nbsp; would pull too many letters from previous
+    	);
     }
+
+    /**
+     * @covers ::dewidow
+     * @covers ::_dewidow_callback
+     * @dataProvider provide_dewidow_data
+     */
+    public function test_dewidow( $html, $result, $max_pull, $max_length )
+    {
+    	$typo = $this->typo;
+    	$typo->set_dewidow( true );
+    	$typo->set_max_dewidow_pull( $max_pull );
+    	$typo->set_max_dewidow_length( $max_length );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
+
+    /**
+     * @covers ::dewidow
+     * @dataProvider provide_dewidow_data
+     */
+    public function test_dewidow_off( $html, $result, $max_pull, $max_length )
+    {
+    	$typo = $this->typo;
+    	$typo->set_dewidow( false );
+    	$typo->set_max_dewidow_pull( $max_pull );
+    	$typo->set_max_dewidow_length( $max_length );
+
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
+    }
+
 
     /**
      * @covers \PHP_Typography\PHP_Typography::_dewidow_callback
