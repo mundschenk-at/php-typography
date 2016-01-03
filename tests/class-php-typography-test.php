@@ -1922,16 +1922,40 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function provide_wrap_urls_data() {
+    	return array(
+    		array( 'https://example.org/',          'https://&#8203;example&#8203;.org/',          2 ),
+    		array( 'http://example.org/',           'http://&#8203;example&#8203;.org/',           2 ),
+    		array( 'https://my-example.org',        'https://&#8203;my&#8203;-example&#8203;.org', 2 ),
+    		array( 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ),
+    		array( 'https://example.org:8080/',     'https://&#8203;example&#8203;.org:8080/',     2 ),
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::wrap_urls
-     * @todo   Implement test_wrap_urls().
+     * @covers ::wrap_urls
+     * @dataProvider provide_wrap_urls_data
      */
-    public function test_wrap_urls()
+    public function test_wrap_urls( $html, $result, $min_after )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_url_wrap( true );
+    	$typo->set_min_after_url_wrap( $min_after );
+
+    	$this->assertTokenSame( $result, $typo->wrap_urls( $this->tokenize( $html ) ) );
+    }
+
+    /**
+     * @covers ::wrap_urls
+     * @dataProvider provide_wrap_urls_data
+     */
+    public function test_wrap_urls_off( $html, $result, $min_after )
+    {
+    	$typo = $this->typo;
+    	$typo->set_url_wrap( false );
+    	$typo->set_min_after_url_wrap( $min_after );
+
+    	$this->assertTokenSame( $html, $typo->wrap_urls( $this->tokenize( $html ) ) );
     }
 
     /**
