@@ -587,8 +587,8 @@ class PHP_Typography {
 		// combined URL pattern
 		$this->components['urlPattern'] = "(?:
 			\A
-			({$this->components['urlScheme']}:\/\/)?			# Subpattern 1: contains _http://_ if it exists
-			(													# Subpattern 2: contains subdomains.domain.tld
+			(?<schema>{$this->components['urlScheme']}:\/\/)?	# Subpattern 1: contains _http://_ if it exists
+			(?<domain>											# Subpattern 2: contains subdomains.domain.tld
 				(?:
 					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
 					[a-z0-9\-]{0,61}							# middle chrs of (sub)domain may be a hyphen;
@@ -606,7 +606,7 @@ class PHP_Typography {
 					)
 				)?
 			)
-			(													# Subpattern 3: contains path following domain
+			(?<path>											# Subpattern 3: contains path following domain
 				(?:
 					\/											# marks nested directory
 					[a-z0-9\"\$\-_\.\+!\*\'\(\),;\?:@=&\#]+		# valid characters within directory structure
@@ -2578,52 +2578,58 @@ class PHP_Typography {
 
 		// test for and parse urls
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( $this->regex['wrapUrlsPattern'], $text_token['value'], $urlMatch ) ) {
-				// $urlMatch[1] holds "http://"
-				// $urlMatch[2] holds "subdomains.domain.tld"
-				// $urlMatch[3] holds the path after the domain
+			if ( preg_match( $this->regex['wrapUrlsPattern'], $text_token['value'], $url_match ) ) {
 
-				$http = ( $urlMatch[1] ) ? $urlMatch[1].$this->chr['zeroWidthSpace'] : "" ;
+				// $url_match['schema'] holds "http://"
+				// $url_match['domain'] holds "subdomains.domain.tld"
+				// $url_match['path']   holds the path after the domain
 
-				$domain_parts = preg_split( $this->regex['wrapUrlsDomainParts'], $urlMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE );
+				$http = ( $url_match['schema'] ) ? $url_match[1].$this->chr['zeroWidthSpace'] : '';
+
+				$domain_parts = preg_split( $this->regex['wrapUrlsDomainParts'], $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 
 				// this is a hack, but it works
 				// first, we hyphenate each part
 				// we need it formated like a group of words
 				$parsed_words_like = array();
-				foreach ( $domain_parts as $key => &$domain_part ) {
-					$parsed_words_like[ $key ]['value'] = $domain_part;
+				foreach ( $domain_parts as $key => $part ) {
+					$parsed_words_like[ $key ]['value'] = $part;
 				}
 
 				// do the hyphenation
 				$parsed_words_like = $this->do_hyphenate( $parsed_words_like );
 
 				// restore format
-				foreach ( $parsed_words_like as $key => $parsed_word_like ) {
-					$domain_parts[ $key ] = $parsed_word_like['value'];
+				foreach ( $parsed_words_like as $key => $parsed_word ) {
+					$domain_parts[ $key ] = $parsed_word['value'];
 				}
-				foreach ( $domain_parts as $key => &$domain_part ) {
+				foreach ( $domain_parts as $key => &$part ) {
 					// then we swap out each soft-hyphen" with a zero-space
-					$domain_part = str_replace( $this->chr['softHyphen'], $this->chr['zeroWidthSpace'], $domain_part );
+					$part = str_replace( $this->chr['softHyphen'], $this->chr['zeroWidthSpace'], $part );
 
 					// we also insert zero-spaces before periods and hyphens
-					if ( $key > 0 && 1 === strlen( $domain_part ) ) {
-						$domain_part = $this->chr['zeroWidthSpace'].$domain_part;
+
+					if ( $key > 0 && 1 === strlen( $part ) ) {
+						$part = $this->chr['zeroWidthSpace'] . $part;
 					}
 				}
 
-				//lastly let's recombine
+				// lastly let's recombine
 				$domain = implode( $domain_parts );
 
-				//break up the URL path to individual characters
-				$path_parts = str_split( $urlMatch[3], 1 );
+				// break up the URL path to individual characters
+				$path_parts = str_split( $url_match['path'], 1 );
 				$path_count = count( $path_parts );
 				$path = '';
-				for ( $i = 0; $i < $path_count; $i++ ) {
-					$path .= ( 0 == $i || $path_count - $i < $this->settings['urlMinAfterWrap'] ) ? $path_parts[$i] : $this->chr['zeroWidthSpace'].$path_parts[$i];
+				foreach ( $path_parts as $index => $path_part ) {
+					if ( 0 === $index || $path_count - $index < $this->settings['urlMinAfterWrap'] ) {
+						$path .= $path_part;
+					} else {
+						$path .= $this->chr['zeroWidthSpace'] . $path_part;
+					}
 				}
 
-				$text_token['value'] = $http.$domain.$path;
+				$text_token['value'] = $http . $domain . $path;
 			}
 		}
 
