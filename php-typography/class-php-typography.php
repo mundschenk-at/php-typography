@@ -1510,7 +1510,7 @@ class PHP_Typography {
 	/**
 	 * Set the minimum character requirement after an URL wrapping point.
 	 *
-	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @param number $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_after_url_wrap( $length = 5 ) {
 		$length = ( $length > 0 ) ? $length : 5;
