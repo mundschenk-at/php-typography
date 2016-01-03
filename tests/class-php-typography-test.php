@@ -2091,17 +2091,40 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( 'foo &amp; bar', $this->clean_html( $typo->process( 'foo & bar' ) ) );
     }
 
+    public function provide_style_initial_quotes_data() {
+    	return array(
+    		array( '<p>no quote</p>', '<p>no quote</p>', false ),
+    		array( '<p>"double quote"</p>', '<p><span class="dquo">"</span>double quote"</p>', false ),
+    		array( "<p>'single quote'</p>", "<p><span class=\"quo\">'</span>single quote'</p>", false ),
+    		array( '"no title quote"', '"no title quote"', false ),
+    		array( '"title quote"', '<span class="dquo">"</span>title quote"', true ),
+    	);
+    }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::style_initial_quotes
-     * @todo   Implement test_style_initial_quotes().
+     * @covers ::style_initial_quotes
+     * @dataProvider provide_style_initial_quotes_data
      */
-    public function test_style_initial_quotes()
+    public function test_style_initial_quotes( $html, $result, $is_title )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_style_initial_quotes( true );
+		$typo->set_initial_quote_tags();
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $html, $is_title ) ) );
+    }
+
+    /**
+     * @covers ::style_initial_quotes
+     * @dataProvider provide_style_initial_quotes_data
+     */
+    public function test_style_initial_quotes_off( $html, $result, $is_title )
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_initial_quotes( false );
+    	$typo->set_initial_quote_tags();
+
+    	$this->assertSame( $html, $typo->process( $html, $is_title ) );
     }
 
     /**
