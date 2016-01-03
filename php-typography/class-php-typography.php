@@ -1034,6 +1034,11 @@ class PHP_Typography {
 
         // utility patterns for splitting string parameter lists into arrays
         $this->regex['parameterSplitting'] = '/[\s,]+/';
+
+        // add the "study" flag to all our regular expressions
+        foreach ( $this->regex as &$regex ) {
+        	$regex .= 'S';
+        }
 	}
 
 
