@@ -430,7 +430,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_smart_ellipses
+     * @covers ::set_smart_ellipses
      */
     public function test_set_smart_ellipses()
     {
@@ -442,8 +442,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_smart_diacritics
-     * @todo   Implement test_set_smart_diacritics().
+     * @covers ::set_smart_diacritics
      */
     public function test_set_smart_diacritics()
     {
@@ -1018,8 +1017,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::get_diacritic_languages
-     * @todo   Implement test_get_diacritic_languages().
+     * @covers ::get_diacritic_languages
      */
     public function test_get_diacritic_languages()
     {
@@ -1398,19 +1396,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$html = '<p>creme brulee</p>';
 
     	$this->assertSame( $html, $this->typo->process( $html ) );
-    }
-
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::translate_words
-     * @todo   Implement test_translate_words().
-     */
-    public function test_translate_words()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
     }
 
     public function provide_smart_marks_data() {
@@ -1909,19 +1894,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
     }
 
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::_dewidow_callback
-     * @todo   Implement test_dewidow_callback().
-     */
-    public function test_dewidow_callback()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
     public function provide_wrap_urls_data() {
     	return array(
     		array( 'https://example.org/',          'https://&#8203;example&#8203;.org/',          2 ),
@@ -2125,18 +2097,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_initial_quote_tags();
 
     	$this->assertSame( $html, $typo->process( $html, $is_title ) );
-    }
-
-    /**
-     * @covers \PHP_Typography\PHP_Typography::hyphenation_pattern_injection
-     * @todo   Implement test_hyphenation_pattern_injection().
-     */
-    public function test_hyphenation_pattern_injection()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
     }
 
     /**
