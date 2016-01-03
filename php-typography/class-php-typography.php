@@ -474,7 +474,7 @@ class PHP_Typography {
 			|
 			\x{3000}		# ideographic space
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		$this->components['normalSpaces'] = '[ \f\n\r\t\v]'; // equivalent to \s in non-Unicode mode
+		$this->components['normalSpaces'] = ' \f\n\r\t\v'; // equivalent to \s in non-Unicode mode
 
 		$this->components['unitSpacingStandardUnits'] = '
 			### Temporal units
@@ -506,23 +506,23 @@ class PHP_Typography {
 
 		$this->components['wrapEmailsValidTLD'] = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
 		$this->components['wrapEmailsEmailPattern'] = "(?:
-		\A
-		[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
-		(?:
-		\.
-		[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
-		)*
-		@
-		(?:
-		[a-z0-9]
-		[a-z0-9\-]{0,61}
-		[a-z0-9]
-		\.
-		)+
-		(?:
-		{$this->components['wrapEmailsValidTLD']}
-		)
-		\Z
+			\A
+			[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
+			(?:
+				\.
+				[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
+			)*
+			@
+			(?:
+				[a-z0-9]
+				[a-z0-9\-]{0,61}
+				[a-z0-9]
+				\.
+			)+
+			(?:
+				{$this->components['wrapEmailsValidTLD']}
+			)
+			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 
 		$this->components['hyphensArray'] = array_unique( array( '-', $this->chr['hyphen'] ) );
@@ -945,7 +945,7 @@ class PHP_Typography {
 				(?:
 					(\s)
 					(\w)
-					{$this->components['normalSpaces']}
+					[{$this->components['normalSpaces']}]
 					(?=\w)
 				)
 			/xu";
@@ -978,10 +978,10 @@ class PHP_Typography {
 				)
 			/xu";
 
-		$this->regex['spaceCollapseNormal']       = "/{$this->components['normalSpaces']}+/xu";
-		$this->regex['spaceCollapseNonBreakable'] = "/(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseOther']        = "/(?:{$this->components['normalSpaces']})*({$this->components['htmlSpaces']})(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseBlockStart']   = "/\A(?:{$this->components['normalSpaces']}|{$this->components['htmlSpaces']})+/xu";
+		$this->regex['spaceCollapseNormal']       = "/[{$this->components['normalSpaces']}]+/xu";
+		$this->regex['spaceCollapseNonBreakable'] = "/(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
+		$this->regex['spaceCollapseOther']        = "/(?:[{$this->components['normalSpaces']}])*({$this->components['htmlSpaces']})(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
+		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})+/xu";
 
 		$this->regex['unitSpacingEscapeSpecialChars'] = "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#";
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
@@ -1012,22 +1012,22 @@ class PHP_Typography {
 					\A
 					|
 					(?:
-						(																#subpattern 1: space before
-							[\s".$this->chr['zeroWidthSpace'].$this->chr['softHyphen']."]+
+						(?<space_before>			# subpattern 1: space before (note: ZWSP is not a space)
+							[\s{$this->chr['zeroWidthSpace']}{$this->chr['softHyphen']}]+
 						)
-						(																#subpattern 2: neighbors widow (short as possible)
-							[^\s".$this->chr['zeroWidthSpace'].$this->chr['softHyphen']."]+
+						(?<neighbor>				# subpattern 2: neighbors widow (short as possible)
+							[^\s{$this->chr['zeroWidthSpace']}{$this->chr['softHyphen']}]+?
 						)
 					)
 				)
-				(																		#subpattern 3: space between
-					[\s".$this->chr['noBreakSpace']."]+
+				(?<space_between>					# subpattern 3: space between
+					[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
 				)
-				(																		#subpattern 4: widow
-					[^\s".$this->chr['zeroWidthSpace']."]+?
+				(?<widow>							# subpattern 4: widow
+					[\w\pM\-]+?                       # \w includes all alphanumeric Unicode characters but not composed characters
 				)
-				(																		#subpattern 5: any trailing punctuation or spaces
-					[^\w]*
+				(?<trailing>					    # subpattern 5: any trailing punctuation or spaces
+					[^\w\pM]*
 				)
 				\Z
 			/xu";
@@ -1035,6 +1035,7 @@ class PHP_Typography {
         // utility patterns for splitting string parameter lists into arrays
         $this->regex['parameterSplitting'] = '/[\s,]+/';
 	}
+
 
 	/**
 	 * Sets tags for which the typography of their children will be left untouched.
@@ -2509,13 +2510,12 @@ class PHP_Typography {
 	function dewidow( \DOMText $textnode ) {
 		// intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser
 		// intervening tags will only interfere if they separate the widow from previous or preceding whitespace
-		if ( empty( $this->settings['dewidow'] ) ) {
+		if ( empty( $this->settings['dewidow'] ) || empty( $this->settings['dewidowMaxPull'] ) || empty( $this->settings['dewidowMaxLength'] ) ) {
 			return;
 		}
 
 		if ( '' === $this->get_next_chr( $textnode ) ) {
 			// we have the last type "text" child of a block level element
-
 			$textnode->data = preg_replace_callback( $this->regex['dewidow'], array( $this, '_dewidow_callback' ), $textnode->data );
 		}
 	}
@@ -2527,42 +2527,38 @@ class PHP_Typography {
 	 * @return string
 	 */
 	private function _dewidow_callback( array $widow ) {
-		if ( empty( $this->settings['dewidowMaxPull'] ) || empty( $this->settings['dewidowMaxLength'] ) ) {
-			return $widow[0];
-		}
-
 		$func = $this->str_functions[ mb_detect_encoding( $widow[0], $this->encodings, true ) ];
 
 		// if we are here, we know that widows are being protected in some fashion
 		//   with that, we will assert that widows should never be hyphenated or wrapped
 		//   as such, we will strip soft hyphens and zero-width-spaces
-		$widow[4] = str_replace( $this->chr['zeroWidthSpace'], '', $widow[4] );
-		$widow[4] = str_replace( $this->chr['softHyphen'], '', $widow[4] );
-
-		$widow[5] = preg_replace( "/\s+/{$func['u']}", $this->chr['noBreakSpace'], $widow[5] );
-		$widow[5] = str_replace( $this->chr['zeroWidthSpace'], '', $widow[5] );
-		$widow[5] = str_replace( $this->chr['softHyphen'], '', $widow[5] );
+		$widow['widow']    = str_replace( $this->chr['zeroWidthSpace'], '', $widow['widow'] ); // TODO: check if this can match here
+		$widow['widow']    = str_replace( $this->chr['softHyphen'],     '', $widow['widow'] ); // TODO: check if this can match here
+		$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", $this->chr['noBreakSpace'], $widow['trailing'] );
+		$widow['trailing'] = str_replace( $this->chr['zeroWidthSpace'], '', $widow['trailing'] );
+		$widow['trailing'] = str_replace( $this->chr['softHyphen'],     '', $widow['trailing'] );
 
 		// eject if widows neighbor is proceeded by a no break space (the pulled text would be too long)
-		if ( '' === $widow[1] || strstr($this->chr['noBreakSpace'], $widow[1])) {
-			return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		if ( '' === $widow['space_before'] || strstr( $this->chr['noBreakSpace'], $widow['space_before'] ) ) {
+			return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
 		}
 
+
 		// eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed
-		if ( ( '' !== $widow[2] && $func['strlen']( $widow[2] ) > $this->settings['dewidowMaxPull'] ) ||
-			 $func['strlen']( $widow[4] ) > $this->settings['dewidowMaxLength']	) {
-			 	return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+		if ( $func['strlen']( $widow['neighbor'] ) > $this->settings['dewidowMaxPull'] ||
+			 $func['strlen']( $widow['widow'] )    > $this->settings['dewidowMaxLength'] ) {
+				return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
 		}
 
 		// never replace thin and hair spaces with &nbsp;
-		switch ( $widow[3] ) {
+		switch ( $widow['space_between'] ) {
 			case $this->chr['thinSpace']:
 			case $this->chr['hairSpace']:
-				return $widow[1].$widow[2].$widow[3].$widow[4].$widow[5];
+				return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
 		}
 
 		// lets protect some widows!
-		return $widow[1].$widow[2].$this->chr['noBreakSpace'].$widow[4].$widow[5];
+		return $widow['space_before'] . $widow['neighbor'] . $this->chr['noBreakSpace'] . $widow['widow'] . $widow['trailing'];
 	}
 
 	/**
