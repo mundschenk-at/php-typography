@@ -2761,35 +2761,40 @@ class PHP_Typography {
 			$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
 
-			if ( $first_character === "'" ||
-				 $first_character === $this->chr['singleQuoteOpen'] ||
-				 $first_character === $this->chr['singleLow9Quote'] ||
-				 $first_character === "," ||
-				 $first_character === '"' ||
-				 $first_character === $this->chr['doubleQuoteOpen'] ||
-				 $first_character === $this->chr['guillemetOpen'] ||
-				 $first_character === $this->chr['guillemetClose'] ||
-				 $first_character === $this->chr['doubleLow9Quote'] ) {
+			switch ( $first_character ) {
+				case "'":
+				case $this->chr['singleQuoteOpen']:
+				case $this->chr['singleLow9Quote']:
+				case ',':
+				case '"':
+				case $this->chr['doubleQuoteOpen']:
+				case $this->chr['guillemetOpen']:
+				case $this->chr['guillemetClose']:
+				case $this->chr['doubleLow9Quote']:
 
-				$block_level_parent = false;
-				if ( ! empty( $textnode->parentNode ) ) {
 					$block_level_parent = $this->get_block_parent( $textnode );
 					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
-				} elseif ( $is_title ) {
-					// assume page title is h2
-					$block_level_parent = 'h2';
-				}
 
-				if ( $block_level_parent && isset( $this->settings['initialQuoteTags'][$block_level_parent] ) ) {
-					if ( $first_character === "'" ||
-						 $first_character === $this->chr['singleQuoteOpen'] ||
-						 $first_character === $this->chr['singleLow9Quote'] ||
-						 $first_character === ",") {
-						$textnode->data =  '<span class="quo">'.$first_character.'</span>'. $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
-					} else { // double quotes or guillemets
-						$textnode->data =  '<span class="dquo">'.$first_character.'</span>'. $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+					if ( $is_title ) {
+						// assume page title is h2
+						$block_level_parent = 'h2';
 					}
-				}
+
+					if ( $block_level_parent && isset( $this->settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+						switch( $first_character ) {
+							case "'":
+							case $this->chr['singleQuoteOpen']:
+							case $this->chr['singleLow9Quote']:
+							case ",":
+								$span_class = 'quo';
+								break;
+
+							default: // double quotes or guillemets
+								$span_class = 'dquo';
+						}
+
+						$textnode->data =  '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+					}
 			}
 		}
 	}
