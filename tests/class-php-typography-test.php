@@ -1958,16 +1958,36 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertTokenSame( $html, $typo->wrap_urls( $this->tokenize( $html ) ) );
     }
 
+    public function provide_wrap_emails_data() {
+    	return array(
+    		array( 'code@example.org', 'code@&#8203;example.&#8203;org' ),
+    		array( 'some.name@sub.domain.org', 'some.&#8203;name@&#8203;sub.&#8203;domain.&#8203;org' ),
+    		array( 'funny123@summer1.org', 'funny1&#8203;2&#8203;3&#8203;@&#8203;summer1&#8203;.&#8203;org' )
+    	);
+    }
+
     /**
-     * @covers \PHP_Typography\PHP_Typography::wrap_emails
-     * @todo   Implement test_wrap_emails().
+     * @covers ::wrap_emails
+     * @dataProvider provide_wrap_emails_data
      */
-    public function test_wrap_emails()
+    public function test_wrap_emails( $html, $result )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_email_wrap( true );
+
+    	$this->assertTokenSame( $result, $typo->wrap_emails( $this->tokenize( $html ) ) );
+    }
+
+    /**
+     * @covers ::wrap_emails
+     * @dataProvider provide_wrap_emails_data
+     */
+    public function test_wrap_emails_off( $html, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_email_wrap( false );
+
+    	$this->assertTokenSame( $html, $typo->wrap_emails( $this->tokenize( $html ) ) );
     }
 
     /**
