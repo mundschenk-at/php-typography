@@ -2256,9 +2256,10 @@ class PHP_Typography {
 			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
 
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-			$textnode->data = preg_replace_callback( $this->settings['diacriticReplacement']['patterns'], function( $match ) {
-		 		if ( isset( $this->settings['diacriticReplacement']['replacements'][ $match[0] ] ) ) {
-		 			return $this->settings['diacriticReplacement']['replacements'][ $match[0] ];
+			$replacements = $this->settings['diacriticReplacement']['replacements'];
+			$textnode->data = preg_replace_callback( $this->settings['diacriticReplacement']['patterns'], function( $match ) use ( $replacements ) {
+		 		if ( isset( $replacements[ $match[0] ] ) ) {
+		 			return $replacements[ $match[0] ];
 		 		} else {
 		 			return $match[0];
 		 		}
