@@ -3,7 +3,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2015 Peter Putzer.
+ *	Copyright 2014-2016 Peter Putzer.
  *	Copyright 2012-2013 Marie Hogebrandt.
  *	Coypright 2009-2011 KINGdesk, LLC.
  *
