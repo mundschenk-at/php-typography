@@ -613,6 +613,44 @@ class PHP_Typography {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive)
 
+		$this->components['smartQuotesApostropheExceptions'] = array(
+			"'tain".$this->chr['apostrophe'].'t' => $this->chr['apostrophe'] . 'tain' . $this->chr['apostrophe'] . 't',
+			"'twere"                             => $this->chr['apostrophe'] . 'twere',
+			"'twas"                              => $this->chr['apostrophe'] . 'twas',
+			"'tis"                               => $this->chr['apostrophe'] . 'tis',
+			"'til"                               => $this->chr['apostrophe'] . 'til',
+			"'bout"                              => $this->chr['apostrophe'] . 'bout',
+			"'nuff"                              => $this->chr['apostrophe'] . 'nuff',
+			"'round"                             => $this->chr['apostrophe'] . 'round',
+			"'cause"                             => $this->chr['apostrophe'] . 'cause',
+			"'splainin"                          => $this->chr['apostrophe'] . 'splainin',
+		);
+		$this->components['smartQuotesApostropheExceptionMatches']      = array_keys( $this->components['smartQuotesApostropheExceptions'] );
+		$this->components['smartQuotesApostropheExceptionReplacements'] = array_values( $this->components['smartQuotesApostropheExceptions'] );
+
+		$this->components['smartQuotesBrackets'] = array(
+			// single quotes
+			"['"  => "[" . $this->chr['singleQuoteOpen'],
+			"{'"  => "{" . $this->chr['singleQuoteOpen'],
+			"('"  => "(" . $this->chr['singleQuoteOpen'],
+			"']"  => $this->chr['singleQuoteClose'] . "}",
+			"'}"  => $this->chr['singleQuoteClose'] . "}",
+			"')"  => $this->chr['singleQuoteClose'] . ")",
+
+			// double quotes
+			"[\"" => "[" . $this->chr['doubleQuoteOpen'],
+			"{\"" => "{" . $this->chr['doubleQuoteOpen'],
+			"(\"" => "(" . $this->chr['doubleQuoteOpen'],
+			"\"]" => $this->chr['doubleQuoteClose'] . "]",
+			"\"}" => $this->chr['doubleQuoteClose'] . "}",
+			"\")" => $this->chr['doubleQuoteClose'] . ")",
+
+			// quotes & quotes
+			"\"'" => $this->chr['doubleQuoteOpen']  . $this->chr['singleQuoteOpen'],
+			"'\"" => $this->chr['singleQuoteClose'] . $this->chr['doubleQuoteClose'],
+		);
+		$this->components['smartQuotesBracketMatches']      = array_keys( $this->components['smartQuotesBrackets'] );
+		$this->components['smartQuotesBracketReplacements'] = array_values( $this->components['smartQuotesBrackets'] );
 	}
 
 	/**
@@ -2164,14 +2202,10 @@ class PHP_Typography {
 		// apostrophes
 		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheWords'],   $this->chr['apostrophe'],      $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheDecades'], $this->chr['apostrophe'].'$1', $textnode->data ); // decades: '98
-		$exceptions   = array( "'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin" );
-		$replacements = array( $this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin' );
-		$textnode->data = str_replace( $exceptions, $replacements, $textnode->data );
+		$textnode->data = str_replace( $this->components['smartQuotesApostropheExceptionMatches'], $this->components['smartQuotesApostropheExceptionReplacements'], $textnode->data );
 
 		// quotes
-		$quoteRules = array( "['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"" );
-		$quoteRulesReplace = array( "[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose'] );
-		$textnode->data = str_replace( $quoteRules, $quoteRulesReplace, $textnode->data );
+		$textnode->data = str_replace( $this->components['smartQuotesBracketMatches'], $this->components['smartQuotesBracketReplacements'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'],         $this->chr['singleQuoteOpen'],  $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteClose'],        $this->chr['singleQuoteClose'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'],  $this->chr['singleQuoteOpen'],  $textnode->data ); // like _'¿hola?'_
@@ -2181,7 +2215,7 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'],  $this->chr['doubleQuoteOpen'],  $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteCloseSpecial'], $this->chr['doubleQuoteClose'], $textnode->data );
 
-		//quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
+		// quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
 		$textnode->data = str_replace( "'", $this->chr['singleQuoteClose'], $textnode->data );
 		$textnode->data = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->data );
 
