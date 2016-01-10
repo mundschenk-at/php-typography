@@ -2142,50 +2142,50 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuotedNumbers'], $this->chr['doubleQuoteOpen'].'$1'.$this->chr['doubleQuoteClose'], $textnode->data );
 
 		// guillemets
-		$textnode->data = str_replace( "<<", $this->chr['guillemetOpen'], $textnode->data );
-		$textnode->data = str_replace( "&lt;&lt;", $this->chr['guillemetOpen'], $textnode->data );
-		$textnode->data = str_replace( ">>", $this->chr['guillemetClose'], $textnode->data );
+		$textnode->data = str_replace( "<<",       $this->chr['guillemetOpen'],  $textnode->data );
+		$textnode->data = str_replace( "&lt;&lt;", $this->chr['guillemetOpen'],  $textnode->data );
+		$textnode->data = str_replace( ">>",       $this->chr['guillemetClose'], $textnode->data );
 		$textnode->data = str_replace( "&gt;&gt;", $this->chr['guillemetClose'], $textnode->data );
 
 		// primes
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'], '$1'.$this->chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'],                '$1'.$this->chr['doublePrime'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeSingleCharacter'], '$1'.$this->chr['doublePrime'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'], '$1'.$this->chr['singlePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'],                '$1'.$this->chr['singlePrime'], $textnode->data );
 
 		// backticks
-		$textnode->data = str_replace( "``", $this->chr['doubleQuoteOpen'], $textnode->data );
-		$textnode->data = str_replace( "`", $this->chr['singleQuoteOpen'], $textnode->data );
+		$textnode->data = str_replace( "``", $this->chr['doubleQuoteOpen'],  $textnode->data );
+		$textnode->data = str_replace( "`",  $this->chr['singleQuoteOpen'],  $textnode->data );
 		$textnode->data = str_replace( "''", $this->chr['doubleQuoteClose'], $textnode->data );
 
 		// comma quotes
 		$textnode->data = str_replace( ",,", $this->chr['doubleLow9Quote'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesCommaQuote'], $this->chr['singleLow9Quote'], $textnode->data ); //like _,¿hola?'_
+		$textnode->data = preg_replace( $this->regex['smartQuotesCommaQuote'], $this->chr['singleLow9Quote'], $textnode->data ); // like _,¿hola?'_
 
 		// apostrophes
-		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheWords'], $this->chr['apostrophe'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheWords'],   $this->chr['apostrophe'],      $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheDecades'], $this->chr['apostrophe'].'$1', $textnode->data ); // decades: '98
-		$exceptions = array("'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin");
-		$replacements = array($this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin');
+		$exceptions   = array( "'tain".$this->chr['apostrophe'].'t', "'twere", "'twas", "'tis", "'til", "'bout", "'nuff", "'round", "'cause", "'splainin" );
+		$replacements = array( $this->chr['apostrophe'].'tain'.$this->chr['apostrophe'].'t', $this->chr['apostrophe'].'twere', $this->chr['apostrophe'].'twas', $this->chr['apostrophe'].'tis', $this->chr['apostrophe'].'til', $this->chr['apostrophe'].'bout', $this->chr['apostrophe'].'nuff', $this->chr['apostrophe'].'round', $this->chr['apostrophe'].'cause', $this->chr['apostrophe'].'splainin' );
 		$textnode->data = str_replace( $exceptions, $replacements, $textnode->data );
 
 		// quotes
-		$quoteRules = array("['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"");
-		$quoteRulesReplace = array("[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose']);
+		$quoteRules = array( "['", "{'", "('", "']", "'}", "')", "[\"", "{\"", "(\"", "\"]", "\"}", "\")", "\"'", "'\"" );
+		$quoteRulesReplace = array( "[".$this->chr['singleQuoteOpen'], "{".$this->chr['singleQuoteOpen'], "(".$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose']."]", $this->chr['singleQuoteClose']."}", $this->chr['singleQuoteClose'].")", "[".$this->chr['doubleQuoteOpen'], "{".$this->chr['doubleQuoteOpen'], "(".$this->chr['doubleQuoteOpen'], $this->chr['doubleQuoteClose']."]", $this->chr['doubleQuoteClose']."}", $this->chr['doubleQuoteClose'].")", $this->chr['doubleQuoteOpen'].$this->chr['singleQuoteOpen'], $this->chr['singleQuoteClose'].$this->chr['doubleQuoteClose'] );
 		$textnode->data = str_replace( $quoteRules, $quoteRulesReplace, $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'], $this->chr['singleQuoteOpen'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteClose'], $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'], $this->chr['singleQuoteOpen'], $textnode->data ); //like _'¿hola?'_
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteCloseSpecial'] , $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpen'], $this->chr['doubleQuoteOpen'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteClose'], $this->chr['doubleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'], $this->chr['doubleQuoteOpen'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'],         $this->chr['singleQuoteOpen'],  $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteClose'],        $this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'],  $this->chr['singleQuoteOpen'],  $textnode->data ); // like _'¿hola?'_
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteCloseSpecial'], $this->chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpen'],         $this->chr['doubleQuoteOpen'],  $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteClose'],        $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'],  $this->chr['doubleQuoteOpen'],  $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteCloseSpecial'], $this->chr['doubleQuoteClose'], $textnode->data );
 
 		//quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed
 		$textnode->data = str_replace( "'", $this->chr['singleQuoteClose'], $textnode->data );
 		$textnode->data = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->data );
 
-		//if we have adjacent characters remove them from the text
+		// if we have adjacent characters remove them from the text
 		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
 
 		if ( '' !== $previous_character ) {
