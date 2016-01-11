@@ -1273,35 +1273,42 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertNull( $node );
     }
 
-    /**
-     * @covers ::smart_quotes
-     */
-    public function test_smart_quotes()
-    {
-		//$html = '<p><em>"I\'m pretty sure,"</em> she said, & "He said \'We are <em>family</em>\'".</p>';
-		//$expected = '<p><em>&ldquo;';
-
-    	$typo = $this->typo;
-
-    	$typo->set_smart_quotes( true );
-
-		$this->assertSame( "<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>",
-						   $this->clean_html( $typo->process( '<span>"Double", \'single\'</span>' ) ) );
-		$this->assertSame( "<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>",
-						   $this->clean_html( $typo->process('<p>"<em>This is nuts.</em>"</p>') ) );
+    public function provide_smart_quotes_data() {
+    	return array(
+    		array( '<span>"Double", \'single\'</span>', '<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>' ),
+    		array( '<p>"<em>This is nuts.</em>"</p>',   '<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>' ),
+    		array( '"This is so 1996", he said.',       '&ldquo;This is so 1996&rdquo;, he said.' ),
+    		array( '6\'5"',                             '6&prime;5&Prime;' ),
+    		array( '6\' 5"',                            '6&prime; 5&Prime;' ),
+    		array( '6\'&nbsp;5"',                       '6&prime;&nbsp;5&Prime;' ),
+    		array( " 6'' ",                             ' 6&Prime; ' ), // nobody uses this for quotes, so it should be OK to keep the primes here
+     		array( 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ),
+    		array( "der 8'-Ölbohrer",                   "der 8&prime;-&Ouml;lbohrer" ),
+    	);
     }
 
     /**
      * @covers ::smart_quotes
+     * @dataProvider provide_smart_quotes_data
      */
-    public function test_smart_quotes_off()
+    public function test_smart_quotes( $html, $result )
     {
     	$typo = $this->typo;
-       	$typo->set_smart_quotes( false );
+    	$typo->set_smart_quotes( true );
 
-       	$html = '<p>"<em>This is nuts.</em>"</p>';
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
 
-    	$this->assertSame( $html, $typo->process( '<p>"<em>This is nuts.</em>"</p>') );
+    /**
+     * @covers ::smart_quotes
+     * @dataProvider provide_smart_quotes_data
+     */
+    public function test_smart_quotes_off( $html, $result )
+    {
+     	$typo = $this->typo;
+    	$typo->set_smart_quotes( false );
+
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
     }
 
     /**
