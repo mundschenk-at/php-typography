@@ -696,30 +696,33 @@ class PHP_Typography {
 
 		$this->regex['controlCharacters'] = '/\p{C}/Su';
 
-		$this->regex['smartQuotesSingleQuotedNumbers']        = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoubleQuotedNumbers']        = "/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrime']                = "/(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrimeSingleCharacter'] = "/(\b\d+)\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesSinglePrime']                = "/(\b\d+)'(?=\W|\Z)/u";
-		$this->regex['smartQuotesCommaQuote']                 = "/(?<=\s|\A),(?=\S)/";
-		$this->regex['smartQuotesApostropheWords']            = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		$this->regex['smartQuotesApostropheDecades']          = "/'(\d\d\b)/";
-		$this->regex['smartQuotesSingleQuoteOpen']            = "/'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		$this->regex['smartQuotesSingleQuoteClose']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'/u";
-		$this->regex['smartQuotesSingleQuoteOpenSpecial']     = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_
-		$this->regex['smartQuotesSingleQuoteCloseSpecial']    = "/(?<=\S)'(?=\s|\Z)/";
-		$this->regex['smartQuotesDoubleQuoteOpen']            = "/\"(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		$this->regex['smartQuotesDoubleQuoteClose']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])\"/u";
-		$this->regex['smartQuotesDoubleQuoteOpenSpecial']     = "/(?<=\s|\A)\"(?=\S)/";
-		$this->regex['smartQuotesDoubleQuoteCloseSpecial']    = "/(?<=\S)\"(?=\s|\Z)/";
+		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoubleQuotedNumbers']       = "/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrime']               = "/(\b\d+)''(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d+)''(?=-\w)/u";
+		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d+)\"(?=-\w)/u";
+		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d+)'(?=-\w)/u";
+		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d+)'(\s*)(\b\d+)''(?=\W|\Z)/u";
+		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d+)'(\s*)(\b\d+)\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesCommaQuote']                = "/(?<=\s|\A),(?=\S)/";
+		$this->regex['smartQuotesApostropheWords']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartQuotesApostropheDecades']         = "/'(\d\d\b)/";
+		$this->regex['smartQuotesSingleQuoteOpen']           = "/'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartQuotesSingleQuoteClose']          = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'/u";
+		$this->regex['smartQuotesSingleQuoteOpenSpecial']    = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_
+		$this->regex['smartQuotesSingleQuoteCloseSpecial']   = "/(?<=\S)'(?=\s|\Z)/";
+		$this->regex['smartQuotesDoubleQuoteOpen']           = "/\"(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartQuotesDoubleQuoteClose']          = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])\"/u";
+		$this->regex['smartQuotesDoubleQuoteOpenSpecial']    = "/(?<=\s|\A)\"(?=\S)/";
+		$this->regex['smartQuotesDoubleQuoteCloseSpecial']   = "/(?<=\S)\"(?=\s|\Z)/";
 
-		$this->regex['smartDashesParentheticalDoubleDash']    = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- ';
-		$this->regex['smartDashesParentheticalSingleDash']    = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - ';
-		$this->regex['smartDashesEnDashAll']                  = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
-		$this->regex['smartDashesEnDashWords']                = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
-		$this->regex['smartDashesEnDashNumbers']              = "/(\b\d+)\-(\d+\b)/";
-		$this->regex['smartDashesEnDashPhoneNumbers']         = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
-		$this->regex['smartDashesYYYY-MM-DD']                   = "/
+		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- ';
+		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - ';
+		$this->regex['smartDashesEnDashAll']                 = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
+		$this->regex['smartDashesEnDashWords']               = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
+		$this->regex['smartDashesEnDashNumbers']             = "/(\b\d+)\-(\d+\b)/";
+		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})".$this->chr['enDash']."(\d{4}\b)/";
+		$this->regex['smartDashesYYYY-MM-DD']                = "/
 				(
 					(?<=\s|\A|".$this->chr['noBreakSpace'].")
 					[12][0-9]{3}
@@ -735,7 +738,7 @@ class PHP_Typography {
 				)
 			/xu";
 
-		$this->regex['smartDashesMM-DD-YYYY']                   = "/
+		$this->regex['smartDashesMM-DD-YYYY']                = "/
 				(?:
 					(?:
 						(
@@ -2186,9 +2189,12 @@ class PHP_Typography {
 		$textnode->data = str_replace( "&gt;&gt;", $this->chr['guillemetClose'], $textnode->data );
 
 		// primes
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'],                '$1'.$this->chr['doublePrime'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeSingleCharacter'], '$1'.$this->chr['doublePrime'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'],                '$1'.$this->chr['singlePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime'],         '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime1Glyph'],   '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'],               '$1' . $this->chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching
+		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrimeCompound'],       '$1' . $this->chr['singlePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeCompound'],       '$1' . $this->chr['doublePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime1GlyphCompound'], '$1' . $this->chr['doublePrime'],                                      $textnode->data );
 
 		// backticks
 		$textnode->data = str_replace( "``", $this->chr['doubleQuoteOpen'],  $textnode->data );
