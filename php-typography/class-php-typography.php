@@ -698,12 +698,12 @@ class PHP_Typography {
 
 		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
 		$this->regex['smartQuotesDoubleQuotedNumbers']       = "/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrime']               = "/(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d+)''(?=-\w)/u";
-		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d+)\"(?=-\w)/u";
-		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d+)'(?=-\w)/u";
-		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d+)'(\s*)(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d+)'(\s*)(\b\d+)\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrime']               = "/(\b\d{1,3})''(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d{1,3})''(?=-\w)/u";
+		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d{1,3})\"(?=-\w)/u";
+		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d{1,3})'(?=-\w)/u";
+		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d{1,3})'(\s*)(\b\d+)''(?=\W|\Z)/u";
+		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d{1,3})'(\s*)(\b\d+)\"(?=\W|\Z)/u";
 		$this->regex['smartQuotesCommaQuote']                = "/(?<=\s|\A),(?=\S)/";
 		$this->regex['smartQuotesApostropheWords']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartQuotesApostropheDecades']         = "/'(\d\d\b)/";
