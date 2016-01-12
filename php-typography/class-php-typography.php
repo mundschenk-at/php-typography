@@ -1095,7 +1095,7 @@ class PHP_Typography {
 		}
 
 		// ensure that we pass only lower-case tag names to XPath
-		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_lower' );
+		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
 
 		// self closing tags shouldn't be in $tags
 		$this->settings['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );;
