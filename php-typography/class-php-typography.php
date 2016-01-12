@@ -1761,7 +1761,7 @@ class PHP_Typography {
 
 		// query some nodes
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes = $xpath->query( '//text()' );
+		$all_textnodes = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
 
 		// start processing
@@ -1861,7 +1861,7 @@ class PHP_Typography {
 
 		// query some nodes in the DOM
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes = $xpath->query( '//text()' );
+		$all_textnodes = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
 
 		// start processing
