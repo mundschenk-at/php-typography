@@ -2205,48 +2205,62 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $html, $typo->process( $html, $is_title ) );
     }
 
+    public function provide_hyphenate_data() {
+    	return array(
+			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ),
+    		array( 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ),
+    		array( 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ),
+    		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false )
+    	);
+    }
+
     /**
      * @covers ::hyphenate
+     * @dataProvider provide_hyphenate_data
      */
-    public function test_hyphenate_disabled()
+    public function test_hyphenate_off( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds )
     {
-		$this->typo->set_hyphenation( false );
-		$this->typo->set_hyphenation_language( 'en-US' );
-		$this->typo->set_min_length_hyphenation(2);
-		$this->typo->set_min_before_hyphenation(2);
-		$this->typo->set_min_after_hyphenation(2);
-		$this->typo->set_hyphenate_headings( true );
-		$this->typo->set_hyphenate_all_caps( true );
-		$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
-		$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+    	$typo = $this->typo;
+		$typo->set_hyphenation( false );
+		$typo->set_hyphenation_language( $lang );
+		$typo->set_min_length_hyphenation( 2 );
+		$typo->set_min_before_hyphenation( 2 );
+		$typo->set_min_after_hyphenation( 2 );
+		$typo->set_hyphenate_headings( $hyphenate_headings );
+		$typo->set_hyphenate_all_caps( $hyphenate_all_caps );
+		$typo->set_hyphenate_title_case( $hyphenate_title_case );
+		$typo->set_hyphenate_compounds( $hyphenate_compunds );
+		$typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
 
-		$html = 'A few words to hyphenate, like KINGdesk. Really, there should be no hyphenation here!';
-    	$this->assertSame( $html, $this->clean_html( $this->typo->process( $html ) ) );
+		$this->assertSame( $html, $typo->process( $html ) );
     }
 
     /**
      * @covers ::hyphenate
      * @covers ::do_hyphenate
      * @covers ::hyphenation_pattern_injection
+     *
+     * @dataProvider provide_hyphenate_data
      */
-    public function test_hyphenate()
+    public function test_hyphenate( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds )
     {
-    	$this->typo->set_hyphenation( true );
-    	$this->typo->set_hyphenation_language( 'en-US' );
-    	$this->typo->set_min_length_hyphenation(2);
-    	$this->typo->set_min_before_hyphenation(2);
-    	$this->typo->set_min_after_hyphenation(2);
-    	$this->typo->set_hyphenate_headings( true );
-    	$this->typo->set_hyphenate_all_caps( true );
-    	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
-    	$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+    	$typo = $this->typo;
+    	$typo->set_hyphenation( true );
+    	$typo->set_hyphenation_language( $lang );
+    	$typo->set_min_length_hyphenation(2);
+    	$typo->set_min_before_hyphenation(2);
+    	$typo->set_min_after_hyphenation(2);
+		$typo->set_hyphenate_headings( $hyphenate_headings );
+		$typo->set_hyphenate_all_caps( $hyphenate_all_caps );
+		$typo->set_hyphenate_title_case( $hyphenate_title_case );
+		$typo->set_hyphenate_compounds( $hyphenate_compunds );
+    	$typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
 
     	/*	$this->assertSame( "This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness",
     	 $this->clean_html( $this->object->process("This is a paragraph with no embedded hyphenation hints and no hyphen-related CSS applied. Corporate gibberish follows. Think visionary. If you generate proactively, you may have to e-enable interactively. We apply the proverb \"Grass doesn't grow on a racetrack\" not only to our re-purposing but our power to matrix. If all of this comes off as dumbfounding to you, that's because it is! Our feature set is unparalleled in the industry, but our reality-based systems and simple use is usually considered a remarkable achievement. The power to brand robustly leads to the aptitude to embrace seamlessly. What do we streamline? Anything and everything, regardless of reconditeness") ) );
     	*/
 
-    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
-    		$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
 
     /**
