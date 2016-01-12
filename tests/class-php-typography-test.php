@@ -1450,29 +1450,58 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $this->typo->process( $input ) ) );
     }
 
-    /**
-     * @covers ::smart_diacritics
-     */
-    public function test_smart_diacritics()
-    {
-		$this->typo->set_smart_diacritics( true );
-		$this->typo->set_diacritic_language( 'en-US' );
-
-		$this->assertSame( $this->clean_html('<p>crème brûlée</p>'),
-						   $this->clean_html( $this->typo->process('<p>creme brulee</p>') ) );
+    public function provide_smart_diacritics_data() {
+    	return array(
+    		array( '<p>creme brulee</p>', '<p>crème brûlée</p>', 'en-US' ),
+    		array( 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US')
+    	);
     }
 
     /**
      * @covers ::smart_diacritics
+     * @dataProvider provide_smart_diacritics_data
      */
-    public function test_smart_diacritics_off()
+    public function test_smart_diacritics( $html, $result, $lang )
     {
-    	$this->typo->set_smart_diacritics( false );
-    	$this->typo->set_diacritic_language( 'en-US' );
+    	$typo = $this->typo;
+    	$typo->set_smart_diacritics( true );
+		$typo->set_diacritic_language( $lang );
 
-    	$html = '<p>creme brulee</p>';
+		$this->assertSame( clean_html( $result ), clean_html( $typo->process( $html ) ) );
+    }
 
-    	$this->assertSame( $html, $this->typo->process( $html ) );
+    /**
+     * @covers ::smart_diacritics
+     * @dataProvider provide_smart_diacritics_data
+     */
+    public function test_smart_diacritics_off( $html, $result, $lang )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_diacritics( false );
+    	$typo->set_diacritic_language( $lang );
+
+		$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
+    }
+
+    public function provide_smart_diacritics_error_in_pattern_data() {
+    	return array(
+    		array( 'no diacritics to replace, except creme', 'en-US', 'creme' )
+    	);
+    }
+
+    /**
+     * @covers ::smart_diacritics
+     * @dataProvider provide_smart_diacritics_error_in_pattern_data
+     */
+    public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset )
+    {
+    	$typo = $this->typo;
+
+    	$typo->set_smart_diacritics( true );
+    	$typo->set_diacritic_language( $lang );
+		unset( $typo->settings['diacriticReplacement']['replacements'][ $unset ] );
+
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
     }
 
     public function provide_smart_marks_data() {
