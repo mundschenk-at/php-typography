@@ -698,12 +698,12 @@ class PHP_Typography {
 
 		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
 		$this->regex['smartQuotesDoubleQuotedNumbers']       = "/(?<=\W|\A)\"(\d+)\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrime']               = "/(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d+)''(?=-\w)/u";
-		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d+)\"(?=-\w)/u";
-		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d+)'(?=-\w)/u";
-		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d+)'(\s*)(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d+)'(\s*)(\b\d+)\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrime']               = "/(\b\d{1,3})''(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d{1,3})''(?=-\w)/u";
+		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d{1,3})\"(?=-\w)/u";
+		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d{1,3})'(?=-\w)/u";
+		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d{1,3})'(\s*)(\b\d+)''(?=\W|\Z)/u";
+		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d{1,3})'(\s*)(\b\d+)\"(?=\W|\Z)/u";
 		$this->regex['smartQuotesCommaQuote']                = "/(?<=\s|\A),(?=\S)/";
 		$this->regex['smartQuotesApostropheWords']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartQuotesApostropheDecades']         = "/'(\d\d\b)/";
@@ -1095,7 +1095,7 @@ class PHP_Typography {
 		}
 
 		// ensure that we pass only lower-case tag names to XPath
-		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_lower' );
+		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
 
 		// self closing tags shouldn't be in $tags
 		$this->settings['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );;
