@@ -95,8 +95,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	// default tags
 		$typo->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre',	'samp',
-												  'script',	'noscript',	'noembed', 'select', 'style', 'textarea',
-												  'title',	'var', 'math' ) );
+										  'script',	'noscript',	'noembed', 'select', 'style', 'textarea',
+										  'title',	'var', 'math' ) );
 		$this->assertArraySubset( array( 'code', 'head', 'kbd', 'object', 'option',	'pre', 'samp',
 										 'script', 'noscript', 'noembed', 'select', 'style', 'textarea',
  								 		 'title', 'var', 'math' ), $typo->settings['ignoreTags'] );
@@ -1035,28 +1035,98 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		}
     }
 
-    /**
-     * @covers \PHP_Typography\PHP_Typography::process
-     * @todo   Implement test_process().
-     */
-    public function test_process()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    public function provide_process_data() {
+    	return array(
+    		array( '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false  ), // smart math
+    		array( '"Hey there!"', '&ldquo;Hey there!&rdquo;', true ), // smart quotes
+    		array( 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ), // smart dashes
+    		array( 'Hey...', 'Hey&hellip;', true ), // smart ellipses
+    		array( '(c)', '&copy;', true ), // smart marks
+    		array( 'creme', 'cr&egrave;me', false ), // diacritics
+    		array( 'a a a', 'a a&nbsp;a', false ), // single characgter word spacing
+    		array( '3 cm', '<span class="numbers">3</span>&#8239;cm', false ), // unit spacing
+    		array( 'a/b', 'a/&#8203;b', false ), // dash spacing
+    		array( '<span class="numbers">5</span>', '<span class="numbers">5</span>', true ), // class present, no change
+    		array( '1st', '<span class="numbers">1</span><sup>st</sup>', false ), // smart ordinal suffixes
+    		array( '1^1', '<span class="numbers">1</span><sup><span class="numbers">1</span></sup>', false ), // smart exponents
+    		array( 'a &amp; b', 'a <span class="amp">&amp;</span>&nbsp;b', false ), // wrap amps
+    		array( 'a  b', 'a b', false ), // space collapse
+    		array( 'NATO', '<span class="caps">NATO</span>', false ), // style caps
+    		array( 'superfluous', 'super&shy;flu&shy;ous', false ), // hyphenate
+    		array( 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ), // wrap URLs
+    		array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails
+    		array( '<span> </span>', '<span> </span>', true ), // whitespace is ignored
+    		array( '<span class="noTypo">123</span>', '<span class="noTypo">123</span>', true ), // skipped class
+    	);
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::process_feed
-     * @todo   Implement test_process_feed().
+     * @covers ::process
+     * @dataProvider provide_process_data
      */
-    public function test_process_feed()
+    public function test_process( $html, $result, $feed )
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
+
+    /**
+     * @covers ::process_feed
+     * @dataProvider provide_process_data
+     */
+    public function test_process_feed( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+		if ( is_string( $feed ) ) {
+   			$this->assertSame( $feed, clean_html( $typo->process_feed( $html ) ) );
+		} elseif ( $feed ) {
+			$this->assertSame( $result, clean_html( $typo->process_feed( $html ) ) );
+		} else {
+			$this->assertSame( $html, $typo->process_feed( $html ) );
+		}
+    }
+
+    public function provide_process_with_title_data() {
+    	return array(
+    		array( 'Really...', 'Really&hellip;', true, '' ), // processed
+    		array( 'Really...', 'Really...', true, array( 'h1' ) ), // skipped
+    	);
+    }
+
+    /**
+     * @covers ::process
+     * @dataProvider provide_process_with_title_data
+     */
+    public function test_process_with_title( $html, $result, $feed, $skip_tags )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+    	$typo->set_tags_to_ignore( $skip_tags );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html, true ) ) );
+    }
+
+    /**
+     * @covers ::process_feed
+     * @dataProvider provide_process_with_title_data
+     */
+    public function test_process_feed_with_title( $html, $result, $feed, $skip_tags )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+    	$typo->set_tags_to_ignore( $skip_tags );
+
+    	if ( is_string( $feed ) ) {
+    		$this->assertSame( $feed, clean_html( $typo->process_feed( $html, true ) ) );
+    	} elseif ( $feed ) {
+    		$this->assertSame( $result, clean_html( $typo->process_feed( $html, true ) ) );
+    	} else {
+    		$this->assertSame( $html, $typo->process_feed( $html, true ) );
+    	}
     }
 
     /**
