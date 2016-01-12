@@ -2391,12 +2391,43 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::save_state
-     * @covers ::__construct
      * @covers ::init
+     * @covers ::__construct
+     */
+    public function test_init() {
+    	$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
+    	$this->assertAttributeEmpty( 'settings', $second_typo );
+    	$this->assertAttributeEmpty( 'chr', $second_typo );
+    	$this->assertAttributeEmpty( 'quote_styles', $second_typo );
+    	$this->assertAttributeEmpty( 'dash_styles', $second_typo );
+    	$this->assertAttributeEmpty( 'regex', $second_typo );
+    	$this->assertAttributeEmpty( 'components', $second_typo );
+
+    	$second_typo->init();
+    	$this->assertAttributeNotEmpty( 'settings', $second_typo );
+    	$this->assertAttributeNotEmpty( 'chr', $second_typo );
+    	$this->assertAttributeNotEmpty( 'quote_styles', $second_typo );
+    	$this->assertAttributeNotEmpty( 'dash_styles', $second_typo );
+    	$this->assertAttributeNotEmpty( 'regex', $second_typo );
+    	$this->assertAttributeNotEmpty( 'components', $second_typo );
+    }
+
+    /**
+     * @covers ::set_defaults
+     */
+    public function test_init_no_default() {
+    	$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
+    	$second_typo->init( false );
+
+    	$this->assertFalse( isset( $second_typo->settings['smartQuotes'] ) );
+    	$second_typo->set_defaults();
+    	$this->assertTrue( $second_typo->settings['smartQuotes'] );
+    }
+
+    /**
+     * @covers ::save_state
      * @covers ::initialize_components
      * @covers ::initialize_patterns
-     * @covers ::set_defaults
      */
     public function test_save_state()
     {
@@ -2418,8 +2449,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::load_state
-     * @covers ::__construct
-     * @covers ::set_defaults
      * @depends test_save_state
      */
     public function test_load_state_OK( array $state )
