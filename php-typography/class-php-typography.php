@@ -391,6 +391,7 @@ class PHP_Typography {
 		$this->set_hyphenate_headings();
 		$this->set_hyphenate_all_caps();
 		$this->set_hyphenate_title_case();   // added in version 1.5
+		$this->set_hyphenate_compounds();
 		$this->set_hyphenation_exceptions();
 	}
 
@@ -1709,6 +1710,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Enable/disable hyphenation of compound words (e.g. "editor-in-chief").
+	 *
+	 * @param boolean $on Defaults to true;
+	 */
+	function set_hyphenate_compounds( $on = true ) {
+		$this->settings['hyphenateCompounds'] = $on;
+	}
+
+	/**
 	 * Sets custom word hyphenations.
 	 *
  	 * @param string|array $exceptions An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
@@ -1751,9 +1761,8 @@ class PHP_Typography {
 			return $html;
 		}
 
-		// Lazy-load our parsers
+		// Lazy-load our HTML parser
 		$html5_parser = $this->get_html5_parser();
-		$text_parser  = $this->get_text_parser();
 
 		// parse the html
 		$dom = $this->parse_html( $html5_parser, $html );
@@ -1791,22 +1800,8 @@ class PHP_Typography {
 			$this->dash_spacing( $textnode );
 			$this->unit_spacing( $textnode );
 
-			// break it down for a bit more granularity
-			$text_parser->load( $textnode->data );
-			$parsed_mixed_words = $text_parser->get_words( 'no-all-letters', 'allow-all-caps' ); // prohibit letter only words, allow caps
-			$parsed_words = $text_parser->get_words( 'require-all-letters',  // require letter only words, caps allowance in setting; mutually exclusive with $parsed_mixed_words
-														   ( ! empty ( $this->settings['hyphenateAllCaps'] ) ) ? 'allow-all-caps' : 'no-all-caps' );
-			$parsed_other = $text_parser->get_other();
-
-			// process individual text parts here
-			$parsed_mixed_words = $this->wrap_hard_hyphens( $parsed_mixed_words );
-			$parsed_words = $this->hyphenate( $parsed_words, $is_title, $textnode );
-			$parsed_other = $this->wrap_urls( $parsed_other );
-			$parsed_other = $this->wrap_emails( $parsed_other );
-
-			// apply updates to unlockedText
-			$text_parser->update( $parsed_mixed_words + $parsed_words + $parsed_other );
-			$textnode->data = $text_parser->unload();
+			// parse and process individual words
+			$this->process_words( $textnode );
 
 			// some final space manipulation
 			$this->dewidow( $textnode );
@@ -1837,7 +1832,6 @@ class PHP_Typography {
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
 	}
-
 
 	/**
 	 * Modifies $html according to the defined settings, in a way that is appropriate for RSS feeds
@@ -1890,6 +1884,47 @@ class PHP_Typography {
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );;
+	}
+
+	/**
+	 * Tokenize the content of a textnode and process the individual words separately.
+	 *
+	 * Currently this functions applies the following enhancements:
+	 *   - wrapping hard hyphens
+	 *   - hyphenation
+	 *   - wrapping URLs
+	 *   - wrapping email addresses
+	 *
+	 * @param \DOMText $textnode The textnode to process.
+	 * @param boolean  $is_title If the HTML fragment is a title. Defaults to false.
+	 */
+	function process_words( \DOMText $textnode, $is_title = false ) {
+		// lazy-load text parser
+		$text_parser  = $this->get_text_parser();
+
+		// set up parameters for word categories
+		$mixed_caps       = empty( $this->settings['hyphenateAllCaps'] ) ? 'allow-all-caps' : 'no-all-caps';
+		$letter_caps      = empty( $this->settings['hyphenateAllCaps'] ) ? 'no-all-caps' : 'allow-all-caps';
+		$mixed_compounds  = empty( $this->settings['hyphenateCompounds'] ) ? 'allow-compounds' : 'no-compounds';
+		$letter_compounds = empty( $this->settings['hyphenateCompounds'] ) ? 'no-compounds' : 'allow-compounds';
+
+		// break text down for a bit more granularity
+		$text_parser->load( $textnode->data );
+		$parsed_mixed_words    = $text_parser->get_words( 'no-all-letters', $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not)
+		$parsed_compound_words = ! empty( $this->settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : array();
+		$parsed_words          = $text_parser->get_words( 'require-all-letters', $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa
+		$parsed_other          = $text_parser->get_other();
+
+		// process individual text parts here
+		$parsed_mixed_words    = $this->wrap_hard_hyphens( $parsed_mixed_words );
+		$parsed_compound_words = $this->hyphenate_compounds( $parsed_compound_words, $is_title, $textnode );
+		$parsed_words          = $this->hyphenate( $parsed_words, $is_title, $textnode );
+		$parsed_other          = $this->wrap_urls( $parsed_other );
+		$parsed_other          = $this->wrap_emails( $parsed_other );
+
+		// apply updates to our text
+		$text_parser->update( $parsed_mixed_words + $parsed_compound_words + $parsed_words + $parsed_other );
+		$textnode->data = $text_parser->unload();
 	}
 
 	/**
@@ -2892,6 +2927,35 @@ class PHP_Typography {
 
 		// call functionality as seperate function so it can be run without test for setting['hyphenation'] - such as with url wrapping
 		return $this->do_hyphenate( $parsed_text_tokens );
+	}
+
+	/**
+	 * Hyphenate hyphenated compound words (if enabled).
+	 *
+	 * Calls hyphenate() on the component words.
+	 *
+	 * @param array    $parsed_text_tokens Filtered to compound words.
+	 * @param boolean  $is_title Flag to indicate title fragments. Optional. Default false.
+	 * @param \DOMText $textnode The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
+	 */
+	function hyphenate_compounds( array $parsed_text_tokens, $is_title = false, \DOMText $textnode = null ) {
+		if ( empty( $this->settings['hyphenateCompounds'] ) ) {
+			return $parsed_text_tokens; // abort
+		}
+
+		// hyphenate compound words
+		foreach ( $parsed_text_tokens as $key => $word_token ) {
+			$component_words = array();
+			foreach ( preg_split( '/(-)/', $word_token['value'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
+				$component_words[] = array( 'value' => $word_part );
+			}
+
+			$parsed_text_tokens[$key]['value'] = array_reduce( $this->hyphenate( $component_words, $is_title, $textnode ), function( $carry, $item ) {
+				return $carry . $item['value'];
+			});
+		}
+
+		return $parsed_text_tokens;
 	}
 
 	/**
