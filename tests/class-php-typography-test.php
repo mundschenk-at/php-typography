@@ -950,6 +950,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::set_hyphenate_compounds
+     */
+    public function test_set_hyphenate_compounds()
+    {
+    	$this->typo->set_hyphenate_compounds( true );
+    	$this->assertTrue( $this->typo->settings['hyphenateCompounds'] );
+
+    	$this->typo->set_hyphenate_compounds( false );
+    	$this->assertFalse( $this->typo->settings['hyphenateCompounds'] );
+    }
+
+    /**
      * @covers \PHP_Typography\PHP_Typography::set_hyphenation_exceptions
      */
     public function test_set_hyphenation_exceptions_array()
@@ -1088,6 +1100,30 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		} else {
 			$this->assertSame( $html, $typo->process_feed( $html ) );
 		}
+    }
+
+    public function provide_process_words_data() {
+    	return array(
+    		array( 'superfluous', 'super&shy;flu&shy;ous', false ), // hyphenate
+    		array( 'super-policemen', 'super-police&shy;men', false ), // hyphenate compounds
+    		array( 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ), // wrap URLs
+    		array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails
+    	);
+    }
+
+    /**
+     * @covers ::process_words
+     * @dataProvider provide_process_words_data
+     */
+    public function test_process_words( $text, $result, $is_title )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+   		$node = new \DOMText( $text );
+   		$typo->process_words( $node, $is_title );
+
+    	$this->assertSame( $result, clean_html( $node->data ) );
     }
 
     public function provide_process_with_title_data() {
@@ -2238,6 +2274,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::hyphenate
      * @covers ::do_hyphenate
+     * @covers ::hyphenate_compounds
      * @covers ::hyphenation_pattern_injection
      *
      * @dataProvider provide_hyphenate_data
