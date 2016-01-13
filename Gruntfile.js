@@ -52,7 +52,8 @@ module.exports = function(grunt) {
                 plugin_slug: 'wp-typography',
                 // svn_user: 'your-wp-repo-username',  
                 build_dir: 'build', //relative path to your build directory
-                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
+                assets_dir: 'wp-assets', //relative path to your assets directory (optional).
+                max_buffer: 1024 * 1024
             },
             release: {
             	// nothing
