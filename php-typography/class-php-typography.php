@@ -344,7 +344,7 @@ class PHP_Typography {
 		$this->set_classes_to_ignore();
 		$this->set_ids_to_ignore();
 
-		//smart characters
+		// smart characters
 		$this->set_smart_quotes();
 		$this->set_smart_quotes_primary();   // added in version 1.15
 		$this->set_smart_quotes_secondary(); // added in version 1.15
@@ -360,7 +360,7 @@ class PHP_Typography {
 		$this->set_smart_fractions();
 		$this->set_smart_exponents();
 
-		//smart spacing
+		// smart spacing
 		$this->set_single_character_word_spacing();
 		$this->set_fraction_spacing();
 		$this->set_unit_spacing();
@@ -376,14 +376,15 @@ class PHP_Typography {
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
 
-		//character styling
+		// character styling
 		$this->set_style_ampersands();
 		$this->set_style_caps();
 		$this->set_style_initial_quotes();
 		$this->set_style_numbers();
+		$this->set_style_hanging_punctuation();
 		$this->set_initial_quote_tags();
 
-		//hyphenation
+		// hyphenation
 		$this->set_hyphenation();
 		$this->set_hyphenation_language();
 		$this->set_min_length_hyphenation();
@@ -477,6 +478,18 @@ class PHP_Typography {
 			\x{3000}		# ideographic space
 			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
 		$this->components['normalSpaces'] = ' \f\n\r\t\v'; // equivalent to \s in non-Unicode mode
+
+		// hanging punctuation
+		$this->components['doubleHangingPunctuation'] = "
+			\"
+			{$this->chr['doubleQuoteOpen']}
+			{$this->chr['doubleQuoteClose']}
+			{$this->chr['doubleLow9Quote']}
+			{$this->chr['doublePrime']}
+
+			"; // requires modifiers: x (multiline pattern) u (utf8)
+		$this->components['singleHangingPunctuation'] = '
+			'; // requires modifiers: x (multiline pattern) u (utf8)
 
 		$this->components['unitSpacingStandardUnits'] = '
 			### Temporal units
@@ -1049,6 +1062,10 @@ class PHP_Typography {
         // style_numbers
         $this->regex['styleNumbers'] = "/([0-9]+)/u";
 
+        // style hanging punctuation
+        $this->regex['styleHangingPunctuationDouble'] = "/(\s)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
+        $this->regex['styleHangingPunctuationInitialDouble'] = "/(?:\A)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
+
         // style_ampersands
         $this->regex['styleAmpersands'] = "/(\&amp\;)/u";
 
@@ -1611,6 +1628,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Enable/disable wrapping of punctiation and wide characters in <span class="pull-*">.
+	 *
+	 * @param boolean $on Defaults to true;
+	 */
+	function set_style_hanging_punctuation( $on = true ) {
+		$this->settings['styleHangingPunctuation'] = $on;
+	}
+
+	/**
 	 * Set the list of tags where initial quotes and guillemets should be styled.
 	 *
 	 * @param string|array $units A comma separated list or an array of tag names.
@@ -1825,14 +1851,16 @@ class PHP_Typography {
 
 			// everything that requires HTML injection occurs here (functions above assume tag-free content)
 			// pay careful attention to functions below for tolerance of injected tags
-			$this->smart_ordinal_suffix( $textnode );	// call before "style_numbers" and "smart_fractions"
-			$this->smart_exponents( $textnode ); // call before "style_numbers"
-			$this->smart_fractions( $textnode ); // call before "style_numbers" and after "smart_ordinal_suffix"
+			$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions"
+			$this->smart_exponents( $textnode );      // call before "style_numbers"
+			$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix"
 			if ( ! has_class( $textnode, 'caps' ) ) {
-				$this->style_caps( $textnode ); // call before "style_numbers"
+				// call before "style_numbers"
+				$this->style_caps( $textnode );
 			}
 			if ( ! has_class( $textnode, 'numbers' ) ) {
-				$this->style_numbers( $textnode ); // call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"
+				// call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"
+				$this->style_numbers( $textnode );
 			}
 			if ( ! has_class( $textnode, 'amp') ) {
 				$this->style_ampersands( $textnode );
@@ -1840,9 +1868,13 @@ class PHP_Typography {
 			if ( ! has_class( $textnode, array( 'quo', 'dquo' ) ) ) {
 				$this->style_initial_quotes( $textnode, $is_title );
 			}
+			if ( ! has_class( $textnode, array( 'pull-single', 'pull-double',
+												'pull-A', 'pull-C', 'pull-O', 'pull-T', 'pull-V', 'pull-W', 'pull-Y',
+												'pull-c', 'pull-o', 'pull-v', 'pull-w' ) ) ) {
+				$this->style_hanging_punctuation( $textnode );
+			}
 
-			// Until now, we've only been working on a textnode.
-			// HTMLify result
+			// Until now, we've only been working on a single textnode: HTMLify result
 			$this->replace_node_with_html( $textnode, $textnode->data );
 		}
 
@@ -2837,6 +2869,15 @@ class PHP_Typography {
 		}
 
 		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="numbers">$1</span>', $textnode->data );
+	}
+
+	function style_hanging_punctuation( \DOMText $textnode ) {
+		if ( empty( $this->settings['styleHangingPunctuation'] ) ) {
+			return;
+		}
+
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'],        '$1<span class="push-double"></span><span class="pull-double">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2',                                    $textnode->data );
 	}
 
 	/**

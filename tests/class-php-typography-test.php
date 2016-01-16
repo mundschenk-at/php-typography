@@ -785,7 +785,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_style_numbers
+     * @covers ::set_style_numbers
      */
     public function test_set_style_numbers()
     {
@@ -794,6 +794,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$this->typo->set_style_numbers( false );
 		$this->assertFalse( $this->typo->settings['styleNumbers'] );
+    }
+
+    /**
+     * @covers ::set_style_hanging_punctuation
+     */
+    public function test_set_style_hanging_punctuation()
+    {
+    	$this->typo->set_style_hanging_punctuation( true );
+    	$this->assertTrue( $this->typo->settings['styleHangingPunctuation'] );
+
+    	$this->typo->set_style_hanging_punctuation( false );
+    	$this->assertFalse( $this->typo->settings['styleHangingPunctuation'] );
     }
 
     /**
@@ -1062,7 +1074,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function provide_process_data() {
     	return array(
     		array( '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false  ), // smart math
-    		array( '"Hey there!"', '&ldquo;Hey there!&rdquo;', true ), // smart quotes
+    		array( '"Hey there!"', '<span class="pull-double">&ldquo;</span>Hey there!&rdquo;', '&ldquo;Hey there!&rdquo;' ), // smart quotes
     		array( 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ), // smart dashes
     		array( 'Hey...', 'Hey&hellip;', true ), // smart ellipses
     		array( '(c)', '&copy;', true ), // smart marks
@@ -2234,6 +2246,36 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_style_numbers( false );
 
     	$this->assertSame( 'foo 123 bar', $this->clean_html( $typo->process( 'foo 123 bar' ) ) );
+    }
+
+    public function provide_style_hanging_punctuation_data() {
+    	return array(
+    		array( '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span><span class="pull-double">"</span>second <span class="push-double"></span><span class="pull-double">"</span>third.' ),
+    	);
+    }
+
+    /**
+     * @covers ::style_hanging_punctuation
+     * @dataProvider provide_style_hanging_punctuation_data
+     */
+    public function test_style_hanging_punctuation( $html, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_hanging_punctuation( true );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
+
+    /**
+     * @covers ::style_hanging_punctuation
+     * @dataProvider provide_style_hanging_punctuation_data
+     */
+    public function test_style_hanging_punctuation_off( $html, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_hanging_punctuation( false );
+
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
     }
 
     /**
