@@ -364,6 +364,7 @@ class PHP_Typography {
 		$this->set_single_character_word_spacing();
 		$this->set_fraction_spacing();
 		$this->set_unit_spacing();
+		$this->set_french_punctuation_spacing();
 		$this->set_units();
 		$this->set_dash_spacing();
 		$this->set_dewidow();
@@ -1023,8 +1024,13 @@ class PHP_Typography {
 		$this->regex['spaceCollapseOther']        = "/(?:[{$this->components['normalSpaces']}])*({$this->components['htmlSpaces']})(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
 		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})+/xu";
 
+		// unit spacing
 		$this->regex['unitSpacingEscapeSpecialChars'] = "#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#";
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
+
+		// french punctuation spacing
+		$this->regex['frenchPunctuationSpacing']          = '/(\w+)(\s?)([?!:])(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingSemicolon'] = '/(\w+)(\s?)((?<!&amp);)(\s|\Z)/u';
 
 		// wrap_hard_hyphens
 		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";
@@ -1436,8 +1442,17 @@ class PHP_Typography {
 	 *
 	 * @param boolean $on Defaults to true;
 	 */
-	function set_unit_spacing($on = true) {
+	function set_unit_spacing( $on = true ) {
 		$this->settings['unitSpacing'] = $on;
+	}
+
+	/**
+	 * Enable/disable extra whitespace before certain punction marks, as is the French custom.
+	 *
+	 * @param boolean $on Defaults to true;
+	 */
+	function set_french_punctuation_spacing( $on = true ) {
+		$this->settings['frenchPunctuationSpacing'] = $on;
 	}
 
 	/**
@@ -1799,6 +1814,7 @@ class PHP_Typography {
 			$this->single_character_word_spacing( $textnode );
 			$this->dash_spacing( $textnode );
 			$this->unit_spacing( $textnode );
+			$this->french_punctuation_spacing( $textnode );
 
 			// parse and process individual words
 			$this->process_words( $textnode );
@@ -2551,6 +2567,26 @@ class PHP_Typography {
 		}
 
 		$textnode->data = preg_replace( $this->regex['unitSpacingUnitPattern'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->data );
+	}
+
+	/**
+	 * Add a narrow no-break space before
+	 * - exclamation mark (!)
+	 * - question mark (?)
+	 * - semicolon (;)
+	 * - colon (:)
+	 *
+	 * If there already is a space there, it is replaced.
+	 *
+	 * @param \DOMText $textnode
+	 */
+	function french_punctuation_spacing( \DOMText $textnode ) {
+		if ( empty( $this->settings['frenchPunctuationSpacing'] ) ) {
+			return;
+		}
+
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacing'],          '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'], '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
 	}
 
 	/**
