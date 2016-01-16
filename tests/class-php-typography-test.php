@@ -594,6 +594,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertFalse( $this->typo->settings['unitSpacing'] );
     }
 
+        /**
+     * @covers ::set_french_punctuation_spacing
+     */
+    public function test_set_french_punctuation_spacing()
+    {
+    	$this->typo->set_french_punctuation_spacing( true );
+    	$this->assertTrue( $this->typo->settings['frenchPunctuationSpacing'] );
+
+    	$this->typo->set_french_punctuation_spacing( false );
+    	$this->assertFalse( $this->typo->settings['frenchPunctuationSpacing'] );
+    }
+
     /**
      * @covers ::set_units
      * @covers ::update_unit_pattern
@@ -1935,6 +1947,47 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_unit_spacing( false );
 
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    public function provide_french_punctuation_spacing_data() {
+    	return array(
+    		array( "Je t'aime ; m'aimes-tu ?", "Je t'aime&#8239;; m'aimes-tu&#8239;?" ),
+    		array( "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?" ),
+    		array( 'Au secours !', 'Au secours&#8239;!' ),
+    		array( 'Au secours!', 'Au secours&#8239;!' ),
+    		array( 'Jean a dit : Foo', 'Jean a dit&#8239;: Foo' ),
+    		array( 'Jean a dit: Foo', 'Jean a dit&#8239;: Foo' ),
+    		array( 'http://example.org', 'http://example.org' ),
+    		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ),
+    		array( '5 > 3', '5 > 3' ),
+
+    	);
+    }
+
+    /**
+     * @covers ::french_punctuation_spacing
+     *
+     * @dataProvider provide_french_punctuation_spacing_data
+     */
+    public function test_french_punctuation_spacing( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_french_punctuation_spacing( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::french_punctuation_spacing
+     *
+     * @dataProvider provide_french_punctuation_spacing_data
+     */
+    public function test_french_punctuation_spacing_off( $input, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_french_punctuation_spacing( false );
+
+    	$this->assertSame( clean_html( $input ), clean_html( $typo->process( $input ) ) );
     }
 
     public function provide_wrap_hard_hyphens_data() {
