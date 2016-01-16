@@ -1030,7 +1030,7 @@ class PHP_Typography {
 
 		// french punctuation spacing
 		$this->regex['frenchPunctuationSpacing']          = '/(\w+)(\s?)([?!:])(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingSemicolon'] = '/(\w+)(\s?)((?<!&amp);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingSemicolon'] = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
 
 		// wrap_hard_hyphens
 		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";

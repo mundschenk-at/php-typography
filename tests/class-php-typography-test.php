@@ -1959,6 +1959,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( 'Jean a dit: Foo', 'Jean a dit&#8239;: Foo' ),
     		array( 'http://example.org', 'http://example.org' ),
     		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ),
+    		array( '5 > 3', '5 > 3' ),
+
     	);
     }
 
