@@ -2900,15 +2900,15 @@ class PHP_Typography {
 			$textnode->data =  $textnode->data.$next_character;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span><span class="pull-double">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span><span class="pull-single">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$2</span>$3', $textnode->data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
 			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2', $textnode->data );
 			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="pull-single">$1</span>$2', $textnode->data );
 		} else {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span><span class="pull-double">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span><span class="pull-single">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$1</span>$2', $textnode->data );
 		}
 
 		// remove any added characters;

@@ -2250,9 +2250,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     public function provide_style_hanging_punctuation_data() {
     	return array(
-    		array( '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span><span class="pull-double">"</span>second <span class="push-double"></span><span class="pull-double">"</span>third.' ),
-    		array( '<span>"only pull"</span><span>"push & pull"</span>', '<span><span class="pull-double">"</span>only pull"</span><span><span class="push-double"></span><span class="pull-double">"</span>push &amp; pull"</span>' ),
-    		array( '<p><span>"Pull"</span> <span>\'Single Push\'</span></p>', '<p><span><span class="pull-double">"</span>Pull"</span> <span><span class="push-single"></span><span class="pull-single">\'</span>Single Push\'</span></p>' ),
+    		array( '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.' ),
+    		array( '<span>"only pull"</span><span>"push & pull"</span>', '<span><span class="pull-double">"</span>only pull"</span><span><span class="push-double"></span>&#8203;<span class="pull-double">"</span>push &amp; pull"</span>' ),
+    		array( '<p><span>"Pull"</span> <span>\'Single Push\'</span></p>', '<p><span><span class="pull-double">"</span>Pull"</span> <span><span class="push-single"></span>&#8203;<span class="pull-single">\'</span>Single Push\'</span></p>' ),
     	);
     }
 
