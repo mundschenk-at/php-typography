@@ -488,8 +488,15 @@ class PHP_Typography {
 			{$this->chr['doublePrime']}
 
 			"; // requires modifiers: x (multiline pattern) u (utf8)
-		$this->components['singleHangingPunctuation'] = '
-			'; // requires modifiers: x (multiline pattern) u (utf8)
+		$this->components['singleHangingPunctuation'] = "
+			'
+			{$this->chr['singleQuoteOpen']}
+			{$this->chr['singleQuoteClose']}
+			{$this->chr['singleLow9Quote']}
+			{$this->chr['singlePrime']}
+			{$this->chr['apostrophe']}
+
+			"; // requires modifiers: x (multiline pattern) u (utf8)
 
 		$this->components['unitSpacingStandardUnits'] = '
 			### Temporal units
@@ -1064,7 +1071,9 @@ class PHP_Typography {
 
         // style hanging punctuation
         $this->regex['styleHangingPunctuationDouble'] = "/(\s)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
+        $this->regex['styleHangingPunctuationSingle'] = "/(\s)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
         $this->regex['styleHangingPunctuationInitialDouble'] = "/(?:\A)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
+        $this->regex['styleHangingPunctuationInitialSingle'] = "/(?:\A)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
 
         // style_ampersands
         $this->regex['styleAmpersands'] = "/(\&amp\;)/u";
@@ -2876,8 +2885,19 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'],        '$1<span class="push-double"></span><span class="pull-double">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2',                                    $textnode->data );
+		$block = $this->get_block_parent( $textnode );
+		$firstnode = ! empty( $block ) ? $this->get_first_textnode( $block ) : null;
+
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span><span class="pull-double">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span><span class="pull-single">$2</span>$3', $textnode->data );
+
+		if ( empty( $block ) || $firstnode === $textnode ) {
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="pull-single">$1</span>$2', $textnode->data );
+		} else {
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span><span class="pull-double">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span><span class="pull-single">$1</span>$2', $textnode->data );
+		}
 	}
 
 	/**
