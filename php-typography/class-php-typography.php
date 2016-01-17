@@ -3161,12 +3161,12 @@ class PHP_Typography {
 	 *
 	 * @param \DOMNode $element The node to get the containing block-level tag.
 	 *
-	 * @return \DOMNode
+	 * @return \DOMElement
 	 */
 	function get_block_parent( \DOMNode $element ) {
 		$parent = $element->parentNode;
 
-		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) ) {
+		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
 			$parent = $parent->parentNode;
 		}
 
