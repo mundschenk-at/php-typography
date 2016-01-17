@@ -486,6 +486,8 @@ class PHP_Typography {
 			{$this->chr['doubleQuoteClose']}
 			{$this->chr['doubleLow9Quote']}
 			{$this->chr['doublePrime']}
+			{$this->quote_styles['doubleCurled']['open']}
+			{$this->quote_styles['doubleCurled']['close']}
 
 			"; // requires modifiers: x (multiline pattern) u (utf8)
 		$this->components['singleHangingPunctuation'] = "
@@ -494,6 +496,8 @@ class PHP_Typography {
 			{$this->chr['singleQuoteClose']}
 			{$this->chr['singleLow9Quote']}
 			{$this->chr['singlePrime']}
+			{$this->quote_styles['singleCurled']['open']}
+			{$this->quote_styles['singleCurled']['close']}
 			{$this->chr['apostrophe']}
 
 			"; // requires modifiers: x (multiline pattern) u (utf8)
@@ -2885,8 +2889,16 @@ class PHP_Typography {
 			return;
 		}
 
+		// we need the parent
 		$block = $this->get_block_parent( $textnode );
 		$firstnode = ! empty( $block ) ? $this->get_first_textnode( $block ) : null;
+
+		// need to get context of adjacent characters outside adjacent inline tags or HTML comment
+		// if we have adjacent characters add them to the text
+		$next_character = $this->get_next_chr( $textnode );
+		if ( '' !== $next_character ) {
+			$textnode->data =  $textnode->data.$next_character;
+		}
 
 		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span><span class="pull-double">$2</span>$3', $textnode->data );
 		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span><span class="pull-single">$2</span>$3', $textnode->data );
@@ -2897,6 +2909,12 @@ class PHP_Typography {
 		} else {
 			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span><span class="pull-double">$1</span>$2', $textnode->data );
 			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span><span class="pull-single">$1</span>$2', $textnode->data );
+		}
+
+		// remove any added characters;
+		if ( '' !== $next_character ) {
+			$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
 		}
 	}
 
