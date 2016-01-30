@@ -2072,6 +2072,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	);
     }
 
+    public function provide_dewidow_with_hyphenation_data() {
+    	return array(
+    		array( 'this is fucking ri...', 'this is fuck&shy;ing&nbsp;ri...', 4, 2 ),
+    		array( 'this is fucking fucking', 'this is fuck&shy;ing fuck&shy;ing', 4, 2 ),
+    	);
+    }
+
     /**
      * @covers ::dewidow
      * @covers ::_dewidow_callback
@@ -2086,6 +2093,27 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
+
+    /**
+     * @covers ::dewidow
+     * @covers ::_dewidow_callback
+     * @dataProvider provide_dewidow_with_hyphenation_data
+     */
+    public function test_dewidow_with_hyphenation( $html, $result, $max_pull, $max_length )
+    {
+    	$typo = $this->typo;
+    	$typo->set_dewidow( true );
+    	$typo->set_hyphenation( true );
+    	$typo->set_hyphenation_language( 'en-US' );
+    	$typo->set_min_length_hyphenation( 2 );
+    	$typo->set_min_before_hyphenation( 2 );
+    	$typo->set_min_after_hyphenation( 2 );
+    	$typo->set_max_dewidow_pull( $max_pull );
+    	$typo->set_max_dewidow_length( $max_length );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
+
 
     /**
      * @covers ::dewidow
@@ -2343,7 +2371,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ),
     		array( 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ),
     		array( 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ),
-    		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false )
+    		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ),
     	);
     }
 
