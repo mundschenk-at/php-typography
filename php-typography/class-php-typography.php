@@ -1342,9 +1342,9 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Sets the diacritics replacement language. // FIXME
+	 * Set the language used for diacritics replacements.
 	 *
-	 * @param string $lang Defaults to 'en-US'.
+	 * @param string $lang Has to correspond to a filename in 'diacritics'. Optional. Default 'en-US'.
 	 */
 	function set_diacritic_language( $lang = 'en-US' ) {
 		if ( isset($this->settings['diacriticLanguage']) && $this->settings['diacriticLanguage'] === $lang ) {
@@ -1487,7 +1487,7 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Enable/disable FIXME.
+	 * Enable/disable fraction spacing.
 	 *
 	 * @param boolean $on Defaults to true;
 	 */
@@ -1702,9 +1702,9 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Set the hyphenation pattern language. //FIXME
+	 * Set the hyphenation pattern language.
 	 *
-	 * @param string $lang Defaults to 'en-US'.
+	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
 	 */
 	function set_hyphenation_language( $lang = 'en-US' ) {
 		if ( isset( $this->settings['hyphenLanguage'] ) && $this->settings['hyphenLanguage'] === $lang ) {
