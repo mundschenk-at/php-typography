@@ -217,7 +217,7 @@ class PHP_Typography {
 										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version
 
 		$this->chr['noBreakSpace']            = uchr(160);
-		$this->chr['noBreakNarrowSpace']      = uchr(160);  // used in unit spacing // FIXME: Add setting to switch between 160/8239
+		$this->chr['noBreakNarrowSpace']      = uchr(160);  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space
 		$this->chr['copyright']               = uchr(169);
 		$this->chr['guillemetOpen']           = uchr(171);
 		$this->chr['softHyphen']              = uchr(173);
@@ -375,6 +375,7 @@ class PHP_Typography {
 		$this->set_email_wrap();
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
+		$this->set_true_no_break_narrow_space();
 
 		// character styling
 		$this->set_style_ampersands();
@@ -1117,6 +1118,19 @@ class PHP_Typography {
         }
 	}
 
+	/**
+	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
+	 *
+	 * @param boolean $on Optional. Default false.
+	 */
+	function set_true_no_break_narrow_space( $on = false ) {
+
+		if ( $on ) {
+			$this->chr['noBreakNarrowSpace'] = uchr( 8239 );
+		} else {
+			$this->chr['noBreakNarrowSpace'] = uchr( 160 );
+		}
+	}
 
 	/**
 	 * Sets tags for which the typography of their children will be left untouched.

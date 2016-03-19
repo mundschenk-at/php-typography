@@ -1080,7 +1080,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( '(c)', '&copy;', true ), // smart marks
     		array( 'creme', 'cr&egrave;me', false ), // diacritics
     		array( 'a a a', 'a a&nbsp;a', false ), // single characgter word spacing
-    		array( '3 cm', '<span class="numbers">3</span>&#8239;cm', false ), // unit spacing
+    		array( '3 cm', '<span class="numbers">3</span>&nbsp;cm', false ), // unit spacing without true no-break narrow space
     		array( 'a/b', 'a/&#8203;b', false ), // dash spacing
     		array( '<span class="numbers">5</span>', '<span class="numbers">5</span>', true ), // class present, no change
     		array( '1st', '<span class="numbers">1</span><sup>st</sup>', false ), // smart ordinal suffixes
@@ -1708,6 +1708,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
 		$typo = $this->typo;
 		$typo->set_smart_fractions( true );
+		$typo->set_true_no_break_narrow_space( true );
 
 		$typo->set_fraction_spacing( false );
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
@@ -1944,6 +1945,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
     	$typo = $this->typo;
     	$typo->set_unit_spacing( true );
+    	$typo->set_true_no_break_narrow_space( true );
 
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
     }
@@ -1985,6 +1987,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
     	$typo = $this->typo;
     	$typo->set_french_punctuation_spacing( true );
+    	$typo->set_true_no_break_narrow_space( true );
 
     	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
     }
@@ -2754,5 +2757,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->assertSame( $outer_div, $typo->get_block_parent( $span_bar ) );
 		$this->assertSame( $outer_div, $typo->get_block_parent( $textnode_b ) );
 		$this->assertSame( $paragraph, $typo->get_block_parent( $textnode_c ) );
+    }
+
+    /**
+     * @covers ::set_true_no_break_narrow_space
+     */
+    public function test_set_true_no_break_narrow_space() {
+    	$typo = $this->typo;
+
+    	$typo->set_true_no_break_narrow_space(); // defaults to false
+    	$this->assertSame( $typo->chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 160 ) );
+
+    	$typo->set_true_no_break_narrow_space( true ); // defaults to false
+    	$this->assertSame( $typo->chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 8239 ) );
     }
 }
