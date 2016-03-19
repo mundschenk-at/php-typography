@@ -1414,6 +1414,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( " 6'' ",                             ' 6&Prime; ' ), // nobody uses this for quotes, so it should be OK to keep the primes here
      		array( 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ),
     		array( "der 8'-Ölbohrer",                   "der 8&prime;-&Ouml;lbohrer" ),
+    		array( '("Some" word',					    '(&ldquo;Some&rdquo; word' ),
     	);
     }
 
@@ -1439,6 +1440,26 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_smart_quotes( false );
 
     	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
+    }
+
+    public function provide_smart_quotes_special_data() {
+    	return array(
+    		array( '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ),
+    	);
+    }
+
+    /**
+     * @covers ::smart_quotes
+     * @dataProvider provide_smart_quotes_special_data
+     */
+    public function test_smart_quotes_special( $html, $result, $primary, $secondary )
+    {
+    	$typo = $this->typo;
+    	$typo->set_smart_quotes( true );
+    	$typo->set_smart_quotes_primary( $primary );
+    	$typo->set_smart_quotes_secondary( $secondary );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
 
     /**

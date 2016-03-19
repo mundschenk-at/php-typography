@@ -147,7 +147,7 @@ class PHP_Typography {
 
 		// not sure if this is necessary - but error_log seems to have problems with the strings.
 		// used as the default encoding for mb_* functions
-		$encoding_set = mb_internal_encoding('UTF-8');
+		$encoding_set = mb_internal_encoding( 'UTF-8' );
 
 		if ( 'now' === $init ) {
 			$this->init( $set_defaults );
@@ -655,6 +655,14 @@ class PHP_Typography {
 		$this->components['smartQuotesApostropheExceptionMatches']      = array_keys( $this->components['smartQuotesApostropheExceptions'] );
 		$this->components['smartQuotesApostropheExceptionReplacements'] = array_values( $this->components['smartQuotesApostropheExceptions'] );
 
+		// needs to be updated whenever the quote style changes
+		$this->update_smart_quotes_brackets();
+	}
+
+	/**
+	 * Update smartQuotesBrackets component after quote style change.
+	 */
+	private function update_smart_quotes_brackets() {
 		$this->components['smartQuotesBrackets'] = array(
 			// single quotes
 			"['"  => "[" . $this->chr['singleQuoteOpen'],
@@ -676,7 +684,7 @@ class PHP_Typography {
 			"\"'" => $this->chr['doubleQuoteOpen']  . $this->chr['singleQuoteOpen'],
 			"'\"" => $this->chr['singleQuoteClose'] . $this->chr['doubleQuoteClose'],
 		);
-		$this->components['smartQuotesBracketMatches']      = array_keys( $this->components['smartQuotesBrackets'] );
+		$this->components['smartQuotesBracketMatches']      =   array_keys( $this->components['smartQuotesBrackets'] );
 		$this->components['smartQuotesBracketReplacements'] = array_values( $this->components['smartQuotesBrackets'] );
 	}
 
@@ -1215,6 +1223,9 @@ class PHP_Typography {
 			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
 				$this->chr['doubleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
+
+			// update brackets component
+			$this->update_smart_quotes_brackets();
 		} else {
 			trigger_error( "Invalid quote style $style.", E_USER_WARNING );
 		}
@@ -1250,6 +1261,9 @@ class PHP_Typography {
 			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
 				$this->chr['singleQuoteClose'] = $this->quote_styles[ $style ]['close'];
 			}
+
+			// update brackets component
+			$this->update_smart_quotes_brackets();
 		} else {
 			trigger_error( "Invalid quote style $style.", E_USER_WARNING );
 		}
