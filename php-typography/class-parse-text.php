@@ -316,6 +316,7 @@ class Parse_Text {
 		$this->regex['punctuation']          = "/\A{$this->components['punctuation']}\Z/Ssxiu";
 		$this->regex['word']                 = "/\A{$this->components['word']}\Z/Sxu";
 		$this->regex['htmlLetterConnectors'] = "/{$this->components['htmlLetterConnectors']}|[0-9\-_&#;\/]/Sxu";
+		$this->regex['maxStringLength']      = '@\w{500}@Ss';
 	}
 
 	/**
@@ -330,7 +331,7 @@ class Parse_Text {
 		}
 
 		// abort if a simple string exceeds 500 characters (security concern)
-		if ( preg_match( '@\w{500}@s', $raw_text ) ) { // FIXME: should be in $this->regex
+		if ( preg_match( $this->regex['maxStringLength'], $raw_text ) ) {
 			return false;
 		}
 
