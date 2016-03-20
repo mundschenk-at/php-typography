@@ -39,7 +39,7 @@ class Parse_TextTest extends PHPUnit_Framework_TestCase
     	$this->assertAttributeContains( 'UTF-8', 'encodings', $parser );
     	$this->assertAttributeCount( 1, 'encodings', $parser );
     	$this->assertAttributeCount( 0, 'text', $parser );
-    	$this->assertAttributeCount( 5, 'regex', $parser );
+    	$this->assertAttributeCount( 6, 'regex', $parser );
     	$this->assertAttributeCount( 8, 'components', $parser );
     	$this->assertAttributeEmpty( 'current_strtoupper', $parser );
     }
