@@ -1884,7 +1884,7 @@ class PHP_Typography {
 			$this->french_punctuation_spacing( $textnode );
 
 			// parse and process individual words
-			$this->process_words( $textnode );
+			$this->process_words( $textnode, $is_title );
 
 			// some final space manipulation
 			$this->dewidow( $textnode );
