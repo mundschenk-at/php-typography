@@ -162,6 +162,9 @@ module.exports = function(grunt) {
   	                      		'copy',
   	                      		'wp_deploy:assets'
 	]);	
+  	grunt.registerTask('iana', [
+    	                    		'curl:update-iana',
+  	]);	
   	
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
