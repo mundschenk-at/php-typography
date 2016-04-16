@@ -3246,7 +3246,13 @@ class PHP_Typography {
 	 * @return string An binary hash value for the current settings limited to $max_length.
 	 */
 	public function get_settings_hash( $max_length = 8 ) {
-		return substr( md5( json_encode( $this->settings ), true ), 0, $max_length );
+		$hash = md5( json_encode( $this->settings ), true );
+
+		if ( $max_length < strlen( $hash ) ) {
+			$hash = substr( $hash, 0, $max_length );
+		}
+
+		return $hash;
 	}
 
 	/**
