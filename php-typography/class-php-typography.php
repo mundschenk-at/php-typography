@@ -668,7 +668,7 @@ class PHP_Typography {
 			"['"  => "[" . $this->chr['singleQuoteOpen'],
 			"{'"  => "{" . $this->chr['singleQuoteOpen'],
 			"('"  => "(" . $this->chr['singleQuoteOpen'],
-			"']"  => $this->chr['singleQuoteClose'] . "}",
+			"']"  => $this->chr['singleQuoteClose'] . "]",
 			"'}"  => $this->chr['singleQuoteClose'] . "}",
 			"')"  => $this->chr['singleQuoteClose'] . ")",
 
