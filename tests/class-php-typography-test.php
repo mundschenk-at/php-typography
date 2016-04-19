@@ -252,7 +252,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_smart_quotes_secondary
+     * @covers ::set_smart_quotes_secondary
      */
     public function test_set_smart_quotes_secondary()
     {
@@ -277,7 +277,84 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	foreach ( $quote_styles as $style ) {
     		$typo->set_smart_quotes_secondary( $style );
-    		$this->assertSmartQuotesSTyle( $style, $typo->chr['singleQuoteOpen'], $typo->chr['singleQuoteClose'] );
+    		$this->assertSmartQuotesStyle( $style, $typo->chr['singleQuoteOpen'], $typo->chr['singleQuoteClose'] );
+    	}
+    }
+
+    /**
+     * @covers ::set_smart_quotes_secondary
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
+     */
+    public function test_set_smart_quotes_secondary_invalid()
+    {
+    	$typo = $this->typo;
+
+    	$typo->set_smart_quotes_secondary( 'invalidStyleName' );
+    }
+
+    /**
+     * @covers ::update_smart_quotes_brackets
+     *
+     * @uses ::set_smart_quotes_primary
+     * @uses ::set_smart_quotes_secondary
+     */
+    public function test_update_smart_quotes_brackets()
+    {
+    	$typo = $this->typo;
+    	$quote_styles = array(
+    		'doubleCurled',
+    		'doubleCurledReversed',
+    		'doubleLow9',
+    		'doubleLow9Reversed',
+    		'singleCurled',
+    		'singleCurledReversed',
+    		'singleLow9',
+    		'singleLow9Reversed',
+    		// 'doubleGuillemetsFrench', // test doesn't work for this because it's actually two characters
+    		'doubleGuillemets',
+    		'doubleGuillemetsReversed',
+    		'singleGuillemets',
+    		'singleGuillemetsReversed',
+    		'cornerBrackets',
+    		'whiteCornerBracket'
+    	);
+
+    	foreach ( $quote_styles as $primary_style ) {
+    		$typo->set_smart_quotes_primary( $primary_style );
+
+    		foreach ( $quote_styles as $secondary_style ) {
+    			$typo->set_smart_quotes_secondary( $secondary_style );
+
+    			$comp = PHPUnit_Framework_Assert::readAttribute( $typo, 'components' );
+
+    			$this->assertSmartQuotesStyle( $secondary_style,
+    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
+    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
+    			$this->assertSmartQuotesStyle( $secondary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
+    			$this->assertSmartQuotesStyle( $secondary_style,
+     				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
+    			$this->assertSmartQuotesStyle( $secondary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
+
+    			$this->assertSmartQuotesStyle( $primary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["[\""] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"]"] )[0] );
+    			$this->assertSmartQuotesStyle( $primary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["(\""] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\")"] )[0] );
+    			$this->assertSmartQuotesStyle( $primary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["{\""] )[1],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"}"] )[0] );
+    			$this->assertSmartQuotesStyle( $primary_style,
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
+    				                           \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
+    		}
     	}
     }
 
@@ -368,20 +445,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		default:
     			$this->assertTrue( false, "Invalid quote style $style." );
     	}
-    }
-
-
-    /**
-     * @covers ::set_smart_quotes_secondary
-     *
-     * @expectedException PHPUnit_Framework_Error_Warning
-     * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
-     */
-    public function test_set_smart_quotes_secondary_invalid()
-    {
-    	$typo = $this->typo;
-
-    	$typo->set_smart_quotes_secondary( 'invalidStyleName' );
     }
 
     /**
