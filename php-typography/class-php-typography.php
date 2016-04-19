@@ -2027,12 +2027,15 @@ class PHP_Typography {
 	function parse_html( \Masterminds\HTML5 $parser, $html ) {
 		// silence some parsing errors for invalid HTML
 		set_error_handler( array( $this, 'handle_parsing_errors' ) );
+		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// do the actual parsing
 		$dom = $parser->loadHTML( '<body>' . $html . '</body>' );
 		$dom->encoding = 'UTF-8';
 
-		// restor original error handling
+		// restore original error handling
+		libxml_clear_errors();
+		libxml_use_internal_errors( $xml_error_handling );
 		restore_error_handler();
 
 		return $dom;
