@@ -1018,6 +1018,8 @@ class PHP_Typography {
 		// end smart math
 		// ==============
 
+		$this->regex['smartMarksEscape501(c)'] = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/u';
+
 		$this->regex['singleCharacterWordSpacing'] = "/
 				(?:
 					(\s)
@@ -2447,11 +2449,18 @@ class PHP_Typography {
 			return;
 		}
 
+		// escape usage of "501(c)(1...29)" (US non-profit)
+		$textnode->data = preg_replace( $this->regex['smartMarksEscape501(c)'], '$1' . $this->components['escapeMarker'] . '$2' . $this->components['escapeMarker'] . '$3', $textnode->data );
+
+		// replace marks
 		$textnode->data = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $textnode->data );
 		$textnode->data = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $textnode->data );
 		$textnode->data = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $textnode->data );
 		$textnode->data = str_replace( array( '(sm)', '(SM)' ), $this->chr['serviceMark'],    $textnode->data );
 		$textnode->data = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $textnode->data );
+
+		// un-escape escaped sequences
+		$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
 	}
 
 	/**

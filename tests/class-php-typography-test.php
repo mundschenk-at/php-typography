@@ -1660,6 +1660,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( '(SM)', '&#8480;' ),
     		array( '(tm)', '&trade;' ),
     		array( '(TM)', '&trade;' ),
+    		array( '501(c)(1)', '501(c)(1)' ),      // protected
+    		array( '501(c)(29)', '501(c)(29)' ),    // protected
+    		array( '501(c)(30)', '501&copy;(30)' ), // not protected
     	);
     }
 
