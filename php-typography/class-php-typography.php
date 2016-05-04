@@ -657,6 +657,9 @@ class PHP_Typography {
 
 		// needs to be updated whenever the quote style changes
 		$this->update_smart_quotes_brackets();
+
+		// marker for strings that should not be replaced
+		$this->components['escapeMarker'] = '_E_S_C_A_P_E_D_';
 	}
 
 	/**
@@ -2532,14 +2535,14 @@ class PHP_Typography {
 
 		if ( !empty($this->settings['smartFractions']) ) {
 			// Escape sequences we don't want fractionified
- 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->data );
- 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1_E_S_C_A_P_E_D_$2$3$4', $textnode->data );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
 
  			// Replace fractions
  			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->data );
 
  			// Unescape escaped sequences
- 			$textnode->data = str_replace( '_E_S_C_A_P_E_D_', '', $textnode->data );
+ 			$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
 		}
 	}
 
