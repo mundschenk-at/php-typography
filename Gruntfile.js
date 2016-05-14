@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+		
 	    makepot: {
 	        target: {
 	            options: {
@@ -19,6 +20,22 @@ module.exports = function(grunt) {
 	            }
 	        }
 	    },
+	    
+	    shell: {
+	    	update_html5: {
+	    		tmpDir: 'vendor/tmp',
+	    		sourceDir: '<%= shell.update_html5.tmpDir %>/src',
+	    		targetDir: 'vendor/Masterminds',
+	    		repository: 'https://github.com/Masterminds/html5-php.git',
+	    		command: [
+	    		         'mkdir -p <%= shell.update_html5.tmpDir %>',
+	    		         'git clone <%= shell.update_html5.repository %> <%= shell.update_html5.tmpDir %>',
+	    		         'cp -a <%= shell.update_html5.sourceDir %>/* <%= shell.update_html5.targetDir %>',
+	    		         'rm -rf <%= shell.update_html5.tmpDir %>' // cleanup
+		        ].join(' && ')
+	    	}
+	    },	
+	    
 	    phpunit: {
 	        default: {
 	            options: {
@@ -36,6 +53,7 @@ module.exports = function(grunt) {
 	            configuration: 'phpunit.xml',
 	        }
 	    },
+	    
 		copy: {
 			main: {
 				files:[
@@ -44,9 +62,11 @@ module.exports = function(grunt) {
 				],
 			}
 		},
+		
 	    clean: {
 	    	  build: ["build/*"]//,
-	    },		
+	    },	
+	    
 	    wp_deploy: {
             options: {
                 plugin_slug: 'wp-typography',
