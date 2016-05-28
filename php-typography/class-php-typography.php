@@ -137,6 +137,17 @@ class PHP_Typography {
 	private $block_Tags = array();
 
 	/**
+	 * An array of CSS classes that are added for ampersands, numbers etc.
+	 */
+	protected $css_classes = array(
+		'caps'    => 'caps',
+		'numbers' => 'numbers',
+		'amp'     => 'amp',
+		'quo'     => 'quo',
+		'dquo'    => 'dquo',
+	);
+
+	/**
 	 * Set up a new PHP_Typography object.
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
@@ -170,6 +181,7 @@ class PHP_Typography {
 			 ! isset( $state['regex'] )              ||
 			 ! isset( $state['self_closing_tags'] )  ||
 			 ! isset( $state['inappropriate_tags'] ) ||
+			 ! isset( $state['css_classes'] )        ||
 			 ! isset( $state['settings'] ) ) {
 		 	return false;
 		}
@@ -183,6 +195,7 @@ class PHP_Typography {
 		$this->regex              = $state['regex'];
 		$this->self_closing_tags  = $state['self_closing_tags'];
 		$this->inappropriate_tags = $state['inappropriate_tags'];
+		$this->css_classes        = $state['css_classes'];
 		$this->settings           = $state['settings'];
 
 		return true;
@@ -204,6 +217,7 @@ class PHP_Typography {
 			'regex'              => $this->regex,
 			'self_closing_tags'  => $this->self_closing_tags,
 			'inappropriate_tags' => $this->inappropriate_tags,
+			'css_classes'        => $this->css_classes,
 			'settings'           => $this->settings,
 		);
 	}
@@ -1902,18 +1916,18 @@ class PHP_Typography {
 			$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions"
 			$this->smart_exponents( $textnode );      // call before "style_numbers"
 			$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix"
-			if ( ! has_class( $textnode, 'caps' ) ) {
+			if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
 				// call before "style_numbers"
 				$this->style_caps( $textnode );
 			}
-			if ( ! has_class( $textnode, 'numbers' ) ) {
+			if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
 				// call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"
 				$this->style_numbers( $textnode );
 			}
-			if ( ! has_class( $textnode, 'amp') ) {
+			if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
 				$this->style_ampersands( $textnode );
 			}
-			if ( ! has_class( $textnode, array( 'quo', 'dquo' ) ) ) {
+			if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
 				$this->style_initial_quotes( $textnode, $is_title );
 			}
 			if ( ! has_class( $textnode, array( 'pull-single', 'pull-double',
@@ -2870,7 +2884,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="caps">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="' . $this->css_classes['caps'] . '">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -2927,7 +2941,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="numbers">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="'. $this->css_classes['numbers'] . '">$1</span>', $textnode->data );
 	}
 
 	function style_hanging_punctuation( \DOMText $textnode ) {
@@ -2979,7 +2993,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="amp">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="'. $this->css_classes['amp'] .'">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -3030,7 +3044,7 @@ class PHP_Typography {
 								$span_class = 'dquo';
 						}
 
-						$textnode->data =  '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+						$textnode->data =  '<span class="' . $this->css_classes[ $span_class ] . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 					}
 			}
 		}

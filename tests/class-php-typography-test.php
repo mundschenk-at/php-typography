@@ -2709,6 +2709,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertArrayHasKey( 'regex', $state );
     	$this->assertArrayHasKey( 'self_closing_tags', $state );
     	$this->assertArrayHasKey( 'inappropriate_tags', $state );
+    	$this->assertArrayHasKey( 'css_classes', $state );
     	$this->assertArrayHasKey( 'settings', $state );
 
     	return $state;
@@ -2736,7 +2737,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	// set up imperfect states
     	$states = array();
 
-    	for ( $i = 0; $i < 8; ++$i ) {
+    	for ( $i = 0; $i < 9; ++$i ) {
     		$states[ $i ] = $state;
     	}
     	unset( $states[0]['chr'] );
@@ -2747,6 +2748,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	unset( $states[5]['self_closing_tags'] );
     	unset( $states[6]['settings'] );
     	unset( $states[7]['block_tags'] );
+    	unset( $states[8]['css_classes'] );
 
     	// new, uninitialized PHP_Typography
     	$second_typo = new \PHP_Typography\PHP_Typography( false );
