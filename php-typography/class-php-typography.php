@@ -1068,8 +1068,9 @@ class PHP_Typography {
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
 
 		// french punctuation spacing
-		$this->regex['frenchPunctuationSpacing']          = '/(\w+)(\s?)([?!:])(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingSemicolon'] = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacing']             = '/(\w+)(\s?)([?!:»])(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingSemicolon']    = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingOpeningQuote'] = '/(\s|\A)(«)(\s?)(\w+)/u';
 
 		// wrap_hard_hyphens
 		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";
@@ -2674,8 +2675,9 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacing'],          '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'], '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacing'],             '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'],    '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $this->chr['noBreakNarrowSpace'] . '$4', $textnode->data );
 	}
 
 	/**
