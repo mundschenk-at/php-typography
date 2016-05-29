@@ -2944,6 +2944,11 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="'. $this->css_classes['numbers'] . '">$1</span>', $textnode->data );
 	}
 
+	/**
+	 * Wraps hanging punctuation in <span class="pull-*"> and <span class="push-*">, if enabled.
+	 *
+	 * @param \DOMText $textnode
+	 */
 	function style_hanging_punctuation( \DOMText $textnode ) {
 		if ( empty( $this->settings['styleHangingPunctuation'] ) ) {
 			return;
