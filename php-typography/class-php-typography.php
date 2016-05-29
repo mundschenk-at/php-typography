@@ -137,6 +137,24 @@ class PHP_Typography {
 	private $block_Tags = array();
 
 	/**
+	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
+	 */
+	protected $css_classes = array(
+		'caps'        => 'caps',
+		'numbers'     => 'numbers',
+		'amp'         => 'amp',
+		'quo'         => 'quo',
+		'dquo'        => 'dquo',
+		'pull-single' => 'pull-single',
+		'pull-double' => 'pull-double',
+		'push-single' => 'push-single',
+		'push-double' => 'push-double',
+		'numerator'   => '',
+		'denominator' => '',
+		'ordinal'     => '',
+	);
+
+	/**
 	 * Set up a new PHP_Typography object.
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
@@ -170,6 +188,7 @@ class PHP_Typography {
 			 ! isset( $state['regex'] )              ||
 			 ! isset( $state['self_closing_tags'] )  ||
 			 ! isset( $state['inappropriate_tags'] ) ||
+			 ! isset( $state['css_classes'] )        ||
 			 ! isset( $state['settings'] ) ) {
 		 	return false;
 		}
@@ -183,6 +202,7 @@ class PHP_Typography {
 		$this->regex              = $state['regex'];
 		$this->self_closing_tags  = $state['self_closing_tags'];
 		$this->inappropriate_tags = $state['inappropriate_tags'];
+		$this->css_classes        = $state['css_classes'];
 		$this->settings           = $state['settings'];
 
 		return true;
@@ -204,6 +224,7 @@ class PHP_Typography {
 			'regex'              => $this->regex,
 			'self_closing_tags'  => $this->self_closing_tags,
 			'inappropriate_tags' => $this->inappropriate_tags,
+			'css_classes'        => $this->css_classes,
 			'settings'           => $this->settings,
 		);
 	}
@@ -1068,8 +1089,9 @@ class PHP_Typography {
 		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
 
 		// french punctuation spacing
-		$this->regex['frenchPunctuationSpacing']          = '/(\w+)(\s?)([?!:])(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingSemicolon'] = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacing']             = '/(\w+)(\s?)([?!:»])(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingSemicolon']    = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingOpeningQuote'] = '/(\s|\A)(«)(\s?)(\w+)/u';
 
 		// wrap_hard_hyphens
 		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";
@@ -1901,23 +1923,21 @@ class PHP_Typography {
 			$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions"
 			$this->smart_exponents( $textnode );      // call before "style_numbers"
 			$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix"
-			if ( ! has_class( $textnode, 'caps' ) ) {
+			if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
 				// call before "style_numbers"
 				$this->style_caps( $textnode );
 			}
-			if ( ! has_class( $textnode, 'numbers' ) ) {
+			if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
 				// call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps"
 				$this->style_numbers( $textnode );
 			}
-			if ( ! has_class( $textnode, 'amp') ) {
+			if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
 				$this->style_ampersands( $textnode );
 			}
-			if ( ! has_class( $textnode, array( 'quo', 'dquo' ) ) ) {
+			if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
 				$this->style_initial_quotes( $textnode, $is_title );
 			}
-			if ( ! has_class( $textnode, array( 'pull-single', 'pull-double',
-												'pull-A', 'pull-C', 'pull-O', 'pull-T', 'pull-V', 'pull-W', 'pull-Y',
-												'pull-c', 'pull-o', 'pull-v', 'pull-w' ) ) ) {
+			if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
 				$this->style_hanging_punctuation( $textnode );
 			}
 
@@ -2538,18 +2558,20 @@ class PHP_Typography {
 		}
 
 		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1' . $this->chr['noBreakNarrowSpace'] . '$2', $textnode->data );
 		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'. $this->chr['noBreakSpace'] . '$2', $textnode->data );
 		}
 
 		if ( !empty($this->settings['smartFractions']) ) {
 			// Escape sequences we don't want fractionified
  			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
- 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'],   '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
 
  			// Replace fractions
- 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->data );
+ 			$numerator_class   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
+ 			$denominator_class = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], "<sup{$numerator_class}>\$1</sup>" . $this->chr['fractionSlash'] . "<sub{$denominator_class}>\$2</sub>\$3", $textnode->data );
 
  			// Unescape escaped sequences
  			$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
@@ -2568,7 +2590,8 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1'.'<sup>$2</sup>', $textnode->data );
+		$ordinal_class = empty( $this->css_classes['ordinal'] ) ? '' : ' class="' . $this->css_classes['ordinal'] . '"';
+		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1' . "<sup{$ordinal_class}>$2</sup>", $textnode->data );
 	}
 
 	/**
@@ -2674,8 +2697,9 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacing'],          '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'], '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacing'],             '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'],    '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $this->chr['noBreakNarrowSpace'] . '$4', $textnode->data );
 	}
 
 	/**
@@ -2868,7 +2892,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="caps">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="' . $this->css_classes['caps'] . '">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -2925,9 +2949,14 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="numbers">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="'. $this->css_classes['numbers'] . '">$1</span>', $textnode->data );
 	}
 
+	/**
+	 * Wraps hanging punctuation in <span class="pull-*"> and <span class="push-*">, if enabled.
+	 *
+	 * @param \DOMText $textnode
+	 */
 	function style_hanging_punctuation( \DOMText $textnode ) {
 		if ( empty( $this->settings['styleHangingPunctuation'] ) ) {
 			return;
@@ -2944,15 +2973,15 @@ class PHP_Typography {
 			$textnode->data =  $textnode->data.$next_character;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$2</span>$3', $textnode->data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="pull-single">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		} else {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		}
 
 		// remove any added characters;
@@ -2977,7 +3006,7 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="amp">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="'. $this->css_classes['amp'] .'">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -3028,7 +3057,7 @@ class PHP_Typography {
 								$span_class = 'dquo';
 						}
 
-						$textnode->data =  '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+						$textnode->data =  '<span class="' . $this->css_classes[ $span_class ] . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
 					}
 			}
 		}

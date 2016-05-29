@@ -1818,6 +1818,51 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+
+    public function provide_smart_fractions_with_classes_data() {
+    	return array(
+    		array(
+    			'1/2 3/300 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    		),
+    		array(
+    			'1/2 4/2015 1999/2000 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    		),
+    	);
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_with_classes_data
+     */
+    public function test_smart_fractions_with_classes( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+
+    	$typo->set_smart_fractions( true );
+    	$typo->set_true_no_break_narrow_space( true );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_with_classes_data
+     */
+    public function test_smart_fractions_with_classes_off( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+
+    	$typo->set_smart_fractions( false );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
     public function provide_fraction_spacing_data() {
     	return array(
     		array(
@@ -1879,6 +1924,42 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
+
+    public function provide_smart_ordinal_suffix_with_css_classes() {
+    	return array(
+    		array( 'in the 1st instance', 'in the 1<sup class="ordinal">st</sup> instance' ),
+    		array( 'in the 2nd degree',   'in the 2<sup class="ordinal">nd</sup> degree' ),
+    		array( 'a 3rd party',         'a 3<sup class="ordinal">rd</sup> party' ),
+    		array( '12th Night',          '12<sup class="ordinal">th</sup> Night' ),
+    	);
+    }
+
+    /**
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
+     */
+    public function test_smart_ordinal_suffix_with_css_classes( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+    	$typo->set_smart_ordinal_suffix( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
+     */
+    public function test_smart_ordinal_suffix_with_css_classes_off( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+    	$typo->set_smart_ordinal_suffix( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
 
     public function provide_single_character_word_spacing_data() {
     	return array(
@@ -2061,6 +2142,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( 'http://example.org', 'http://example.org' ),
     		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ),
     		array( '5 > 3', '5 > 3' ),
+    		array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&#8239;: ils sont "fabuleux".' ),
 
     	);
     }
@@ -2708,6 +2790,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertArrayHasKey( 'regex', $state );
     	$this->assertArrayHasKey( 'self_closing_tags', $state );
     	$this->assertArrayHasKey( 'inappropriate_tags', $state );
+    	$this->assertArrayHasKey( 'css_classes', $state );
     	$this->assertArrayHasKey( 'settings', $state );
 
     	return $state;
@@ -2735,7 +2818,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	// set up imperfect states
     	$states = array();
 
-    	for ( $i = 0; $i < 8; ++$i ) {
+    	for ( $i = 0; $i < 9; ++$i ) {
     		$states[ $i ] = $state;
     	}
     	unset( $states[0]['chr'] );
@@ -2746,6 +2829,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	unset( $states[5]['self_closing_tags'] );
     	unset( $states[6]['settings'] );
     	unset( $states[7]['block_tags'] );
+    	unset( $states[8]['css_classes'] );
 
     	// new, uninitialized PHP_Typography
     	$second_typo = new \PHP_Typography\PHP_Typography( false );
