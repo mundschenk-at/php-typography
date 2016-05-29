@@ -2151,12 +2151,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?" ),
     		array( 'Au secours !', 'Au secours&#8239;!' ),
     		array( 'Au secours!', 'Au secours&#8239;!' ),
-    		array( 'Jean a dit : Foo', 'Jean a dit&#8239;: Foo' ),
-    		array( 'Jean a dit: Foo', 'Jean a dit&#8239;: Foo' ),
+    		array( 'Jean a dit : Foo', 'Jean a dit&nbsp;: Foo' ),
+    		array( 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo' ),
     		array( 'http://example.org', 'http://example.org' ),
     		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ),
     		array( '5 > 3', '5 > 3' ),
-    		array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&#8239;: ils sont "fabuleux".' ),
+    		array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".' ),
 
     	);
     }
