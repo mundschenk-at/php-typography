@@ -2569,9 +2569,9 @@ class PHP_Typography {
  			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'],   '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
 
  			// Replace fractions
- 			$numeratorClass   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
- 			$denominatorClass = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
- 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], "<sup{$numeratorClass}>\$1</sup>" . $this->chr['fractionSlash'] . "<sub{$denominatorClass}>\$2</sub>\$3", $textnode->data );
+ 			$numerator_class   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
+ 			$denominator_class = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], "<sup{$numerator_class}>\$1</sup>" . $this->chr['fractionSlash'] . "<sub{$denominator_class}>\$2</sub>\$3", $textnode->data );
 
  			// Unescape escaped sequences
  			$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
