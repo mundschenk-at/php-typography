@@ -140,11 +140,15 @@ class PHP_Typography {
 	 * An array of CSS classes that are added for ampersands, numbers etc.
 	 */
 	protected $css_classes = array(
-		'caps'    => 'caps',
-		'numbers' => 'numbers',
-		'amp'     => 'amp',
-		'quo'     => 'quo',
-		'dquo'    => 'dquo',
+		'caps'        => 'caps',
+		'numbers'     => 'numbers',
+		'amp'         => 'amp',
+		'quo'         => 'quo',
+		'dquo'        => 'dquo',
+		'pull-single' => 'pull-single',
+		'pull-double' => 'pull-double',
+		'push-single' => 'push-single',
+		'push-double' => 'push-double',
 	);
 
 	/**
@@ -1930,9 +1934,7 @@ class PHP_Typography {
 			if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
 				$this->style_initial_quotes( $textnode, $is_title );
 			}
-			if ( ! has_class( $textnode, array( 'pull-single', 'pull-double',
-												'pull-A', 'pull-C', 'pull-O', 'pull-T', 'pull-V', 'pull-W', 'pull-Y',
-												'pull-c', 'pull-o', 'pull-v', 'pull-w' ) ) ) {
+			if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
 				$this->style_hanging_punctuation( $textnode );
 			}
 
@@ -2965,15 +2967,15 @@ class PHP_Typography {
 			$textnode->data =  $textnode->data.$next_character;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$2</span>$3', $textnode->data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="pull-double">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="pull-single">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		} else {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="push-double"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-double">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="push-single"></span>' . $this->chr['zeroWidthSpace'] . '<span class="pull-single">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		}
 
 		// remove any added characters;
