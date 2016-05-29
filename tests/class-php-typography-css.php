@@ -7,5 +7,6 @@ class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
 
 		$this->css_classes['numerator']   = 'num';
 		$this->css_classes['denominator'] = 'denom';
+		$this->css_classes['ordinal'] = 'ordinal';
 	}
 }

@@ -151,6 +151,7 @@ class PHP_Typography {
 		'push-double' => 'push-double',
 		'numerator'   => '',
 		'denominator' => '',
+		'ordinal'     => '',
 	);
 
 	/**
@@ -2589,7 +2590,8 @@ class PHP_Typography {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1'.'<sup>$2</sup>', $textnode->data );
+		$ordinal_class = empty( $this->css_classes['ordinal'] ) ? '' : ' class="' . $this->css_classes['ordinal'] . '"';
+		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1' . "<sup{$ordinal_class}>$2</sup>", $textnode->data );
 	}
 
 	/**

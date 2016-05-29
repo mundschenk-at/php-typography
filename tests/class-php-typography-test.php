@@ -1925,6 +1925,42 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+    public function provide_smart_ordinal_suffix_with_css_classes() {
+    	return array(
+    		array( 'in the 1st instance', 'in the 1<sup class="ordinal">st</sup> instance' ),
+    		array( 'in the 2nd degree',   'in the 2<sup class="ordinal">nd</sup> degree' ),
+    		array( 'a 3rd party',         'a 3<sup class="ordinal">rd</sup> party' ),
+    		array( '12th Night',          '12<sup class="ordinal">th</sup> Night' ),
+    	);
+    }
+
+    /**
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
+     */
+    public function test_smart_ordinal_suffix_with_css_classes( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+    	$typo->set_smart_ordinal_suffix( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_ordinal_suffix
+     *
+     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
+     */
+    public function test_smart_ordinal_suffix_with_css_classes_off( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+    	$typo->set_smart_ordinal_suffix( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+
     public function provide_single_character_word_spacing_data() {
     	return array(
     		array( 'A cat in a tree', 'A cat in a&nbsp;tree' ),
