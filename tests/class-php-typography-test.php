@@ -1818,6 +1818,51 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
 
+
+    public function provide_smart_fractions_with_classes_data() {
+    	return array(
+    		array(
+    			'1/2 3/300 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    		),
+    		array(
+    			'1/2 4/2015 1999/2000 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    		),
+    	);
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_with_classes_data
+     */
+    public function test_smart_fractions_with_classes( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+
+    	$typo->set_smart_fractions( true );
+    	$typo->set_true_no_break_narrow_space( true );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @dataProvider provide_smart_fractions_with_classes_data
+     */
+    public function test_smart_fractions_with_classes_off( $input, $result )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false );
+
+    	$typo->set_smart_fractions( false );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+    }
+
     public function provide_fraction_spacing_data() {
     	return array(
     		array(

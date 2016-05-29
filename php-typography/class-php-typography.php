@@ -149,6 +149,8 @@ class PHP_Typography {
 		'pull-double' => 'pull-double',
 		'push-single' => 'push-single',
 		'push-double' => 'push-double',
+		'numerator'   => '',
+		'denominator' => '',
 	);
 
 	/**
@@ -2555,18 +2557,20 @@ class PHP_Typography {
 		}
 
 		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakNarrowSpace'].'$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1' . $this->chr['noBreakNarrowSpace'] . '$2', $textnode->data );
 		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'.$this->chr['noBreakSpace'].'$2', $textnode->data );
+			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1'. $this->chr['noBreakSpace'] . '$2', $textnode->data );
 		}
 
 		if ( !empty($this->settings['smartFractions']) ) {
 			// Escape sequences we don't want fractionified
  			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
- 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'],   '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
 
  			// Replace fractions
- 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], '<sup>$1</sup>'.$this->chr['fractionSlash'].'<sub>$2</sub>$3', $textnode->data );
+ 			$numeratorClass   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
+ 			$denominatorClass = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
+ 			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], "<sup{$numeratorClass}>\$1</sup>" . $this->chr['fractionSlash'] . "<sub{$denominatorClass}>\$2</sub>\$3", $textnode->data );
 
  			// Unescape escaped sequences
  			$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
