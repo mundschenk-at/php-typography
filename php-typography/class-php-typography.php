@@ -298,8 +298,8 @@ class PHP_Typography {
 				                                 'close' => uchr(8217) ),
 			'singleLow9Reversed'       => array( 'open'  => $this->chr['singleLow9Quote'],
 				                                 'close' => uchr(8216) ),
-			'doubleGuillemetsFrench'   => array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakSpace'],
-				                                 'close' => $this->chr['noBreakSpace'].$this->chr['guillemetClose'] ),
+			'doubleGuillemetsFrench'   => array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakNarrowSpace'],
+				                                 'close' => $this->chr['noBreakNarrowSpace'].$this->chr['guillemetClose'] ),
 			'doubleGuillemets'         => array( 'open'  => $this->chr['guillemetOpen'],
 				                                 'close' => $this->chr['guillemetClose'] ),
 			'doubleGuillemetsReversed' => array( 'open'  => $this->chr['guillemetClose'],
@@ -1166,6 +1166,10 @@ class PHP_Typography {
 		} else {
 			$this->chr['noBreakNarrowSpace'] = uchr( 160 );
 		}
+
+		// update French guillemets
+		$this->quote_styles['doubleGuillemetsFrench'] = array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakNarrowSpace'],
+			                                                   'close' => $this->chr['noBreakNarrowSpace'].$this->chr['guillemetClose'] );
 	}
 
 	/**

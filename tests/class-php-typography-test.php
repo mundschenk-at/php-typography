@@ -2952,8 +2952,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$typo->set_true_no_break_narrow_space(); // defaults to false
     	$this->assertSame( $typo->chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 160 ) );
+     	$this->assertAttributeContains( array( 'open'  => \PHP_Typography\uchr(171) . \PHP_Typography\uchr( 160 ),
+     									       'close' => \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr(187) ), 'quote_styles', $typo );
 
     	$typo->set_true_no_break_narrow_space( true ); // defaults to false
     	$this->assertSame( $typo->chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 8239 ) );
+    	$this->assertAttributeContains( array( 'open'  => \PHP_Typography\uchr(171) . \PHP_Typography\uchr( 8239 ),
+    		                                   'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr(187) ), 'quote_styles', $typo );
     }
 }
