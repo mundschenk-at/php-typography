@@ -15,8 +15,3 @@ require_once dirname( __DIR__ ) . '/php-typography/php-typography-autoload.php';
  */
 require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';
 require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5/autoload.php';
-
-/**
- * Some additional subclasses for testing.
- */
-require_once __DIR__ . '/class-php-typography-css.php';
