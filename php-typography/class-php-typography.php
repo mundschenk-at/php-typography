@@ -137,7 +137,7 @@ class PHP_Typography {
 	private $block_Tags = array();
 
 	/**
-	 * An array of CSS classes that are added for ampersands, numbers etc.
+	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
 	 */
 	protected $css_classes = array(
 		'caps'        => 'caps',
