@@ -1146,7 +1146,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( '3 cm', '<span class="numbers">3</span>&nbsp;cm', false ), // unit spacing without true no-break narrow space
     		array( 'a/b', 'a/&#8203;b', false ), // dash spacing
     		array( '<span class="numbers">5</span>', '<span class="numbers">5</span>', true ), // class present, no change
-    		array( '1st', '<span class="numbers">1</span><sup>st</sup>', false ), // smart ordinal suffixes
+    		array( '1st', '<span class="numbers">1</span><sup class="ordinal">st</sup>', false ), // smart ordinal suffixes
     		array( '1^1', '<span class="numbers">1</span><sup><span class="numbers">1</span></sup>', false ), // smart exponents
     		array( 'a &amp; b', 'a <span class="amp">&amp;</span>&nbsp;b', false ), // wrap amps
     		array( 'a  b', 'a b', false ), // space collapse
@@ -1777,11 +1777,29 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     			'1/2 3/300 999/1000',
     			'<sup>1</sup>&frasl;<sub>2</sub> <sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
     			'<sup>1</sup>&frasl;<sub>2</sub>&#8239;<sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
+    			'',
+    			''
     		),
     		array(
     			'1/2 4/2015 1999/2000 999/1000',
     			'<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>',
     			'<sup>1</sup>&frasl;<sub>2</sub>&#8239;4/2015 1999/2000&#8239;<sup>999</sup>&frasl;<sub>1000</sub>',
+    			'',
+    			''
+    		),
+    		array(
+    			'1/2 3/300 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;<sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    			'num',
+    			'denom'
+    		),
+    		array(
+    			'1/2 4/2015 1999/2000 999/1000',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;4/2015 1999/2000&#8239;<sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+    			'num',
+    			'denom'
     		),
     	);
     }
@@ -1791,10 +1809,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @dataProvider provide_smart_fractions_data
      */
-    public function test_smart_fractions( $input, $result, $result_spacing )
+    public function test_smart_fractions( $input, $result, $result_spacing, $num_css_class, $denom_css_class )
     {
-		$typo = $this->typo;
-		$typo->set_smart_fractions( true );
+    	$typo = new PHP_Typography_CSS_Classes( false, 'now', array( 'numerator' => $num_css_class, 'denominator' => $denom_css_class) );
+    	$typo->set_smart_fractions( true );
 		$typo->set_true_no_break_narrow_space( true );
 
 		$typo->set_fraction_spacing( false );
@@ -1809,54 +1827,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @dataProvider provide_smart_fractions_data
      */
-    public function test_smart_fractions_off( $input, $result, $result_spacing )
+    public function test_smart_fractions_off( $input, $result, $result_spacing, $num_css_class, $denom_css_class )
     {
-    	$typo = $this->typo;
-    	$typo->set_smart_fractions( false );
-    	$typo->set_fraction_spacing( false );
-
-    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
-    }
-
-
-    public function provide_smart_fractions_with_classes_data() {
-    	return array(
-    		array(
-    			'1/2 3/300 999/1000',
-    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
-    		),
-    		array(
-    			'1/2 4/2015 1999/2000 999/1000',
-    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
-    		),
-    	);
-    }
-
-    /**
-     * @covers ::smart_fractions
-     *
-     * @dataProvider provide_smart_fractions_with_classes_data
-     */
-    public function test_smart_fractions_with_classes( $input, $result )
-    {
-    	$typo = new PHP_Typography_CSS_Classes( false );
-
-    	$typo->set_smart_fractions( true );
-    	$typo->set_true_no_break_narrow_space( true );
-    	$typo->set_fraction_spacing( false );
-
-    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
-    }
-
-    /**
-     * @covers ::smart_fractions
-     *
-     * @dataProvider provide_smart_fractions_with_classes_data
-     */
-    public function test_smart_fractions_with_classes_off( $input, $result )
-    {
-    	$typo = new PHP_Typography_CSS_Classes( false );
-
+    	$typo = new PHP_Typography_CSS_Classes( false, 'now', array( 'numerator' => $num_css_class, 'denominator' => $denom_css_class ) );
     	$typo->set_smart_fractions( false );
     	$typo->set_fraction_spacing( false );
 
@@ -1892,10 +1865,14 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 	public function provide_smart_ordinal_suffix() {
 		return array(
-			array( 'in the 1st instance', 'in the 1<sup>st</sup> instance' ),
-			array( 'in the 2nd degree',   'in the 2<sup>nd</sup> degree' ),
-			array( 'a 3rd party',         'a 3<sup>rd</sup> party' ),
-			array( '12th Night',          '12<sup>th</sup> Night' ),
+			array( 'in the 1st instance', 'in the 1<sup>st</sup> instance', '' ),
+			array( 'in the 2nd degree',   'in the 2<sup>nd</sup> degree', '' ),
+			array( 'a 3rd party',         'a 3<sup>rd</sup> party', '' ),
+			array( '12th Night',          '12<sup>th</sup> Night', '' ),
+			array( 'in the 1st instance', 'in the 1<sup class="ordinal">st</sup> instance', 'ordinal' ),
+			array( 'in the 2nd degree',   'in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
+			array( 'a 3rd party',         'a 3<sup class="ordinal">rd</sup> party', 'ordinal' ),
+			array( '12th Night',          '12<sup class="ordinal">th</sup> Night', 'ordinal' ),
 		);
 	}
 
@@ -1904,9 +1881,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @dataProvider provide_smart_ordinal_suffix
      */
-    public function test_smart_ordinal_suffix( $input, $result )
+    public function test_smart_ordinal_suffix( $input, $result, $css_class )
     {
-    	$typo = $this->typo;
+    	$typo = new PHP_Typography_CSS_Classes( false, 'now', array( 'ordinal' => $css_class ) );
     	$typo->set_smart_ordinal_suffix( true );
 
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
@@ -1917,49 +1894,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @dataProvider provide_smart_ordinal_suffix
      */
-    public function test_smart_ordinal_suffix_off( $input, $result )
+    public function test_smart_ordinal_suffix_off( $input, $result, $css_class )
     {
-    	$typo = $this->typo;
+    	$typo = new PHP_Typography_CSS_Classes( false, 'now', array( 'ordinal' => $css_class ) );
     	$typo->set_smart_ordinal_suffix( false );
 
     	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
     }
-
-    public function provide_smart_ordinal_suffix_with_css_classes() {
-    	return array(
-    		array( 'in the 1st instance', 'in the 1<sup class="ordinal">st</sup> instance' ),
-    		array( 'in the 2nd degree',   'in the 2<sup class="ordinal">nd</sup> degree' ),
-    		array( 'a 3rd party',         'a 3<sup class="ordinal">rd</sup> party' ),
-    		array( '12th Night',          '12<sup class="ordinal">th</sup> Night' ),
-    	);
-    }
-
-    /**
-     * @covers ::smart_ordinal_suffix
-     *
-     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
-     */
-    public function test_smart_ordinal_suffix_with_css_classes( $input, $result )
-    {
-    	$typo = new PHP_Typography_CSS_Classes( false );
-    	$typo->set_smart_ordinal_suffix( true );
-
-    	$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
-    }
-
-    /**
-     * @covers ::smart_ordinal_suffix
-     *
-     * @dataProvider provide_smart_ordinal_suffix_with_css_classes
-     */
-    public function test_smart_ordinal_suffix_with_css_classes_off( $input, $result )
-    {
-    	$typo = new PHP_Typography_CSS_Classes( false );
-    	$typo->set_smart_ordinal_suffix( false );
-
-    	$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
-    }
-
 
     public function provide_single_character_word_spacing_data() {
     	return array(

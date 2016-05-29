@@ -149,9 +149,9 @@ class PHP_Typography {
 		'pull-double' => 'pull-double',
 		'push-single' => 'push-single',
 		'push-double' => 'push-double',
-		'numerator'   => '',
-		'denominator' => '',
-		'ordinal'     => '',
+		'numerator'   => 'numerator',
+		'denominator' => 'denominator',
+		'ordinal'     => 'ordinal',
 	);
 
 	/**
