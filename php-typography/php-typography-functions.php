@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  This file is part of wp-Typography.
  *
@@ -24,11 +23,8 @@
  *  ***
  *
  *  @package wpTypography/PHPTypography
- *  @author Jeffrey D. King <jeff@kingdesk.com>
- *  @author Peter Putzer <github@mundschenk.at>
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
-
 
 namespace PHP_Typography;
 
@@ -36,7 +32,6 @@ namespace PHP_Typography;
  * HTML5 element introspection
  */
 require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' ); // @codeCoverageIgnore
-
 
 /**
  * Determines whether two object arrays intersect. The second array is expected
@@ -47,7 +42,7 @@ require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' ); // @codeC
  * @return boolean
  */
 function arrays_intersect( array $array1, array $array2 ) {
-	foreach( $array1 as $value ) {
+	foreach ( $array1 as $value ) {
 		if ( isset( $array2[ spl_object_hash( $value ) ] ) ) {
 			return true;
 		}
@@ -59,7 +54,7 @@ function arrays_intersect( array $array1, array $array2 ) {
 /**
  * Convert \DOMNodeList to array;
  *
- * @param \DOMNodeList $list
+ * @param \DOMNodeList $list Required.
  * @return array An associative array in the form ( $spl_object_hash => $node ).
  */
 function nodelist_to_array( \DOMNodeList $list ) {
@@ -76,13 +71,13 @@ function nodelist_to_array( \DOMNodeList $list ) {
  * Retrieve an array containing all the ancestors of the node. This could be done
  * via an XPath query for "ancestor::*", but DOM walking is in all likelyhood faster.
  *
- * @param \DOMNode $node
+ * @param \DOMNode $node Required.
  * @return array An array of \DOMNode.
  */
 function get_ancestors( \DOMNode $node ) {
 	$result = array();
 
-	while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) {
+	while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // @codingStandardsIgnoreLine.
 		$result[] = $node;
 	}
 
@@ -93,28 +88,28 @@ function get_ancestors( \DOMNode $node ) {
  * Checks whether the \DOMNode has one of the given classes.
  * If $tag is a \DOMText, the parent DOMElement is checked instead.
  *
- * @param \DOMNode $tag An element or textnode.
+ * @param \DOMNode     $tag        An element or textnode.
  * @param string|array $classnames A single classname or an array of classnames.
  *
  * @return boolean True if the element has any of the given class(es).
  */
 function has_class( \DOMNode $tag, $classnames ) {
 	if ( $tag instanceof \DOMText ) {
-		$tag = $tag->parentNode;
+		$tag = $tag->parentNode; // @codingStandardsIgnoreLine.
 	}
 
-	// bail if we are not working with a tag or if there is no classname
+	// Bail if we are not working with a tag or if there is no classname.
 	if ( ! ( $tag instanceof \DOMElement ) || empty( $classnames ) ) {
 		return false;
 	}
 
-	// ensure we always have an array of classnames
+	// Ensure we always have an array of classnames.
 	if ( ! is_array( $classnames ) ) {
 		$classnames = array( $classnames );
 	}
 
 	if ( $tag->hasAttribute( 'class' ) ) {
-		$tag_classes = array_flip( explode(' ', $tag->getAttribute( 'class' ) ) );
+		$tag_classes = array_flip( explode( ' ', $tag->getAttribute( 'class' ) ) );
 
 		foreach ( $classnames as $classname ) {
 			if ( isset( $tag_classes[ $classname ] ) ) {
@@ -137,7 +132,7 @@ function uchr( $codes ) {
 		$codes = func_get_args();
 	}
 
-	$str= '';
+	$str = '';
 	foreach ( $codes as $code ) {
 		$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
 	}
@@ -148,7 +143,7 @@ function uchr( $codes ) {
 /**
  * Is a number odd?
  *
- * @param integer $number
+ * @param integer $number Required.
  * @return boolean true if $number is odd, false if it is even.
  */
 function is_odd( $number ) {
@@ -158,8 +153,8 @@ function is_odd( $number ) {
 /**
  * Multibyte-safe str_split function.
  *
- * @param string $str
- * @param int    $length Optional. Default 1.
+ * @param string $str      Required.
+ * @param int    $length   Optional. Default 1.
  * @param string $encoding Optional. Default 'UTF-8'.
  */
 function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
@@ -189,14 +184,14 @@ function get_language_plugin_list( $path, $language_name_variable ) {
 	$languages = array();
 	$handler = opendir( $path );
 
-	// read all files in directory
+	// Read all files in directory.
 	while ( $file = readdir( $handler ) ) {
-		// we only want the php files
-		if ('.php' == substr( $file, -4 ) ) {
+		// We only want the PHP files.
+		if ( '.php' === substr( $file, -4 ) ) {
 			$file_content = file_get_contents( $path . $file );
 			if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
-				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // normally this doesn't work, but we may have added the
-			 																	      // language name in the patgen file already.
+				// Normally this doesn't work, but we may have added the language name in the patgen file already.
+				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // @codingStandardsIgnoreLine.
 				$language_code = substr( $file, 0, -4 );
 				$languages[ $language_code ] = $language_name;
 			}
@@ -204,7 +199,7 @@ function get_language_plugin_list( $path, $language_name_variable ) {
 	}
 	closedir( $handler );
 
-	// sort translated language names according to current locale
+	// Sort translated language names according to current locale.
 	asort( $languages );
 
 	return $languages;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  This file is part of wp-Typography.
  *
@@ -22,14 +21,13 @@
  *  ***
  *
  *  @package wpTypography/PHPTypography
- *  @author Peter Putzer <github@mundschenk.at>
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 /**
  * An autoloader implementation for the PHP_Typography classes.
  *
- * @param string $class_name
+ * @param string $class_name Required.
  */
 function php_typography_autoloader( $class_name ) {
 	static $prefix;
@@ -38,7 +36,7 @@ function php_typography_autoloader( $class_name ) {
 	}
 
 	if ( false === strpos( $class_name, $prefix ) ) {
-		return; // abort
+		return; // abort early.
 	}
 
 	static $classes_dir;
