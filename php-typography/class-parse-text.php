@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  This file is part of wp-Typography.
  *
@@ -24,8 +23,6 @@
  *  ***
  *
  *  @package wpTypography/PHPTypography
- *  @author Jeffrey D. King <jeff@kingdesk.com>
- *  @author Peter Putzer <github@mundschenk.at>
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
@@ -53,9 +50,10 @@ class Parse_Text {
 	 * 		@type string $encoding The name of the strtoupper function to use.
 	 * }
 	 */
-	private $str_functions = array( 'UTF-8' => 'mb_strtoupper',
-					  			    'ASCII' => 'strtoupper',
-								    false   => false,
+	private $str_functions = array(
+		'UTF-8' => 'mb_strtoupper',
+		'ASCII' => 'strtoupper',
+		false   => false,
 	);
 
 	/**
@@ -72,21 +70,12 @@ class Parse_Text {
 	 * 		@type array $index {
 	 * 			Tokenized text.
 	 *
-	 * 			@type string $type 'space' | 'punctuation' | 'word' | 'other'. Required.
+	 * 			@type string $type  'space' | 'punctuation' | 'word' | 'other'. Required.
 	 * 			@type string $value Token content. Required.
 	 * 		}
 	 * }
 	 */
 	private $text = array();
-			/*
-				$text structure:
-					ARRAY:
-						index	=> ARRAY: tokenized Text
-
-				 			// REQUIRED
-							'type' 		=> STRING: 'space' | 'punctuation' | 'word' | 'other'
-							'value'		=> STRING: token content
-			*/
 
 	/**
 	 * An array of various regex components (not complete patterns).
@@ -107,7 +96,7 @@ class Parse_Text {
 	 *
 	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8' ].
 	 */
-	function __construct( $encodings = array( 'ASCII','UTF-8' ) ) {
+	function __construct( $encodings = array( 'ASCII', 'UTF-8' ) ) {
 		$this->encodings = $encodings;
 
 		/**
@@ -150,8 +139,8 @@ class Parse_Text {
 						\x{2004}|\x{2005}|\x{2006}|\x{2007}|\x{2008}|\x{2009}|\x{200a}|\x{202f}|\x{205f}|\x{3000}
 					)
 				)
-			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-		$this->components['space'] = "(?:\s|{$this->components['htmlSpacing']})+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8
+			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
+		$this->components['space'] = "(?:\s|{$this->components['htmlSpacing']})+"; // required modifiers: x (multiline pattern) i (case insensitive) $utf8.
 
 		/**
 		 * Find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
@@ -188,7 +177,7 @@ class Parse_Text {
 						;
 					)
 				)
-			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 		$this->components['punctuation'] = "
 		(?:
 			(?:
@@ -200,8 +189,7 @@ class Parse_Text {
 				{$this->components['htmlPunctuation']}			# catch any HTML reps of punctuation
 			)+
 		)
-		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
-
+		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 		/**
 		 * Letter connectors allowed in words
@@ -235,7 +223,7 @@ class Parse_Text {
 					\x{002d}|\x{005f}|\x{00ad}|\x{200b}|\x{200c}|\x{200d}|\x{2010}|\x{2011}|\x{2012}
 				)
 			)
-		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 		/**
 		 * Word character html entities
@@ -290,7 +278,7 @@ class Parse_Text {
 					\x{017c}|\x{017d}|\x{017e}|\x{017f}
 				)
 			)
-		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 		$this->components['word'] = "
 		(?:
@@ -305,12 +293,12 @@ class Parse_Text {
 				{$this->components['htmlLetterConnectors']}
 			)+
 		)
-		"; // required modifiers: x (multiline pattern) u (utf8)
+		"; // required modifiers: x (multiline pattern) u (utf8).
 
 		// Find any text
-		$this->components['anyText'] = "{$this->components['space']}|{$this->components['punctuation']}|{$this->components['word']}"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8)
+		$this->components['anyText'] = "{$this->components['space']}|{$this->components['punctuation']}|{$this->components['word']}"; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
-		// Store compiled regexes for later use & use S modifier ('study')
+		// Store compiled regexes for later use & use S modifier ('study').
 		$this->regex['anyText']              = "/({$this->components['anyText']})/Sixu";
 		$this->regex['space']                = "/\A{$this->components['space']}\Z/Sxiu";
 		$this->regex['punctuation']          = "/\A{$this->components['punctuation']}\Z/Ssxiu";
@@ -326,19 +314,19 @@ class Parse_Text {
 	 * @return boolean Returns `true` on successful completion, `false` otherwise.
 	 */
 	function load( $raw_text ) {
-		if( ! is_string( $raw_text ) ) {
-			return false; // we have an error, abort
+		if ( ! is_string( $raw_text ) ) {
+			return false; // we have an error, abort.
 		}
 
-		// abort if a simple string exceeds 500 characters (security concern)
+		// Abort if a simple string exceeds 500 characters (security concern).
 		if ( preg_match( $this->regex['maxStringLength'], $raw_text ) ) {
 			return false;
 		}
 
-		// detect encoding
+		// Detect encoding.
 		$this->current_strtoupper = $this->str_functions[ mb_detect_encoding( $raw_text, $this->encodings, true ) ];
 		if ( ! $this->current_strtoupper ) {
-			return false; // unknown encoding
+			return false; // unknown encoding.
 		}
 
 		$tokens = array();
@@ -359,8 +347,8 @@ class Parse_Text {
 						'value'	=> $part,
 					);
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
-					// make sure that things like email addresses and URLs are not broken up
-					// into words and punctuation not preceeded by an 'other'
+					// Make sure that things like email addresses and URLs are not broken up
+					// into words and punctuation not preceeded by an 'other'.
 					if ( $index - 1 >= 0 && 'other' === $tokens[ $index - 1 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
 						$tokens[ $index - 1 ] = array(
@@ -369,8 +357,8 @@ class Parse_Text {
 						);
 						$index = $index - 1;
 
-					// not preceeded by a non-space + punctuation
-					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
+					// Not preceeded by a non-space + punctuation.
+					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
@@ -386,8 +374,8 @@ class Parse_Text {
 						);
 					}
 				} else {
-					// make sure that things like email addresses and URLs are not broken up into words
-					// and punctuation not preceeded by an 'other' or 'word'
+					// Make sure that things like email addresses and URLs are not broken up into words
+					// and punctuation not preceeded by an 'other' or 'word'.
 					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
 						$index = $index - 1;
 						$old_part = $tokens[ $index ]['value'];
@@ -395,8 +383,8 @@ class Parse_Text {
 							'type'	=> 'other',
 							'value'	=> $old_part . $part,
 						);
-					// not preceeded by a non-space + punctuation
-					} elseif( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
+					// Not preceeded by a non-space + punctuation.
+					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
@@ -441,7 +429,7 @@ class Parse_Text {
 	function unload() {
 		$reassembled_text = '';
 
-		foreach( $this->text as $token ) {
+		foreach ( $this->text as $token ) {
 			$reassembled_text .= $token['value'];
 		}
 
@@ -468,7 +456,7 @@ class Parse_Text {
 	 * }
 	 */
 	function update( $tokens ) {
-		foreach( $tokens as $index => $token ) {
+		foreach ( $tokens as $index => $token ) {
 			$this->text[ $index ]['value'] = $token['value'];
 		}
 	}
@@ -509,28 +497,30 @@ class Parse_Text {
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
 		$tokens = array();
-		$strtoupper = $this->current_strtoupper; // cannot call class properties
+		$strtoupper = $this->current_strtoupper; // cannot call class properties.
 
-		// initialize helper variables outside the loop
+		// Initialize helper variables outside the loop.
 		$capped   = '';
 		$lettered = '';
 		$compound = '';
 
-		foreach( $this->get_type( 'word' ) as $index => $token ) {
+		foreach ( $this->get_type( 'word' ) as $index => $token ) {
 			$capped   = $strtoupper( $token['value'] );
 			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token['value'] );
 			$compound = preg_replace( '/[^\w-]/Su', '', $token['value'] );
 
+			// @todo Refactor these tangled if statements.
+			// @codingStandardsIgnoreStart.
 			if ( 'no-all-letters' === $abc && $lettered !== $token['value'] ) {
-				if ( ( ( 'no-all-caps'       === $caps && $capped !== $token['value'] ) ||
-					   ( 'allow-all-caps'    === $caps ) ||
-					   ( 'require-all-caps'  === $caps && $capped === $token['value'] ) ) &&
+				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+					   ( 'allow-all-caps'   === $caps ) ||
+					   ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) &&
 					 ( ( 'no-compounds'      === $comps && $compound !== $token['value'] ) ||
 					   ( 'allow-compounds'   === $comps ) ||
 					   ( 'require-compounds' === $comps && $compound === $token['value'] ) ) ) {
 					$tokens[ $index ] = $token;
 				}
-			} elseif ( 'allow-all-letters' === $abc) {
+			} elseif ( 'allow-all-letters' === $abc ) {
 				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
 					   ( 'allow-all-caps'   === $caps ) ||
 					   ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) &&
@@ -546,6 +536,7 @@ class Parse_Text {
 				 	$tokens[ $index ] = $token;
 				}
 			}
+			// @codingStandardsIgnoreEnd.
 		}
 
 		return $tokens;
@@ -568,13 +559,12 @@ class Parse_Text {
 	function get_type( $type ) {
 		$tokens = array();
 
-		foreach( $this->text as $index => $token ) {
-			if( $token['type'] === $type ) {
+		foreach ( $this->text as $index => $token ) {
+			if ( $token['type'] === $type ) {
 				$tokens[ $index ] = $token;
 			}
 		}
 
 		return $tokens;
 	}
-
 }
