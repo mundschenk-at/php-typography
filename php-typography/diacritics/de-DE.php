@@ -17,7 +17,7 @@
 
 $diacriticLanguage = 'German';
 
-$diacriticWords = array(
+$diacritic_words = array(
 	"a bas"=>"à bas",
 	"A bas"=>"À bas",
 	"a la"=>"à la",
