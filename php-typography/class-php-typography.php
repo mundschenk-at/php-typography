@@ -1217,9 +1217,11 @@ class PHP_Typography {
 			$this->chr['noBreakNarrowSpace'] = uchr( 160 );
 		}
 
-		// update French guillemets
-		$this->quote_styles['doubleGuillemetsFrench'] = array( 'open'  => $this->chr['guillemetOpen'].$this->chr['noBreakNarrowSpace'],
-			                                                   'close' => $this->chr['noBreakNarrowSpace'].$this->chr['guillemetClose'] );
+		// Update French guillemets.
+		$this->quote_styles['doubleGuillemetsFrench'] = array(
+			'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
+			'close' => $this->chr['noBreakNarrowSpace'] . $this->chr['guillemetClose'],
+		);
 	}
 
 	/**
