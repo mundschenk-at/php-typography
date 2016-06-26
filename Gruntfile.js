@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		
+
 	    makepot: {
 	        target: {
 	            options: {
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 	            }
 	        }
 	    },
-	    
+
 	    shell: {
 	    	update_html5: {
 	    		tmpDir: 'vendor/tmp',
@@ -34,8 +34,18 @@ module.exports = function(grunt) {
 	    		         'rm -rf <%= shell.update_html5.tmpDir %>' // cleanup
 		        ].join(' && ')
 	    	}
-	    },	
-	    
+	    },
+
+	    phpcs: {
+	        plugin: {
+	            src: ['includes/*.php', 'php-typography/*.php']
+	        },
+	        options: {
+	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
+	            standard: './codesniffer.ruleset.xml'
+	        }
+	    },
+
 	    phpunit: {
 	        default: {
 	            options: {
@@ -47,13 +57,13 @@ module.exports = function(grunt) {
 	            	testsuite: 'wpTypography',
 	            	coverageHtml: 'tests/coverage/',
 	            }
-	        },   
+	        },
 	        options: {
 	            colors: true,
 	            configuration: 'phpunit.xml',
 	        }
 	    },
-	    
+
 		copy: {
 			main: {
 				files:[
@@ -62,15 +72,15 @@ module.exports = function(grunt) {
 				],
 			}
 		},
-		
+
 	    clean: {
 	    	  build: ["build/*"]//,
-	    },	
-	    
+	    },
+
 	    wp_deploy: {
             options: {
                 plugin_slug: 'wp-typography',
-                // svn_user: 'your-wp-repo-username',  
+                // svn_user: 'your-wp-repo-username',
                 build_dir: 'build', //relative path to your build directory
                 assets_dir: 'wp-assets', //relative path to your assets directory (optional).
                 max_buffer: 1024 * 1024
@@ -86,12 +96,12 @@ module.exports = function(grunt) {
 	        	}
             },
             assets: {
-            	options: { 
+            	options: {
             		deploy_assets: true,
             		deploy_trunk: false,
             		deploy_release: false,
             	}
-            }            
+            }
 	    },
         sass: {
             dist: {
@@ -135,7 +145,7 @@ module.exports = function(grunt) {
         },
         regex_extract: {
         	options: {
-        		
+
         	},
         	language_names: {
         		options: {
@@ -146,7 +156,7 @@ module.exports = function(grunt) {
         			includePath: false
         		},
             	files: {
-            		
+
 		            "php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
             	}
         	}
@@ -181,11 +191,11 @@ module.exports = function(grunt) {
   	                    		'clean:build',
   	                      		'copy',
   	                      		'wp_deploy:assets'
-	]);	
+	]);
   	grunt.registerTask('iana', [
     	                    		'curl:update-iana',
-  	]);	
-  	
+  	]);
+
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
 		'regex_extract:language_names',
