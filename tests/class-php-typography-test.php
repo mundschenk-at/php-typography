@@ -5,12 +5,10 @@
  */
 class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
 
-	function __construct( $set_defaults = true, $init = 'now' )	{
+	function __construct( $set_defaults = true, $init = 'now', $css_classes = array() )	{
 		parent::__construct( $set_defaults, $init );
 
-		$this->css_classes['numerator']   = 'num';
-		$this->css_classes['denominator'] = 'denom';
-		$this->css_classes['ordinal'] = 'ordinal';
+		$this->css_classes = array_merge( $this->css_classes, $css_classes );
 	}
 }
 
@@ -1884,10 +1882,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 			array( 'in the 2nd degree',   'in the 2<sup>nd</sup> degree', '' ),
 			array( 'a 3rd party',         'a 3<sup>rd</sup> party', '' ),
 			array( '12th Night',          '12<sup>th</sup> Night', '' ),
-			array( 'in the 1st instance', 'in the 1<sup class="ordinal">st</sup> instance', 'ordinal' ),
-			array( 'in the 2nd degree',   'in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
+			array( 'in the 1st instance, we', 'in the 1<sup class="ordinal">st</sup> instance, we', 'ordinal' ),
+			array( 'murder in the 2nd degree',   'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
 			array( 'a 3rd party',         'a 3<sup class="ordinal">rd</sup> party', 'ordinal' ),
-			array( '12th Night',          '12<sup class="ordinal">th</sup> Night', 'ordinal' ),
+			array( 'the 12th Night',          'the 12<sup class="ordinal">th</sup> Night', 'ordinal' ),
 		);
 	}
 
