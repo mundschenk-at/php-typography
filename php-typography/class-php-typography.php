@@ -3255,7 +3255,7 @@ class PHP_Typography {
 			}
 
 			if ( ! isset( $word_pattern ) ) {
-				// First we set up the matching pattern to be a series of zeros one character longer than $parsedTextToken.
+				// First we set up the matching pattern to be a series of zeros one character longer than $text_token.
 				$word_pattern = array();
 				for ( $i = 0; $i < $word_length + 1; $i++ ) {
 					$word_pattern[] = '0';
@@ -3284,7 +3284,7 @@ class PHP_Typography {
 				}
 			}
 
-			// Add soft-hyphen based on $wordPattern.
+			// Add soft-hyphen based on $word_pattern.
 			$word_parts = $func['str_split']( $text_token['value'], 1 );
 
 			$hyphenated_word = '';
