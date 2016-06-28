@@ -3201,18 +3201,7 @@ class PHP_Typography {
 
 		// Make sure we have full exceptions list.
 		if ( ! isset( $this->settings['hyphenationExceptions'] ) ) {
-			$exceptions = array();
-
-			if ( $this->settings['hyphenationPatternExceptions'] || ! empty( $this->settings['hyphenationCustomExceptions'] ) ) {
-				if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
-					// Nerges custom and language specific word hyphenations.
-					$exceptions = array_merge( $this->settings['hyphenationCustomExceptions'], $this->settings['hyphenationPatternExceptions'] );
-				} else {
-					$exceptions = $this->settings['hyphenationPatternExceptions'];
-				}
-			}
-
-			$this->settings['hyphenationExceptions'] = $exceptions;
+			$this->merge_hyphenation_exceptions();
 		}
 
 		$func = array(); // quickly reference string functions according to encoding.
@@ -3236,22 +3225,8 @@ class PHP_Typography {
 			}
 
 			// Give exceptions preference.
-			if ( isset( $this->settings['hyphenationExceptions'][ $the_key ] ) ) {
-				// Set the word_pattern - this method keeps any contextually important capitalization.
-				$lowercase_hyphened_word        = $this->settings['hyphenationExceptions'][ $the_key ];
-				$lowercase_hyphened_word_parts  = $func['str_split']( $lowercase_hyphened_word, 1 );
-				$lowercase_hyphened_word_length = $func['strlen']( $lowercase_hyphened_word );
-
-				$word_pattern = array();
-				for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
-					if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
-						$word_pattern[] = '9';
-						$i++;
-					} else {
-						$word_pattern[] = '0';
-					}
-				}
-				$word_pattern[] = '0'; // For consistent length with the other word patterns.
+			if ( isset( $this->settings['hyphenationExceptionPatterns'][ $the_key ] ) ) {
+				$word_pattern = $this->settings['hyphenationExceptionPatterns'][ $the_key ];
 			}
 
 			if ( ! isset( $word_pattern ) ) {
@@ -3301,6 +3276,65 @@ class PHP_Typography {
 		}
 
 		return $parsed_text_tokens;
+	}
+
+	/**
+	 * Merge hyphenation exceptions from the language file and custom hyphenation exceptions and
+	 * generate patterns for all of them.
+	 */
+	function merge_hyphenation_exceptions() {
+		// Make sure we have full exceptions list.
+		if ( ! isset( $this->settings['hyphenationExceptions'] ) ) {
+			$exceptions = array();
+
+			if ( $this->settings['hyphenationPatternExceptions'] || ! empty( $this->settings['hyphenationCustomExceptions'] ) ) {
+				if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
+					// Nerges custom and language specific word hyphenations.
+					$exceptions = array_merge( $this->settings['hyphenationCustomExceptions'], $this->settings['hyphenationPatternExceptions'] );
+				} else {
+					$exceptions = $this->settings['hyphenationPatternExceptions'];
+				}
+			}
+
+			$this->settings['hyphenationExceptions'] = $exceptions;
+
+			// Update patterns as well.
+			$exception_patterns = array();
+			foreach ( $exceptions as $exception_key => $exception ) {
+				$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
+			}
+			$this->settings['hyphenationExceptionPatterns'] = $exception_patterns;
+		}
+	}
+
+	/**
+	 * Generate a hyphenation pattern from an exception.
+	 *
+	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
+	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
+	 */
+	function convert_hyphenation_exception_to_pattern( $exception ) {
+		$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
+		if ( empty( $func ) || empty( $func['strlen'] ) ) {
+			return; // unknown encoding, abort.
+		}
+
+		// Set the word_pattern - this method keeps any contextually important capitalization.
+		$lowercase_hyphened_word_parts  = $func['str_split']( $exception, 1 );
+		$lowercase_hyphened_word_length = $func['strlen']( $exception );
+
+		$word_pattern = array();
+		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
+			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
+				$word_pattern[] = '9';
+				$i++;
+			} else {
+				$word_pattern[] = '0';
+			}
+		}
+		$word_pattern[] = '0'; // For consistent length with the other word patterns.
+
+		return $word_pattern;
 	}
 
 	/**
