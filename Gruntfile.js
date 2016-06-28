@@ -66,10 +66,20 @@ module.exports = function(grunt) {
 
 		copy: {
 			main: {
-				files:[
-					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['includes/**','php-typography/*.php','php-typography/lang/*.php','php-typography/diacritics/*.php','admin/**','vendor/**'], dest: 'build/'},
-				],
+				files: [ {
+					expand: true, nonull: true, src: [
+			           'readme.txt',
+                       '*.php',
+                       'includes/**',
+                       'php-typography/*.php',
+                       'php-typography/lang/*.php',
+                       'php-typography/diacritics/*.php',
+                       'admin/**',
+                       'vendor/**',
+                       'js/**',
+                   ],
+                   dest: 'build/'
+                } ],
 			}
 		},
 
@@ -173,18 +183,14 @@ module.exports = function(grunt) {
 
   	grunt.registerTask('deploy', [
  	    'phpunit:default',
-		'clean:build',
-		'regex_extract:language_names',
-  		'copy',
-		'sass:dist',
+ 	    'phpcs',
+		'build',
   		'wp_deploy:release'
   	]);
   	grunt.registerTask('trunk', [
   	                     	    'phpunit:default',
-  	                    		'clean:build',
-  	                      		'regex_extract:language_names',
-  	                      		'copy',
-  	                    		'sass:dist',
+                     	    	'phpcs',
+  	                   	    	'build',
   	                      		'wp_deploy:trunk'
   	]);
   	grunt.registerTask('assets', [
