@@ -229,6 +229,10 @@ class PHP_Typography {
 		$this->css_classes        = $state['css_classes'];
 		$this->settings           = $state['settings'];
 
+		// reset hyphenator
+		unset( $this->hyphenator );
+		$this->get_hyphenator();
+
 		return true;
 	}
 
@@ -1793,24 +1797,7 @@ class PHP_Typography {
 		}
 
 		$this->settings['hyphenLanguage'] = $lang;
-
-		if ( file_exists( dirname( __FILE__ ) . '/lang/' . $this->settings['hyphenLanguage'] . '.php' ) ) {
-			include( 'lang/' . $this->settings['hyphenLanguage'] . '.php' );
-
-			// @todo Fix variable naming in language files. @codingStandardsIgnoreStart.
-			$this->settings['hyphenationPattern'] = $patgen;
-			$this->settings['hyphenationPatternMaxSegment'] = $patgenMaxSeg;
-			$this->settings['hyphenationPatternExceptions'] = $patgenExceptions; // @codingStandardsIgnoreEnd.
-		} else {
-			unset( $this->settings['hyphenationPattern'] );
-			unset( $this->settings['hyphenationPatternMaxSegment'] );
-			unset( $this->settings['hyphenationPatternExceptions'] );
-		}
-
-		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
-			unset( $this->settings['hyphenationExceptions'] );
-		}
+		$this->get_hyphenator()->set_language( $lang );
 	}
 
 	/**
@@ -1822,6 +1809,7 @@ class PHP_Typography {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->settings['hyphenMinLength'] = $length;
+		$this->get_hyphenator()->set_min_length( $length );
 	}
 
 	/**
@@ -1833,6 +1821,7 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 3;
 
 		$this->settings['hyphenMinBefore'] = $length;
+		$this->get_hyphenator()->set_min_before( $length );
 	}
 
 	/**
@@ -1844,6 +1833,7 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->settings['hyphenMinAfter'] = $length;
+		$this->get_hyphenator()->set_min_after( $length );
 	}
 
 	/**
@@ -1893,24 +1883,8 @@ class PHP_Typography {
 			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
-		$exception_keys = array();
-		$func = array();
-		foreach ( $exceptions as $exception ) {
-			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
-				continue; // unknown encoding, abort.
-			}
-
-			$exception = $func['strtolower']( $exception );
-			$exception_keys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );
-		}
-
-		$this->settings['hyphenationCustomExceptions'] = array_flip( $exception_keys );
-
-		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		if ( isset( $this->settings['hyphenationExceptions'] ) ) {
-			unset( $this->settings['hyphenationExceptions'] );
-		}
+		$this->settings['hyphenationCustomExceptions'] = $exceptions;
+		$this->get_hyphenator()->set_custom_exceptions( $exceptions );
 	}
 
 	/**
@@ -3100,28 +3074,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Inject the PatGen segments pattern into the PatGen words pattern.
-	 *
-	 * @param array  $word_pattern     Required.
-	 * @param array  $segment_pattern  Required.
-	 * @param number $segment_position Required.
-	 * @param number $segment_length   Required.
-	 */
-	function hyphenation_pattern_injection( array $word_pattern, array $segment_pattern, $segment_position, $segment_length ) {
-
-		for ( $number_position = $segment_position;
-			  $number_position <= $segment_position + $segment_length;
-			  $number_position++ ) {
-
-			$word_pattern[ $number_position ] =
-				( intval( $word_pattern[ $number_position ] ) >= intval( $segment_pattern[ $number_position - $segment_position ] ) ) ?
-					$word_pattern[ $number_position ] : $segment_pattern[ $number_position - $segment_position ];
-		}
-
-		return $word_pattern;
-	}
-
-	/**
 	 * Hyphenate given text fragment (if enabled).
 	 *
 	 * Actual work is done in do_hyphenate().
@@ -3182,6 +3134,38 @@ class PHP_Typography {
 		return $parsed_text_tokens;
 	}
 
+	public function get_hyphenator() {
+		// Lazy-load hyphenator.
+		if ( ! isset( $this->hyphenator ) ) {
+			$this->hyphenator = new Hyphenator( $this->chr['softHyphen'] );
+
+			if ( isset( $this->settings['hyphenMinLength'] ) ) {
+				$this->hyphenator->set_min_length( $this->settings['hyphenMinLength'] );
+			}
+
+			if ( isset( $this->settings['hyphenMinBefore'] ) ) {
+				$this->hyphenator->set_min_before( $this->settings['hyphenMinBefore'] );
+			}
+
+			if ( isset( $this->settings['hyphenMinAfter'] ) ) {
+				$this->hyphenator->set_min_after( $this->settings['hyphenMinAfter'] );
+			}
+
+			if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
+				$this->hyphenator->set_custom_exceptions( $this->settings['hyphenationCustomExceptions'] );
+			}
+
+			if ( isset( $this->settings['hyphenLanguage'] ) ) {
+				$this->get_hyphenator()->set_language( $this->settings['hyphenLanguage'] );
+			}
+
+
+			error_log("Initialized new hyphenator");
+		}
+
+		return $this->hyphenator;
+	}
+
 	/**
 	 * Really hyphenate given text fragment.
 	 *
@@ -3190,151 +3174,12 @@ class PHP_Typography {
 	 */
 	function do_hyphenate( array $parsed_text_tokens ) {
 
-		if ( empty( $this->settings['hyphenMinLength'] )              ||
-			 empty( $this->settings['hyphenMinBefore'] )              ||
-		   ! isset( $this->settings['hyphenationPatternMaxSegment'] ) ||
-		   ! isset( $this->settings['hyphenationPatternExceptions'] ) ||
-		   ! isset( $this->settings['hyphenationPattern'] ) ) {
-
+		if ( empty( $this->settings['hyphenMinLength'] ) || empty( $this->settings['hyphenMinBefore'] ) ) {
 		   	return $parsed_text_tokens;
 		}
 
-		// Make sure we have full exceptions list.
-		if ( ! isset( $this->settings['hyphenationExceptions'] ) ) {
-			$this->merge_hyphenation_exceptions();
-		}
-
-		$func = array(); // quickly reference string functions according to encoding.
-		foreach ( $parsed_text_tokens as &$text_token ) {
-			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
-				continue; // unknown encoding, abort.
-			}
-
-			$word_length = $func['strlen']( $text_token['value'] );
-			$the_key     = $func['strtolower']( $text_token['value'] );
-
-			if ( $word_length < $this->settings['hyphenMinLength'] ) {
-				continue;
-			}
-
-			// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
-			// Note: This is different than uppercase words, where we are looking for title case.
-			if ( empty( $this->settings['hyphenateTitleCase'] ) && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $text_token['value'], 0, 1 ) ) {
-				continue;
-			}
-
-			// Give exceptions preference.
-			if ( isset( $this->settings['hyphenationExceptionPatterns'][ $the_key ] ) ) {
-				$word_pattern = $this->settings['hyphenationExceptionPatterns'][ $the_key ];
-			}
-
-			if ( ! isset( $word_pattern ) ) {
-				// First we set up the matching pattern to be a series of zeros one character longer than $text_token.
-				$word_pattern = array();
-				for ( $i = 0; $i < $word_length + 1; $i++ ) {
-					$word_pattern[] = '0';
-				}
-
-				// We grab all possible segments from $parsedTextToken of length 1 through $this->settings['hyphenationPatternMaxSegment'].
-				for ( $segment_length = 1; ( $segment_length <= $word_length ) && ( $segment_length <= $this->settings['hyphenationPatternMaxSegment'] ); $segment_length++ ) {
-					for ( $segment_position = 0; $segment_position + $segment_length <= $word_length; $segment_position++ ) {
-						$segment = $func['strtolower']( $func['substr']( $text_token['value'], $segment_position, $segment_length ) );
-
-						if ( 0 === $segment_position && isset( $this->settings['hyphenationPattern']['begin'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->settings['hyphenationPattern']['begin'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
-
-						if ( $segment_position + $segment_length === $word_length && isset( $this->settings['hyphenationPattern']['end'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->settings['hyphenationPattern']['end'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
-
-						if ( isset( $this->settings['hyphenationPattern']['all'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->settings['hyphenationPattern']['all'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
-					}
-				}
-			}
-
-			// Add soft-hyphen based on $word_pattern.
-			$word_parts = $func['str_split']( $text_token['value'], 1 );
-
-			$hyphenated_word = '';
-			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( is_odd( intval( $word_pattern[ $i ] ) ) && ( $i >= $this->settings['hyphenMinBefore']) && ( $i < $word_length - $this->settings['hyphenMinAfter'] ) ) {
-					$hyphenated_word .= $this->chr['softHyphen'] . $word_parts[ $i ];
-				} else {
-					$hyphenated_word .= $word_parts[ $i ];
-				}
-			}
-
-			$text_token['value'] = $hyphenated_word;
-			unset( $word_pattern );
-		}
-
-		return $parsed_text_tokens;
-	}
-
-	/**
-	 * Merge hyphenation exceptions from the language file and custom hyphenation exceptions and
-	 * generate patterns for all of them.
-	 */
-	function merge_hyphenation_exceptions() {
-		// Make sure we have full exceptions list.
-		if ( ! isset( $this->settings['hyphenationExceptions'] ) ) {
-			$exceptions = array();
-
-			if ( $this->settings['hyphenationPatternExceptions'] || ! empty( $this->settings['hyphenationCustomExceptions'] ) ) {
-				if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
-					// Nerges custom and language specific word hyphenations.
-					$exceptions = array_merge( $this->settings['hyphenationCustomExceptions'], $this->settings['hyphenationPatternExceptions'] );
-				} else {
-					$exceptions = $this->settings['hyphenationPatternExceptions'];
-				}
-			}
-
-			$this->settings['hyphenationExceptions'] = $exceptions;
-
-			// Update patterns as well.
-			$exception_patterns = array();
-			foreach ( $exceptions as $exception_key => $exception ) {
-				$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
-			}
-			$this->settings['hyphenationExceptionPatterns'] = $exception_patterns;
-		}
-	}
-
-	/**
-	 * Generate a hyphenation pattern from an exception.
-	 *
-	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
-	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
-	 */
-	function convert_hyphenation_exception_to_pattern( $exception ) {
-		$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-		if ( empty( $func ) || empty( $func['strlen'] ) ) {
-			return; // unknown encoding, abort.
-		}
-
-		// Set the word_pattern - this method keeps any contextually important capitalization.
-		$lowercase_hyphened_word_parts  = $func['str_split']( $exception, 1 );
-		$lowercase_hyphened_word_length = $func['strlen']( $exception );
-
-		$word_pattern = array();
-		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
-			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
-				$word_pattern[] = '9';
-				$i++;
-			} else {
-				$word_pattern[] = '0';
-			}
-		}
-		$word_pattern[] = '0'; // For consistent length with the other word patterns.
-
-		return $word_pattern;
+		$hyphenator = $this->get_hyphenator();
+		return $hyphenator->hyphenate( $parsed_text_tokens, ! empty( $this->settings['hyphenateTitleCase'] ) );
 	}
 
 	/**
