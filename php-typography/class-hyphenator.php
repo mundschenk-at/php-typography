@@ -150,14 +150,16 @@ class Hyphenator {
 		}
 
 		$this->language = $lang;
+		$language_file_name = dirname( __FILE__ ) . '/lang/' . $this->language . '.json';
 
-		if ( file_exists( dirname( __FILE__ ) . '/lang/' . $this->language . '.php' ) ) {
-			include( 'lang/' . $this->language . '.php' );
+		if ( file_exists( $language_file_name ) ) {
+			$language_file = json_decode( file_get_contents( $language_file_name ), true );
 
-			// @todo Fix variable naming in language files. @codingStandardsIgnoreStart.
-			$this->pattern = $patgen;
-			$this->pattern_max_segment = $patgenMaxSeg;
-			$this->pattern_exceptions = $patgenExceptions; // @codingStandardsIgnoreEnd.
+			$this->pattern             = $language_file['patterns'];
+			$this->pattern_max_segment = $language_file['max_segment_size'];
+			$this->pattern_exceptions  = $language_file['exceptions'];
+
+			unset( $language_file );
 		} else {
 			unset( $this->pattern );
 			unset( $this->pattern_max_segment );
