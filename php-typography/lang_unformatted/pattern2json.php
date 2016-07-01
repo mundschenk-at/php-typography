@@ -150,6 +150,8 @@ class Pattern_Converter {
 
 		$json_results = array(
 			'language'         => $this->language,
+			'source_url'       => $this->url,
+			'copyright'        => array_map( 'rtrim', $comments ),
 			'exceptions'       => $json_exceptions,
 			'max_segment_size' => max( array_map( 'mb_strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ),
 			'patterns'         => array(
@@ -158,33 +160,8 @@ class Pattern_Converter {
 				'all'   => $all_patterns,
 			),
 		);
-	?>
-/*
-	Project: wp-Typography
-	Project URI: https://code.mundschenk.at/wp-typography/
 
-	File modified to place pattern and exceptions in arrays that can be understood in php files.
-	This file is released under the same copyright as the below referenced original file
-	Original unmodified file is available at: <?= dirname( $this->url ) . "/\n" ?>
-	Original file name: <?= basename( $this->url ) . "\n" ?>
-
-//============================================================================================================
-	ORIGINAL FILE INFO
-
-<?php
-	foreach ( $comments as $comment ) {
-		echo "\t\t" . $comment;
-	}
-?>
-
-
-//============================================================================================================
-
-*/
-
-<?php echo json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ); ?>
-
-<?php
+		echo json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
