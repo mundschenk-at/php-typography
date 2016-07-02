@@ -172,15 +172,15 @@ module.exports = function(grunt) {
         	},
         	language_names: {
         		options: {
-        			regex: 'Language\\s*=\\s*.*(("|\')[\\w() ]+\\2)',
+        			regex: '"language"\\s*:\\s*.*(("|\')[\\w() ]+\\2)',
         			modifiers: 'g',
-        			output: '<?php __( $1, \'wp-typography\' ); ?>',
+        			output: "<?php _x( $1, 'language name' 'wp-typography' ); ?>",
         			verbose: false,
         			includePath: false
         		},
             	files: {
 
-		            "php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
+		            "php-typography/_language_names.php": [ 'php-typography/lang/*.json', 'php-typography/diacritics/*.json' ],
             	}
         	}
         },
