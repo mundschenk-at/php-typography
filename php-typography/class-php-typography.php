@@ -1437,10 +1437,11 @@ class PHP_Typography {
 		}
 
 		$this->settings['diacriticLanguage'] = $lang;
+		$language_file_name = dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
 
-		if ( file_exists( dirname( __FILE__ ) . '/diacritics/' . $this->settings['diacriticLanguage'] . '.php' ) ) {
-			include( 'diacritics/' . $this->settings['diacriticLanguage'] . '.php' );
-			$this->settings['diacriticWords'] = $diacritic_words;
+		if ( file_exists( $language_file_name ) ) {
+			$diacritics_file = json_decode( file_get_contents( $language_file_name ), true );
+			$this->settings['diacriticWords'] = $diacritics_file['diacritic_words'];
 		} else {
 			unset( $this->settings['diacriticWords'] );
 		}
