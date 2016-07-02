@@ -229,7 +229,7 @@ class PHP_Typography {
 		$this->css_classes        = $state['css_classes'];
 		$this->settings           = $state['settings'];
 
-		// reset hyphenator
+		// Reset hyphenator.
 		unset( $this->hyphenator );
 		$this->get_hyphenator();
 
@@ -3135,9 +3135,15 @@ class PHP_Typography {
 		return $parsed_text_tokens;
 	}
 
+	/**
+	 * Retrieve the hyphenator instance.
+	 *
+	 * @return \PHP_Typography\
+	 */
 	public function get_hyphenator() {
-		// Lazy-load hyphenator.
 		if ( ! isset( $this->hyphenator ) ) {
+
+			// Create and initialize our hyphenator instance.
 			$this->hyphenator = new Hyphenator( $this->chr['softHyphen'] );
 
 			if ( isset( $this->settings['hyphenMinLength'] ) ) {
@@ -3159,9 +3165,6 @@ class PHP_Typography {
 			if ( isset( $this->settings['hyphenLanguage'] ) ) {
 				$this->get_hyphenator()->set_language( $this->settings['hyphenLanguage'] );
 			}
-
-
-			error_log("Initialized new hyphenator");
 		}
 
 		return $this->hyphenator;
@@ -3180,7 +3183,7 @@ class PHP_Typography {
 		}
 
 		$hyphenator = $this->get_hyphenator();
-		return $hyphenator->hyphenate( $parsed_text_tokens, ! empty( $this->settings['hyphenateTitleCase'] ) );
+		return $hyphenator->hyphenate( $parsed_text_tokens, $this->chr['softHyphen'], ! empty( $this->settings['hyphenateTitleCase'] ) );
 	}
 
 	/**
