@@ -142,7 +142,7 @@ class Pattern_Converter {
 			}
 		}
 
-		// Produce a nice exceptions mapping
+		// Produce a nice exceptions mapping.
 		$json_exceptions = array();
 		foreach ( $exceptions as $exception ) {
 			$json_exceptions[ mb_strtolower( str_replace( '-', '', $exception ) ) ] = mb_strtolower( $exception );
@@ -174,17 +174,20 @@ class Pattern_Converter {
 		$this->url      = $url;
 		$this->language = $language;
 
-		$this->word_characters = "\w.'ʼ᾽ʼ᾿’" .
-			uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ) .
-			"\p{Devanagari}" . uchr( 2385, 2386 ) .
-			"\p{Bengali}" .
-			"\p{Gujarati}" .
-			"\p{Kannada}" .
-			"\p{Telugu}" .
-			"\p{Malayalam}" .
-			"\p{Thai}" .
-			"-";
-			//  2366, 2367, 2368, 2369, 2370, 2371, 2372, 2402 ) .
+		$this->word_characters = join(
+			array(
+				"\w.'ʼ᾽ʼ᾿’",
+				uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+				'\p{Devanagari}' . uchr( 2385, 2386 ),
+				'\p{Bengali}',
+				'\p{Gujarati}',
+				'\p{Kannada}',
+				'\p{Telugu}',
+				'\p{Malayalam}',
+				'\p{Thai}',
+				'-',
+			)
+		);
 	}
 
 	/**
@@ -216,9 +219,10 @@ class Pattern_Converter {
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// Ignore comments and whitespace in exceptions.
+			return true;
 		} else {
-			echo "Error: unknown exception line $line\n";
-			die(-1000);
+			echo "Error: unknown exception line $line\n"; // xss ok.
+			die( -1000 );
 		}
 
 		return true;
@@ -227,8 +231,8 @@ class Pattern_Converter {
 	/**
 	 * Try to match a pattern.
 	 *
-	 * @param string $line    A line from the TeX pattern file.
-	 * @param array $patterns An array of patterns.
+	 * @param string $line     A line from the TeX pattern file.
+	 * @param array  $patterns An array of patterns.
 	 * @return boolean
 	 */
 	function match_patterns( $line, array &$patterns ) {
@@ -239,15 +243,16 @@ class Pattern_Converter {
 			return false;
 		} elseif ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters .  ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple patterns on a single line.
 			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
 				$patterns[] = $match;
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// Ignore comments and whitespace in patterns.
+			return true;
 		} else {
-			echo "Error: unknown pattern line " . clean_html( $line ) . "\n";
+			echo 'Error: unknown pattern line ' . clean_html( $line ) . "\n"; // xss ok.
 			die( -1000 );
 		}
 
@@ -260,9 +265,9 @@ class Pattern_Converter {
 	function convert() {
 		if ( ! file_exists( $this->url ) ) {
 			$file_headers = @get_headers( $this->url );
-			if ( $file_headers[0] === 'HTTP/1.0 404 Not Found' ) {
-				echo "Error: unknown pattern file '{$this->url}'\n";
-				die(-3);
+			if ( 'HTTP/1.0 404 Not Found' === $file_headers[0] ) {
+				echo "Error: unknown pattern file '{$this->url}'\n"; // xss ok.
+				die( -3 );
 			}
 		}
 
@@ -293,13 +298,14 @@ class Pattern_Converter {
 					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions );
 				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// Ignore this line completely.
+					continue;
 				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
 					// Treat other commands as comments unless we are matching exceptions or patterns.
 					$comments[] = $line;
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
-					// Do nothing.
+					continue; // Do nothing.
 				} else {
-					echo "Error: unknown line $line\n";
+					echo "Error: unknown line $line\n"; // xss ok.
 					die( -1000 );
 				}
 			}
