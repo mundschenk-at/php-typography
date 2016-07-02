@@ -309,24 +309,24 @@ class Pattern_Converter {
 	}
 }
 
-$shortopts = 'l:f:hvs';
-$longopts = array( 'lang:', 'file:', 'help', 'version', 'single-quotes' );
+$shortopts = 'l:f:hv';
+$longopts = array( 'lang:', 'file:', 'help', 'version' );
 
 $options = getopt( $shortopts, $longopts );
 
 // Print version.
 if ( isset( $options['v'] ) || isset( $options['version'] ) ) {
-	echo "wp-Typography hyhpenation pattern converter 2.0-alpha\n\n";
+	echo "wp-Typography hyhpenation pattern converter 2.0-beta\n\n";
 	die( 0 );
 }
 
 // Print help.
 if ( isset( $options['h'] ) || isset( $options['help'] ) ) {
 	echo "Usage: convert_pattern [arguments]\n";
-	echo "convert_pattern -l <language> -f <filename>\t\tconvert <filename>\n";
-	echo "convert_pattern --lang <language> --file <filename>\tconvert <filename>\n";
-	echo "convert_pattern -v|--version\t\t\t\tprint version\n";
-	echo "convert_pattern -h|--help\t\t\t\tprint help\n";
+	echo "pattern2json -l <language> -f <filename>\t\tconvert <filename>\n";
+	echo "pattern2json --lang <language> --file <filename>\tconvert <filename>\n";
+	echo "pattern2json -v|--version\t\t\t\tprint version\n";
+	echo "pattern2json -h|--help\t\t\t\tprint help\n";
 	die( 0 );
 }
 
