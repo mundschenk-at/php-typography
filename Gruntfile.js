@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 
 	    phpcs: {
 	        plugin: {
-	            src: ['includes/*.php', 'php-typography/*.php']
+	            src: ['includes/**/*.php', 'php-typography/**/*.php']
 	        },
 	        options: {
 	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
