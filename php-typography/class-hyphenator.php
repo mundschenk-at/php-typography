@@ -271,7 +271,7 @@ class Hyphenator {
 	 * @return array The modified text tokens.
 	 */
 	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false ) {
-		if ( empty( $this->min_length ) || empty( $this->min_before ) || ! isset( $this->pattern_max_segment ) || ! isset( $this->pattern_exceptions ) ) {
+		if ( empty( $this->min_length ) || empty( $this->min_before ) || ! isset( $this->pattern ) || ! isset( $this->pattern_max_segment ) || ! isset( $this->pattern_exceptions ) ) {
 			return $parsed_text_tokens;
 		}
 
@@ -382,29 +382,25 @@ class Hyphenator {
 	 * generate patterns for all of them.
 	 */
 	function merge_hyphenation_exceptions() {
-		// Make sure we have full exceptions list.
-		if ( ! isset( $this->hyphenation_exceptions ) ) {
-			$exceptions = array();
+		$exceptions = array();
 
-			if ( $this->pattern_exceptions || ! empty( $this->custom_exceptions ) ) {
-				if ( isset( $this->custom_exceptions ) ) {
-					// Nerges custom and language specific word hyphenations.
-					$exceptions = array_merge( $this->custom_exceptions, $this->pattern_exceptions );
-				} else {
-					$exceptions = $this->pattern_exceptions;
-				}
-			}
-
-			$this->hyphenation_exceptions = $exceptions;
-
-			// Update patterns as well.
-			$exception_patterns = array();
-			foreach ( $exceptions as $exception_key => $exception ) {
-				$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
-			}
-			$this->hyphenation_exception_patterns = $exception_patterns;
+		// Merge custom and language specific word hyphenations.
+		if ( ! empty( $this->pattern_exceptions ) && ! empty( $this->custom_exceptions ) ) {
+			$exceptions = array_merge( $this->custom_exceptions, $this->pattern_exceptions );
+		} elseif ( ! empty( $this->pattern_exceptions ) ) {
+			$exceptions = $this->pattern_exceptions;
+		} elseif ( ! empty( $this->custom_exceptions ) ) {
+			$exceptions = $this->custom_exceptions;
 		}
 
+		// Update patterns as well.
+		$exception_patterns = array();
+		foreach ( $exceptions as $exception_key => $exception ) {
+			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
+		}
+
+		$this->hyphenation_exceptions = $exceptions;
+		$this->hyphenation_exception_patterns = $exception_patterns;
 	}
 
 	/**
