@@ -1797,8 +1797,9 @@ class PHP_Typography {
 			return; // Bail out, no need to do anything.
 		}
 
-		$this->settings['hyphenLanguage'] = $lang;
-		$this->get_hyphenator()->set_language( $lang );
+		if ( $this->get_hyphenator()->set_language( $lang ) ) {
+			$this->settings['hyphenLanguage'] = $lang;
+		}
 	}
 
 	/**

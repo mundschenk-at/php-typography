@@ -216,33 +216,39 @@ class Hyphenator {
 	 * Set the hyphenation pattern language.
 	 *
 	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
+	 *
+	 * @return boolean Whether loading the pattern file was successful.
 	 */
 	public function set_language( $lang = 'en-US' ) {
 		if ( isset( $this->language ) && $this->language === $lang ) {
-			return; // Bail out, no need to do anything.
+			return true; // Bail out, no need to do anything.
 		}
 
+		$success = false;
 		$this->language = $lang;
 		$language_file_name = dirname( __FILE__ ) . '/lang/' . $this->language . '.json';
 
 		if ( file_exists( $language_file_name ) ) {
 			$raw_language_file = file_get_contents( $language_file_name );
-			if ( false === $raw_language_file ) {
-				trigger_error( "Error reading hyphenation pattern ${lang}.json" );
+
+			if ( false !== $raw_language_file ) {
+				$language_file = json_decode( $raw_language_file, true );
+
+				if ( false !== $language_file ) {
+					$this->pattern             = $language_file['patterns'];
+					$this->pattern_max_segment = $language_file['max_segment_size'];
+					$this->pattern_exceptions  = $language_file['exceptions'];
+
+					$success = true;
+				}
+
+				unset( $raw_language_file );
+				unset( $language_file );
 			}
+		}
 
-			$language_file = json_decode( $raw_language_file, true );
-			if ( false === $language_file ) {
-				trigger_error( "Error decoding hyphenation pattern ${lang}.json" );
-			}
-
-			$this->pattern             = $language_file['patterns'];
-			$this->pattern_max_segment = $language_file['max_segment_size'];
-			$this->pattern_exceptions  = $language_file['exceptions'];
-
-			unset( $raw_language_file );
-			unset( $language_file );
-		} else {
+		// Clean up
+		if ( ! $success ) {
 			unset( $this->pattern );
 			unset( $this->pattern_max_segment );
 			unset( $this->pattern_exceptions );
@@ -252,6 +258,8 @@ class Hyphenator {
 		if ( isset( $this->hyphenation_exceptions ) ) {
 			unset( $this->hyphenation_exceptions );
 		}
+
+		return $success;
 	}
 
 	/**
