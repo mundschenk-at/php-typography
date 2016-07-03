@@ -5,6 +5,8 @@
  *
  * @coversDefaultClass \PHP_Typography\Hyphenator
  * @usesDefaultClass \PHP_Typography\Hyphenator
+ *
+ * @uses PHP_Typography\Hyphenator
  */
 class Hyphenator_Test extends PHPUnit_Framework_TestCase
 {
@@ -131,6 +133,28 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_language
+     * @uses ::set_custom_exceptions
+     * @uses ::merge_hyphenation_exceptions
+     */
+    public function test_set_language_with_custom_exceptions()
+    {
+    	$h = $this->h;
+
+    	$h->set_custom_exceptions( array( 'KINGdesk' => 'KING-desk' ) );
+    	$h->set_language( 'en-US' );
+    	$h->merge_hyphenation_exceptions();
+    	$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
+    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+
+    	$h->set_language( 'de' );
+    	$this->assertAttributeCount( 3, 'pattern', $h, 'Invalid German pattern.');
+    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeEmpty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file
+    }
+
+    /**
+     * @covers ::set_language
      */
     public function test_set_same_hyphenation_language()
     {
@@ -194,50 +218,33 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
 
     /**
-     * @covers \PHP_Typography\Hyphenator::set_custom_exceptions
+     * @covers ::set_custom_exceptions
      */
-    public function test_set_custom_exceptions_array()
+    public function test_set_custom_exceptions()
     {
-// 		$h = $this->h;
-// 		$h->settings['hyphenationExceptions'] = array(); // necessary for full coverage
-// 		$exceptions = array( "Hu-go", "Fö-ba-ß" );
+ 		$h = $this->h;
+ 		$exceptions = array( "Hu-go", "Fö-ba-ß" );
+ 		$h->set_custom_exceptions( $exceptions );
 
-// 		$h->set_custom_exceptions( $exceptions );
-// 		$this->assertContainsOnly( 'string', $h->settings['hyphenationCustomExceptions'] );
-// 		$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $h->settings['hyphenationCustomExceptions'] );
-// 		$this->assertArraySubset( array( 'föbaß' => 'fö-ba-ß' ), $h->settings['hyphenationCustomExceptions'] );
-// 		$this->assertCount( 2, $h->settings['hyphenationCustomExceptions'] );
+ 		$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
+ 		$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
+ 		$this->assertAttributeContains( 'fö-ba-ß', 'custom_exceptions', $h );
+ 		$this->assertAttributeCount( 2, 'custom_exceptions', $h );
     }
 
     /**
-     * @covers \PHP_Typography\Hyphenator::set_custom_exceptions
+     * @covers ::set_custom_exceptions
      */
     public function test_set_custom_exceptions_unknown_encoding()
     {
-//     	$h = $this->h;
-//     	$h->settings['hyphenationExceptions'] = array(); // necessary for full coverage
-//     	$exceptions = array( "Hu-go", mb_convert_encoding( "Fö-ba-ß" , 'ISO-8859-2' ) );
+    	$h = $this->h;
+    	$exceptions = array( "Hu-go", mb_convert_encoding( "Fö-ba-ß", 'ISO-8859-2' ) );
+    	$h->set_custom_exceptions( $exceptions );
 
-//     	$h->set_custom_exceptions( $exceptions );
-//     	$this->assertContainsOnly( 'string', $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertArrayNotHasKey( 'föbaß', $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertCount( 1, $h->settings['hyphenationCustomExceptions'] );
-    }
-
-    /**
-     * @covers \PHP_Typography\Hyphenator::set_custom_exceptions
-     */
-    public function test_set_custom_exceptions_string()
-    {
-//     	$h = $this->h;
-//     	$exceptions = "Hu-go, Fö-ba-ß";
-
-//     	$h->set_custom_exceptions( $exceptions );
-//     	$this->assertContainsOnly( 'string', $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertArraySubset( array( 'hugo' => 'hu-go' ), $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertArraySubset( array( 'föbaß' => 'fö-ba-ß' ), $h->settings['hyphenationCustomExceptions'] );
-//     	$this->assertCount( 2, $h->settings['hyphenationCustomExceptions'] );
+    	$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
+ 		$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
+ 		$this->assertAttributeNotContains( 'fö-ba-ß', 'custom_exceptions', $h );
+    	$this->assertAttributeCount( 1, 'custom_exceptions', $h );
     }
 
     public function provide_hyphenate_data() {
@@ -270,6 +277,10 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::hyphenate
      * @covers ::hyphenation_pattern_injection
+     *
+     * @uses \PHP_Typography\is_odd
+     * @uses \PHP_Typography\mb_str_split
+     * @uses \mb_convert_encoding
      */
     public function test_hyphenate_wrong_encoding()
     {
@@ -335,6 +346,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
+     *
+     * @uses ReflectionClass
+     * @uses ReflectionProperty
      */
     public function test_hyphenate_no_exceptions_at_all()
     {
@@ -356,5 +370,25 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     		'A few words to hy|phen|ate, like KINGdesk. Re|ally, there should be more hy|phen|ation here!',
     		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ), '|', true )
     	);
+    }
+
+    /**
+     * @covers ::convert_hyphenation_exception_to_pattern
+     */
+    public function test_convert_hyphenation_exception_to_pattern() {
+    	$h = $this->h;
+    	$this->assertSame( str_split( '000090000' ), $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
+    }
+
+    /**
+     * @covers ::convert_hyphenation_exception_to_pattern
+     *
+     * @uses \mb_convert_encoding
+     */
+    public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
+    	$h = $this->h;
+        $exception = mb_convert_encoding( "Fö-ba-ß" , 'ISO-8859-2' );
+
+    	$this->assertNull( $h->convert_hyphenation_exception_to_pattern( $exception ) );
     }
 }
