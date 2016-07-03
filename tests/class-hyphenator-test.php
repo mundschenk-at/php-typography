@@ -73,7 +73,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$tokens = array();
 
     	foreach ( $words as $word ) {
-    		$token[] = array(
+    		$tokens[] = array(
     			'type'  => 'word',
     			'value' => $word,
     		);
@@ -99,7 +99,23 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 			$expected = $this->tokenize( $expected_value );
 		}
 
-    	return $this->assertSame( $expected, $actual_tokens, $message );
+		$this->assertSame( count( $expected ), count( $actual_tokens ) );
+
+		foreach ( $actual_tokens as $key => $token ) {
+			$this->assertSame( $expected[ $key ]['value'], $token['value'], $message );
+		}
+
+		return true;
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function test_constructor() {
+    	$h = $this->h;
+
+    	$this->assertNotNull( $h );
+    	$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h );
     }
 
     /**
@@ -234,6 +250,30 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_custom_exceptions
+     *
+     * @uses ::merge_hyphenation_exceptions
+     * @uses PHP_Typography\mb_str_split
+     */
+    public function test_set_custom_exceptions_again()
+    {
+    	$h = $this->h;
+    	$exceptions = array( "Hu-go", "Fö-ba-ß" );
+    	$h->set_custom_exceptions( $exceptions );
+    	$h->set_language( 'de' ); // German has no pattern exceptions.
+    	$h->merge_hyphenation_exceptions();
+		$this->assertAttributeNotEmpty( 'hyphenation_exceptions', $h );
+
+    	$exceptions = array( "Hu-go" );
+    	$h->set_custom_exceptions( $exceptions );
+		$this->assertAttributeEmpty( 'hyphenation_exceptions', $h );
+
+    	$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
+    	$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
+    	$this->assertAttributeCount( 1, 'custom_exceptions', $h );
+    }
+
+    /**
+     * @covers ::set_custom_exceptions
      */
     public function test_set_custom_exceptions_unknown_encoding()
     {
@@ -249,16 +289,21 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     public function provide_hyphenate_data() {
     	return array(
-    		array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy|phen|ate, like KING|desk. Re|ally, there should be more hy|phen|ation here!', 'en-US', true ),
+    		array( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|ally there should be more hy|phen|ation here', 'en-US', true ), // fake tokenizer doesn't split off punctuation
     		array( 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ),
-    		array( 'Sauerstoff-Feldflasche', 'Sau|er|stoff-Feld|fla|sche', 'de', true ),
-    		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true ),
+    		array( 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ), // Compound words would not be hyphenated separately
+    		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', false ),
+    		array( 'A', 'A', 'de', true ),
+    		array( 'table', 'ta|ble', 'en-US', false ),
+    		array( 'KINGdesk', 'KINGdesk', 'en-US', false ),
     	);
     }
 
     /**
      * @covers ::hyphenate
      * @covers ::hyphenation_pattern_injection
+     *
+     * @uses PHP_Typography\is_odd
      *
      * @dataProvider provide_hyphenate_data
      */
@@ -271,8 +316,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$h->set_min_after(2);
     	$h->set_custom_exceptions( array( 'KING-desk' ) );
 
-    	$this->assertSame( $this->tokenize_sentence( $result ), $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
+    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
     }
+
 
     /**
      * @covers ::hyphenate
@@ -330,6 +376,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
+     *
+     * @uses PHP_Typography\is_odd
      */
     public function test_hyphenate_no_custom_exceptions()
     {
@@ -338,9 +386,10 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$this->h->set_min_before(2);
     	$this->h->set_min_after(2);
 
+    	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
-    		'A few words to hy|phen|ate, like KINGdesk. Re|ally, there should be more hy|phen|ation here!',
-    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ), '|', true )
+    		'A few words to hy|phen|ate like KINGdesk Re|ally there should be more hy|phen|ation here',
+    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
     	);
     }
 
@@ -349,6 +398,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      *
      * @uses ReflectionClass
      * @uses ReflectionProperty
+     * @uses PHP_Typography\is_odd
      */
     public function test_hyphenate_no_exceptions_at_all()
     {
@@ -366,14 +416,17 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$prop->setAccessible( true );
     	$prop->setValue( $this->h, null );
 
+    	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
-    		'A few words to hy|phen|ate, like KINGdesk. Re|ally, there should be more hy|phen|ation here!',
-    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ), '|', true )
+    		'A few words to hy|phen|ate like KINGdesk Re|ally there should be more hy|phen|ation here',
+    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
     	);
     }
 
     /**
      * @covers ::convert_hyphenation_exception_to_pattern
+     *
+     * @uses \str_split
      */
     public function test_convert_hyphenation_exception_to_pattern() {
     	$h = $this->h;
@@ -390,5 +443,42 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
         $exception = mb_convert_encoding( "Fö-ba-ß" , 'ISO-8859-2' );
 
     	$this->assertNull( $h->convert_hyphenation_exception_to_pattern( $exception ) );
+    }
+
+    /**
+     * @covers ::merge_hyphenation_exceptions
+     *
+     * @uses PHP_Typography\mb_str_split
+     */
+    public function test_merge_hyphenation_exceptions() {
+    	$h = $this->h;
+    	$h->set_custom_exceptions( array( 'Hu-go', 'Fä-vi-ken' ) );
+
+    	$h->set_language( 'en-US' ); // w/ pattern exceptions.
+    	$h->merge_hyphenation_exceptions();
+    	$this->assertAttributeNotCount( 0, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotCount( 1, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotCount( 2, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeContains( 'hu-go', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+
+    	$h->set_language( 'de' ); // w/o pattern exceptions.
+    	$h->merge_hyphenation_exceptions();
+    	$this->assertAttributeCount( 2, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeContains( 'hu-go', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+
+    	$h->set_language( 'en-US' ); // w/ pattern exceptions.
+    	$h->set_custom_exceptions( array() );
+    	$h->merge_hyphenation_exceptions();
+    	$this->assertAttributeNotCount( 0, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotContains( 'hu-go', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+
+    	$h->set_language( 'de' ); // w/o pattern exceptions.
+    	$h->merge_hyphenation_exceptions();
+    	$this->assertAttributeCount( 0, 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotContains( 'hu-go', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
     }
 }
