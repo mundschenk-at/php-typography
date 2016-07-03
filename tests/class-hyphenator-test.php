@@ -342,10 +342,19 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$this->h->set_min_length(2);
     	$this->h->set_min_before(2);
     	$this->h->set_min_after(2);
-		$this->h->settings['hyphenationPatternExceptions'] = array();
-		unset( $this->h->settings['hyphenationExceptions'] );
 
-    	$this->assertSame( 'A few words to hy|phen|ate, like KINGdesk. Re|ally, there should be more hy|phen|ation here!',
-    					   $this->clean_html( $this->h->hyphenate( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
+    	// Unset some internal stuff.
+    	$ref = new ReflectionClass( '\PHP_Typography\Hyphenator' );
+    	$prop = $ref->getProperty( 'pattern_exceptions' );
+    	$prop->setAccessible( true );
+    	$prop->setValue( $this->h, array() );
+    	$prop = $ref->getProperty( 'hyphenation_exceptions' );
+    	$prop->setAccessible( true );
+    	$prop->setValue( $this->h, null );
+
+    	$this->assertTokensSame(
+    		'A few words to hy|phen|ate, like KINGdesk. Re|ally, there should be more hy|phen|ation here!',
+    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ), '|', true )
+    	);
     }
 }
