@@ -3,6 +3,8 @@
 	bootstrap="tests/bootstrap.php"
 	beStrictAboutTestsThatDoNotTestAnything="true"
 	beStrictAboutCoversAnnotation="true" 
+	stopOnRisky="true"
+	verbose="true"
 >
 	<testsuites>
 	    <testsuite name="wpTypography">
