@@ -131,24 +131,13 @@ class Hyphenator {
 
 	/**
 	 * A hash map for string functions according to encoding.
+	 * Initialized in the constructor for compatibility with PHP 5.3.
 	 *
 	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
 	 */
 	private $str_functions = array(
-		'UTF-8' => array(
-			'strlen'     => 'mb_strlen',
-			'str_split'  => __NAMESPACE__ . '\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u',
-		),
-		'ASCII' => array(
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '',
-		),
+		'UTF-8' => array(),
+		'ASCII' => array(),
 		false   => array(),
 	);
 
@@ -156,6 +145,23 @@ class Hyphenator {
 	 * Construct new Hyphenator instance.
 	 */
 	public function __construct() {
+		$this->str_functions = array(
+			'UTF-8' => array(
+				'strlen'     => 'mb_strlen',
+				'str_split'  => __NAMESPACE__ . '\mb_str_split',
+				'strtolower' => 'mb_strtolower',
+				'substr'     => 'mb_substr',
+				'u'          => 'u',
+			),
+			'ASCII' => array(
+				'strlen'     => 'strlen',
+				'str_split'  => 'str_split',
+				'strtolower' => 'strtolower',
+				'substr'     => 'substr',
+				'u'          => '',
+			),
+			false   => array(),
+		);
 	}
 
 	/**
