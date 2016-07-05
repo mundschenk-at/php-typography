@@ -3145,7 +3145,7 @@ class PHP_Typography {
 		if ( ! isset( $this->hyphenator ) ) {
 
 			// Create and initialize our hyphenator instance.
-			$this->hyphenator = new Hyphenator( $this->chr['softHyphen'] );
+			$this->hyphenator = new Hyphenator();
 
 			if ( isset( $this->settings['hyphenMinLength'] ) ) {
 				$this->hyphenator->set_min_length( $this->settings['hyphenMinLength'] );
@@ -3164,7 +3164,7 @@ class PHP_Typography {
 			}
 
 			if ( isset( $this->settings['hyphenLanguage'] ) ) {
-				$this->get_hyphenator()->set_language( $this->settings['hyphenLanguage'] );
+				$this->hyphenator->set_language( $this->settings['hyphenLanguage'] );
 			}
 		}
 
