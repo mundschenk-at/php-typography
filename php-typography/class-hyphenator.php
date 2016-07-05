@@ -255,6 +255,7 @@ class Hyphenator {
 
 		// Clean up
 		if ( ! $success ) {
+			unset( $this->language );
 			unset( $this->pattern );
 			unset( $this->pattern_max_segment );
 			unset( $this->pattern_exceptions );

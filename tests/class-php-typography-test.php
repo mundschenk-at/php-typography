@@ -965,6 +965,31 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::set_hyphenation_language
+     *
+     * @uses PHP_Typography\Hyphenator::__construct
+     * @uses PHP_Typography\Hyphenator::set_language
+     *
+     * @dataProvider provide_hyphenation_language_data
+     */
+    public function test_set_hyphenation_language_again( $lang, $success )
+    {
+    	$typo = $this->typo;
+    	$typo->settings['hyphenationExceptions'] = array(); // necessary for full coverage
+
+    	for ( $i = 0; $i < 2; ++$i ) {
+	    	$typo->set_hyphenation_language( $lang );
+
+	    	if ( $success ) {
+	    		$this->assertSame( $lang, $typo->settings['hyphenLanguage'] );
+ 	    	} else {
+ 	    		$this->assertFalse( isset( $typo->settings['hyphenLanguage'] ) );
+ 	    	}
+    	}
+    }
+
+
+    /**
      * @covers ::set_min_length_hyphenation
      *
      * @uses PHP_Typography\Hyphenator::__construct
