@@ -100,6 +100,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     //{
 //    }
 
+
     /**
      * @covers ::set_tags_to_ignore
      *
@@ -957,7 +958,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$typo->set_hyphenation_language( $lang );
 
-		if ( $success ) {
+    	// if the hyphenator object has not instantiated yet, hyphenLanguage will be set nonetheless
+    	if ( $success || ! isset( $typo->hyphenator ) ) {
 			$this->assertSame( $lang, $typo->settings['hyphenLanguage'] );
 		} else {
 			$this->assertFalse( isset( $typo->settings['hyphenLanguage'] ) );
@@ -980,11 +982,18 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	for ( $i = 0; $i < 2; ++$i ) {
 	    	$typo->set_hyphenation_language( $lang );
 
+	    	// if the hyphenator object has not instantiated yet, hyphenLanguage will be set nonetheless
 	    	if ( $success ) {
-	    		$this->assertSame( $lang, $typo->settings['hyphenLanguage'] );
+	    		$this->assertSame( $lang, $typo->settings['hyphenLanguage'], "Round $i, success" );
+	    	} elseif ( ! isset( $typo->hyphenator ) ) {
+	    		$this->assertSame( $lang, $typo->settings['hyphenLanguage'], "Round $i, no hyphenator" );
+	    		// Clear hyphenation language if there was no hypehnator object.
+	    		unset( $typo->settings['hyphenLanguage'] );
  	    	} else {
- 	    		$this->assertFalse( isset( $typo->settings['hyphenLanguage'] ) );
+ 	    		$this->assertFalse( isset( $typo->settings['hyphenLanguage'] ), "Round $i, unsuccessful" );
  	    	}
+
+ 	    	$typo->get_hyphenator(); // Provide the second iteration with an instantiated hyphenator object.
     	}
     }
 
@@ -1003,6 +1012,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_length_hyphenation( 2 );
 		$this->assertSame( 2, $this->typo->settings['hyphenMinLength'] );
 
+		$this->typo->get_hyphenator();
 		$this->typo->set_min_length_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinLength'] );
     }
@@ -1021,6 +1031,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_before_hyphenation( 1 );
 		$this->assertSame( 1, $this->typo->settings['hyphenMinBefore'] );
 
+		$this->typo->get_hyphenator();
 		$this->typo->set_min_before_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinBefore'] );
 
@@ -1040,6 +1051,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_after_hyphenation( 1 );
 		$this->assertSame( 1, $this->typo->settings['hyphenMinAfter'] );
 
+		$this->typo->get_hyphenator();
 		$this->typo->set_min_after_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinAfter'] );
     }
@@ -1101,11 +1113,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_set_hyphenation_exceptions_array()
     {
  		$typo = $this->typo;
- 		$exceptions = array( "Hu-go", "Fö-ba-ß" );
 
+ 		$exceptions = array( "Hu-go", "Fö-ba-ß" );
  		$typo->set_hyphenation_exceptions( $exceptions );
  		$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
  		$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
+
+ 		$this->typo->get_hyphenator();
+ 		$exceptions = array( "bar-foo" );
+ 		$typo->set_hyphenation_exceptions( $exceptions );
+ 		$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
+ 		$this->assertCount( 1, $typo->settings['hyphenationCustomExceptions'] );
     }
 
     /**
@@ -2881,6 +2899,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::init
+     * @covers ::initialize_components
+     * @covers ::initialize_patterns
      * @covers ::__construct
      *
      * @uses PHP_Typography\Hyphenator
@@ -3021,5 +3041,27 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $typo->chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 8239 ) );
     	$this->assertAttributeContains( array( 'open'  => \PHP_Typography\uchr(171) . \PHP_Typography\uchr( 8239 ),
     		                                   'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr(187) ), 'quote_styles', $typo );
+    }
+
+    /**
+     * @covers ::get_hyphenator()
+     *
+     * @uses PHP_Typography\Hyphenator::__construct
+     * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+     * @uses PHP_Typography\Hyphenator::set_language
+     * @uses PHP_Typography\Hyphenator::set_min_after
+     * @uses PHP_Typography\Hyphenator::set_min_before
+     * @uses PHP_Typography\Hyphenator::set_min_length
+     */
+    public function test_get_hyphenator() {
+		$typo = $this->typo;
+		$typo->settings['hyphenMinLength'] = 2;
+		$typo->settings['hyphenMinBefore'] = 2;
+		$typo->settings['hyphenMinAfter'] = 2;
+		$typo->settings['hyphenationCustomExceptions'] = array( 'foo-bar' );
+		$typo->settings['hyphenLanguage'] = 'en-US';
+		$h = $typo->get_hyphenator();
+
+		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
     }
 }

@@ -1736,9 +1736,12 @@ class PHP_Typography {
 			return; // Bail out, no need to do anything.
 		}
 
-		if ( $this->get_hyphenator()->set_language( $lang ) ) {
-			$this->settings['hyphenLanguage'] = $lang;
+		if ( isset( $this->hyphenator ) && ! $this->get_hyphenator()->set_language( $lang ) ) {
+			// Don't update the language if loading the pattern file failed.
+			return;
 		}
+
+		$this->settings['hyphenLanguage'] = $lang;
 	}
 
 	/**
@@ -1750,7 +1753,11 @@ class PHP_Typography {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->settings['hyphenMinLength'] = $length;
-		$this->get_hyphenator()->set_min_length( $length );
+
+		if ( isset( $this->hyphenator ) ) {
+			// We need to update the hyphenator setting.
+			$this->get_hyphenator()->set_min_length( $length );
+		}
 	}
 
 	/**
@@ -1762,7 +1769,11 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 3;
 
 		$this->settings['hyphenMinBefore'] = $length;
-		$this->get_hyphenator()->set_min_before( $length );
+
+		if ( isset( $this->hyphenator ) ) {
+			// We need to update the hyphenator setting.
+			$this->get_hyphenator()->set_min_before( $length );
+		}
 	}
 
 	/**
@@ -1774,7 +1785,11 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->settings['hyphenMinAfter'] = $length;
-		$this->get_hyphenator()->set_min_after( $length );
+
+		if ( isset( $this->hyphenator ) ) {
+			// We need to update the hyphenator setting.
+			$this->get_hyphenator()->set_min_after( $length );
+		}
 	}
 
 	/**
@@ -1825,7 +1840,10 @@ class PHP_Typography {
 		}
 
 		$this->settings['hyphenationCustomExceptions'] = $exceptions;
-		$this->get_hyphenator()->set_custom_exceptions( $exceptions );
+
+		if ( isset( $this->hyphenator ) ) {
+			$this->get_hyphenator()->set_custom_exceptions( $exceptions );
+		}
 	}
 
 	/**
@@ -3084,27 +3102,13 @@ class PHP_Typography {
 		if ( ! isset( $this->hyphenator ) ) {
 
 			// Create and initialize our hyphenator instance.
-			$this->hyphenator = new Hyphenator();
-
-			if ( isset( $this->settings['hyphenMinLength'] ) ) {
-				$this->hyphenator->set_min_length( $this->settings['hyphenMinLength'] );
-			}
-
-			if ( isset( $this->settings['hyphenMinBefore'] ) ) {
-				$this->hyphenator->set_min_before( $this->settings['hyphenMinBefore'] );
-			}
-
-			if ( isset( $this->settings['hyphenMinAfter'] ) ) {
-				$this->hyphenator->set_min_after( $this->settings['hyphenMinAfter'] );
-			}
-
-			if ( isset( $this->settings['hyphenationCustomExceptions'] ) ) {
-				$this->hyphenator->set_custom_exceptions( $this->settings['hyphenationCustomExceptions'] );
-			}
-
-			if ( isset( $this->settings['hyphenLanguage'] ) ) {
-				$this->hyphenator->set_language( $this->settings['hyphenLanguage'] );
-			}
+			$this->hyphenator = new Hyphenator(
+				isset( $this->settings['hyphenMinLength'] ) ? $this->settings['hyphenMinLength'] : null,
+				isset( $this->settings['hyphenMinBefore'] ) ? $this->settings['hyphenMinBefore'] : null,
+				isset( $this->settings['hyphenMinAfter'] )  ? $this->settings['hyphenMinAfter']  : null,
+				isset( $this->settings['hyphenLanguage'] )  ? $this->settings['hyphenLanguage']  : null,
+				isset( $this->settings['hyphenationCustomExceptions'] ) ? $this->settings['hyphenationCustomExceptions'] : array()
+			);
 		}
 
 		return $this->hyphenator;

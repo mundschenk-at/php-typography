@@ -150,6 +150,15 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     	$this->assertNotNull( $h );
     	$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h );
+
+    	$h2 = new \PHP_Typography\Hyphenator( 3, 4, 5, 'en-US', array( 'foo-bar' ) );
+    	$this->assertNotNull( $h2 );
+    	$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h2 );
+    	$this->assertAttributeSame( 3, 'min_length', $h2 );
+    	$this->assertAttributeSame( 4, 'min_before', $h2 );
+    	$this->assertAttributeSame( 5, 'min_after', $h2 );
+    	$this->assertAttributeSame( 'en-US', 'language', $h2 );
+    	$this->assertAttributeCount( 1, 'custom_exceptions', $h2 );
     }
 
     /**

@@ -50,21 +50,21 @@ class Hyphenator {
 	 *
 	 * @var integer
 	 */
-	protected $min_length = 2;
+	protected $min_length;
 
 	/**
 	 * Minimum word length before hyphen.
 	 *
 	 * @var integer
 	 */
-	protected $min_before = 2;
+	protected $min_before;
 
 	/**
 	 * Minimum word length after hyphen.
 	 *
 	 * @var integer
 	 */
-	protected $min_after = 2;
+	protected $min_after;
 
 	/**
 	 * The hyphenation patterns.
@@ -129,32 +129,44 @@ class Hyphenator {
 	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
 	 */
 	private $str_functions = array(
-		'UTF-8' => array(),
-		'ASCII' => array(),
+		'UTF-8' => array(
+			'strlen'     => 'mb_strlen',
+			'str_split'  => '\PHP_Typography\mb_str_split',
+			'strtolower' => 'mb_strtolower',
+			'substr'     => 'mb_substr',
+			'u'          => 'u',
+		),
+		'ASCII' => array(
+			'strlen'     => 'strlen',
+			'str_split'  => 'str_split',
+			'strtolower' => 'strtolower',
+			'substr'     => 'substr',
+			'u'          => '',
+		),
 		false   => array(),
 	);
 
 	/**
 	 * Construct new Hyphenator instance.
+	 *
+	 * @param number $min_length        Minimum word length for hyphenation. Optional. Default 2.
+	 * @param number $min_before        Minimum number of characters before a hyphenation point. Optional. Default 2.
+	 * @param number $min_after         Minimum number of characters after a hyphenation point. Optional. Default 2.
+	 * @param string $language          Short-form language name. Optional. Default null.
+	 * @param array  $exceptions        Custom hyphenation exceptions. Optional. Default empty array.
 	 */
-	public function __construct() {
-		$this->str_functions = array(
-			'UTF-8' => array(
-				'strlen'     => 'mb_strlen',
-				'str_split'  => __NAMESPACE__ . '\mb_str_split',
-				'strtolower' => 'mb_strtolower',
-				'substr'     => 'mb_substr',
-				'u'          => 'u',
-			),
-			'ASCII' => array(
-				'strlen'     => 'strlen',
-				'str_split'  => 'str_split',
-				'strtolower' => 'strtolower',
-				'substr'     => 'substr',
-				'u'          => '',
-			),
-			false   => array(),
-		);
+	public function __construct( $min_length = 2, $min_before = 2, $min_after = 2, $language = null, array $exceptions = array() ) {
+		$this->min_length = $min_length;
+		$this->min_before = $min_before;
+		$this->min_after  = $min_after;
+
+		if ( ! empty( $language ) ) {
+			$this->set_language( $language );
+		}
+
+		if ( ! empty( $exceptions ) ) {
+			$this->set_custom_exceptions( $exceptions );
+		}
 	}
 
 	/**
@@ -244,7 +256,7 @@ class Hyphenator {
 			}
 		}
 
-		// Clean up
+		// Clean up.
 		if ( ! $success ) {
 			unset( $this->language );
 			unset( $this->pattern );
