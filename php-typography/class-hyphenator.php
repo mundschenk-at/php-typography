@@ -112,7 +112,7 @@ class Hyphenator {
 	 *
 	 * @var array
 	 */
-	protected $hyphenation_exception_patterns;
+	protected $merged_exception_patterns;
 
 	/**
 	 * The current hyphenation language.
@@ -308,8 +308,8 @@ class Hyphenator {
 			}
 
 			// Give exceptions preference.
-			if ( isset( $this->hyphenation_exception_patterns[ $the_key ] ) ) {
-				$word_pattern = $this->hyphenation_exception_patterns[ $the_key ];
+			if ( isset( $this->merged_exception_patterns[ $the_key ] ) ) {
+				$word_pattern = $this->merged_exception_patterns[ $the_key ];
 			}
 
 			if ( ! isset( $word_pattern ) ) {
@@ -407,7 +407,7 @@ class Hyphenator {
 		}
 
 		$this->hyphenation_exceptions = $exceptions;
-		$this->hyphenation_exception_patterns = $exception_patterns;
+		$this->merged_exception_patterns = $exception_patterns;
 	}
 
 	/**
