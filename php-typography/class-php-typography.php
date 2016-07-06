@@ -2789,19 +2789,14 @@ class PHP_Typography {
 				}
 
 				// Do the hyphenation.
-				$parsed_words_like = $this->do_hyphenate( $parsed_words_like );
+				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $this->chr['zeroWidthSpace'] );
 
 				// Restore format.
 				foreach ( $parsed_words_like as $key => $parsed_word ) {
-					$domain_parts[ $key ] = $parsed_word['value'];
-				}
-				foreach ( $domain_parts as $key => &$part ) {
-					// Then we swap out each soft-hyphen" with a zero-space.
-					$part = str_replace( $this->chr['softHyphen'], $this->chr['zeroWidthSpace'], $part );
-
-					// We also insert zero-spaces before periods and hyphens.
-					if ( $key > 0 && 1 === strlen( $part ) ) {
-						$part = $this->chr['zeroWidthSpace'] . $part;
+					if ( $key > 0 && 1 === strlen( $parsed_word['value'] ) ) {
+						$domain_parts[ $key ] = $this->chr['zeroWidthSpace'] . $parsed_word['value'];
+					} else {
+						$domain_parts[ $key ] = $parsed_word['value'];
 					}
 				}
 
@@ -3116,17 +3111,21 @@ class PHP_Typography {
 	/**
 	 * Really hyphenate given text fragment.
 	 *
-	 * @param  array $parsed_text_tokens Filtered to words.
-	 * @return array The hyphenated text token.
+	 * @param  array  $parsed_text_tokens Filtered to words.
+	 * @param  string $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
+	 * @return array  The hyphenated text token.
 	 */
-	function do_hyphenate( array $parsed_text_tokens ) {
-
+	function do_hyphenate( array $parsed_text_tokens, $hyphen = null ) {
 		if ( empty( $this->settings['hyphenMinLength'] ) || empty( $this->settings['hyphenMinBefore'] ) ) {
 		   	return $parsed_text_tokens;
 		}
 
-		$hyphenator = $this->get_hyphenator();
-		return $hyphenator->hyphenate( $parsed_text_tokens, $this->chr['softHyphen'], ! empty( $this->settings['hyphenateTitleCase'] ) );
+		// Default to &shy; is $hyphen is not set.
+		if ( ! isset( $hyphen ) ) {
+			$hyphen = $this->chr['softHyphen'];
+		}
+
+		return $this->get_hyphenator()->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $this->settings['hyphenateTitleCase'] ) );
 	}
 
 	/**
