@@ -197,67 +197,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Load the given state.
-	 *
-	 * @param  array $state The state array. Has to contain 'block_tags', 'chr', 'quote_styles', 'dash_styles', 'str_functions',
-	 *                      'components', 'regex', 'self_closing_tags', 'inappropriate_tags', 'css_classes', 'settings'.
-	 * @return boolean True if successful, false if $state is incomplete.
-	 */
-	function load_state( $state ) {
-		if ( ! isset( $state['block_tags'] )         ||
-			 ! isset( $state['chr'] )                ||
-			 ! isset( $state['quote_styles'] )       ||
-			 ! isset( $state['str_functions'] )      ||
-			 ! isset( $state['components'] )         ||
-			 ! isset( $state['regex'] )              ||
-			 ! isset( $state['self_closing_tags'] )  ||
-			 ! isset( $state['inappropriate_tags'] ) ||
-			 ! isset( $state['css_classes'] )        ||
-			 ! isset( $state['settings'] ) ) {
-		 	return false;
-		}
-
-		$this->block_tags         = $state['block_tags'];
-		$this->chr                = $state['chr'];
-		$this->quote_styles       = $state['quote_styles'];
-		$this->dash_styles        = $state['dash_styles'];
-		$this->str_functions      = $state['str_functions'];
-		$this->components         = $state['components'];
-		$this->regex              = $state['regex'];
-		$this->self_closing_tags  = $state['self_closing_tags'];
-		$this->inappropriate_tags = $state['inappropriate_tags'];
-		$this->css_classes        = $state['css_classes'];
-		$this->settings           = $state['settings'];
-
-		// Reset hyphenator.
-		unset( $this->hyphenator );
-		$this->get_hyphenator();
-
-		return true;
-	}
-
-	/**
-	 * Retrieves to current state of the PHP_Typography object for caching.
-	 *
-	 * @return array The state array.
-	 */
-	function save_state() {
-		return array(
-			'block_tags'         => $this->block_tags,
-			'chr'                => $this->chr,
-			'quote_styles'       => $this->quote_styles,
-			'dash_styles'        => $this->dash_styles,
-			'str_functions'      => $this->str_functions,
-			'components'         => $this->components,
-			'regex'              => $this->regex,
-			'self_closing_tags'  => $this->self_closing_tags,
-			'inappropriate_tags' => $this->inappropriate_tags,
-			'css_classes'        => $this->css_classes,
-			'settings'           => $this->settings,
-		);
-	}
-
-	/**
 	 * Initialize the PHP_Typography object.
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
