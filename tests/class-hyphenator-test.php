@@ -83,6 +83,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Reports an error identified by $message if the combined token values differ from the expected value.
      *
      * @param string $expected_value
      * @param array $actual_tokens
@@ -109,6 +110,39 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Reports an error identified by $message if $attribute in $object does not have the $key.
+     *
+     * @param string $key
+     * @param string $attribute
+     * @param object $object
+     * @param string $message
+     */
+    protected function assertAttributeArrayHasKey( $key, $attribute, $object, $message = '' ) {
+    	$ref = new ReflectionClass( get_class( $object ) );
+    	$prop = $ref->getProperty( $attribute );
+    	$prop->setAccessible( true );
+
+    	return $this->assertArrayHasKey( $key, $prop->getValue( $object ), $message );
+    }
+
+    /**
+     * Reports an error identified by $message if $attribute in $object does have the $key.
+     *
+     * @param string $key
+     * @param string $attribute
+     * @param object $object
+     * @param string $message
+     */
+    protected function assertAttributeArrayNotHasKey( $key, $attribute, $object, $message = '' ) {
+    	$ref = new ReflectionClass( get_class( $object ) );
+    	$prop = $ref->getProperty( $attribute );
+    	$prop->setAccessible( true );
+
+    	return $this->assertArrayNotHasKey( $key, $prop->getValue( $object ), $message );
+    }
+
+
+    /**
      * @covers ::__construct
      */
     public function test_constructor() {
@@ -124,8 +158,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_set_language()
     {
     	$h = $this->h;
-    	//$h->hyphenation_exceptions = array(); // necessary for full coverage
-
 		$h->set_language( 'en-US' );
 		$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
 		$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
@@ -261,11 +293,11 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$h->set_custom_exceptions( $exceptions );
     	$h->set_language( 'de' ); // German has no pattern exceptions.
     	$h->merge_hyphenation_exceptions();
-		$this->assertAttributeNotEmpty( 'hyphenation_exceptions', $h );
+		$this->assertAttributeNotEmpty( 'merged_exception_patterns', $h );
 
     	$exceptions = array( "Hu-go" );
     	$h->set_custom_exceptions( $exceptions );
-		$this->assertAttributeEmpty( 'hyphenation_exceptions', $h );
+		$this->assertAttributeEmpty( 'merged_exception_patterns', $h );
 
     	$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
     	$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
@@ -412,7 +444,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$prop = $ref->getProperty( 'pattern_exceptions' );
     	$prop->setAccessible( true );
     	$prop->setValue( $this->h, array() );
-    	$prop = $ref->getProperty( 'hyphenation_exceptions' );
+    	$prop = $ref->getProperty( 'merged_exception_patterns' );
     	$prop->setAccessible( true );
     	$prop->setValue( $this->h, null );
 
@@ -456,29 +488,29 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     	$h->set_language( 'en-US' ); // w/ pattern exceptions.
     	$h->merge_hyphenation_exceptions();
-    	$this->assertAttributeNotCount( 0, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotCount( 1, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotCount( 2, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeContains( 'hu-go', 'hyphenation_exceptions', $h );
-    	$this->assertAttributeContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
+    	$this->assertAttributeNotCount( 1, 'merged_exception_patterns', $h );
+    	$this->assertAttributeNotCount( 2, 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayHasKey( 'hugo', 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
     	$h->set_language( 'de' ); // w/o pattern exceptions.
     	$h->merge_hyphenation_exceptions();
-    	$this->assertAttributeCount( 2, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeContains( 'hu-go', 'hyphenation_exceptions', $h );
-    	$this->assertAttributeContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeCount( 2, 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayHasKey( 'hugo', 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
     	$h->set_language( 'en-US' ); // w/ pattern exceptions.
     	$h->set_custom_exceptions( array() );
     	$h->merge_hyphenation_exceptions();
-    	$this->assertAttributeNotCount( 0, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotContains( 'hu-go', 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayNotHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
     	$h->set_language( 'de' ); // w/o pattern exceptions.
     	$h->merge_hyphenation_exceptions();
-    	$this->assertAttributeCount( 0, 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotContains( 'hu-go', 'hyphenation_exceptions', $h );
-    	$this->assertAttributeNotContains( 'fä-vi-ken', 'hyphenation_exceptions', $h );
+    	$this->assertAttributeCount( 0, 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
+    	$this->assertAttributeArrayNotHasKey( 'fäviken', 'merged_exception_patterns', $h );
     }
 }

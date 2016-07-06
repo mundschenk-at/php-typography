@@ -101,13 +101,6 @@ class Hyphenator {
 	protected $custom_exceptions;
 
 	/**
-	 * The merged hyphenation exceptions.
-	 *
-	 * @var array
-	 */
-	protected $hyphenation_exceptions;
-
-	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
 	 * @var array
@@ -213,9 +206,7 @@ class Hyphenator {
 		$this->custom_exceptions = array_flip( $exception_keys );
 
 		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		if ( isset( $this->hyphenation_exceptions ) ) {
-			unset( $this->hyphenation_exceptions );
-		}
+		unset( $this->merged_exception_patterns );
 	}
 
 	/**
@@ -262,9 +253,7 @@ class Hyphenator {
 		}
 
 		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		if ( isset( $this->hyphenation_exceptions ) ) {
-			unset( $this->hyphenation_exceptions );
-		}
+		unset( $this->merged_exception_patterns );
 
 		return $success;
 	}
@@ -283,7 +272,7 @@ class Hyphenator {
 		}
 
 		// Make sure we have full exceptions list.
-		if ( ! isset( $this->hyphenation_exceptions ) ) {
+		if ( ! isset( $this->merged_exception_patterns ) ) {
 			$this->merge_hyphenation_exceptions();
 		}
 
@@ -406,7 +395,6 @@ class Hyphenator {
 			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
 		}
 
-		$this->hyphenation_exceptions = $exceptions;
 		$this->merged_exception_patterns = $exception_patterns;
 	}
 
