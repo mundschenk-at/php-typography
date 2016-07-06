@@ -116,8 +116,20 @@ class PHP_Typography {
 	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
 	 */
 	private $str_functions = array(
-		'UTF-8' => array(),
-		'ASCII' => array(),
+		'UTF-8' => array(
+			'strlen'     => 'mb_strlen',
+			'str_split'  => '\PHP_Typography\mb_str_split',
+			'strtolower' => 'mb_strtolower',
+			'substr'     => 'mb_substr',
+			'u'          => 'u', // unicode flag for regex.
+		),
+		'ASCII' => array(
+			'strlen'     => 'strlen',
+			'str_split'  => 'str_split',
+			'strtolower' => 'strtolower',
+			'substr'     => 'substr',
+			'u'          => '', // no regex flag needed.
+		),
 		false   => array(),
 	);
 
@@ -326,19 +338,6 @@ class PHP_Typography {
 			),
 		);
 
-		// Set up both UTF-8 and ASCII string functions.
-		// UTF-8 first.
-		$this->str_functions['UTF-8']['strlen']     = 'mb_strlen';
-		$this->str_functions['UTF-8']['str_split']  = __NAMESPACE__ . '\mb_str_split';
-		$this->str_functions['UTF-8']['strtolower'] = 'mb_strtolower';
-		$this->str_functions['UTF-8']['substr']     = 'mb_substr';
-		$this->str_functions['UTF-8']['u']          = 'u'; // unicode flag for regex.
-		// Now ASCII.
-		$this->str_functions['ASCII']['strlen']     = 'strlen';
-		$this->str_functions['ASCII']['str_split']  = 'str_split';
-		$this->str_functions['ASCII']['strtolower'] = 'strtolower';
-		$this->str_functions['ASCII']['substr']     = 'substr';
-		$this->str_functions['ASCII']['u']			= ''; // no regex flag needed.
 		// All other encodings get the empty array.
 		// Set up regex patterns.
 		$this->initialize_components();
