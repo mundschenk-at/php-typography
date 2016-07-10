@@ -33,12 +33,25 @@ module.exports = function(grunt) {
 	    		         'cp -a <%= shell.update_html5.sourceDir %>/* <%= shell.update_html5.targetDir %>',
 	    		         'rm -rf <%= shell.update_html5.tmpDir %>' // cleanup
 		        ].join(' && ')
+	    	},
+
+	    	update_patterns: {
+	    		targetDir: 'php-typography/lang',
+	    		command: (function() {
+	    			var cli = [];
+	    			grunt.file.readJSON('php-typography/lang_unformatted/patterns.json').list.forEach(function(element, index) {
+	    				cli.push('php php-typography/lang_unformatted/pattern2json.php -l "' + element.name + '" -f ' + element.url + ' > <%= shell.update_patterns.targetDir %>/' + element.short + '.json');
+	    			});
+
+
+	    			return cli;
+	    		})().join(' && ')
 	    	}
 	    },
 
 	    phpcs: {
 	        plugin: {
-	            src: ['includes/*.php', 'php-typography/*.php']
+	            src: ['includes/**/*.php', 'php-typography/**/*.php']
 	        },
 	        options: {
 	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
@@ -159,15 +172,15 @@ module.exports = function(grunt) {
         	},
         	language_names: {
         		options: {
-        			regex: 'Language\\s*=\\s*.*(("|\')[\\w() ]+\\2)',
+        			regex: '"language"\\s*:\\s*.*(("|\')[\\w() ]+\\2)',
         			modifiers: 'g',
-        			output: '<?php __( $1, \'wp-typography\' ); ?>',
+        			output: "<?php _x( $1, 'language name' 'wp-typography' ); ?>",
         			verbose: false,
         			includePath: false
         		},
             	files: {
 
-		            "php-typography/_language_names.php": [ 'php-typography/lang/*.php', 'php-typography/diacritics/*.php' ],
+		            "php-typography/_language_names.php": [ 'php-typography/lang/*.json', 'php-typography/diacritics/*.json' ],
             	}
         	}
         },
@@ -176,6 +189,7 @@ module.exports = function(grunt) {
     // update various components
     grunt.registerTask( 'update:iana', ['curl:update-iana'] );
     grunt.registerTask( 'update:html5', ['shell:update_html5'] );
+    grunt.registerTask( 'update:patterns', ['shell:update_patterns'] );
 
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',

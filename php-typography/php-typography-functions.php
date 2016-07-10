@@ -174,25 +174,23 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 /**
  * Retrieve the list of valid language plugins in the given directory.
  *
- * @param string $path The path in which to look for language plugin files.
- * @param string $language_name_variable The variable used for the language name in the plugin files.
- *
+ * @param string $path                   The path in which to look for language plugin files.
  * @return array An array in the form ( $language_code => $translated_language_name ).
  */
-function get_language_plugin_list( $path, $language_name_variable ) {
-	$language_name_pattern = '/\$' . $language_name_variable . '\s*=\s*((".+")|(\'.+\'))\s*;/';
+function get_language_plugin_list( $path ) {
+	$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
 	$languages = array();
 	$handler = opendir( $path );
 
 	// Read all files in directory.
 	while ( $file = readdir( $handler ) ) {
-		// We only want the PHP files.
-		if ( '.php' === substr( $file, -4 ) ) {
+		// We only want the JSON files.
+		if ( '.json' === substr( $file, -5 ) ) {
 			$file_content = file_get_contents( $path . $file );
 			if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
 				// Normally this doesn't work, but we may have added the language name in the patgen file already.
 				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // @codingStandardsIgnoreLine.
-				$language_code = substr( $file, 0, -4 );
+				$language_code = substr( $file, 0, -5 );
 				$languages[ $language_code ] = $language_name;
 			}
 		}

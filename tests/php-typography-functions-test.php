@@ -12,7 +12,6 @@ class PHP_Typography_Functions_Test extends PHPUnit_Framework_TestCase {
 	 */
 	protected function setUp()
 	{
-		$this->parser = new \PHP_Typography\Parse_Text;
 	}
 
 	/**
@@ -88,6 +87,9 @@ class PHP_Typography_Functions_Test extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @covers \PHP_Typography\get_ancestors
+	 *
+	 * @uses PHP_Typography\nodelist_to_array
+	 *
 	 * @dataProvider provide_get_ancestors_data
 	 */
 	public function test_get_ancestors( $html, $xpath_query ) {
