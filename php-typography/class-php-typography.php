@@ -586,7 +586,9 @@ class PHP_Typography {
 				(
 					(?:							# CASE 1: " 9A "
 						[0-9]+					# starts with at least one number
-						[A-ZÀ-ÖØ-Ý]				# must contain at least one capital letter
+					    (?:\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
+					    	                    # may contain hyphens, underscores, zero width spaces, or soft hyphens,
+						[A-ZÀ-ÖØ-Ý]				# but must contain at least one capital letter
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
 												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 					)
@@ -596,7 +598,6 @@ class PHP_Typography {
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9])	# must be followed a number or capital letter
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
 												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-
 					)
 				)
 				(?![\w\-_' . $this->chr['zeroWidthSpace'] . $this->chr['softHyphen'] . ']) # negative lookahead assertion

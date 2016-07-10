@@ -2478,33 +2478,43 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertTokenSame( $html, $typo->wrap_emails( $this->tokenize( $html ) ) );
     }
 
+    public function provide_style_caps_data() {
+    	return array(
+    		array( 'foo BAR bar', 'foo <span class="caps">BAR</span> bar' ),
+    		array( 'foo BARbaz', 'foo BARbaz' ),
+    		array( 'foo BAR123 baz', 'foo <span class="caps">BAR123</span> baz' ),
+    		array( 'foo 123BAR baz', 'foo <span class="caps">123BAR</span> baz' ),
+    	);
+    }
+
     /**
      * @covers ::style_caps
      *
      * @uses PHP_Typography\Parse_Text
      *
+     * @dataProvider provide_style_caps_data
      */
-    public function test_style_caps()
+    public function test_style_caps( $html, $result )
     {
     	$typo = $this->typo;
     	$typo->set_style_caps( true );
 
-    	$this->assertSame( 'foo <span class="caps">FUBAR</span> bar', $this->clean_html( $typo->process( 'foo FUBAR bar' ) ) );
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
-
 
     /**
      * @covers ::style_caps
      *
      * @uses PHP_Typography\Parse_Text
      *
+     * @dataProvider provide_style_caps_data
      */
-    public function test_style_caps_off()
+    public function test_style_caps_off( $html, $result )
     {
     	$typo = $this->typo;
     	$typo->set_style_caps( false );
 
-    	$this->assertSame( 'foo FUBAR bar', $this->clean_html( $typo->process( 'foo FUBAR bar' ) ) );
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
     }
 
     /**
@@ -2541,18 +2551,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertSame( $node, $new_node );
     }
 
-    /**
-     * @covers ::style_numbers
-     *
-     * @uses PHP_Typography\Parse_Text
-     *
-     */
-    public function test_style_numbers()
-    {
-    	$typo = $this->typo;
-    	$typo->set_style_numbers( true );
-
-    	$this->assertSame( 'foo <span class="numbers">123</span> bar', $this->clean_html( $typo->process( 'foo 123 bar' ) ) );
+    public function provide_style_numbers_data() {
+    	return array(
+    		array( 'foo 123 bar', 'foo <span class="numbers">123</span> bar' ),
+    		array( 'foo 123bar baz', 'foo <span class="numbers">123</span>bar baz' ),
+    		array( 'foo bar123 baz', 'foo bar<span class="numbers">123</span> baz' ),
+    		array( 'foo 123BAR baz', 'foo <span class="numbers">123</span>BAR baz' ),
+    	);
     }
 
     /**
@@ -2560,13 +2565,55 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @uses PHP_Typography\Parse_Text
      *
+     * @dataProvider provide_style_numbers_data
      */
-    public function test_style_numbers_off()
+    public function test_style_numbers( $html, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_numbers( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $html ) ) );
+    }
+
+    /**
+     * @covers ::style_numbers
+     *
+     * @uses PHP_Typography\Parse_Text
+     *
+	 * @dataProvider provide_style_numbers_data
+     */
+    public function test_style_numbers_off( $html, $result )
     {
     	$typo = $this->typo;
     	$typo->set_style_numbers( false );
 
-    	$this->assertSame( 'foo 123 bar', $this->clean_html( $typo->process( 'foo 123 bar' ) ) );
+    	$this->assertSame( clean_html( $html ), clean_html( $typo->process( $html ) ) );
+    }
+
+    public function provide_style_caps_and_numbers_data() {
+    	return array(
+    		array( 'foo 123 BAR', 'foo <span class="numbers">123</span> <span class="caps">BAR</span>' ),
+    		array( 'FOO-BAR', '<span class="caps">FOO-BAR</span>' ),
+    		array( 'foo 123-BAR baz', 'foo <span class="caps"><span class="numbers">123</span>-BAR</span> baz' ),
+    		array( 'foo BAR123 baz', 'foo <span class="caps">BAR<span class="numbers">123</span></span> baz' ),
+    		array( 'foo 123BAR baz', 'foo <span class="caps"><span class="numbers">123</span>BAR</span> baz' ),
+    	);
+    }
+
+    /**
+     * @coversNothing
+     *
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_style_caps_and_numbers_data
+     */
+    public function test_style_caps_and_numbers( $html, $result )
+    {
+    	$typo = $this->typo;
+    	$typo->set_style_caps( true );
+    	$typo->set_style_numbers( true );
+
+    	$this->assertSame( $result, $this->clean_html( $typo->process( $html ) ) );
     }
 
     public function provide_style_hanging_punctuation_data() {
