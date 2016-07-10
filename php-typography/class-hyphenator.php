@@ -341,13 +341,12 @@ class Hyphenator {
 
 		        for ( $start = 0; $start < $search_length; ++$start ) {
 		            // Start from the trie root node.
-		            $node = &$this->pattern_trie;
+		            $node = $this->pattern_trie;
 
 		            // Walk through the trie while storing detected patterns.
 		            for ( $step = $start; $step < $search_length; ++$step ) {
 		                if ( isset( $node['_pattern'] ) ) {
-		                    // Uh oh, I kind of forgot what happens here in detail
-		                    // but the max value for the offset is stored.
+		                    // Merge different offset values and keep maximum.
 		                    foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
 		                        $value = $pattern_offset[0];
 		                        $offset = $pattern_offset[1] + $start - 1;
@@ -360,7 +359,7 @@ class Hyphenator {
 		                    break;
 		                }
 
-		                $node = &$node[ $chars[ $step ] ];
+		                $node = $node[ $chars[ $step ] ];
 		            }
 		        }
 			}
