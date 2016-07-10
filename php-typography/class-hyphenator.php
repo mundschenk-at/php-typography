@@ -233,8 +233,8 @@ class Hyphenator {
 				$language_file = json_decode( $raw_language_file, true );
 
 				if ( false !== $language_file ) {
-					$this->pattern_exceptions  = $language_file['exceptions'];
-					$this->build_trie( $language_file['patterns'] );
+					$this->pattern_exceptions = $language_file['exceptions'];
+					$this->pattern_trie       = $this->build_trie( $language_file['patterns'] );
 
 					$success = true;
 				}
@@ -261,12 +261,15 @@ class Hyphenator {
 	 * Build pattern search trie from pattern list(s).
 	 *
 	 * @param array $patterns An array of hyphenation patterns.
+	 *
+	 * @return array The starting node of the trie.
 	 */
 	protected function build_trie( array $patterns ) {
-		// Build a Trie for supposedly efficient pattern look-up.
 		$node = null;
+		$trie = array();
+
 		foreach ( $patterns as $key => $pattern ) {
-			$node = &$this->pattern_trie;
+			$node = &$trie;
 
 			foreach ( mb_str_split( $key ) as $char ) {
 				if ( ! isset( $node[ $char ] ) ) {
@@ -281,6 +284,8 @@ class Hyphenator {
 				'offsets' => $offsets[1],
 			);
 		}
+
+		return $trie;
 	}
 
 	/**
