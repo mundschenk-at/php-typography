@@ -186,6 +186,10 @@ module.exports = function(grunt) {
         },
 	});
 
+    // update various components
+    grunt.registerTask( 'update:iana', ['curl:update-iana'] );
+    grunt.registerTask( 'update:html5', ['shell:update_html5'] );
+
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
 		'clean:build',
@@ -211,9 +215,6 @@ module.exports = function(grunt) {
   	                      		'copy',
   	                      		'wp_deploy:assets'
 	]);
-  	grunt.registerTask('iana', [
-    	                    		'curl:update-iana',
-  	]);
 
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
