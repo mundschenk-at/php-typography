@@ -26,7 +26,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 7,
     "patterns": {
         "ba": "100",
         "be": "100",

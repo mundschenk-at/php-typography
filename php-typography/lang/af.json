@@ -218,7 +218,6 @@
         "wesoewer": "wes-oe-wer",
         "xhosatjie": "xho-sa-tjie"
     },
-    "max_segment_size": 10,
     "patterns": {
         "_aans": "000054",
         "_aälawa": "00070000",

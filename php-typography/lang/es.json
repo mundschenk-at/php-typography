@@ -45,7 +45,6 @@
         "% TeX y tipografia            | http:\/\/www.tex-tipografia.com\/"
     ],
     "exceptions": [],
-    "max_segment_size": 13,
     "patterns": {
         "b": "10",
         "b_": "400",

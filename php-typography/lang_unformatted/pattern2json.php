@@ -66,7 +66,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	function get_segment( $pattern ) {
-		return preg_replace( '/[0-9]/', '', str_replace( '.', '', $pattern ) );
+		return preg_replace( '/[0-9]/', '', str_replace( '.', '_', $pattern ) );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	function get_sequence( $pattern ) {
-		$characters = mb_str_split( str_replace( '.', '', $pattern ) );
+		$characters = mb_str_split( str_replace( '.', '_', $pattern ) );
 		$result = array();
 
 		foreach ( $characters as $index => $chr ) {
@@ -119,26 +119,13 @@ class Pattern_Converter {
 	 * @param array $comments An array of TeX comments.
 	 */
 	function write_results( array $patterns, array $exceptions, array $comments ) {
-		$begin_patterns = array();
-		$end_patterns   = array();
-		$all_patterns   = array();
+		$pattern_mapping = array();
 
 		foreach ( $patterns as $pattern ) {
-			if ( preg_match( '/^\.(.+)$/', $pattern, $matches ) ) {
-				$segment = $this->get_segment( $matches[1] );
-				if ( ! isset( $begin_patterns[ $segment ] ) ) {
-					$begin_patterns[ $segment ] = $this->get_sequence( $matches[1] );
-				}
-			} elseif ( preg_match( '/^(.+)\.$/', $pattern, $matches ) ) {
-				$segment = $this->get_segment( $matches[1] );
-				if ( ! isset( $end_patterns[ $segment ] ) ) {
-					$end_patterns[ $segment ] = $this->get_sequence( $matches[1] );
-				}
-			} else {
-				$segment = $this->get_segment( $pattern );
-				if ( ! isset( $all_patterns[ $segment ] ) ) {
-					$all_patterns[ $segment ] = $this->get_sequence( $pattern );
-				}
+			$segment = $this->get_segment( $pattern );
+
+			if ( ! isset( $pattern_mapping[ $segment ] ) ) {
+				$pattern_mapping[ $segment ] = $this->get_sequence( $pattern );
 			}
 		}
 
@@ -153,12 +140,7 @@ class Pattern_Converter {
 			'source_url'       => $this->url,
 			'copyright'        => array_map( 'rtrim', $comments ),
 			'exceptions'       => $json_exceptions,
-			'max_segment_size' => max( array_map( 'mb_strlen', array_map( array( $this, 'get_segment' ), $patterns ) ) ),
-			'patterns'         => array(
-				'begin' => $begin_patterns,
-				'end'   => $end_patterns,
-				'all'   => $all_patterns,
-			),
+			'patterns'         => $pattern_mapping,
 		);
 
 		echo json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );

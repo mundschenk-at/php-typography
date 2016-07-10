@@ -44,7 +44,6 @@
         "úhlopříčka": "úhlo-příč-ka",
         "úhlopříčky": "úhlo-příč-ky"
     },
-    "max_segment_size": 6,
     "patterns": {
         "_a": "002",
         "_ada": "00400",

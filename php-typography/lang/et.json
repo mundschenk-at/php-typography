@@ -49,7 +49,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 8,
     "patterns": {
         "_aa": "0004",
         "_aasta": "0000005",

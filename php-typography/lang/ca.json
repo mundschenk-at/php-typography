@@ -102,7 +102,6 @@
         "whisky": "whis-ky",
         "whiskies": "whis-kies"
     },
-    "max_segment_size": 10,
     "patterns": {
         "ba": "100",
         "be": "100",

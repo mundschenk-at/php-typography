@@ -57,7 +57,6 @@
         "retribution": "ret-ri-bu-tion",
         "table": "ta-ble"
     },
-    "max_segment_size": 9,
     "patterns": {
         "_ach": "00004",
         "_adder": "0004000",

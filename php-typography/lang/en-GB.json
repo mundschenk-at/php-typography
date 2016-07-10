@@ -68,7 +68,6 @@
         "throughout": "through-out",
         "something": "some-thing"
     },
-    "max_segment_size": 8,
     "patterns": {
         "_abi": "00040",
         "_abol": "000300",

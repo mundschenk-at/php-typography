@@ -61,7 +61,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 4,
     "patterns": {
         "ba": "100",
         "be": "100",

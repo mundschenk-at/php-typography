@@ -49,7 +49,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 10,
     "patterns": {
         "_act": "00040",
         "_adae": "000300",

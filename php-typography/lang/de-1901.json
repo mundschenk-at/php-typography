@@ -35,7 +35,6 @@
         "%%% End:"
     ],
     "exceptions": [],
-    "max_segment_size": 12,
     "patterns": {
         "_aba": "00010",
         "_abl": "00030",

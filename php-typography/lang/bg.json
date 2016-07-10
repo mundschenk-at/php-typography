@@ -90,7 +90,6 @@
         "%%% End:"
     ],
     "exceptions": [],
-    "max_segment_size": 4,
     "patterns": {
         "а": "11",
         "б": "11",

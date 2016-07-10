@@ -44,7 +44,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 8,
     "patterns": {
         "_ae": "0003",
         "_ank": "00030",

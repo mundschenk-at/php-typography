@@ -40,7 +40,6 @@
         "%"
     ],
     "exceptions": [],
-    "max_segment_size": 11,
     "patterns": {
         "α": "01",
         "ε": "01",
