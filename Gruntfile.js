@@ -172,9 +172,9 @@ module.exports = function(grunt) {
         	},
         	language_names: {
         		options: {
-        			regex: '"language"\\s*:\\s*.*(("|\')[\\w() ]+\\2)',
+        			regex: '"language"\\s*:\\s*.*("|\')([\\w() ]+)\\1',
         			modifiers: 'g',
-        			output: "<?php _x( $1, 'language name' 'wp-typography' ); ?>",
+        			output: "<?php _x( '$2', 'language name', 'wp-typography' ); ?>",
         			verbose: false,
         			includePath: false
         		},
