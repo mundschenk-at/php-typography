@@ -971,6 +971,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @uses PHP_Typography\Hyphenator::__construct
      * @uses PHP_Typography\Hyphenator::set_language
+     * @uses PHP_Typography\Hyphenator::build_trie
      *
      * @dataProvider provide_hyphenation_language_data
      */
@@ -3047,6 +3048,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::get_hyphenator()
      *
      * @uses PHP_Typography\Hyphenator::__construct
+     * @uses PHP_Typography\Hyphenator::build_trie
      * @uses PHP_Typography\Hyphenator::set_custom_exceptions
      * @uses PHP_Typography\Hyphenator::set_language
      * @uses PHP_Typography\Hyphenator::set_min_after

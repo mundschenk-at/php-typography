@@ -144,6 +144,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     *
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_constructor() {
     	$h = $this->h;
@@ -163,6 +165,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_language
+	 * @covers ::build_trie
+	 *
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_set_language()
     {
@@ -186,8 +191,10 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_language
+     *
      * @uses ::set_custom_exceptions
      * @uses ::merge_hyphenation_exceptions
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_set_language_with_custom_exceptions()
     {
@@ -206,6 +213,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_language
+     *
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_set_same_hyphenation_language()
     {
@@ -336,6 +345,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      * @covers ::hyphenate
      *
      * @uses PHP_Typography\is_odd
+     * @uses PHP_Typography\mb_str_split
      *
      * @dataProvider provide_hyphenate_data
      */
@@ -377,6 +387,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
+     *
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_hyphenate_no_title_case()
     {
@@ -392,6 +404,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
+     *
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_hyphenate_invalid()
     {
@@ -409,6 +423,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      * @covers ::hyphenate
      *
      * @uses PHP_Typography\is_odd
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_hyphenate_no_custom_exceptions()
     {
@@ -430,6 +445,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      * @uses ReflectionClass
      * @uses ReflectionProperty
      * @uses PHP_Typography\is_odd
+     * @uses PHP_Typography\mb_str_split
      */
     public function test_hyphenate_no_exceptions_at_all()
     {
@@ -456,8 +472,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::convert_hyphenation_exception_to_pattern
-     *
-     * @uses \str_split
      */
     public function test_convert_hyphenation_exception_to_pattern() {
     	$h = $this->h;
