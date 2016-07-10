@@ -52,8 +52,10 @@ $php_typo->set_min_length_hyphenation();
 $php_typo->set_min_before_hyphenation();
 $php_typo->set_min_after_hyphenation();
 
+$iterations = 100;
+
 $startTime = microtime( true );
-for ( $i = 0; $i < 100; ++$i ) {
+for ( $i = 0; $i < $iterations; ++$i ) {
 	$php_typo->set_hyphenation_exceptions( array('foo-bar', 'pre-pro-ces-sor', 'fo-ll-o-w-i-ng') );
 	$php_typo->process( $testHTML, false );
 }
@@ -80,7 +82,7 @@ $startTime = microtime(true);
 $startTime = microtime(true);
 $hyphenator = new \NikoNyrh\Hyphenator\Hyphenator();
 $html = new \Masterminds\HTML5();
-for ( $i = 0; $i < 100; ++$i ) {
+for ( $i = 0; $i < $iterations; ++$i ) {
 	$html->loadHTML( $testHTML );
 	$html->saveHTML();
 	$hyphenator->hyphenate($testHTML);
