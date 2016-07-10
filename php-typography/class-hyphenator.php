@@ -380,28 +380,6 @@ class Hyphenator {
 	}
 
 	/**
-	 * Inject the PatGen segments pattern into the PatGen words pattern.
-	 *
-	 * @param array  $word_pattern     Required.
-	 * @param array  $segment_pattern  Required.
-	 * @param number $segment_position Required.
-	 * @param number $segment_length   Required.
-	 */
-	function hyphenation_pattern_injection( array $word_pattern, array $segment_pattern, $segment_position, $segment_length ) {
-
-		for ( $number_position = $segment_position;
-		$number_position <= $segment_position + $segment_length;
-		$number_position++ ) {
-
-			$word_pattern[ $number_position ] =
-			( intval( $word_pattern[ $number_position ] ) >= intval( $segment_pattern[ $number_position - $segment_position ] ) ) ?
-			$word_pattern[ $number_position ] : $segment_pattern[ $number_position - $segment_position ];
-		}
-
-		return $word_pattern;
-	}
-
-	/**
 	 * Merge hyphenation exceptions from the language file and custom hyphenation exceptions and
 	 * generate patterns for all of them.
 	 */

@@ -334,7 +334,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
-     * @covers ::hyphenation_pattern_injection
      *
      * @uses PHP_Typography\is_odd
      *
@@ -355,7 +354,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::hyphenate
-     * @covers ::hyphenation_pattern_injection
      *
      * @uses \PHP_Typography\is_odd
      * @uses \PHP_Typography\mb_str_split
