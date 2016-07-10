@@ -67,22 +67,11 @@ class Hyphenator {
 	protected $min_after;
 
 	/**
-	 * The hyphenation patterns.
+	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
-	 * @var array {
-	 * 		@type array 'begin' Prefix hyphenations.
-	 * 		@type array 'end'   Suffix hyphenations.
-	 *      @type array 'all'   Infix hyphenations.
-	 * }
+	 * @var array
 	 */
-	protected $pattern;
-
-	/**
-	 * The maximum segment length in `$pattern`.
-	 *
-	 * @var integer
-	 */
-	protected $pattern_max_segment;
+	protected $pattern_trie;
 
 	/**
 	 * The hyphenation exceptions from the pattern file.
@@ -244,9 +233,8 @@ class Hyphenator {
 				$language_file = json_decode( $raw_language_file, true );
 
 				if ( false !== $language_file ) {
-					$this->pattern             = $language_file['patterns'];
-					$this->pattern_max_segment = $language_file['max_segment_size'];
 					$this->pattern_exceptions  = $language_file['exceptions'];
+					$this->build_trie( $language_file['patterns'] );
 
 					$success = true;
 				}
@@ -259,8 +247,7 @@ class Hyphenator {
 		// Clean up.
 		if ( ! $success ) {
 			unset( $this->language );
-			unset( $this->pattern );
-			unset( $this->pattern_max_segment );
+			unset( $this->pattern_trie );
 			unset( $this->pattern_exceptions );
 		}
 
@@ -268,6 +255,32 @@ class Hyphenator {
 		unset( $this->merged_exception_patterns );
 
 		return $success;
+	}
+
+	/**
+	 * Build pattern search trie from pattern list(s).
+	 *
+	 * @param array $patterns An array of hyphenation patterns.
+	 */
+	protected function build_trie( array $patterns ) {
+		// Build a Trie for supposedly efficient pattern look-up.
+		$node = null;
+		foreach ( $patterns as $key => $pattern ) {
+			$node = &$this->pattern_trie;
+
+			foreach ( mb_str_split( $key ) as $char ) {
+				if ( ! isset( $node[ $char ] ) ) {
+					$node[ $char ] = array();
+				}
+				$node = &$node[ $char ];
+			}
+
+			preg_match_all( '/([1-9])/', $pattern, $offsets, PREG_OFFSET_CAPTURE );
+
+			$node['_pattern'] = array(
+				'offsets' => $offsets[1],
+			);
+		}
 	}
 
 	/**
@@ -279,7 +292,7 @@ class Hyphenator {
 	 * @return array The modified text tokens.
 	 */
 	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false ) {
-		if ( empty( $this->min_length ) || empty( $this->min_before ) || ! isset( $this->pattern ) || ! isset( $this->pattern_max_segment ) || ! isset( $this->pattern_exceptions ) ) {
+		if ( empty( $this->min_length ) || empty( $this->min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
 			return $parsed_text_tokens;
 		}
 
@@ -314,41 +327,45 @@ class Hyphenator {
 			}
 
 			if ( ! isset( $word_pattern ) ) {
-				// First we set up the matching pattern to be a series of zeros one character longer than $text_token.
-				$word_pattern = array();
-				for ( $i = 0; $i < $word_length + 1; $i++ ) {
-					$word_pattern[] = '0';
-				}
+		        // Add underscores to make out-of-index checks unnecessary,
+		        // also hyphenation is done in lower case.
+		        $search        = '_' . $the_key . '_';
+		        $search_length = $func['strlen']( $search );
+		        $chars         = $func['str_split']( $search );
+		        $word_pattern  = array();
 
-				// We grab all possible segments from $parsedTextToken of length 1 through $this->pattern_max_segment.
-				for ( $segment_length = 1; ( $segment_length <= $word_length ) && ( $segment_length <= $this->pattern_max_segment ); $segment_length++ ) {
-					for ( $segment_position = 0; $segment_position + $segment_length <= $word_length; $segment_position++ ) {
-						$segment = $func['strtolower']( $func['substr']( $text_token['value'], $segment_position, $segment_length ) );
+		        for ( $start = 0; $start < $search_length; ++$start ) {
+		            // Start from the trie root node.
+		            $node = &$this->pattern_trie;
 
-						if ( 0 === $segment_position && isset( $this->pattern['begin'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->pattern['begin'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
+		            // Walk through the trie while storing detected patterns.
+		            for ( $step = $start; $step < $search_length; ++$step ) {
+		                if ( isset( $node['_pattern'] ) ) {
+		                    // Uh oh, I kind of forgot what happens here in detail
+		                    // but the max value for the offset is stored.
+		                    foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
+		                        $value = $pattern_offset[0];
+		                        $offset = $pattern_offset[1] + $start - 1;
+		                        $word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
+		                    }
+		                }
 
-						if ( $segment_position + $segment_length === $word_length && isset( $this->pattern['end'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->pattern['end'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
+		                // No further path in the trie.
+		                if ( ! isset( $node[ $chars[ $step ] ] ) ) {
+		                    break;
+		                }
 
-						if ( isset( $this->pattern['all'][ $segment ] ) ) {
-							$segment_pattern = $func['str_split']( $this->pattern['all'][ $segment ], 1 );
-							$word_pattern = $this->hyphenation_pattern_injection( $word_pattern, $segment_pattern, $segment_position, $segment_length );
-						}
-					}
-				}
+		                $node = &$node[ $chars[ $step ] ];
+		            }
+		        }
 			}
 
 			// Add soft-hyphen based on $word_pattern.
 			$word_parts = $func['str_split']( $text_token['value'], 1 );
-
 			$hyphenated_word = '';
+
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( is_odd( intval( $word_pattern[ $i ] ) ) && ( $i >= $this->min_before) && ( $i < $word_length - $this->min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i < $word_length - $this->min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];
@@ -361,7 +378,6 @@ class Hyphenator {
 
 		return $parsed_text_tokens;
 	}
-
 
 	/**
 	 * Inject the PatGen segments pattern into the PatGen words pattern.
@@ -429,13 +445,10 @@ class Hyphenator {
 		$word_pattern = array();
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
 			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
-				$word_pattern[] = '9';
+				$word_pattern[ $i ] = 9;
 				$i++;
-			} else {
-				$word_pattern[] = '0';
 			}
 		}
-		$word_pattern[] = '0'; // For consistent length with the other word patterns.
 
 		return $word_pattern;
 	}

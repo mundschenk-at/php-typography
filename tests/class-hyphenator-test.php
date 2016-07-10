@@ -168,23 +168,19 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     {
     	$h = $this->h;
 		$h->set_language( 'en-US' );
-		$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
-		$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
- 		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty English-US pattern array' );
+		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
  		$h->set_language( 'foobar' );
  		$this->assertFalse( isset( $h->pattern ) );
- 		$this->assertFalse( isset( $h->pattern_max_segment ) );
  		$this->assertFalse( isset( $h->pattern_exceptions ) );
 
  		$h->set_language( 'no' );
- 		$this->assertAttributeCount( 3, 'pattern', $h, 'Invalid Norwegian pattern.');
- 		$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty Norwegian pattern array' );
  		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' ); // Norwegian has exceptions
 
  		$h->set_language( 'de' );
- 		$this->assertAttributeCount( 3, 'pattern', $h, 'Invalid German pattern.');
- 		$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty German pattern array' );
  		$this->assertAttributeEmpty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file
     }
 
@@ -200,13 +196,11 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$h->set_custom_exceptions( array( 'KINGdesk' => 'KING-desk' ) );
     	$h->set_language( 'en-US' );
     	$h->merge_hyphenation_exceptions();
-    	$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
-    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
     	$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
     	$h->set_language( 'de' );
-    	$this->assertAttributeCount( 3, 'pattern', $h, 'Invalid German pattern.');
-    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
     	$this->assertAttributeEmpty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file
     }
 
@@ -218,13 +212,11 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$h = $this->h;
 
     	$h->set_language( 'en-US' );
-    	$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
-    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
     	$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
     	$h->set_language( 'en-US' );
-    	$this->assertAttributeNotEmpty( 'pattern', $h, 'Empty pattern array' );
-    	$this->assertAttributeGreaterThan( 0, 'pattern_max_segment', $h, 'Max segment size 0' );
+    	$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
     	$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
     }
 
@@ -471,7 +463,8 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      */
     public function test_convert_hyphenation_exception_to_pattern() {
     	$h = $this->h;
-    	$this->assertSame( str_split( '000090000' ), $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
+    	$this->assertSame( array( 4 => 9 ), $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
+    	$this->assertSame( array( 2 => 9 ), $h->convert_hyphenation_exception_to_pattern( 'ta-ble' ) );
     }
 
     /**
