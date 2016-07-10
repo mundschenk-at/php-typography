@@ -189,6 +189,7 @@ module.exports = function(grunt) {
     // update various components
     grunt.registerTask( 'update:iana', ['curl:update-iana'] );
     grunt.registerTask( 'update:html5', ['shell:update_html5'] );
+    grunt.registerTask( 'update:patterns', ['shell:update_patterns'] );
 
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
