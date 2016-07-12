@@ -146,6 +146,11 @@
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-classic.tex"
 	}, 
 	{
+		"short" : "la-liturgic",
+		"name"  : "Latin (Liturgical)",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-liturgic.tex"
+	}, 
+	{
 		"short" : "la",
 		"name"  : "Latin",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la.tex"
