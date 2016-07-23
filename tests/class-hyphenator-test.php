@@ -33,17 +33,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Return encoded HTML string (everything except <>"').
-     *
-     * @param string $html
-     */
-    protected function clean_html( $html ) {
-    	$convmap = array(0x80, 0x10ffff, 0, 0xffffff);
-
-    	return str_replace( array('&lt;', '&gt;'), array('<', '>'), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap ) );
-    }
-
-    /**
      * Helper function to generate a valid token list from strings.
      *
      * @param string $value
@@ -91,7 +80,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
      */
     protected function assertTokensSame( $expected_value, $actual_tokens, $message = '' ) {
     	foreach ( $actual_tokens as $index => $token ) {
-    		$actual_tokens[ $index ]['value'] = $this->clean_html( $actual_tokens[ $index ]['value'] );
+    		$actual_tokens[ $index ]['value'] = clean_html( $actual_tokens[ $index ]['value'] );
     	}
 
 		if ( false !== strpos( $expected_value, ' ' ) ) {
