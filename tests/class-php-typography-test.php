@@ -1538,6 +1538,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( " 6'' ",                             ' 6&Prime; ' ), // nobody uses this for quotes, so it should be OK to keep the primes here
      		array( 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ),
     		array( "der 8'-Ölbohrer",                   "der 8&prime;-&Ouml;lbohrer" ),
+    		array( "der 1/4'-Bohrer",                   "der 1/4&prime;-Bohrer" ),
+    		array( "2/4'",                              "2/4&prime;" ),
+    		array( '3/44"',                             '3/44&Prime;' ),
     		array( '("Some" word',					    '(&ldquo;Some&rdquo; word' ),
     	);
     }
@@ -1936,7 +1939,36 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_smart_fractions( false );
     	$typo->set_fraction_spacing( false );
 
-    	$this->assertSame( $input, clean_html( $typo->process( $input ) ) );
+    	$this->assertSame( clean_html( $input ), clean_html( $typo->process( $input ) ) );
+    }
+
+    public function provide_smart_fractions_smart_quotes_data() {
+    	return array(
+    		array(
+    			'1/2" 1/2\' 3/4″',
+    			'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&Prime; <sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&prime; <sup class="num">3</sup>&frasl;<sub class="denom">4</sub>&Prime;',
+    			'num',
+    			'denom'
+    		),
+    	);
+    }
+
+    /**
+     * @covers ::smart_fractions
+     *
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_smart_fractions_smart_quotes_data
+     */
+    public function test_smart_fractions_with_smart_quotes( $input, $result, $num_css_class, $denom_css_class )
+    {
+    	$typo = new PHP_Typography_CSS_Classes( false, 'now', array( 'numerator' => $num_css_class, 'denominator' => $denom_css_class) );
+    	$typo->set_smart_fractions( true );
+    	$typo->set_smart_quotes( true );
+    	$typo->set_true_no_break_narrow_space( true );
+    	$typo->set_fraction_spacing( false );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $input ) ) );
     }
 
     public function provide_fraction_spacing_data() {
