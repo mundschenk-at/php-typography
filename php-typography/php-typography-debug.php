@@ -31,7 +31,11 @@ if ( ! function_exists( 'clean_html' ) ) {
 	 * @param string $html A HTML fragment.
 	 */
 	function clean_html( $html ) {
-		static $convmap = array( 0x80, 0x10ffff, 0, 0xffffff );
+		// Convert everything except Latin and Cyrillic.
+		static $convmap = array(
+			0x80,   0x03ff,   0, 0xffffff,
+			0x0514, 0x10ffff, 0, 0xffffff,
+		);
 
 		return str_replace( array( '&lt;', '&gt;' ), array( '<', '>' ), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
 	}
