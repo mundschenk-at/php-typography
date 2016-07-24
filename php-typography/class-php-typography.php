@@ -552,6 +552,8 @@ class PHP_Typography {
 		$this->components['hyphensArray'] = array_unique( array( '-', $this->chr['hyphen'] ) );
 		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
 
+		$this->components['numbersPrime'] = '\b(?:\d+\/)?\d{1,3}';
+
 		/*
 		 // \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
 		 // for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
@@ -754,12 +756,14 @@ class PHP_Typography {
 
 		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
 		$this->regex['smartQuotesDoubleQuotedNumbers']       = '/(?<=\W|\A)"(\d+)"(?=\W|\Z)/u';
-		$this->regex['smartQuotesDoublePrime']               = "/(\b\d{1,3})''(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrimeCompound']       = "/(\b\d{1,3})''(?=-\w)/u";
-		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/(\b\d{1,3})\"(?=-\w)/u";
-		$this->regex['smartQuotesSinglePrimeCompound']       = "/(\b\d{1,3})'(?=-\w)/u";
-		$this->regex['smartQuotesSingleDoublePrime']         = "/(\b\d{1,3})'(\s*)(\b\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/(\b\d{1,3})'(\s*)(\b\d+)\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrime']               = "/({$this->components['numbersPrime']})''(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrimeCompound']       = "/({$this->components['numbersPrime']})''(?=-\w)/u";
+		$this->regex['smartQuotesDoublePrime1Glyph']         = "/({$this->components['numbersPrime']})\"(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/({$this->components['numbersPrime']})\"(?=-\w)/u";
+		$this->regex['smartQuotesSinglePrime']               = "/({$this->components['numbersPrime']})'(?=\W|\Z)/u";
+		$this->regex['smartQuotesSinglePrimeCompound']       = "/({$this->components['numbersPrime']})'(?=-\w)/u";
+		$this->regex['smartQuotesSingleDoublePrime']         = "/({$this->components['numbersPrime']})'(\s*)(\b(?:\d+\/)?\d+)''(?=\W|\Z)/u";
+		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/({$this->components['numbersPrime']})'(\s*)(\b(?:\d+\/)?\d+)\"(?=\W|\Z)/u";
 		$this->regex['smartQuotesCommaQuote']                = '/(?<=\s|\A),(?=\S)/';
 		$this->regex['smartQuotesApostropheWords']           = "/(?<=[\w|{$this->components['nonEnglishWordCharacters']}])'(?=[\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartQuotesApostropheDecades']         = "/'(\d\d\b)/";
@@ -1000,7 +1004,8 @@ class PHP_Typography {
 			(?:\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
 			(\d+)
 			(
-				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	# handle ordinals after fractions
+				(?:{$this->chr['singlePrime']}|{$this->chr['doublePrime']})? # handle fractions followed by prime symbols
+				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	                         # handle ordinals after fractions
 				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 			)
 			/xu";
@@ -2318,8 +2323,10 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime'],         '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime1Glyph'],   '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'],               '$1' . $this->chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
+		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'],               '$1' . $this->chr['singlePrime'],                                      $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrimeCompound'],       '$1' . $this->chr['singlePrime'],                                      $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeCompound'],       '$1' . $this->chr['doublePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime1Glyph'],         '$1' . $this->chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime1GlyphCompound'], '$1' . $this->chr['doublePrime'],                                      $textnode->data );
 
 		// Backticks.
