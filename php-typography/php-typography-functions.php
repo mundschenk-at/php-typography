@@ -188,8 +188,7 @@ function get_language_plugin_list( $path ) {
 		if ( '.json' === substr( $file, -5 ) ) {
 			$file_content = file_get_contents( $path . $file );
 			if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
-				// Normally this doesn't work, but we may have added the language name in the patgen file already.
-				$language_name = __( substr( $matches[1], 1, -1 ), 'wp-typography' ); // @codingStandardsIgnoreLine.
+				$language_name = substr( $matches[1], 1, -1 );
 				$language_code = substr( $file, 0, -5 );
 				$languages[ $language_code ] = $language_name;
 			}
