@@ -1268,7 +1268,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     public function provide_process_with_title_data() {
     	return array(
-    		array( 'Really...', 'Really&hellip;', true, '' ), // processed
+    		array( 'Really...', 'Real&shy;ly&hellip;', 'Really&hellip;', '' ), // processed
     		array( 'Really...', 'Really...', true, array( 'h1' ) ), // skipped
     	);
     }
@@ -2756,10 +2756,12 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     public function provide_hyphenate_data() {
     	return array(
-			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ),
+			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ),
     		array( 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ),
     		array( 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ),
     		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ),
+    		array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ),
+    		array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ),
     	);
     }
 
@@ -2818,6 +2820,45 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
+
+
+    public function provide_hyphenate_with_exceptions_data() {
+    	return array(
+    			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', array( 'KING-desk' ), 'en-US', true, true, true, false ),
+    			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array(), 'de', true, true, true, false ),
+    			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array( 'Ge-schäfts-über-nah-me' ), 'de', true, true, true, false ),
+    			array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', array(), 'de', true, true, true, false ),
+    			array( 'Trinkwasserinstallation', 'Trink&shy;wasser&shy;in&shy;stal&shy;la&shy;tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true, true, true, false ),
+    	);
+    }
+
+    /**
+     * @covers ::hyphenate
+     * @covers ::do_hyphenate
+     * @covers ::hyphenate_compounds
+     *
+     * @uses PHP_Typography\Parse_Text
+     * @uses PHP_Typography\Hyphenator
+     *
+     * @dataProvider provide_hyphenate_with_exceptions_data
+     */
+    public function test_hyphenate_with_exceptions( $html, $result, $exceptions, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds )
+    {
+    	$typo = $this->typo;
+    	$typo->set_hyphenation( true );
+    	$typo->set_hyphenation_language( $lang );
+    	$typo->set_min_length_hyphenation(2);
+    	$typo->set_min_before_hyphenation(2);
+    	$typo->set_min_after_hyphenation(2);
+    	$typo->set_hyphenate_headings( $hyphenate_headings );
+    	$typo->set_hyphenate_all_caps( $hyphenate_all_caps );
+    	$typo->set_hyphenate_title_case( $hyphenate_title_case );
+    	$typo->set_hyphenate_compounds( $hyphenate_compunds );
+    	$typo->set_hyphenation_exceptions( $exceptions );
+
+    	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
+    }
+
 
     /**
      * @covers ::hyphenate
@@ -2929,7 +2970,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
 
-    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
+    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
     					   clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
     }
 
@@ -2953,7 +2994,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->settings['hyphenationPatternExceptions'] = array();
 		unset( $this->typo->settings['hyphenationExceptions'] );
 
-    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;ally, there should be more hy&shy;phen&shy;ation here!',
+    	$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
     					   clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!' ) ) );
     }
 
