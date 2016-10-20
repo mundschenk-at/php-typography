@@ -320,7 +320,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     public function provide_hyphenate_data() {
     	return array(
-    		array( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|ally there should be more hy|phen|ation here', 'en-US', true ), // fake tokenizer doesn't split off punctuation
+    		array( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|al|ly there should be more hy|phen|ation here', 'en-US', true ), // fake tokenizer doesn't split off punctuation
     		array( 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ),
     		array( 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ), // Compound words would not be hyphenated separately
     		array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', false ),
@@ -350,6 +350,36 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
     }
 
+    public function provide_hyphenate_with_exceptions_data() {
+    	return array(
+    			array( 'KINGdesk', 'KING|desk', array('KING-desk'), 'en-US', true ),
+    			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array(), 'de', true ),
+    			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array( 'Ge-schäfts-über-nah-me' ), 'de', true ),
+    			array( 'Trinkwasserinstallation', 'Trink|was|ser|in|stal|la|ti|on', array(), 'de', true, true, true, false ),
+    			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true ),
+    			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'en-US', true ),
+    	);
+    }
+
+    /**
+     * @covers ::hyphenate
+     *
+     * @uses PHP_Typography\is_odd
+     * @uses PHP_Typography\mb_str_split
+     *
+     * @dataProvider provide_hyphenate_with_exceptions_data
+     */
+    public function test_hyphenate_with_exceptions( $html, $result, $exceptions, $lang, $hyphenate_title_case )
+    {
+    	$h = $this->h;
+    	$h->set_language( $lang );
+    	$h->set_min_length(2);
+    	$h->set_min_before(2);
+    	$h->set_min_after(2);
+    	$h->set_custom_exceptions( $exceptions );
+
+    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
+    }
 
     /**
      * @covers ::hyphenate
@@ -423,7 +453,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
-    		'A few words to hy|phen|ate like KINGdesk Re|ally there should be more hy|phen|ation here',
+    		'A few words to hy|phen|ate like KINGdesk Re|al|ly there should be more hy|phen|ation here',
     		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
     	);
     }
@@ -454,7 +484,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
 
     	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
-    		'A few words to hy|phen|ate like KINGdesk Re|ally there should be more hy|phen|ation here',
+    		'A few words to hy|phen|ate like KINGdesk Re|al|ly there should be more hy|phen|ation here',
     		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
     	);
     }

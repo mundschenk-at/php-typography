@@ -369,7 +369,7 @@ class Hyphenator {
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i < $word_length - $this->min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i <= $word_length - $this->min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];
@@ -425,10 +425,13 @@ class Hyphenator {
 		$lowercase_hyphened_word_length = $func['strlen']( $exception );
 
 		$word_pattern = array();
+		$index = 0;
+
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
 			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
-				$word_pattern[ $i ] = 9;
-				$i++;
+				$word_pattern[ $index ] = 9;
+			} else {
+				$index++;
 			}
 		}
 
