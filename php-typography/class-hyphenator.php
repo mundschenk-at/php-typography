@@ -369,7 +369,7 @@ class Hyphenator {
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i < $word_length - $this->min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i <= $word_length - $this->min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];
