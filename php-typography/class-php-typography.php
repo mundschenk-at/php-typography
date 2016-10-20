@@ -2070,7 +2070,7 @@ class PHP_Typography {
 	 * @return boolean Returns true if the error was handled, false otherwise.
 	 */
 	public function handle_parsing_errors( $errno, $errstr, $errfile, $errline, array $errcontext ) {
-		if ( ! ( error_reporting() & $errno ) ) {
+		if ( ! ( error_reporting() & $errno ) ) { // @codingStandardsIgnoreLine.
 			return true; // not interesting.
 		}
 
