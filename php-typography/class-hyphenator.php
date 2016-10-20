@@ -425,10 +425,13 @@ class Hyphenator {
 		$lowercase_hyphened_word_length = $func['strlen']( $exception );
 
 		$word_pattern = array();
+		$index = 0;
+
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
 			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
-				$word_pattern[ $i ] = 9;
-				$i++;
+				$word_pattern[ $index ] = 9;
+			} else {
+				$index++;
 			}
 		}
 
