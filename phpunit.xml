@@ -25,6 +25,6 @@
 		</whitelist>
 	</filter>
 	<php>
-  		<ini name="memory_limit" value="1G"/>
+  		<ini name="memory_limit" value="2G"/>
 	</php>
 </phpunit>
