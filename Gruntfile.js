@@ -114,15 +114,13 @@ module.exports = function(grunt) {
 	        trunk: {
 	        	options: {
 	            	deploy_trunk: true,
-	            	deploy_assets: true,
-	            	deploy_release: false,
+	            	deploy_tag: false,
 	        	}
             },
             assets: {
             	options: {
-            		deploy_assets: true,
             		deploy_trunk: false,
-            		deploy_release: false,
+            		deploy_tag: false,
             	}
             }
 	    },
