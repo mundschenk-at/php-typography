@@ -754,8 +754,8 @@ class PHP_Typography {
 
 		$this->regex['controlCharacters'] = '/\p{C}/Su';
 
-		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'(\d+)'(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoubleQuotedNumbers']       = '/(?<=\W|\A)"(\d+)"(?=\W|\Z)/u';
+		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/u";
+		$this->regex['smartQuotesDoubleQuotedNumbers']       = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/u';
 		$this->regex['smartQuotesDoublePrime']               = "/({$this->components['numbersPrime']})''(?=\W|\Z)/u";
 		$this->regex['smartQuotesDoublePrimeCompound']       = "/({$this->components['numbersPrime']})''(?=-\w)/u";
 		$this->regex['smartQuotesDoublePrime1Glyph']         = "/({$this->components['numbersPrime']})\"(?=\W|\Z)/u";
@@ -2309,7 +2309,7 @@ class PHP_Typography {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
-		// Before primes, handle quoted numbers.
+		// Before primes, handle quoted numbers (and quotes ending in numbers).
 		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuotedNumbers'], $this->chr['singleQuoteOpen'] . '$1' . $this->chr['singleQuoteClose'], $textnode->data );
 		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuotedNumbers'], $this->chr['doubleQuoteOpen'] . '$1' . $this->chr['doubleQuoteClose'], $textnode->data );
 
