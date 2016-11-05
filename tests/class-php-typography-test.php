@@ -1539,6 +1539,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      		array( 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ),
     		array( "der 8'-Ölbohrer",                   "der 8&prime;-&Ouml;lbohrer" ),
     		array( "der 1/4'-Bohrer",                   "der 1/4&prime;-Bohrer" ),
+    		array( 'Hier 1" "Typ 2" einsetzen',            'Hier 1&Prime; &ldquo;Typ 2&rdquo; einsetzen' ),
     		array( "2/4'",                              "2/4&prime;" ),
     		array( '3/44"',                             '3/44&Prime;' ),
     		array( '("Some" word',					    '(&ldquo;Some&rdquo; word' ),
@@ -2240,17 +2241,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     public function provide_french_punctuation_spacing_data() {
     	return array(
-    		array( "Je t'aime ; m'aimes-tu ?", "Je t'aime&#8239;; m'aimes-tu&#8239;?" ),
-    		array( "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?" ),
-    		array( 'Au secours !', 'Au secours&#8239;!' ),
-    		array( 'Au secours!', 'Au secours&#8239;!' ),
-    		array( 'Jean a dit : Foo', 'Jean a dit&nbsp;: Foo' ),
-    		array( 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo' ),
-    		array( 'http://example.org', 'http://example.org' ),
-    		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ),
-    		array( '5 > 3', '5 > 3' ),
-    		array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".' ),
-
+    		array( "Je t'aime ; m'aimes-tu ?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ),
+    		array( "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ),
+    		array( 'Au secours !', 'Au secours&#8239;!', false ),
+    		array( 'Au secours!', 'Au secours&#8239;!', false ),
+    		array( 'Jean a dit : Foo', 'Jean a dit&nbsp;: Foo', false ),
+    		array( 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo', false ),
+    		array( 'http://example.org', 'http://example.org', false ),
+    		array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar', false ),
+    		array( '5 > 3', '5 > 3', false ),
+    		array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".', false ),
+			array( '"diabète de type 3"', '&laquo;&#8239;diab&egrave;te de type 3&#8239;&raquo;', true ),
     	);
     }
 
@@ -2258,14 +2259,21 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::french_punctuation_spacing
      *
      * @uses PHP_Typography\Parse_Text
+     * @uses PHP_Typography::set_smart_quotes
+     * @uses PHP_Typography::set_smart_quotes_primary
      *
      * @dataProvider provide_french_punctuation_spacing_data
      */
-    public function test_french_punctuation_spacing( $input, $result )
+    public function test_french_punctuation_spacing( $input, $result, $use_french_quotes )
     {
     	$typo = $this->typo;
     	$typo->set_french_punctuation_spacing( true );
     	$typo->set_true_no_break_narrow_space( true );
+
+    	if ( $use_french_quotes ) {
+    		$typo->set_smart_quotes_primary( 'doubleGuillemetsFrench' );
+    		$typo->set_smart_quotes( true );
+    	}
 
     	$this->assertSame( $result, clean_html( $typo->process( $input ) ) );
     }
