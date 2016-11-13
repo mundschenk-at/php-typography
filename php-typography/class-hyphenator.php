@@ -46,27 +46,6 @@ require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
 class Hyphenator {
 
 	/**
-	 * Minimum word length for hyphenation.
-	 *
-	 * @var integer
-	 */
-	protected $min_length;
-
-	/**
-	 * Minimum word length before hyphen.
-	 *
-	 * @var integer
-	 */
-	protected $min_before;
-
-	/**
-	 * Minimum word length after hyphen.
-	 *
-	 * @var integer
-	 */
-	protected $min_after;
-
-	/**
 	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
 	 * @var array
@@ -138,16 +117,10 @@ class Hyphenator {
 	/**
 	 * Construct new Hyphenator instance.
 	 *
-	 * @param number $min_length        Minimum word length for hyphenation. Optional. Default 2.
-	 * @param number $min_before        Minimum number of characters before a hyphenation point. Optional. Default 2.
-	 * @param number $min_after         Minimum number of characters after a hyphenation point. Optional. Default 2.
 	 * @param string $language          Short-form language name. Optional. Default null.
 	 * @param array  $exceptions        Custom hyphenation exceptions. Optional. Default empty array.
 	 */
-	public function __construct( $min_length = 2, $min_before = 2, $min_after = 2, $language = null, array $exceptions = array() ) {
-		$this->min_length = $min_length;
-		$this->min_before = $min_before;
-		$this->min_after  = $min_after;
+	public function __construct( $language = null, array $exceptions = array() ) {
 
 		if ( ! empty( $language ) ) {
 			$this->set_language( $language );
@@ -156,33 +129,6 @@ class Hyphenator {
 		if ( ! empty( $exceptions ) ) {
 			$this->set_custom_exceptions( $exceptions );
 		}
-	}
-
-	/**
-	 * Set the minimum word length.
-	 *
-	 * @param integer $min_length Minimum word length for hyphenation.
-	 */
-	public function set_min_length( $min_length ) {
-		$this->min_length = $min_length;
-	}
-
-	/**
-	 * Set the minimum word length before a potential hyphenation point.
-	 *
-	 * @param integer $min_before Minimum number of characters before hyphenation point.
-	 */
-	public function set_min_before( $min_before ) {
-		$this->min_before = $min_before;
-	}
-
-	/**
-	 * Set the minimum word length after a potential hyphenation point.
-	 *
-	 * @param integer $min_after Minimum number of characters after hyphenation point.
-	 */
-	public function set_min_after( $min_after ) {
-		$this->min_after = $min_after;
 	}
 
 	/**
@@ -294,10 +240,14 @@ class Hyphenator {
 	 * @param array   $parsed_text_tokens   An array of text tokens.
 	 * @param string  $hyphen               The hyphen character. Optional. Default '-'.
 	 * @param boolean $hyphenate_title_case Whether words in Title Case should be hyphenated. Optional. Default false.
+	 * @param int     $min_length           Minimum word length for hyphenation. Optional. Default 2.
+	 * @param int     $min_before           Minimum number of characters before a hyphenation point. Optional. Default 2.
+	 * @param int     $min_after            Minimum number of characters after a hyphenation point. Optional. Default 2.
+	 *
 	 * @return array The modified text tokens.
 	 */
-	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false ) {
-		if ( empty( $this->min_length ) || empty( $this->min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
+	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
+		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
 			return $parsed_text_tokens;
 		}
 
@@ -316,7 +266,7 @@ class Hyphenator {
 			$word_length = $func['strlen']( $text_token['value'] );
 			$the_key     = $func['strtolower']( $text_token['value'] );
 
-			if ( $word_length < $this->min_length ) {
+			if ( $word_length < $min_length ) {
 				continue;
 			}
 
@@ -369,7 +319,7 @@ class Hyphenator {
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $this->min_before) && ( $i <= $word_length - $this->min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];

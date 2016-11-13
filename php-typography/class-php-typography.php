@@ -1758,11 +1758,6 @@ class PHP_Typography {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->settings['hyphenMinLength'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_length( $length );
-		}
 	}
 
 	/**
@@ -1774,11 +1769,6 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 3;
 
 		$this->settings['hyphenMinBefore'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_before( $length );
-		}
 	}
 
 	/**
@@ -1790,11 +1780,6 @@ class PHP_Typography {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->settings['hyphenMinAfter'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_after( $length );
-		}
 	}
 
 	/**
@@ -3105,9 +3090,6 @@ class PHP_Typography {
 
 			// Create and initialize our hyphenator instance.
 			$this->hyphenator = new Hyphenator(
-				isset( $this->settings['hyphenMinLength'] ) ? $this->settings['hyphenMinLength'] : null,
-				isset( $this->settings['hyphenMinBefore'] ) ? $this->settings['hyphenMinBefore'] : null,
-				isset( $this->settings['hyphenMinAfter'] )  ? $this->settings['hyphenMinAfter']  : null,
 				isset( $this->settings['hyphenLanguage'] )  ? $this->settings['hyphenLanguage']  : null,
 				isset( $this->settings['hyphenationCustomExceptions'] ) ? $this->settings['hyphenationCustomExceptions'] : array()
 			);
@@ -3125,7 +3107,7 @@ class PHP_Typography {
 	 */
 	function do_hyphenate( array $parsed_text_tokens, $hyphen = null ) {
 		if ( empty( $this->settings['hyphenMinLength'] ) || empty( $this->settings['hyphenMinBefore'] ) ) {
-		   	return $parsed_text_tokens;
+			return $parsed_text_tokens;
 		}
 
 		// Default to &shy; is $hyphen is not set.
@@ -3133,7 +3115,7 @@ class PHP_Typography {
 			$hyphen = $this->chr['softHyphen'];
 		}
 
-		return $this->get_hyphenator()->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $this->settings['hyphenateTitleCase'] ) );
+		return $this->get_hyphenator()->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $this->settings['hyphenateTitleCase'] ), $this->settings['hyphenMinLength'], $this->settings['hyphenMinBefore'], $this->settings['hyphenMinAfter'] );
 	}
 
 	/**
