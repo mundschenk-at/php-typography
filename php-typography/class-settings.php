@@ -242,6 +242,21 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
+	 * Retrieve the named character.
+	 *
+	 * @param string $name The character name.
+	 *
+	 * @return string|boolean Returns the character or false if it does not exist.
+	 */
+	public function chr( $name ) {
+		if ( isset( $this->chr[ $name ] ) ) {
+			return $this->chr[ $name ];
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Retrieve the named components calculated from the current settings.
 	 *
 	 * @return array
