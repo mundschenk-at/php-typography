@@ -38,56 +38,49 @@ require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
  *
  *  @author Peter Putzer <github@mundschenk.at>
  */
-class Settings {
+class Settings implements \ArrayAccess {
 
 	/**
 	 * A hashmap for various special characters.
 	 *
 	 * @var array
 	 */
-	public $chr = array();
+	protected $chr = array();
 
 	/**
 	 * A hashmap of settings for the various typographic options.
 	 *
 	 * @var array
 	 */
-	public $settings = array();
+	protected $data = array();
 
 	/**
 	 * An array containing all self-closing HTML5 tags.
 	 *
 	 * @var array
 	 */
-	private $self_closing_tags = array();
+	protected $self_closing_tags = array();
 
 	/**
 	 * A array of tags we should never touch.
 	 *
 	 * @var array
 	 */
-	private $inappropriate_tags = array();
-
-	/**
-	 * An array of ( $tag => true ) for quick checking with `isset`.
-	 *
-	 * @var array
-	 */
-	private $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
+	protected $inappropriate_tags = array();
 
 	/**
 	 * An array of encodings in detection order.
 	 *
 	 * @var array
 	 */
-	private $encodings = array( 'ASCII', 'UTF-8' );
+	protected $encodings = array( 'ASCII', 'UTF-8' );
 
 	/**
 	 * A hash map for string functions according to encoding.
 	 *
 	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
 	 */
-	private $str_functions = array(
+	protected $str_functions = array(
 		'UTF-8' => array(
 			'strlen'     => 'mb_strlen',
 			'str_split'  => '\PHP_Typography\mb_str_split',
@@ -110,55 +103,35 @@ class Settings {
 	 *
 	 * @var array $components
 	 */
-	private $components = array();
+	protected $components = array();
 
 	/**
 	 * An array of regex patterns.
 	 *
 	 * @var array $regex
 	 */
-	private $regex = array();
+	protected $regex = array();
 
 	/**
 	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	private $quote_styles = array();
+	protected $quote_styles = array();
 
 	/**
 	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	private $dash_styles = array();
+	protected $dash_styles = array();
 
 	/**
 	 * An array in the form of [ '$tag' => true ]
 	 *
 	 * @var array
 	 */
-	private $block_tags = array();
-
-	/**
-	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
-	 *
-	 * @var array
-	 */
-	protected $css_classes = array(
-		'caps'        => 'caps',
-		'numbers'     => 'numbers',
-		'amp'         => 'amp',
-		'quo'         => 'quo',
-		'dquo'        => 'dquo',
-		'pull-single' => 'pull-single',
-		'pull-double' => 'pull-double',
-		'push-single' => 'push-single',
-		'push-double' => 'push-double',
-		'numerator'   => 'numerator',
-		'denominator' => 'denominator',
-		'ordinal'     => 'ordinal',
-	);
+	protected $block_tags = array();
 
 	/**
 	 * Set up a new Settings object.
@@ -175,6 +148,115 @@ class Settings {
 		$encoding_set = mb_internal_encoding( 'UTF-8' );
 
 		$this->init( $set_defaults );
+	}
+
+	/**
+	 * Provide access to named settings (object syntax).
+	 *
+	 * @param string $key The settings key.
+	 *
+	 * @return mixed
+	 */
+	public function &__get( $key ) {
+		return $this->data[ $key ];
+	}
+
+	/**
+	 * Change a named setting (object syntax).
+	 *
+	 * @param string $key   The settings key.
+	 * @param mixed  $value The settings value.
+	 */
+	public function __set( $key, $value ) {
+		$this->data[ $key ] = $value;
+	}
+
+	/**
+	 * Check if a named setting exists (object syntax).
+	 *
+	 * @param string $key The settings key.
+	 */
+	public function __isset( $key ) {
+		return isset( $this->data[ $key ] );
+	}
+
+	/**
+	 * Unset a named setting.
+	 *
+	 * @param string $key The settings key.
+	 */
+	public function __unset( $key ) {
+		unset( $this->data[ $key ] );
+	}
+
+	/**
+	 * Change a named setting (array syntax).
+	 *
+	 * @param string $offset The settings key.
+	 * @param mixed  $value  The settings value.
+	 */
+	public function offsetSet( $offset, $value ) {
+		if ( is_null( $offset ) ) {
+			$this->data[] = $value;
+		} else {
+			$this->data[ $offset ] = $value;
+		}
+	}
+
+	/**
+	 * Check if a named setting exists (array syntax).
+	 *
+	 * @param string $offset The settings key.
+	 */
+	public function offsetExists( $offset ) {
+		return isset( $this->data[ $offset ] );
+	}
+
+	/**
+	 * Unset a named setting (array syntax).
+	 *
+	 * @param string $offset The settings key.
+	 */
+	public function offsetUnset( $offset ) {
+		unset( $this->data[ $offset ] );
+	}
+
+	/**
+	 * Provide access to named settings (array syntax).
+	 *
+	 * @param string $offset The settings key.
+	 *
+	 * @return mixed
+	 */
+	public function offsetGet( $offset ) {
+		return isset( $this->data[ $offset ] ) ? $this->data[ $offset ] : null;
+	}
+
+	/**
+	 * Retrieve the array of named characters.
+	 *
+	 * @return array
+	 */
+	public function get_named_characters() {
+		return $this->chr;
+	}
+
+	/**
+	 * Retrieve the named components calculated from the current settings.
+	 *
+	 * @return array
+	 */
+	public function get_components() {
+		return $this->components;
+	}
+
+	/**
+	 * Retrieve the regular expressions calculated from the current settings.
+	 *
+	 * @return array
+	 */
+	public function get_regular_expressions() {
+		return $this->regex;
 	}
 
 	/**
@@ -1052,7 +1134,7 @@ class Settings {
 
 		// Unit spacing.
 		$this->regex['unitSpacingEscapeSpecialChars'] = '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#';
-		$this->update_unit_pattern( isset( $this->settings['units'] ) ? $this->settings['units'] : array() );
+		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : array() );
 
 		// French punctuation spacing.
 		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+)(\s?)([?!»])(\s|\Z)/u';
@@ -1155,7 +1237,7 @@ class Settings {
 		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
 
 		// Self closing tags shouldn't be in $tags.
-		$this->settings['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );
+		$this->data['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );
 	}
 
 	/**
@@ -1167,7 +1249,7 @@ class Settings {
 		if ( ! is_array( $classes ) ) {
 			$classes = preg_split( $this->regex['parameterSplitting'], $classes, -1, PREG_SPLIT_NO_EMPTY );
 		}
-		$this->settings['ignoreClasses'] = $classes;
+		$this->data['ignoreClasses'] = $classes;
 	}
 
 	/**
@@ -1179,7 +1261,7 @@ class Settings {
 		if ( ! is_array( $ids ) ) {
 			$ids = preg_split( $this->regex['parameterSplitting'], $ids, -1, PREG_SPLIT_NO_EMPTY );
 		}
-		$this->settings['ignoreIDs'] = $ids;
+		$this->data['ignoreIDs'] = $ids;
 	}
 
 	/**
@@ -1188,7 +1270,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_quotes( $on = true ) {
-		$this->settings['smartQuotes'] = $on;
+		$this->data['smartQuotes'] = $on;
 	}
 
 	/**
@@ -1273,7 +1355,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_dashes( $on = true ) {
-		$this->settings['smartDashes'] = $on;
+		$this->data['smartDashes'] = $on;
 	}
 
 	/**
@@ -1327,7 +1409,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_ellipses( $on = true ) {
-		$this->settings['smartEllipses'] = $on;
+		$this->data['smartEllipses'] = $on;
 	}
 
 	/**
@@ -1336,7 +1418,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_diacritics( $on = true ) {
-		$this->settings['smartDiacritics'] = $on;
+		$this->data['smartDiacritics'] = $on;
 	}
 
 	/**
@@ -1345,18 +1427,18 @@ class Settings {
 	 * @param string $lang Has to correspond to a filename in 'diacritics'. Optional. Default 'en-US'.
 	 */
 	function set_diacritic_language( $lang = 'en-US' ) {
-		if ( isset( $this->settings['diacriticLanguage'] ) && $this->settings['diacriticLanguage'] === $lang ) {
+		if ( isset( $this->data['diacriticLanguage'] ) && $this->data['diacriticLanguage'] === $lang ) {
 			return;
 		}
 
-		$this->settings['diacriticLanguage'] = $lang;
+		$this->data['diacriticLanguage'] = $lang;
 		$language_file_name = dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
 
 		if ( file_exists( $language_file_name ) ) {
 			$diacritics_file = json_decode( file_get_contents( $language_file_name ), true );
-			$this->settings['diacriticWords'] = $diacritics_file['diacritic_words'];
+			$this->data['diacriticWords'] = $diacritics_file['diacritic_words'];
 		} else {
-			unset( $this->settings['diacriticWords'] );
+			unset( $this->data['diacriticWords'] );
 		}
 
 		$this->update_diacritics_replacement_arrays();
@@ -1402,7 +1484,7 @@ class Settings {
 			}
 		}
 
-		$this->settings['diacriticCustomReplacements'] = $replacements;
+		$this->data['diacriticCustomReplacements'] = $replacements;
 		$this->update_diacritics_replacement_arrays();
 	}
 
@@ -1416,20 +1498,20 @@ class Settings {
 		$patterns = array();
 		$replacements = array();
 
-		if ( ! empty( $this->settings['diacriticCustomReplacements'] ) ) {
-			foreach ( $this->settings['diacriticCustomReplacements'] as $needle => $replacement ) {
+		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
+			foreach ( $this->data['diacriticCustomReplacements'] as $needle => $replacement ) {
 				$patterns[] = "/\b$needle\b/u";
 				$replacements[ $needle ] = $replacement;
 			}
 		}
-		if ( ! empty( $this->settings['diacriticWords'] ) ) {
-	 		foreach ( $this->settings['diacriticWords'] as $needle => $replacement ) {
+		if ( ! empty( $this->data['diacriticWords'] ) ) {
+	 		foreach ( $this->data['diacriticWords'] as $needle => $replacement ) {
 				$patterns[] = "/\b$needle\b/u";
 				$replacements[ $needle ] = $replacement;
 	 		}
 		}
 
-		$this->settings['diacriticReplacement'] = array( 'patterns' => $patterns, 'replacements' => $replacements );
+		$this->data['diacriticReplacement'] = array( 'patterns' => $patterns, 'replacements' => $replacements );
 	}
 
 	/**
@@ -1438,7 +1520,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_marks( $on = true ) {
-		$this->settings['smartMarks'] = $on;
+		$this->data['smartMarks'] = $on;
 	}
 
 	/**
@@ -1447,7 +1529,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_math( $on = true ) {
-		$this->settings['smartMath'] = $on;
+		$this->data['smartMath'] = $on;
 	}
 
 	/**
@@ -1456,7 +1538,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_exponents( $on = true ) {
-		$this->settings['smartExponents'] = $on;
+		$this->data['smartExponents'] = $on;
 	}
 
 	/**
@@ -1465,7 +1547,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_fractions( $on = true ) {
-		$this->settings['smartFractions'] = $on;
+		$this->data['smartFractions'] = $on;
 	}
 
 	/**
@@ -1474,7 +1556,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_smart_ordinal_suffix( $on = true ) {
-		$this->settings['smartOrdinalSuffix'] = $on;
+		$this->data['smartOrdinalSuffix'] = $on;
 	}
 
 	/**
@@ -1483,7 +1565,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_single_character_word_spacing( $on = true ) {
-		$this->settings['singleCharacterWordSpacing'] = $on;
+		$this->data['singleCharacterWordSpacing'] = $on;
 	}
 
 	/**
@@ -1492,7 +1574,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_fraction_spacing( $on = true ) {
-		$this->settings['fractionSpacing'] = $on;
+		$this->data['fractionSpacing'] = $on;
 	}
 
 	/**
@@ -1501,7 +1583,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_unit_spacing( $on = true ) {
-		$this->settings['unitSpacing'] = $on;
+		$this->data['unitSpacing'] = $on;
 	}
 
 	/**
@@ -1510,7 +1592,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_french_punctuation_spacing( $on = true ) {
-		$this->settings['frenchPunctuationSpacing'] = $on;
+		$this->data['frenchPunctuationSpacing'] = $on;
 	}
 
 	/**
@@ -1523,7 +1605,7 @@ class Settings {
 			$units = preg_split( $this->regex['parameterSplitting'], $units, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
-		$this->settings['units'] = $units;
+		$this->data['units'] = $units;
 		$this->update_unit_pattern( $units );
 	}
 
@@ -1550,7 +1632,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_dash_spacing( $on = true ) {
-		$this->settings['dashSpacing'] = $on;
+		$this->data['dashSpacing'] = $on;
 	}
 
 	/**
@@ -1559,7 +1641,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_space_collapse( $on = true ) {
-		$this->settings['spaceCollapse'] = $on;
+		$this->data['spaceCollapse'] = $on;
 	}
 
 	/**
@@ -1568,7 +1650,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_dewidow( $on = true ) {
-		$this->settings['dewidow'] = $on;
+		$this->data['dewidow'] = $on;
 	}
 
 	/**
@@ -1579,7 +1661,7 @@ class Settings {
 	function set_max_dewidow_length( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->settings['dewidowMaxLength'] = $length;
+		$this->data['dewidowMaxLength'] = $length;
 	}
 
 	/**
@@ -1590,7 +1672,7 @@ class Settings {
 	function set_max_dewidow_pull( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->settings['dewidowMaxPull'] = $length;
+		$this->data['dewidowMaxPull'] = $length;
 	}
 
 	/**
@@ -1599,7 +1681,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_wrap_hard_hyphens( $on = true ) {
-		$this->settings['hyphenHardWrap'] = $on;
+		$this->data['hyphenHardWrap'] = $on;
 	}
 
 	/**
@@ -1608,7 +1690,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_url_wrap( $on = true ) {
-		$this->settings['urlWrap'] = $on;
+		$this->data['urlWrap'] = $on;
 	}
 
 	/**
@@ -1617,7 +1699,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_email_wrap( $on = true ) {
-		$this->settings['emailWrap'] = $on;
+		$this->data['emailWrap'] = $on;
 	}
 
 	/**
@@ -1628,7 +1710,7 @@ class Settings {
 	function set_min_after_url_wrap( $length = 5 ) {
 		$length = ( $length > 0 ) ? $length : 5;
 
-		$this->settings['urlMinAfterWrap'] = $length;
+		$this->data['urlMinAfterWrap'] = $length;
 	}
 
 	/**
@@ -1637,7 +1719,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_style_ampersands( $on = true ) {
-		$this->settings['styleAmpersands'] = $on;
+		$this->data['styleAmpersands'] = $on;
 	}
 
 	/**
@@ -1646,7 +1728,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_style_caps( $on = true ) {
-		$this->settings['styleCaps'] = $on;
+		$this->data['styleCaps'] = $on;
 	}
 
 	/**
@@ -1655,7 +1737,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_style_initial_quotes( $on = true ) {
-		$this->settings['styleInitialQuotes'] = $on;
+		$this->data['styleInitialQuotes'] = $on;
 	}
 
 	/**
@@ -1664,7 +1746,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_style_numbers( $on = true ) {
-		$this->settings['styleNumbers'] = $on;
+		$this->data['styleNumbers'] = $on;
 	}
 
 	/**
@@ -1673,7 +1755,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_style_hanging_punctuation( $on = true ) {
-		$this->settings['styleHangingPunctuation'] = $on;
+		$this->data['styleHangingPunctuation'] = $on;
 	}
 
 	/**
@@ -1688,7 +1770,7 @@ class Settings {
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
-		$this->settings['initialQuoteTags'] = array_change_key_case( array_flip( $tags ), CASE_LOWER );
+		$this->data['initialQuoteTags'] = array_change_key_case( array_flip( $tags ), CASE_LOWER );
 	}
 
 	/**
@@ -1697,7 +1779,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_hyphenation( $on = true ) {
-		$this->settings['hyphenation'] = $on;
+		$this->data['hyphenation'] = $on;
 	}
 
 	/**
@@ -1706,16 +1788,11 @@ class Settings {
 	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
 	 */
 	function set_hyphenation_language( $lang = 'en-US' ) {
-		if ( isset( $this->settings['hyphenLanguage'] ) && $this->settings['hyphenLanguage'] === $lang ) {
+		if ( isset( $this->data['hyphenLanguage'] ) && $this->data['hyphenLanguage'] === $lang ) {
 			return; // Bail out, no need to do anything.
 		}
 
-		if ( isset( $this->hyphenator ) && ! $this->get_hyphenator()->set_language( $lang ) ) {
-			// Don't update the language if loading the pattern file failed.
-			return;
-		}
-
-		$this->settings['hyphenLanguage'] = $lang;
+		$this->data['hyphenLanguage'] = $lang;
 	}
 
 	/**
@@ -1726,12 +1803,7 @@ class Settings {
 	function set_min_length_hyphenation( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
-		$this->settings['hyphenMinLength'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_length( $length );
-		}
+		$this->data['hyphenMinLength'] = $length;
 	}
 
 	/**
@@ -1742,12 +1814,7 @@ class Settings {
 	function set_min_before_hyphenation( $length = 3 ) {
 		$length = ( $length > 0 ) ? $length : 3;
 
-		$this->settings['hyphenMinBefore'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_before( $length );
-		}
+		$this->data['hyphenMinBefore'] = $length;
 	}
 
 	/**
@@ -1758,12 +1825,7 @@ class Settings {
 	function set_min_after_hyphenation( $length = 2 ) {
 		$length = ( $length > 0 ) ? $length : 2;
 
-		$this->settings['hyphenMinAfter'] = $length;
-
-		if ( isset( $this->hyphenator ) ) {
-			// We need to update the hyphenator setting.
-			$this->get_hyphenator()->set_min_after( $length );
-		}
+		$this->data['hyphenMinAfter'] = $length;
 	}
 
 	/**
@@ -1772,7 +1834,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_hyphenate_headings( $on = true ) {
-		$this->settings['hyphenateTitle'] = $on;
+		$this->data['hyphenateTitle'] = $on;
 	}
 
 	/**
@@ -1781,7 +1843,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_hyphenate_all_caps( $on = true ) {
-		$this->settings['hyphenateAllCaps'] = $on;
+		$this->data['hyphenateAllCaps'] = $on;
 	}
 
 	/**
@@ -1790,7 +1852,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_hyphenate_title_case( $on = true ) {
-		$this->settings['hyphenateTitleCase'] = $on;
+		$this->data['hyphenateTitleCase'] = $on;
 	}
 
 	/**
@@ -1799,7 +1861,7 @@ class Settings {
 	 * @param boolean $on Optional. Default true.
 	 */
 	function set_hyphenate_compounds( $on = true ) {
-		$this->settings['hyphenateCompounds'] = $on;
+		$this->data['hyphenateCompounds'] = $on;
 	}
 
 	/**
@@ -1813,46 +1875,23 @@ class Settings {
 			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
-		$this->settings['hyphenationCustomExceptions'] = $exceptions;
-
-		if ( isset( $this->hyphenator ) ) {
-			$this->get_hyphenator()->set_custom_exceptions( $exceptions );
-		}
+		$this->data['hyphenationCustomExceptions'] = $exceptions;
 	}
 
 	/**
 	 * Retrieve a unique hash value for the current settings.
 	 *
-	 * @param number $max_length The maximum number of bytes returned.
-	 * @return string An binary hash value for the current settings limited to $max_length.
+	 * @param number $max_length The maximum number of bytes returned. Optional. Default 20.
+	 *
+	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
-	public function get_settings_hash( $max_length = 8 ) {
-		$hash = md5( json_encode( $this->settings ), true );
+	public function get_hash( $max_length = 16 ) {
+		$hash = md5( json_encode( $this->data ), true );
 
 		if ( $max_length < strlen( $hash ) ) {
 			$hash = substr( $hash, 0, $max_length );
 		}
 
 		return $hash;
-	}
-
-	/**
-	 * Retrieve the list of valid hyphenation languages.
-	 * The language names are translation-ready but not translated yet.
-	 *
-	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
-	 */
-	static public function get_hyphenation_languages() {
-		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/lang/', 'patgenLanguage' );
-	}
-
-	/**
-	 * Retrieve the list of valid diacritic replacement languages.
-	 * The language names are translation-ready but not translated yet.
-	 *
-	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
-	 */
-	static public function get_diacritic_languages() {
-		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/diacritics/', 'diacriticLanguage' );
 	}
 }
