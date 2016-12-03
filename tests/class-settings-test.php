@@ -932,7 +932,6 @@ class Settings_Test extends PHPUnit_Framework_TestCase
      * @covers ::set_min_length_hyphenation
      *
      * @uses PHP_Typography\Hyphenator::__construct
-     * @uses PHP_Typography\Hyphenator::set_min_length
      */
     public function test_set_min_length_hyphenation()
     {

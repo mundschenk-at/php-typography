@@ -18,6 +18,7 @@ class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
  * @usesDefaultClass \PHP_Typography\PHP_Typography
  *
  * @uses PHP_Typography\PHP_Typography
+ * @uses PHP_Typography\Settings
  * @uses PHP_Typography\get_ancestors
  * @uses PHP_Typography\has_class
  * @uses PHP_Typography\nodelist_to_array
@@ -310,71 +311,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::update_smart_quotes_brackets
-     *
-     * @uses ::set_smart_quotes_primary
-     * @uses ::set_smart_quotes_secondary
-     * @uses PHP_Typography\mb_str_split
-     */
-    public function test_update_smart_quotes_brackets() {
-    	$typo = $this->typo;
-    	$quote_styles = array(
-    		'doubleCurled',
-    		'doubleCurledReversed',
-    		'doubleLow9',
-    		'doubleLow9Reversed',
-    		'singleCurled',
-    		'singleCurledReversed',
-    		'singleLow9',
-    		'singleLow9Reversed',
-    		// 'doubleGuillemetsFrench', // test doesn't work for this because it's actually two characters
-    		'doubleGuillemets',
-    		'doubleGuillemetsReversed',
-    		'singleGuillemets',
-    		'singleGuillemetsReversed',
-    		'cornerBrackets',
-    		'whiteCornerBracket'
-    	);
-
-    	foreach ( $quote_styles as $primary_style ) {
-    		$typo->set_smart_quotes_primary( $primary_style );
-
-    		foreach ( $quote_styles as $secondary_style ) {
-    			$typo->set_smart_quotes_secondary( $secondary_style );
-    			$typo->update_state( $typo->settings );
-
-    			$comp = PHPUnit_Framework_Assert::readAttribute( $typo, 'components' );
-
-    			$this->assertSmartQuotesStyle( $secondary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
-    			$this->assertSmartQuotesStyle( $secondary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
-    			$this->assertSmartQuotesStyle( $secondary_style,
-     										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
-    			$this->assertSmartQuotesStyle( $secondary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
-
-    			$this->assertSmartQuotesStyle( $primary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["[\""] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"]"] )[0] );
-    			$this->assertSmartQuotesStyle( $primary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["(\""] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\")"] )[0] );
-    			$this->assertSmartQuotesStyle( $primary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["{\""] )[1],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"}"] )[0] );
-    			$this->assertSmartQuotesStyle( $primary_style,
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
-    										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
-    		}
-    	}
-    }
-
-    /**
      * Assert that the given quote styles match
      *
      * @param string $style
@@ -534,7 +470,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_diacritic_language
-	 * @covers ::update_diacritics_replacement_arrays
      */
     public function test_set_diacritic_language()
     {
@@ -556,7 +491,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_diacritic_custom_replacements
-     * @covers ::update_diacritics_replacement_arrays
      */
     public function test_set_diacritic_custom_replacements()
     {
@@ -687,7 +621,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_units
-     * @covers ::update_unit_pattern
      */
     public function test_set_units()
     {
@@ -959,7 +892,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::set_min_length_hyphenation
      *
      * @uses PHP_Typography\Hyphenator::__construct
-     * @uses PHP_Typography\Hyphenator::set_min_length
      */
     public function test_set_min_length_hyphenation()
     {
@@ -978,7 +910,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::set_min_before_hyphenation
      *
      * @uses PHP_Typography\Hyphenator::__construct
-     * @uses PHP_Typography\Hyphenator::set_min_before
      */
     public function test_set_min_before_hyphenation()
     {
@@ -998,7 +929,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::set_min_after_hyphenation
      *
      * @uses PHP_Typography\Hyphenator::__construct
-     * @uses PHP_Typography\Hyphenator::set_min_after
      */
     public function test_set_min_after_hyphenation()
     {
@@ -2234,8 +2164,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @covers ::french_punctuation_spacing
      *
      * @uses PHP_Typography\Parse_Text
-     * @uses PHP_Typography::set_smart_quotes
-     * @uses PHP_Typography::set_smart_quotes_primary
+     * @uses ::set_smart_quotes
+     * @uses ::set_smart_quotes_primary
      *
      * @dataProvider provide_french_punctuation_spacing_data
      */
@@ -3008,8 +2938,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::init
-     * @covers ::initialize_components
-     * @covers ::initialize_patterns
      * @covers ::__construct
      *
      * @uses PHP_Typography\Hyphenator
@@ -3143,9 +3071,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @uses PHP_Typography\Hyphenator::build_trie
      * @uses PHP_Typography\Hyphenator::set_custom_exceptions
      * @uses PHP_Typography\Hyphenator::set_language
-     * @uses PHP_Typography\Hyphenator::set_min_after
-     * @uses PHP_Typography\Hyphenator::set_min_before
-     * @uses PHP_Typography\Hyphenator::set_min_length
      */
     public function test_get_hyphenator() {
 		$typo = $this->typo;
