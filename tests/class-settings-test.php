@@ -71,18 +71,200 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\Settings::set_defaults
-     * @todo   Implement test_set_defaults().
+     * @covers ::set_defaults
      */
-   // public function test_set_defaults()
-    //{
-//    }
+	public function test_set_defaults()
+	{
+		$second_settings = new \PHP_Typography\Settings( false );
+		$this->assertAttributeEmpty( 'data', $second_settings );
+		$second_settings->set_defaults();
+		$this->assertAttributeNotEmpty( 'data', $second_settings );
+	}
 
 
     /**
-     * @covers ::set_tags_to_ignore
+     * @covers ::init
+     * @covers ::initialize_components
+     * @covers ::initialize_patterns
+
+     * @covers ::__construct
      *
-     * @uses \PHP_Typography\Parse_Text
+     * @uses PHP_Typography\Hyphenator
+     */
+    public function test_init() {
+    	$second_settings = new \PHP_Typography\Settings( false );
+    	$this->assertAttributeNotEmpty( 'chr', $second_settings );
+    	$this->assertAttributeNotEmpty( 'regex', $second_settings );
+    	$this->assertAttributeNotEmpty( 'components', $second_settings );
+    	$this->assertAttributeEmpty( 'data', $second_settings );
+
+    	$second_settings->init( true );
+		$this->assertAttributeNotEmpty( 'chr', $second_settings );
+    	$this->assertAttributeNotEmpty( 'regex', $second_settings );
+    	$this->assertAttributeNotEmpty( 'components', $second_settings );
+    	$this->assertAttributeNotEmpty( 'data', $second_settings );
+    }
+
+
+    /**
+     * @covers ::__get
+     *
+     * @uses ::offsetGet
+     */
+    public function test___get() {
+    	$s = $this->settings;
+
+    	$s[ 'newKey' ] = 42;
+    	$this->assertEquals( 42, $s->newKey );
+    }
+
+    /**
+     * @covers ::__set
+     *
+     * @uses ::__get
+     * @uses ::__isset
+     */
+    public function test___set() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( isset( $s->newKey ) );
+    	$s->newKey = 42;
+    	$this->assertTrue( isset( $s->newKey ) );
+    }
+
+    /**
+     * @covers ::__isset
+     */
+    public function test___isset() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( isset( $s->newKey ) );
+    	$s->newKey = 42;
+    	$this->assertTrue( isset( $s->newKey ) );
+    }
+
+    /**
+     * @covers ::__unset
+     */
+    public function test___unset() {
+    	$s = $this->settings;
+
+    	$s->newKey = 42;
+    	$this->assertTrue( isset( $s->newKey ) );
+
+    	unset( $s->newKey );
+    	$this->assertFalse( isset( $s->newKey ) );
+    }
+
+    /**
+     * @covers ::offsetSet
+     *
+     * @uses ::offsetGet
+     * @uses ::offsetExists
+     */
+    public function test_offsetSet() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( isset( $s[0] ) );
+    	$s[] = 666;
+    	$this->assertEquals( 666, $s[0] );
+
+    	$this->assertFalse( isset( $s['newKey'] ) );
+    	$s[ 'newKey' ] = 42;
+    	$this->assertEquals( 42, $s['newKey'] );
+    }
+
+    /**
+     * @covers ::offsetExists
+     *
+     * @uses ::offsetSet
+     */
+    public function test_offsetExists() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( isset( $s['newKey'] ) );
+    	$s[ 'newKey' ] = 42;
+    	$this->assertTrue( isset( $s['newKey'] ) );
+
+    }
+
+    /**
+     * @covers ::offsetUnset
+     *
+     * @uses ::offsetSet
+     * @uses ::offsetGet
+     * @uses ::offsetExists
+     */
+    public function test_offsetUnset() {
+    	$s = $this->settings;
+
+    	$s[ 'newKey' ] = 42;
+    	$this->assertTrue( isset( $s['newKey'] ) );
+
+    	unset( $s['newKey'] );
+    	$this->assertFalse( isset( $s['newKey'] ) );
+    }
+
+    /**
+     * @covers ::offsetGet
+     *
+     * @uses ::offsetSet
+     */
+    public function test_offsetGet() {
+    	$s = $this->settings;
+    	$this->assertNull( $s['newKey'] );
+
+    	$s[ 'newKey' ] = 42;
+    	$this->assertEquals( 42, $s['newKey'] );
+    }
+
+
+    /**
+     * @covers ::chr
+     */
+    public function test_chr() {
+		$s = $this->settings;
+
+		$this->assertFalse( $s->chr( 'DoesNotExist' ) );
+		$this->assertEquals( $s->chr( 'noBreakSpace' ), \PHP_Typography\uchr( 160 ) );
+		$this->assertEquals( $s->chr( 'emDash' ), \PHP_Typography\uchr( 8212 ) );
+    }
+
+    /**
+     * @covers ::get_components
+     */
+    public function test_get_components() {
+    	$s = $this->settings;
+    	$c = $s->get_components();
+
+    	$this->assertTrue( is_array( $c ) );
+    	$this->assertGreaterThan( 0, count( $c ) );
+    }
+
+    /**
+     * @covers ::get_regular_expressions
+     */
+    public function test_get_regular_expressions() {
+    	$s = $this->settings;
+    	$regexs = $s->get_regular_expressions();
+
+    	$this->assertTrue( is_array( $regexs ) );
+    	$this->assertGreaterThan( 0, count( $regexs ) );
+    }
+
+    /**
+     * @covers ::get_named_characters
+     */
+    public function test_get_named_characters() {
+    	$s = $this->settings;
+    	$c = $s->get_named_characters();
+
+    	$this->assertTrue( is_array( $c ) );
+    	$this->assertGreaterThan( 0, count( $c ) );
+    }
+
+    /**
+     * @covers ::set_tags_to_ignore
      */
     public function test_set_tags_to_ignore()
     {
@@ -120,8 +302,6 @@ class Settings_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_classes_to_ignore
-     *
-     * @uses PHP_Typography\Parse_Text
      */
     public function test_set_classes_to_ignore()
     {
@@ -134,8 +314,6 @@ class Settings_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set_ids_to_ignore
-     *
-     * @uses PHP_Typography\Parse_Text
      */
     public function test_set_ids_to_ignore()
     {
