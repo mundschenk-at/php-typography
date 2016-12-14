@@ -371,7 +371,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$this->h->set_language( 'de' );
 
     	$tokens = $this->tokenize( 'Änderungsmeldung' );
-    	$hyphenated  = $this->h->hyphenate( $tokens, 2, 0, 2 );
+    	$hyphenated  = $this->h->hyphenate( $tokens,  '|', true, 2, 0, 2 );
     	$this->assertEquals( $tokens, $hyphenated);
     }
 
