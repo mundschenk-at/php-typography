@@ -765,99 +765,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	function process( $html, $is_title = false, Settings $settings = null ) {
-		// Save current settings.
-		if ( ! empty( $settings ) ) {
-			$current_settings = $this->settings;
-			$this->settings   = $settings;
-		}
-
-		// Retrieve chr, components and regex arrays.
-		$this->update_state( $this->settings );
-
-		if ( isset( $this->settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $this->settings['ignoreTags'], true ) || in_array( 'h2', $this->settings['ignoreTags'], true ) ) ) {
-			return $html;
-		}
-
-		// Lazy-load our HTML parser.
-		$html5_parser = $this->get_html5_parser();
-
-		// Parse the HTML.
-		$dom = $this->parse_html( $html5_parser, $html );
-		$xpath = new \DOMXPath( $dom );
-
-		// Query some nodes.
-		$body_node = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes = $xpath->query( '//text()', $body_node );
-		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
-
-		// Start processing.
-		foreach ( $all_textnodes as $textnode ) {
-			if ( arrays_intersect( get_ancestors( $textnode ), $tags_to_ignore ) ) {
-				continue;
-			}
-
-			// We won't be doing anything with spaces, so we can jump ship if that is all we have.
-			if ( $textnode->isWhitespaceInElementContent() ) {
-				continue;
-			}
-
-			// Decode all characters except < > &.
-			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
-
-			// Nodify anything that requires adjacent text awareness here.
-			$this->smart_math( $textnode );
-			$this->smart_diacritics( $textnode );
-			$this->smart_quotes( $textnode );
-			$this->smart_dashes( $textnode );
-			$this->smart_ellipses( $textnode );
-			$this->smart_marks( $textnode );
-
-			// Keep spacing after smart character replacement.
-			$this->single_character_word_spacing( $textnode );
-			$this->dash_spacing( $textnode );
-			$this->unit_spacing( $textnode );
-			$this->french_punctuation_spacing( $textnode );
-
-			// Parse and process individual words.
-			$this->process_words( $textnode, $is_title );
-
-			// Some final space manipulation.
-			$this->dewidow( $textnode );
-			$this->space_collapse( $textnode );
-
-			// Everything that requires HTML injection occurs here (functions above assume tag-free content)
-			// pay careful attention to functions below for tolerance of injected tags.
-			$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions".
-			$this->smart_exponents( $textnode );      // call before "style_numbers".
-			$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix".
-			if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
-				// Call before "style_numbers".
-				$this->style_caps( $textnode );
-			}
-			if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
-				// Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
-				$this->style_numbers( $textnode );
-			}
-			if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
-				$this->style_ampersands( $textnode );
-			}
-			if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
-				$this->style_initial_quotes( $textnode, $is_title );
-			}
-			if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
-				$this->style_hanging_punctuation( $textnode );
-			}
-
-			// Until now, we've only been working on a single textnode: HTMLify result.
-			$this->replace_node_with_html( $textnode, $textnode->data );
-		}
-
-		// Restore settings
-		if ( ! empty( $current_settings ) ) {
-			$this->settings = $current_settings;
-		}
-
-		return $html5_parser->saveHTML( $body_node->childNodes ); // @codingStandardsIgnoreLine.
+		return $this->process_textnodes( $html, array( $this, 'apply_fixes_to_html_node' ), $is_title, $settings );
 	}
 
 	/**
@@ -871,6 +779,27 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	function process_feed( $html, $is_title = false, Settings $settings = null ) {
+		return $this->process_textnodes( $html, array( $this, 'apply_fixes_to_feed_node' ), $is_title, $settings );
+	}
+
+	/**
+	 * Applies specific fixes to all textnodes of the HTML fragment.
+	 *
+	 * @param string   $html     A HTML fragment.
+	 * @param callable $fixer    A callback that applies typography fixes to a single textnode.
+	 * @param string   $is_title If the HTML fragment is a title. Optional. Default false.
+	 * @param Settings $settings Optional. A settings object. Default null (which means the internal settings will be used).
+	 *
+	 * @return string The processed $html.
+	 */
+	public function process_textnodes( $html, $fixer, $is_title = false, Settings $settings = null ) {
+		// Don't do aynthing if there is no valid callback.
+		if ( ! is_callable( $fixer ) ) {
+			trigger_error( 'PHP_Typography::process_textnodes called without a valid callback.', E_USER_WARNING );
+
+			return $html;
+		}
+
 		// Save current settings.
 		if ( ! empty( $settings ) ) {
 			$current_settings = $this->settings;
@@ -910,22 +839,85 @@ class PHP_Typography {
 			// Decode all characters except < > &.
 			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
 
-			// Modify anything that requires adjacent text awareness here.
-			$this->smart_quotes( $textnode );
-			$this->smart_dashes( $textnode );
-			$this->smart_ellipses( $textnode );
-			$this->smart_marks( $textnode );
+			// Apply fixes.
+			call_user_func( $fixer, $textnode, $is_title );
 
 			// Until now, we've only been working on a textnode: HTMLify result.
 			$this->replace_node_with_html( $textnode, $textnode->data );
 		}
 
-		// Restore settings
+		// Restore settings.
 		if ( ! empty( $current_settings ) ) {
 			$this->settings = $current_settings;
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );  // @codingStandardsIgnoreLine.
+	}
+
+	/**
+	 * Apply standard typography fixes to a textnode.
+	 *
+	 * @param \DOMText $textnode The node to process.
+	 * @param bool     $is_title Optional. Default false.
+	 */
+	protected function apply_fixes_to_html_node( \DOMText $textnode, $is_title = false ) {
+		// Nodify anything that requires adjacent text awareness here.
+		$this->smart_math( $textnode );
+		$this->smart_diacritics( $textnode );
+		$this->smart_quotes( $textnode );
+		$this->smart_dashes( $textnode );
+		$this->smart_ellipses( $textnode );
+		$this->smart_marks( $textnode );
+
+		// Keep spacing after smart character replacement.
+		$this->single_character_word_spacing( $textnode );
+		$this->dash_spacing( $textnode );
+		$this->unit_spacing( $textnode );
+		$this->french_punctuation_spacing( $textnode );
+
+		// Parse and process individual words.
+		$this->process_words( $textnode, $is_title );
+
+		// Some final space manipulation.
+		$this->dewidow( $textnode );
+		$this->space_collapse( $textnode );
+
+		// Everything that requires HTML injection occurs here (functions above assume tag-free content)
+		// pay careful attention to functions below for tolerance of injected tags.
+		$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions".
+		$this->smart_exponents( $textnode );      // call before "style_numbers".
+		$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix".
+		if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
+			// Call before "style_numbers".
+			$this->style_caps( $textnode );
+		}
+		if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
+			// Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
+			$this->style_numbers( $textnode );
+		}
+		if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
+			$this->style_ampersands( $textnode );
+		}
+		if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
+			$this->style_initial_quotes( $textnode, $is_title );
+		}
+		if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
+			$this->style_hanging_punctuation( $textnode );
+		}
+	}
+
+	/**
+	 * Apply typography fixes specific to RSS feeds to a textnode.
+	 *
+	 * @param \DOMText $textnode The node to process.
+	 * @param bool     $is_title Optional. Default false.
+	 */
+	protected function apply_fixes_to_feed_node( \DOMText $textnode, $is_title = false ) {
+		// Modify anything that requires adjacent text awareness here.
+		$this->smart_quotes( $textnode );
+		$this->smart_dashes( $textnode );
+		$this->smart_ellipses( $textnode );
+		$this->smart_marks( $textnode );
 	}
 
 	/**
