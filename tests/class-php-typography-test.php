@@ -1029,6 +1029,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
     }
 
+    public function test_update_state() {
+    	$typo = $this->typo;
+
+    	$this->assertAttributeEmpty( 'chr', $typo );
+    	$this->assertAttributeEmpty( 'components', $typo );
+    	$this->assertAttributeEmpty( 'regex', $typo );
+
+    	$typo->update_state( $typo->settings );
+
+    	$this->assertAttributeNotEmpty( 'chr', $typo );
+    	$this->assertAttributeNotEmpty( 'components', $typo );
+    	$this->assertAttributeNotEmpty( 'regex', $typo );
+    }
+
     /**
      * @covers ::get_hyphenation_languages
      *
@@ -1099,9 +1113,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::process
+     * @covers ::apply_fixes_to_html_node
      *
      * @uses PHP_Typography\Hyphenator
      * @uses PHP_Typography\Parse_Text
+     * @uses ::process_textnodes
      *
      * @dataProvider provide_process_data
      */
@@ -1115,9 +1131,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::process_feed
+     * @covers ::apply_fixes_to_feed_node
      *
      * @uses PHP_Typography\Hyphenator
      * @uses PHP_Typography\Parse_Text
+     * @uses ::process_textnodes
 	 *
      * @dataProvider provide_process_data
      */
@@ -1142,6 +1160,90 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ), // wrap URLs
     		array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails
     	);
+    }
+
+    /**
+     * @covers ::process_textnodes
+     *
+     * @uses PHP_Typography\Hyphenator
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_process_textnodes( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+    	$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function( $node ) {} ) ) );
+    }
+
+    /**
+     * @covers ::process_textnodes
+     *
+     * @uses PHP_Typography\Hyphenator
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_process_textnodes_no_fixer( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+    	$typo->process_textnodes( $html, 'bar' );
+    }
+
+    /**
+     * @covers ::process_textnodes
+     *
+     * @uses PHP_Typography\Hyphenator
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_process_textnodes_no_fixer_return_value( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$typo->set_defaults( true );
+
+    	$this->assertSame( $html, clean_html( @$typo->process_textnodes( $html, 'bar' ) ) );
+    }
+
+
+    /**
+     * @covers ::process_textnodes
+     *
+     * @uses PHP_Typography\Hyphenator
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_process_textnodes_alternate_settings( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$s    = new \PHP_Typography\Settings( true );
+
+    	$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function( $node ) {}, false, $s ) ) );
+    }
+
+    /**
+     * @covers ::process_textnodes
+     *
+     * @uses PHP_Typography\Hyphenator
+     * @uses PHP_Typography\Parse_Text
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_process_textnodes_alternate_settings_title( $html, $result, $feed )
+    {
+    	$typo = $this->typo;
+    	$s    = new \PHP_Typography\Settings( true );
+    	$s->set_tags_to_ignore( array( 'h1', 'h2' ) );
+
+    	$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function( $node ) {}, true, $s ) ) );
     }
 
     /**
@@ -3079,6 +3181,11 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo->settings['hyphenMinAfter'] = 2;
 		$typo->settings['hyphenationCustomExceptions'] = array( 'foo-bar' );
 		$typo->settings['hyphenLanguage'] = 'en-US';
+		$h = $typo->get_hyphenator();
+
+		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
+
+		$typo->settings['hyphenationCustomExceptions'] = array( 'bar-foo' );
 		$h = $typo->get_hyphenator();
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
