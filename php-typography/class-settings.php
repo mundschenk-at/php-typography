@@ -1896,7 +1896,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Retrieve a unique hash value for the current settings.
 	 *
-	 * @param number $max_length The maximum number of bytes returned. Optional. Default 20.
+	 * @param number $max_length The maximum number of bytes returned. Optional. Default 16.
 	 *
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
