@@ -2084,10 +2084,10 @@ class PHP_Typography {
 	/**
 	 * Retrieve a unique hash value for the current settings.
 	 *
-	 * @param number $max_length The maximum number of bytes returned.
+	 * @param number $max_length The maximum number of bytes returned. Optional. Default 16.
 	 * @return string An binary hash value for the current settings limited to $max_length.
 	 */
-	public function get_settings_hash( $max_length = 8 ) {
+	public function get_settings_hash( $max_length = 16 ) {
 		return $this->settings->get_hash( $max_length );
 	}
 
