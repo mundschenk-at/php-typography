@@ -848,7 +848,7 @@ class Settings implements \ArrayAccess {
 		$this->regex['customDiacriticsDoubleQuoteValue'] = '/(?:=>\s*")([^"]+)(?:")/';
 		$this->regex['customDiacriticsSingleQuoteValue'] = "/(?:=>\s*')([^']+)(?:')/";
 
-		$this->regex['controlCharacters'] = '/\p{C}/Su';
+		$this->regex['controlCharacters'] = '/\p{C}/Su'; // obsolete.
 
 		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/u";
 		$this->regex['smartQuotesDoubleQuotedNumbers']       = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/u';
