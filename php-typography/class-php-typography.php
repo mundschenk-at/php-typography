@@ -55,13 +55,6 @@ require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5/autoload.php'; // @
 class PHP_Typography {
 
 	/**
-	 * A hashmap for various special characters.
-	 *
-	 * @var array
-	 */
-	public $chr = array();
-
-	/**
 	 * A hashmap of settings for the various typographic options.
 	 *
 	 * @var Settings
@@ -118,20 +111,6 @@ class PHP_Typography {
 		),
 		false   => array(),
 	);
-
-	/**
-	 * An array of various regex components (not complete patterns).
-	 *
-	 * @var array $components
-	 */
-	private $components = array();
-
-	/**
-	 * An array of regex patterns.
-	 *
-	 * @var array $regex
-	 */
-	private $regex = array();
 
 	/**
 	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
@@ -418,11 +397,11 @@ class PHP_Typography {
 	/**
 	 * Set up custom diacritics replacements.
 	 *
-	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...),
-	 *                                          or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @param string|array $replacements An array formatted array(needle=>replacement, needle=>replacement...),
+	 *                                   or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
-	function set_diacritic_custom_replacements( $custom_replacements = array() ) {
-		$this->settings->set_diacritic_custom_replacements( $custom_replacements );
+	function set_diacritic_custom_replacements( $replacements = array() ) {
+		$this->settings->set_diacritic_custom_replacements( $replacements );
 	}
 
 	/**
@@ -744,18 +723,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Load state from given settings.
-	 *
-	 * @param Settings $settings The settings to apply.
-	 */
-	public function update_state( Settings $settings ) {
-		// Retrieve chr, components and regex arrays.
-		$this->chr        = $settings->get_named_characters();
-		$this->components = $settings->get_components();
-		$this->regex      = $settings->get_regular_expressions();
-	}
-
-	/**
 	 * Modifies $html according to the defined settings.
 	 *
 	 * @param string   $html      A HTML fragment.
@@ -800,16 +767,12 @@ class PHP_Typography {
 			return $html;
 		}
 
-		// Save current settings.
-		if ( ! empty( $settings ) ) {
-			$current_settings = $this->settings;
-			$this->settings   = $settings;
+		// Use internal settings if necessary.
+		if ( empty( $settings ) ) {
+			$settings = $this->settings;
 		}
 
-		// Retrieve chr, components and regex arrays.
-		$this->update_state( $this->settings );
-
-		if ( isset( $this->settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $this->settings['ignoreTags'], true ) || in_array( 'h2', $this->settings['ignoreTags'], true ) ) ) {
+		if ( isset( $settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $settings['ignoreTags'], true ) || in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
 
@@ -823,7 +786,7 @@ class PHP_Typography {
 		// Query some nodes in the DOM.
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
 		$all_textnodes = $xpath->query( '//text()', $body_node );
-		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node );
+		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
 		foreach ( $all_textnodes as $textnode ) {
@@ -840,15 +803,10 @@ class PHP_Typography {
 			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
 
 			// Apply fixes.
-			call_user_func( $fixer, $textnode, $is_title );
+			call_user_func( $fixer, $textnode, $settings, $is_title );
 
 			// Until now, we've only been working on a textnode: HTMLify result.
 			$this->replace_node_with_html( $textnode, $textnode->data );
-		}
-
-		// Restore settings.
-		if ( ! empty( $current_settings ) ) {
-			$this->settings = $current_settings;
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );  // @codingStandardsIgnoreLine.
@@ -858,51 +816,52 @@ class PHP_Typography {
 	 * Apply standard typography fixes to a textnode.
 	 *
 	 * @param \DOMText $textnode The node to process.
+	 * @param Settings $settings The settings to apply.
 	 * @param bool     $is_title Optional. Default false.
 	 */
-	protected function apply_fixes_to_html_node( \DOMText $textnode, $is_title = false ) {
+	protected function apply_fixes_to_html_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Nodify anything that requires adjacent text awareness here.
-		$this->smart_math( $textnode );
-		$this->smart_diacritics( $textnode );
-		$this->smart_quotes( $textnode );
-		$this->smart_dashes( $textnode );
-		$this->smart_ellipses( $textnode );
-		$this->smart_marks( $textnode );
+		$this->smart_math( $textnode, $settings );
+		$this->smart_diacritics( $textnode, $settings );
+		$this->smart_quotes( $textnode, $settings );
+		$this->smart_dashes( $textnode, $settings );
+		$this->smart_ellipses( $textnode, $settings );
+		$this->smart_marks( $textnode, $settings );
 
 		// Keep spacing after smart character replacement.
-		$this->single_character_word_spacing( $textnode );
-		$this->dash_spacing( $textnode );
-		$this->unit_spacing( $textnode );
-		$this->french_punctuation_spacing( $textnode );
+		$this->single_character_word_spacing( $textnode, $settings );
+		$this->dash_spacing( $textnode, $settings );
+		$this->unit_spacing( $textnode, $settings );
+		$this->french_punctuation_spacing( $textnode, $settings );
 
 		// Parse and process individual words.
-		$this->process_words( $textnode, $is_title );
+		$this->process_words( $textnode, $settings, $is_title );
 
 		// Some final space manipulation.
-		$this->dewidow( $textnode );
-		$this->space_collapse( $textnode );
+		$this->dewidow( $textnode, $settings );
+		$this->space_collapse( $textnode, $settings );
 
 		// Everything that requires HTML injection occurs here (functions above assume tag-free content)
 		// pay careful attention to functions below for tolerance of injected tags.
-		$this->smart_ordinal_suffix( $textnode ); // call before "style_numbers" and "smart_fractions".
-		$this->smart_exponents( $textnode );      // call before "style_numbers".
-		$this->smart_fractions( $textnode );      // call before "style_numbers" and after "smart_ordinal_suffix".
+		$this->smart_ordinal_suffix( $textnode, $settings ); // call before "style_numbers" and "smart_fractions".
+		$this->smart_exponents( $textnode, $settings );      // call before "style_numbers".
+		$this->smart_fractions( $textnode, $settings );      // call before "style_numbers" and after "smart_ordinal_suffix".
 		if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
 			// Call before "style_numbers".
-			$this->style_caps( $textnode );
+			$this->style_caps( $textnode, $settings );
 		}
 		if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
 			// Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
-			$this->style_numbers( $textnode );
+			$this->style_numbers( $textnode, $settings );
 		}
 		if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
-			$this->style_ampersands( $textnode );
+			$this->style_ampersands( $textnode, $settings );
 		}
 		if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
-			$this->style_initial_quotes( $textnode, $is_title );
+			$this->style_initial_quotes( $textnode, $settings, $is_title );
 		}
 		if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
-			$this->style_hanging_punctuation( $textnode );
+			$this->style_hanging_punctuation( $textnode, $settings );
 		}
 	}
 
@@ -910,14 +869,15 @@ class PHP_Typography {
 	 * Apply typography fixes specific to RSS feeds to a textnode.
 	 *
 	 * @param \DOMText $textnode The node to process.
+	 * @param Settings $settings The settings to apply.
 	 * @param bool     $is_title Optional. Default false.
 	 */
-	protected function apply_fixes_to_feed_node( \DOMText $textnode, $is_title = false ) {
+	protected function apply_fixes_to_feed_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Modify anything that requires adjacent text awareness here.
-		$this->smart_quotes( $textnode );
-		$this->smart_dashes( $textnode );
-		$this->smart_ellipses( $textnode );
-		$this->smart_marks( $textnode );
+		$this->smart_quotes( $textnode, $settings );
+		$this->smart_dashes( $textnode, $settings );
+		$this->smart_ellipses( $textnode, $settings );
+		$this->smart_marks( $textnode, $settings );
 	}
 
 	/**
@@ -930,31 +890,32 @@ class PHP_Typography {
 	 *   - wrapping email addresses
 	 *
 	 * @param \DOMText $textnode The textnode to process.
+	 * @param Settings $settings The settings to apply.
 	 * @param boolean  $is_title If the HTML fragment is a title. Defaults to false.
 	 */
-	function process_words( \DOMText $textnode, $is_title = false ) {
+	function process_words( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Lazy-load text parser.
 		$text_parser  = $this->get_text_parser();
 
 		// Set up parameters for word categories.
-		$mixed_caps       = empty( $this->settings['hyphenateAllCaps'] ) ? 'allow-all-caps' : 'no-all-caps';
-		$letter_caps      = empty( $this->settings['hyphenateAllCaps'] ) ? 'no-all-caps' : 'allow-all-caps';
-		$mixed_compounds  = empty( $this->settings['hyphenateCompounds'] ) ? 'allow-compounds' : 'no-compounds';
-		$letter_compounds = empty( $this->settings['hyphenateCompounds'] ) ? 'no-compounds' : 'allow-compounds';
+		$mixed_caps       = empty( $settings['hyphenateAllCaps'] ) ? 'allow-all-caps' : 'no-all-caps';
+		$letter_caps      = empty( $settings['hyphenateAllCaps'] ) ? 'no-all-caps' : 'allow-all-caps';
+		$mixed_compounds  = empty( $settings['hyphenateCompounds'] ) ? 'allow-compounds' : 'no-compounds';
+		$letter_compounds = empty( $settings['hyphenateCompounds'] ) ? 'no-compounds' : 'allow-compounds';
 
 		// Break text down for a bit more granularity.
 		$text_parser->load( $textnode->data );
 		$parsed_mixed_words    = $text_parser->get_words( 'no-all-letters', $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
-		$parsed_compound_words = ! empty( $this->settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : array();
+		$parsed_compound_words = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : array();
 		$parsed_words          = $text_parser->get_words( 'require-all-letters', $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
 		$parsed_other          = $text_parser->get_other();
 
 		// Process individual text parts here.
-		$parsed_mixed_words    = $this->wrap_hard_hyphens( $parsed_mixed_words );
-		$parsed_compound_words = $this->hyphenate_compounds( $parsed_compound_words, $is_title, $textnode );
-		$parsed_words          = $this->hyphenate( $parsed_words, $is_title, $textnode );
-		$parsed_other          = $this->wrap_urls( $parsed_other );
-		$parsed_other          = $this->wrap_emails( $parsed_other );
+		$parsed_mixed_words    = $this->wrap_hard_hyphens( $parsed_mixed_words, $settings );
+		$parsed_compound_words = $this->hyphenate_compounds( $parsed_compound_words, $settings, $is_title, $textnode );
+		$parsed_words          = $this->hyphenate( $parsed_words, $settings, $is_title, $textnode );
+		$parsed_other          = $this->wrap_urls( $parsed_other, $settings );
+		$parsed_other          = $this->wrap_emails( $parsed_other, $settings );
 
 		// Apply updates to our text.
 		$text_parser->update( $parsed_mixed_words + $parsed_compound_words + $parsed_words + $parsed_other );
@@ -1014,21 +975,23 @@ class PHP_Typography {
 	/**
 	 * Retrieve an array of nodes that should be skipped during processing.
 	 *
-	 * @param \DOMXPath $xpath A valid XPath instance for the DOM to be queried.
+	 * @param \DOMXPath $xpath        A valid XPath instance for the DOM to be queried.
 	 * @param \DOMNode  $initial_node The starting node of the XPath query.
+	 * @param Settings  $settings     The settings to apply.
+	 *
 	 * @return array An array of \DOMNode (can be empty).
 	 */
-	function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node ) {
+	function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
 		$elements = array();
 		$query_parts = array();
-		if ( ! empty( $this->settings['ignoreTags'] ) ) {
-			$query_parts[] = '//' . implode( ' | //', $this->settings['ignoreTags'] );
+		if ( ! empty( $settings['ignoreTags'] ) ) {
+			$query_parts[] = '//' . implode( ' | //', $settings['ignoreTags'] );
 		}
-		if ( ! empty( $this->settings['ignoreClasses'] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $this->settings['ignoreClasses'] ) . " ')]";
+		if ( ! empty( $settings['ignoreClasses'] ) ) {
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
 		}
-		if ( ! empty( $this->settings['ignoreIDs'] ) ) {
-			$query_parts[] = '//*[@id=\'' . implode( '\' or @id=\'', $this->settings['ignoreIDs'] ) . '\']';
+		if ( ! empty( $settings['ignoreIDs'] ) ) {
+			$query_parts[] = '//*[@id=\'' . implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {
@@ -1056,7 +1019,7 @@ class PHP_Typography {
 			$func = $this->str_functions[ mb_detect_encoding( $previous_textnode->data, $this->encodings, true ) ];
 
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
-				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $previous_textnode->data, - 1 ) );
+				return preg_replace( '/\p{C}/Su', '', $func['substr']( $previous_textnode->data, - 1 ) );
 			}
 		} // @codeCoverageIgnore
 
@@ -1077,7 +1040,7 @@ class PHP_Typography {
 			$func = $this->str_functions[ mb_detect_encoding( $next_textnode->data, $this->encodings, true ) ];
 
 			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
-				return preg_replace( $this->regex['controlCharacters'], '', $func['substr']( $next_textnode->data, 0, 1 ) );
+				return preg_replace( '/\p{C}/Su', '', $func['substr']( $next_textnode->data, 0, 1 ) );
 			}
 		} // @codeCoverageIgnore
 
@@ -1117,6 +1080,7 @@ class PHP_Typography {
 	 * Retrieve the next \DOMText sibling (if there is one).
 	 *
 	 * @param \DOMNode $element	The content node. Optional. Default null.
+	 *
 	 * @return \DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
 	function get_next_textnode( \DOMNode $element = null ) {
@@ -1220,9 +1184,10 @@ class PHP_Typography {
 	 * Apply smart quotes (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_quotes( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartQuotes'] ) ) {
+	function smart_quotes( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartQuotes'] ) ) {
 			return;
 		}
 
@@ -1237,54 +1202,59 @@ class PHP_Typography {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
+		$components = $settings->get_components();
+
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuotedNumbers'], $this->chr['singleQuoteOpen'] . '$1' . $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuotedNumbers'], $this->chr['doubleQuoteOpen'] . '$1' . $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleQuotedNumbers'], $chr['singleQuoteOpen'] . '$1' . $chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoubleQuotedNumbers'], $chr['doubleQuoteOpen'] . '$1' . $chr['doubleQuoteClose'], $textnode->data );
 
 		// Guillemets.
-		$textnode->data = str_replace( '<<',       $this->chr['guillemetOpen'],  $textnode->data );
-		$textnode->data = str_replace( '&lt;&lt;', $this->chr['guillemetOpen'],  $textnode->data );
-		$textnode->data = str_replace( '>>',       $this->chr['guillemetClose'], $textnode->data );
-		$textnode->data = str_replace( '&gt;&gt;', $this->chr['guillemetClose'], $textnode->data );
+		$textnode->data = str_replace( '<<',       $chr['guillemetOpen'],  $textnode->data );
+		$textnode->data = str_replace( '&lt;&lt;', $chr['guillemetOpen'],  $textnode->data );
+		$textnode->data = str_replace( '>>',       $chr['guillemetClose'], $textnode->data );
+		$textnode->data = str_replace( '&gt;&gt;', $chr['guillemetClose'], $textnode->data );
 
 		// Primes.
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime'],         '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleDoublePrime1Glyph'],   '$1' . $this->chr['singlePrime'] . '$2$3' . $this->chr['doublePrime'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime'],               '$1' . $this->chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
-		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrime'],               '$1' . $this->chr['singlePrime'],                                      $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSinglePrimeCompound'],       '$1' . $this->chr['singlePrime'],                                      $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrimeCompound'],       '$1' . $this->chr['doublePrime'],                                      $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime1Glyph'],         '$1' . $this->chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoublePrime1GlyphCompound'], '$1' . $this->chr['doublePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleDoublePrime'],         '$1' . $chr['singlePrime'] . '$2$3' . $chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleDoublePrime1Glyph'],   '$1' . $chr['singlePrime'] . '$2$3' . $chr['doublePrime'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoublePrime'],               '$1' . $chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
+		$textnode->data = preg_replace( $regex['smartQuotesSinglePrime'],               '$1' . $chr['singlePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSinglePrimeCompound'],       '$1' . $chr['singlePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoublePrimeCompound'],       '$1' . $chr['doublePrime'],                                      $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoublePrime1Glyph'],         '$1' . $chr['doublePrime'],                                      $textnode->data ); // should not interfere with regular quote matching.
+		$textnode->data = preg_replace( $regex['smartQuotesDoublePrime1GlyphCompound'], '$1' . $chr['doublePrime'],                                      $textnode->data );
 
 		// Backticks.
-		$textnode->data = str_replace( '``', $this->chr['doubleQuoteOpen'],  $textnode->data );
-		$textnode->data = str_replace( '`',  $this->chr['singleQuoteOpen'],  $textnode->data );
-		$textnode->data = str_replace( "''", $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = str_replace( '``', $chr['doubleQuoteOpen'],  $textnode->data );
+		$textnode->data = str_replace( '`',  $chr['singleQuoteOpen'],  $textnode->data );
+		$textnode->data = str_replace( "''", $chr['doubleQuoteClose'], $textnode->data );
 
 		// Comma quotes.
-		$textnode->data = str_replace( ',,', $this->chr['doubleLow9Quote'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesCommaQuote'], $this->chr['singleLow9Quote'], $textnode->data ); // like _,¿hola?'_.
+		$textnode->data = str_replace( ',,', $chr['doubleLow9Quote'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesCommaQuote'], $chr['singleLow9Quote'], $textnode->data ); // like _,¿hola?'_.
 
 		// Apostrophes.
-		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheWords'],   $this->chr['apostrophe'],      $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesApostropheDecades'], $this->chr['apostrophe'] . '$1', $textnode->data ); // decades: '98.
-		$textnode->data = str_replace( $this->components['smartQuotesApostropheExceptionMatches'], $this->components['smartQuotesApostropheExceptionReplacements'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesApostropheWords'],   $chr['apostrophe'],      $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesApostropheDecades'], $chr['apostrophe'] . '$1', $textnode->data ); // decades: '98.
+		$textnode->data = str_replace( $components['smartQuotesApostropheExceptionMatches'], $components['smartQuotesApostropheExceptionReplacements'], $textnode->data );
 
 		// Quotes.
-		$textnode->data = str_replace( $this->components['smartQuotesBracketMatches'], $this->components['smartQuotesBracketReplacements'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpen'],         $this->chr['singleQuoteOpen'],  $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteClose'],        $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteOpenSpecial'],  $this->chr['singleQuoteOpen'],  $textnode->data ); // like _'¿hola?'_.
-		$textnode->data = preg_replace( $this->regex['smartQuotesSingleQuoteCloseSpecial'], $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpen'],         $this->chr['doubleQuoteOpen'],  $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteClose'],        $this->chr['doubleQuoteClose'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteOpenSpecial'],  $this->chr['doubleQuoteOpen'],  $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartQuotesDoubleQuoteCloseSpecial'], $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = str_replace( $components['smartQuotesBracketMatches'], $components['smartQuotesBracketReplacements'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleQuoteOpen'],         $chr['singleQuoteOpen'],  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleQuoteClose'],        $chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesSingleQuoteOpenSpecial'],  $chr['singleQuoteOpen'],  $textnode->data ); // like _'¿hola?'_.
+		$textnode->data = preg_replace( $regex['smartQuotesSingleQuoteCloseSpecial'], $chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoubleQuoteOpen'],         $chr['doubleQuoteOpen'],  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoubleQuoteClose'],        $chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoubleQuoteOpenSpecial'],  $chr['doubleQuoteOpen'],  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartQuotesDoubleQuoteCloseSpecial'], $chr['doubleQuoteClose'], $textnode->data );
 
 		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
-		$textnode->data = str_replace( "'", $this->chr['singleQuoteClose'], $textnode->data );
-		$textnode->data = str_replace( '"', $this->chr['doubleQuoteClose'], $textnode->data );
+		$textnode->data = str_replace( "'", $chr['singleQuoteClose'], $textnode->data );
+		$textnode->data = str_replace( '"', $chr['doubleQuoteClose'], $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
 		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
@@ -1301,63 +1271,72 @@ class PHP_Typography {
 	 * Apply smart dashes (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_dashes( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartDashes'] ) ) {
+	function smart_dashes( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartDashes'] ) ) {
 			return;
 		}
 
-		$textnode->data = str_replace( '---', $this->chr['emDash'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartDashesParentheticalDoubleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->data );
-		$textnode->data = str_replace( '--', $this->chr['enDash'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartDashesParentheticalSingleDash'], "\$1{$this->chr['parentheticalDash']}\$2", $textnode->data );
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
 
-		$textnode->data = preg_replace( $this->regex['smartDashesEnDashAll'],          '$1' . $this->chr['enDash'] . '$2',        $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartDashesEnDashWords'] ,       '$1' . $this->chr['enDash'] . '$2',        $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartDashesEnDashNumbers'],      '$1' . $this->chr['intervalDash'] . '$2',  $textnode->data );
-		$textnode->data = preg_replace( $this->regex['smartDashesEnDashPhoneNumbers'], '$1' . $this->chr['noBreakHyphen'] . '$2', $textnode->data ); // phone numbers.
-		$textnode->data = str_replace( "xn{$this->chr['enDash']}",                     'xn--',                                    $textnode->data ); // revert messed-up punycode.
+		$textnode->data = str_replace( '---', $chr['emDash'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesParentheticalDoubleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
+		$textnode->data = str_replace( '--', $chr['enDash'], $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
+
+		$textnode->data = preg_replace( $regex['smartDashesEnDashAll'],          '$1' . $chr['enDash'] . '$2',        $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . $chr['enDash'] . '$2',        $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$2',  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . $chr['noBreakHyphen'] . '$2', $textnode->data ); // phone numbers.
+		$textnode->data = str_replace( "xn{$chr['enDash']}",                     'xn--',                              $textnode->data ); // revert messed-up punycode.
 
 		// Revert dates back to original formats
 		// YYYY-MM-DD.
-		$textnode->data = preg_replace( $this->regex['smartDashesYYYY-MM-DD'], '$1-$2-$3',     $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesYYYY-MM-DD'], '$1-$2-$3',     $textnode->data );
 		// MM-DD-YYYY or DD-MM-YYYY.
-		$textnode->data = preg_replace( $this->regex['smartDashesMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
 		// YYYY-MM or YYYY-DDDD next.
-		$textnode->data = preg_replace( $this->regex['smartDashesYYYY-MM'],    '$1-$2',        $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesYYYY-MM'],    '$1-$2',        $textnode->data );
 	}
 
 	/**
 	 * Apply smart ellipses (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	 function smart_ellipses( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartEllipses'] ) ) {
+	 function smart_ellipses( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartEllipses'] ) ) {
 			return;
 		}
 
-		$textnode->data = str_replace( array( '....', '. . . .' ), '.' . $this->chr['ellipses'], $textnode->data );
-		$textnode->data = str_replace( array( '...', '. . .' ),   $this->chr['ellipses'],       $textnode->data );
+		$ellipses = $settings->chr( 'ellipses' );
+
+		$textnode->data = str_replace( array( '....', '. . . .' ), '.' . $ellipses, $textnode->data );
+		$textnode->data = str_replace( array( '...', '. . .' ),          $ellipses, $textnode->data );
 	}
 
 	/**
 	 * Apply smart diacritics (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_diacritics( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartDiacritics'] ) ) {
+	function smart_diacritics( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartDiacritics'] ) ) {
 			return; // abort.
 		}
 
-		if ( ! empty( $this->settings['diacriticReplacement'] ) &&
-			 ! empty( $this->settings['diacriticReplacement']['patterns'] ) &&
-			 ! empty( $this->settings['diacriticReplacement']['replacements'] ) ) {
+		if ( ! empty( $settings['diacriticReplacement'] ) &&
+			 ! empty( $settings['diacriticReplacement']['patterns'] ) &&
+			 ! empty( $settings['diacriticReplacement']['replacements'] ) ) {
 
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-			$replacements = $this->settings['diacriticReplacement']['replacements'];
-			$textnode->data = preg_replace_callback( $this->settings['diacriticReplacement']['patterns'], function( $match ) use ( $replacements ) {
+			$replacements = $settings['diacriticReplacement']['replacements'];
+			$textnode->data = preg_replace_callback( $settings['diacriticReplacement']['patterns'], function( $match ) use ( $replacements ) {
 		 		if ( isset( $replacements[ $match[0] ] ) ) {
 		 			return $replacements[ $match[0] ];
 		 		} else {
@@ -1371,69 +1350,73 @@ class PHP_Typography {
 	 * Apply smart marks (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_marks( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartMarks'] ) ) {
+	function smart_marks( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartMarks'] ) ) {
 			return;
 		}
 
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
+		$components = $settings->get_components();
+
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$textnode->data = preg_replace( $this->regex['smartMarksEscape501(c)'], '$1' . $this->components['escapeMarker'] . '$2' . $this->components['escapeMarker'] . '$3', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMarksEscape501(c)'], '$1' . $components['escapeMarker'] . '$2' . $components['escapeMarker'] . '$3', $textnode->data );
 
 		// Replace marks.
-		$textnode->data = str_replace( array( '(c)', '(C)' ),   $this->chr['copyright'],      $textnode->data );
-		$textnode->data = str_replace( array( '(r)', '(R)' ),   $this->chr['registeredMark'], $textnode->data );
-		$textnode->data = str_replace( array( '(p)', '(P)' ),   $this->chr['soundCopyMark'],  $textnode->data );
-		$textnode->data = str_replace( array( '(sm)', '(SM)' ), $this->chr['serviceMark'],    $textnode->data );
-		$textnode->data = str_replace( array( '(tm)', '(TM)' ), $this->chr['tradeMark'],      $textnode->data );
+		$textnode->data = str_replace( array( '(c)', '(C)' ),   $chr['copyright'],      $textnode->data );
+		$textnode->data = str_replace( array( '(r)', '(R)' ),   $chr['registeredMark'], $textnode->data );
+		$textnode->data = str_replace( array( '(p)', '(P)' ),   $chr['soundCopyMark'],  $textnode->data );
+		$textnode->data = str_replace( array( '(sm)', '(SM)' ), $chr['serviceMark'],    $textnode->data );
+		$textnode->data = str_replace( array( '(tm)', '(TM)' ), $chr['tradeMark'],      $textnode->data );
 
 		// Un-escape escaped sequences.
-		$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
+		$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );
 	}
 
 	/**
 	 * Apply smart math (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_math( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartMath'] ) ) {
+	function smart_math( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartMath'] ) ) {
 			return;
 		}
 
+		// Various special characters and regular expressions.
+		$chr   = $settings->get_named_characters();
+		$regex = $settings->get_regular_expressions();
+
 		// First, let's find math equations.
-		$textnode->data = preg_replace_callback( $this->regex['smartMathEquation'], array( $this, '_smart_math_callback' ), $textnode->data );
+		$textnode->data = preg_replace_callback( $regex['smartMathEquation'], function( array $matches ) use ( $chr ) {
+			$matches[0] = str_replace( '-', $chr['minus'],          $matches[0] );
+			$matches[0] = str_replace( '/', $chr['division'],       $matches[0] );
+			$matches[0] = str_replace( 'x', $chr['multiplication'], $matches[0] );
+			$matches[0] = str_replace( '*', $chr['multiplication'], $matches[0] );
+
+			return $matches[0];
+		}, $textnode->data );
 
 		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
-		$textnode->data = preg_replace( $this->regex['smartMathRevertRange'], '$1-$2', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMathRevertRange'], '$1-$2', $textnode->data );
 
 		// Revert fractions to basic slash.
 		// We'll leave styling fractions to smart_fractions.
-		$textnode->data = preg_replace( $this->regex['smartMathRevertFraction'], '$1/$2', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMathRevertFraction'], '$1/$2', $textnode->data );
 
 		// Revert date back to original formats.
 		// YYYY-MM-DD.
-		$textnode->data = preg_replace( $this->regex['smartMathRevertDateYYYY-MM-DD'], '$1-$2-$3', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMathRevertDateYYYY-MM-DD'], '$1-$2-$3',     $textnode->data );
 		// MM-DD-YYYY or DD-MM-YYYY.
-		$textnode->data = preg_replace( $this->regex['smartMathRevertDateMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMathRevertDateMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
 		// YYYY-MM or YYYY-DDD next.
-		$textnode->data = preg_replace( $this->regex['smartMathRevertDateYYYY-MM'], '$1-$2', $textnode->data );
+		$textnode->data = preg_replace( $regex['smartMathRevertDateYYYY-MM'],    '$1-$2',        $textnode->data );
 		// MM/DD/YYYY or DD/MM/YYYY.
-		$textnode->data = preg_replace( $this->regex['smartMathRevertDateMM/DD/YYYY'], '$1$3/$2$4/$5', $textnode->data );
-	}
-
-	/**
-	 * Callback function for smart math.
-	 *
-	 * @param array $matches Regex matches.
-	 */
-	private function _smart_math_callback( array $matches ) {
-		$matches[0] = str_replace( '-', $this->chr['minus'], $matches[0] );
-		$matches[0] = str_replace( '/', $this->chr['division'], $matches[0] );
-		$matches[0] = str_replace( 'x', $this->chr['multiplication'], $matches[0] );
-		$matches[0] = str_replace( '*', $this->chr['multiplication'], $matches[0] );
-
-		return $matches[0];
+		$textnode->data = preg_replace( $regex['smartMathRevertDateMM/DD/YYYY'], '$1$3/$2$4/$5', $textnode->data );
 	}
 
 	/**
@@ -1441,14 +1424,15 @@ class PHP_Typography {
 	 * Purposefully seperated from smart_math because of HTML code injection.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_exponents( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartExponents'] ) ) {
+	function smart_exponents( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartExponents'] ) ) {
 			return;
 		}
 
 		// Handle exponents (ie. 4^2).
-		$textnode->data = preg_replace( $this->regex['smartExponents'], '$1<sup>$2</sup>', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'smartExponents' ), '$1<sup>$2</sup>', $textnode->data );
 	}
 
 	/**
@@ -1458,30 +1442,36 @@ class PHP_Typography {
 	 * Purposefully seperated from smart_math because of HTML code injection.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_fractions( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartFractions'] ) && empty( $this->settings['fractionSpacing'] ) ) {
+	function smart_fractions( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartFractions'] ) && empty( $settings['fractionSpacing'] ) ) {
 			return;
 		}
 
-		if ( ! empty( $this->settings['fractionSpacing'] ) && ! empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1' . $this->chr['noBreakNarrowSpace'] . '$2', $textnode->data );
-		} elseif ( ! empty( $this->settings['fractionSpacing'] ) && empty( $this->settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $this->regex['smartFractionsSpacing'], '$1' . $this->chr['noBreakSpace'] . '$2', $textnode->data );
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
+		$components = $settings->get_components();
+
+		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
+			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $chr['noBreakNarrowSpace'] . '$2', $textnode->data );
+		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
+			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $chr['noBreakSpace'] . '$2', $textnode->data );
 		}
 
-		if ( ! empty( $this->settings['smartFractions'] ) ) {
+		if ( ! empty( $settings['smartFractions'] ) ) {
 			// Escape sequences we don't want fractionified.
-			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['smartFractionsEscapeMM/YYYY'],   '$1' . $this->components['escapeMarker'] . '$2$3$4', $textnode->data );
+			$textnode->data = preg_replace( $regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $components['escapeMarker'] . '$2$3$4', $textnode->data );
+			$textnode->data = preg_replace( $regex['smartFractionsEscapeMM/YYYY'],   '$1' . $components['escapeMarker'] . '$2$3$4', $textnode->data );
 
 			// Replace fractions.
 			$numerator_class   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
 			$denominator_class = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
-			$textnode->data = preg_replace( $this->regex['smartFractionsReplacement'], "<sup{$numerator_class}>\$1</sup>" . $this->chr['fractionSlash'] . "<sub{$denominator_class}>\$2</sub>\$3", $textnode->data );
+			$textnode->data    = preg_replace( $regex['smartFractionsReplacement'], "<sup{$numerator_class}>\$1</sup>" . $chr['fractionSlash'] . "<sub{$denominator_class}>\$2</sub>\$3", $textnode->data );
 
 			// Unescape escaped sequences.
-			$textnode->data = str_replace( $this->components['escapeMarker'], '', $textnode->data );
+			$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );
 		}
 	}
 
@@ -1491,23 +1481,25 @@ class PHP_Typography {
 	 * Call before style_numbers.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_ordinal_suffix( \DOMText $textnode ) {
-		if ( empty( $this->settings['smartOrdinalSuffix'] ) ) {
+	function smart_ordinal_suffix( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['smartOrdinalSuffix'] ) ) {
 			return;
 		}
 
 		$ordinal_class = empty( $this->css_classes['ordinal'] ) ? '' : ' class="' . $this->css_classes['ordinal'] . '"';
-		$textnode->data = preg_replace( $this->regex['smartOrdinalSuffix'], '$1' . "<sup{$ordinal_class}>$2</sup>", $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'smartOrdinalSuffix' ), '$1' . "<sup{$ordinal_class}>$2</sup>", $textnode->data );
 	}
 
 	/**
 	 * Prevent single character words from being alone (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function single_character_word_spacing( \DOMText $textnode ) {
-		if ( empty( $this->settings['singleCharacterWordSpacing'] ) ) {
+	function single_character_word_spacing( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['singleCharacterWordSpacing'] ) ) {
 			return;
 		}
 
@@ -1522,7 +1514,7 @@ class PHP_Typography {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
-		$textnode->data = preg_replace( $this->regex['singleCharacterWordSpacing'], '$1$2' . $this->chr['noBreakSpace'], $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'singleCharacterWordSpacing' ), '$1$2' . $settings->chr( 'noBreakSpace' ), $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
 		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
@@ -1539,39 +1531,49 @@ class PHP_Typography {
 	 * Apply spacing around dashes (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function dash_spacing( \DOMText $textnode ) {
-		if ( empty( $this->settings['dashSpacing'] ) ) {
+	function dash_spacing( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['dashSpacing'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['dashSpacingEmDash'],            $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->data );
-		$textnode->data = preg_replace( $this->regex['dashSpacingParentheticalDash'], $this->chr['parentheticalDashSpace'] . '$1$2' . $this->chr['parentheticalDashSpace'], $textnode->data );
-		$textnode->data = preg_replace( $this->regex['dashSpacingIntervalDash'],      $this->chr['intervalDashSpace'] . '$1$2' . $this->chr['intervalDashSpace'],           $textnode->data );
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
+
+		$textnode->data = preg_replace( $regex['dashSpacingEmDash'],            $chr['intervalDashSpace'] . '$1$2' . $chr['intervalDashSpace'],           $textnode->data );
+		$textnode->data = preg_replace( $regex['dashSpacingParentheticalDash'], $chr['parentheticalDashSpace'] . '$1$2' . $chr['parentheticalDashSpace'], $textnode->data );
+		$textnode->data = preg_replace( $regex['dashSpacingIntervalDash'],      $chr['intervalDashSpace'] . '$1$2' . $chr['intervalDashSpace'],           $textnode->data );
 	}
 
 	/**
 	 * Collapse spaces (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function space_collapse( \DOMText $textnode ) {
-		if ( empty( $this->settings['spaceCollapse'] ) ) {
+	function space_collapse( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['spaceCollapse'] ) ) {
 			return;
 		}
 
+		// Various special characters and regular expressions.
+		$chr        = $settings->get_named_characters();
+		$regex      = $settings->get_regular_expressions();
+
 		// Normal spacing.
-		$textnode->data = preg_replace( $this->regex['spaceCollapseNormal'], ' ', $textnode->data );
+		$textnode->data = preg_replace( $regex['spaceCollapseNormal'], ' ', $textnode->data );
 
 		// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
-		$textnode->data = preg_replace( $this->regex['spaceCollapseNonBreakable'], $this->chr['noBreakSpace'], $textnode->data );
+		$textnode->data = preg_replace( $regex['spaceCollapseNonBreakable'], $chr['noBreakSpace'], $textnode->data );
 
 		// For any other spaceing, replace with the first occurance of an unusual space character.
-		$textnode->data = preg_replace( $this->regex['spaceCollapseOther'], '$1', $textnode->data );
+		$textnode->data = preg_replace( $regex['spaceCollapseOther'], '$1', $textnode->data );
 
 		// Remove all spacing at beginning of block level elements.
 		if ( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
-			$textnode->data = preg_replace( $this->regex['spaceCollapseBlockStart'], '', $textnode->data );
+			$textnode->data = preg_replace( $regex['spaceCollapseBlockStart'], '', $textnode->data );
 		}
 	}
 
@@ -1579,13 +1581,14 @@ class PHP_Typography {
 	 * Prevent values being split from their units (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function unit_spacing( \DOMText $textnode ) {
-		if ( empty( $this->settings['unitSpacing'] ) ) {
+	function unit_spacing( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['unitSpacing'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['unitSpacingUnitPattern'], '$1' . $this->chr['noBreakNarrowSpace'] . '$2', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->chr( 'noBreakNarrowSpace' ) . '$2', $textnode->data );
 	}
 
 	/**
@@ -1598,39 +1601,49 @@ class PHP_Typography {
 	 * If there already is a space there, it is replaced.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function french_punctuation_spacing( \DOMText $textnode ) {
-		if ( empty( $this->settings['frenchPunctuationSpacing'] ) ) {
+	function french_punctuation_spacing( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['frenchPunctuationSpacing'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingNarrow'],       '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingFull'],         '$1' . $this->chr['noBreakSpace'] . '$3$4',       $textnode->data );
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingSemicolon'],    '$1' . $this->chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $this->chr['noBreakNarrowSpace'] . '$4', $textnode->data );
+		// Various special characters and regular expressions.
+		$chr   = $settings->get_named_characters();
+		$regex = $settings->get_regular_expressions();
+
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . $chr['noBreakSpace'] . '$3$4',       $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $chr['noBreakNarrowSpace'] . '$4', $textnode->data );
 	}
 
 	/**
 	 * Wrap hard hypens with zero-width spaces (if enabled).
 	 *
-	 * @param array $parsed_text_tokens The tokenized content of a textnode.
+	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
+	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_hard_hyphens( array $parsed_text_tokens ) {
-		if ( ! empty( $this->settings['hyphenHardWrap'] ) || ! empty( $this->settings['smartDashes'] ) ) {
+	function wrap_hard_hyphens( array $parsed_text_tokens, Settings $settings ) {
+		if ( ! empty( $settings['hyphenHardWrap'] ) || ! empty( $settings['smartDashes'] ) ) {
+
+			// Various special characters and regular expressions.
+			$chr        = $settings->get_named_characters();
+			$regex      = $settings->get_regular_expressions();
+			$components = $settings->get_components();
 
 			foreach ( $parsed_text_tokens as &$text_token ) {
+				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
+					$text_token['value'] = str_replace( $components['hyphensArray'], '-' . $chr['zeroWidthSpace'], $text_token['value'] );
+					$text_token['value'] = str_replace( '_', '_' . $chr['zeroWidthSpace'], $text_token['value'] );
+					$text_token['value'] = str_replace( '/', '/' . $chr['zeroWidthSpace'], $text_token['value'] );
 
-				if ( isset( $this->settings['hyphenHardWrap'] ) && $this->settings['hyphenHardWrap'] ) {
-					$text_token['value'] = str_replace( $this->components['hyphensArray'], '-' . $this->chr['zeroWidthSpace'], $text_token['value'] );
-					$text_token['value'] = str_replace( '_', '_' . $this->chr['zeroWidthSpace'], $text_token['value'] );
-					$text_token['value'] = str_replace( '/', '/' . $this->chr['zeroWidthSpace'], $text_token['value'] );
-
-					$text_token['value'] = preg_replace( $this->regex['wrapHardHyphensRemoveEndingSpace'], '$1', $text_token['value'] );
+					$text_token['value'] = preg_replace( $regex['wrapHardHyphensRemoveEndingSpace'], '$1', $text_token['value'] );
 				}
 
-				if ( ! empty( $this->settings['smartDashes'] ) ) {
+				if ( ! empty( $settings['smartDashes'] ) ) {
 					// Handled here because we need to know we are inside a word and not a URL.
-					$text_token['value'] = str_replace( '-', $this->chr['hyphen'], $text_token['value'] );
+					$text_token['value'] = str_replace( '-', $chr['hyphen'], $text_token['value'] );
 				}
 			}
 		}
@@ -1642,80 +1655,80 @@ class PHP_Typography {
 	 * Prevent widows (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function dewidow( \DOMText $textnode ) {
+	function dewidow( \DOMText $textnode, Settings $settings ) {
 		// Intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser.
 		// Intervening tags will only interfere if they separate the widow from previous or preceding whitespace.
-		if ( empty( $this->settings['dewidow'] ) || empty( $this->settings['dewidowMaxPull'] ) || empty( $this->settings['dewidowMaxLength'] ) ) {
+		if ( empty( $settings['dewidow'] ) || empty( $settings['dewidowMaxPull'] ) || empty( $settings['dewidowMaxLength'] ) ) {
 			return;
 		}
 
 		if ( '' === $this->get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = preg_replace_callback( $this->regex['dewidow'], array( $this, '_dewidow_callback' ), $textnode->data );
+			$that = $this;
+			$chr  = $settings->get_named_characters();
+			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $that, $chr ) {
+				$func = $that->str_functions[ mb_detect_encoding( $widow[0], $that->encodings, true ) ];
+
+				// If we are here, we know that widows are being protected in some fashion
+				// with that, we will assert that widows should never be hyphenated or wrapped
+				// as such, we will strip soft hyphens and zero-width-spaces.
+				$widow['widow']    = str_replace( $chr['zeroWidthSpace'], '', $widow['widow'] ); // TODO: check if this can match here.
+				$widow['widow']    = str_replace( $chr['softHyphen'],     '', $widow['widow'] ); // TODO: check if this can match here.
+				$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", $chr['noBreakSpace'], $widow['trailing'] );
+				$widow['trailing'] = str_replace( $chr['zeroWidthSpace'], '', $widow['trailing'] );
+				$widow['trailing'] = str_replace( $chr['softHyphen'],     '', $widow['trailing'] );
+
+				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
+				if ( '' === $widow['space_before'] || strstr( $chr['noBreakSpace'], $widow['space_before'] ) ) {
+					return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
+				}
+
+				// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
+				if ( $func['strlen']( $widow['neighbor'] ) > $settings['dewidowMaxPull'] ||
+					 $func['strlen']( $widow['widow'] ) > $settings['dewidowMaxLength'] ) {
+						return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
+				}
+
+				// Never replace thin and hair spaces with &nbsp;.
+				switch ( $widow['space_between'] ) {
+					case $chr['thinSpace']:
+					case $chr['hairSpace']:
+						return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
+				}
+
+				// Let's protect some widows!
+				return $widow['space_before'] . $widow['neighbor'] . $chr['noBreakSpace'] . $widow['widow'] . $widow['trailing'];
+			}, $textnode->data );
 		}
-	}
-
-	/**
-	 * Callback function for de-widowing.
-	 *
-	 * @param array $widow Regex matching array.
-	 * @return string
-	 */
-	private function _dewidow_callback( array $widow ) {
-		$func = $this->str_functions[ mb_detect_encoding( $widow[0], $this->encodings, true ) ];
-
-		// If we are here, we know that widows are being protected in some fashion
-		// with that, we will assert that widows should never be hyphenated or wrapped
-		// as such, we will strip soft hyphens and zero-width-spaces.
-		$widow['widow']    = str_replace( $this->chr['zeroWidthSpace'], '', $widow['widow'] ); // TODO: check if this can match here.
-		$widow['widow']    = str_replace( $this->chr['softHyphen'],     '', $widow['widow'] ); // TODO: check if this can match here.
-		$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", $this->chr['noBreakSpace'], $widow['trailing'] );
-		$widow['trailing'] = str_replace( $this->chr['zeroWidthSpace'], '', $widow['trailing'] );
-		$widow['trailing'] = str_replace( $this->chr['softHyphen'],     '', $widow['trailing'] );
-
-		// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
-		if ( '' === $widow['space_before'] || strstr( $this->chr['noBreakSpace'], $widow['space_before'] ) ) {
-			return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-		}
-
-		// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
-		if ( $func['strlen']( $widow['neighbor'] ) > $this->settings['dewidowMaxPull'] ||
-			 $func['strlen']( $widow['widow'] ) > $this->settings['dewidowMaxLength'] ) {
-				return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-		}
-
-		// Never replace thin and hair spaces with &nbsp;.
-		switch ( $widow['space_between'] ) {
-			case $this->chr['thinSpace']:
-			case $this->chr['hairSpace']:
-				return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-		}
-
-		// Let's protect some widows!
-		return $widow['space_before'] . $widow['neighbor'] . $this->chr['noBreakSpace'] . $widow['widow'] . $widow['trailing'];
 	}
 
 	/**
 	 * Wrap URL parts zero-width spaces (if enabled).
 	 *
-	 * @param array $parsed_text_tokens The tokenized content of a textnode.
+	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
+	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_urls( array $parsed_text_tokens ) {
-		if ( empty( $this->settings['urlWrap'] ) || empty( $this->settings['urlMinAfterWrap'] ) ) {
+	function wrap_urls( array $parsed_text_tokens, Settings $settings ) {
+		if ( empty( $settings['urlWrap'] ) || empty( $settings['urlMinAfterWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
 
+		// Various special characters and regular expressions.
+		$chr   = $settings->get_named_characters();
+		$regex = $settings->get_regular_expressions();
+
 		// Test for and parse urls.
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( $this->regex['wrapUrlsPattern'], $text_token['value'], $url_match ) ) {
+			if ( preg_match( $regex['wrapUrlsPattern'], $text_token['value'], $url_match ) ) {
 
 				// $url_match['schema'] holds "http://".
 				// $url_match['domain'] holds "subdomains.domain.tld".
 				// $url_match['path']   holds the path after the domain.
-				$http = ( $url_match['schema'] ) ? $url_match[1] . $this->chr['zeroWidthSpace'] : '';
+				$http = ( $url_match['schema'] ) ? $url_match[1] . $chr['zeroWidthSpace'] : '';
 
-				$domain_parts = preg_split( $this->regex['wrapUrlsDomainParts'], $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
+				$domain_parts = preg_split( $regex['wrapUrlsDomainParts'], $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 
 				// This is a hack, but it works.
 				// First, we hyphenate each part, we need it formated like a group of words.
@@ -1725,12 +1738,12 @@ class PHP_Typography {
 				}
 
 				// Do the hyphenation.
-				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $this->chr['zeroWidthSpace'] );
+				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $settings, $chr['zeroWidthSpace'] );
 
 				// Restore format.
 				foreach ( $parsed_words_like as $key => $parsed_word ) {
 					if ( $key > 0 && 1 === strlen( $parsed_word['value'] ) ) {
-						$domain_parts[ $key ] = $this->chr['zeroWidthSpace'] . $parsed_word['value'];
+						$domain_parts[ $key ] = $chr['zeroWidthSpace'] . $parsed_word['value'];
 					} else {
 						$domain_parts[ $key ] = $parsed_word['value'];
 					}
@@ -1744,10 +1757,10 @@ class PHP_Typography {
 				$path_count = count( $path_parts );
 				$path = '';
 				foreach ( $path_parts as $index => $path_part ) {
-					if ( 0 === $index || $path_count - $index < $this->settings['urlMinAfterWrap'] ) {
+					if ( 0 === $index || $path_count - $index < $settings['urlMinAfterWrap'] ) {
 						$path .= $path_part;
 					} else {
-						$path .= $this->chr['zeroWidthSpace'] . $path_part;
+						$path .= $chr['zeroWidthSpace'] . $path_part;
 					}
 				}
 
@@ -1761,17 +1774,22 @@ class PHP_Typography {
 	/**
 	 * Wrap email parts zero-width spaces (if enabled).
 	 *
-	 * @param array $parsed_text_tokens The tokenized content of a textnode.
+	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
+	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_emails( array $parsed_text_tokens ) {
-		if ( empty( $this->settings['emailWrap'] ) ) {
+	function wrap_emails( array $parsed_text_tokens, Settings $settings ) {
+		if ( empty( $settings['emailWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
 
+		// Various special characters and regular expressions.
+		$chr   = $settings->get_named_characters();
+		$regex = $settings->get_regular_expressions();
+
 		// Test for and parse urls.
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( $this->regex['wrapEmailsMatchEmails'], $text_token['value'], $email_match ) ) {
-				$text_token['value'] = preg_replace( $this->regex['wrapEmailsReplaceEmails'], '$1' . $this->chr['zeroWidthSpace'], $text_token['value'] );
+			if ( preg_match( $regex['wrapEmailsMatchEmails'], $text_token['value'], $email_match ) ) {
+				$text_token['value'] = preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . $chr['zeroWidthSpace'], $text_token['value'] );
 			}
 		}
 
@@ -1785,13 +1803,14 @@ class PHP_Typography {
 	 * injected containing capital letters.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function style_caps( \DOMText $textnode ) {
-		if ( empty( $this->settings['styleCaps'] ) ) {
+	function style_caps( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['styleCaps'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleCaps'], '<span class="' . $this->css_classes['caps'] . '">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'styleCaps' ), '<span class="' . $this->css_classes['caps'] . '">$1</span>', $textnode->data );
 	}
 
 	/**
@@ -1842,22 +1861,24 @@ class PHP_Typography {
 	 * Only call if you are certain that no html tags have been injected containing numbers.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function style_numbers( \DOMText $textnode ) {
-		if ( empty( $this->settings['styleNumbers'] ) ) {
+	function style_numbers( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['styleNumbers'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleNumbers'], '<span class="' . $this->css_classes['numbers'] . '">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'styleNumbers' ), '<span class="' . $this->css_classes['numbers'] . '">$1</span>', $textnode->data );
 	}
 
 	/**
 	 * Wraps hanging punctuation in <span class="pull-*"> and <span class="push-*">, if enabled.
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function style_hanging_punctuation( \DOMText $textnode ) {
-		if ( empty( $this->settings['styleHangingPunctuation'] ) ) {
+	function style_hanging_punctuation( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['styleHangingPunctuation'] ) ) {
 			return;
 		}
 
@@ -1872,15 +1893,19 @@ class PHP_Typography {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationDouble'], '$1<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $this->regex['styleHangingPunctuationSingle'], '$1<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$2</span>$3', $textnode->data );
+		// Various special characters and regular expressions.
+		$chr   = $settings->get_named_characters();
+		$regex = $settings->get_regular_expressions();
+
+		$textnode->data = preg_replace( $regex['styleHangingPunctuationDouble'], '$1<span class="' . $this->css_classes['push-double'] . '"></span>' . $chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( $regex['styleHangingPunctuationSingle'], '$1<span class="' . $this->css_classes['push-single'] . '"></span>' . $chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$2</span>$3', $textnode->data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		} else {
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['push-double'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $this->regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['push-single'] . '"></span>' . $this->chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->css_classes['push-double'] . '"></span>' . $chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-double'] . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->css_classes['push-single'] . '"></span>' . $chr['zeroWidthSpace'] . '<span class="' . $this->css_classes['pull-single'] . '">$1</span>$2', $textnode->data );
 		}
 
 		// Remove any added characters.
@@ -1899,41 +1924,44 @@ class PHP_Typography {
 	 * Only call if you are certain that no html tags have been injected containing "&amp;".
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 */
-	function style_ampersands( \DOMText $textnode ) {
-		if ( empty( $this->settings['styleAmpersands'] ) ) {
+	function style_ampersands( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['styleAmpersands'] ) ) {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex['styleAmpersands'], '<span class="' . $this->css_classes['amp'] . '">$1</span>', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'styleAmpersands' ), '<span class="' . $this->css_classes['amp'] . '">$1</span>', $textnode->data );
 	}
 
 	/**
 	 * Styles initial quotes and guillemets (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
 	 * @param boolean  $is_title Default false.
 	 */
-	function style_initial_quotes( \DOMText $textnode, $is_title = false ) {
-		if ( empty( $this->settings['styleInitialQuotes'] ) || empty( $this->settings['initialQuoteTags'] ) ) {
+	function style_initial_quotes( \DOMText $textnode, Settings $settings, $is_title = false ) {
+		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) ) {
 			return;
 		}
 
 		if ( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
 
-			$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+			$func            = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
+			$chr             = $settings->get_named_characters();
 
 			switch ( $first_character ) {
 				case "'":
-				case $this->chr['singleQuoteOpen']:
-				case $this->chr['singleLow9Quote']:
+				case $chr['singleQuoteOpen']:
+				case $chr['singleLow9Quote']:
 				case ',':
 				case '"':
-				case $this->chr['doubleQuoteOpen']:
-				case $this->chr['guillemetOpen']:
-				case $this->chr['guillemetClose']:
-				case $this->chr['doubleLow9Quote']:
+				case $chr['doubleQuoteOpen']:
+				case $chr['guillemetOpen']:
+				case $chr['guillemetClose']:
+				case $chr['doubleLow9Quote']:
 
 					$block_level_parent = $this->get_block_parent( $textnode );
 					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false; // @codingStandardsIgnoreLine.
@@ -1943,11 +1971,11 @@ class PHP_Typography {
 						$block_level_parent = 'h2';
 					}
 
-					if ( $block_level_parent && isset( $this->settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+					if ( $block_level_parent && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
 						switch ( $first_character ) {
 							case "'":
-							case $this->chr['singleQuoteOpen']:
-							case $this->chr['singleLow9Quote']:
+							case $chr['singleQuoteOpen']:
+							case $chr['singleLow9Quote']:
 							case ',':
 								$span_class = 'quo';
 								break;
@@ -1968,11 +1996,12 @@ class PHP_Typography {
 	 * Actual work is done in do_hyphenate().
 	 *
 	 * @param array    $parsed_text_tokens Filtered to words.
+	 * @param Settings $settings           The settings to apply.
 	 * @param boolean  $is_title           Flag to indicate title fragments. Optional. Default false.
 	 * @param \DOMText $textnode           The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
 	 */
-	function hyphenate( $parsed_text_tokens, $is_title = false, \DOMText $textnode = null ) {
-		if ( empty( $this->settings['hyphenation'] ) ) {
+	function hyphenate( $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+		if ( empty( $settings['hyphenation'] ) ) {
 			return $parsed_text_tokens; // abort.
 		}
 
@@ -1986,12 +2015,12 @@ class PHP_Typography {
 			}
 		}
 
-		if ( empty( $this->settings['hyphenateTitle'] ) && ( $is_title || $is_heading ) ) {
+		if ( empty( $settings['hyphenateTitle'] ) && ( $is_title || $is_heading ) ) {
 			return $parsed_text_tokens; // abort.
 		}
 
 		// Call functionality as seperate function so it can be run without test for setting['hyphenation'] - such as with url wrapping.
-		return $this->do_hyphenate( $parsed_text_tokens );
+		return $this->do_hyphenate( $parsed_text_tokens, $settings );
 	}
 
 	/**
@@ -2000,11 +2029,12 @@ class PHP_Typography {
 	 * Calls hyphenate() on the component words.
 	 *
 	 * @param array    $parsed_text_tokens Filtered to compound words.
-	 * @param boolean  $is_title Flag to indicate title fragments. Optional. Default false.
-	 * @param \DOMText $textnode The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
+	 * @param Settings $settings           The settings to apply.
+	 * @param boolean  $is_title           Flag to indicate title fragments. Optional. Default false.
+	 * @param \DOMText $textnode           The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
 	 */
-	function hyphenate_compounds( array $parsed_text_tokens, $is_title = false, \DOMText $textnode = null ) {
-		if ( empty( $this->settings['hyphenateCompounds'] ) ) {
+	function hyphenate_compounds( array $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+		if ( empty( $settings['hyphenateCompounds'] ) ) {
 			return $parsed_text_tokens; // abort.
 		}
 
@@ -2015,7 +2045,7 @@ class PHP_Typography {
 				$component_words[] = array( 'value' => $word_part );
 			}
 
-			$parsed_text_tokens[ $key ]['value'] = array_reduce( $this->hyphenate( $component_words, $is_title, $textnode ), function( $carry, $item ) {
+			$parsed_text_tokens[ $key ]['value'] = array_reduce( $this->hyphenate( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
 				return $carry . $item['value'];
 			});
 		}
@@ -2026,19 +2056,21 @@ class PHP_Typography {
 	/**
 	 * Retrieve the hyphenator instance.
 	 *
+	 * @param Settings $settings The settings to apply.
+	 *
 	 * @return \PHP_Typography\
 	 */
-	public function get_hyphenator() {
+	public function get_hyphenator( Settings $settings ) {
 		if ( ! isset( $this->hyphenator ) ) {
 
 			// Create and initialize our hyphenator instance.
 			$this->hyphenator = new Hyphenator(
-				isset( $this->settings['hyphenLanguage'] )  ? $this->settings['hyphenLanguage']  : null,
-				isset( $this->settings['hyphenationCustomExceptions'] ) ? $this->settings['hyphenationCustomExceptions'] : array()
+				isset( $settings['hyphenLanguage'] )              ? $settings['hyphenLanguage'] : null,
+				isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : array()
 			);
 		} else {
-			$this->hyphenator->set_language( $this->settings['hyphenLanguage'] );
-			$this->hyphenator->set_custom_exceptions( isset( $this->settings['hyphenationCustomExceptions'] ) ? $this->settings['hyphenationCustomExceptions'] : array() );
+			$this->hyphenator->set_language( $settings['hyphenLanguage'] );
+			$this->hyphenator->set_custom_exceptions( isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : array() );
 		}
 
 		return $this->hyphenator;
@@ -2047,21 +2079,23 @@ class PHP_Typography {
 	/**
 	 * Really hyphenate given text fragment.
 	 *
-	 * @param  array  $parsed_text_tokens Filtered to words.
-	 * @param  string $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
-	 * @return array  The hyphenated text token.
+	 * @param array    $parsed_text_tokens Filtered to words.
+	 * @param Settings $settings          The settings to apply.
+	 * @param string   $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
+	 *
+	 * @return array The hyphenated text token.
 	 */
-	function do_hyphenate( array $parsed_text_tokens, $hyphen = null ) {
-		if ( empty( $this->settings['hyphenMinLength'] ) || empty( $this->settings['hyphenMinBefore'] ) ) {
+	function do_hyphenate( array $parsed_text_tokens, Settings $settings, $hyphen = null ) {
+		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {
 			return $parsed_text_tokens;
 		}
 
 		// Default to &shy; is $hyphen is not set.
 		if ( ! isset( $hyphen ) ) {
-			$hyphen = $this->settings->chr( 'softHyphen' );
+			$hyphen = $settings->chr( 'softHyphen' );
 		}
 
-		return $this->get_hyphenator()->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $this->settings['hyphenateTitleCase'] ), $this->settings['hyphenMinLength'], $this->settings['hyphenMinBefore'], $this->settings['hyphenMinAfter'] );
+		return $this->get_hyphenator( $settings )->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $settings['hyphenateTitleCase'] ), $settings['hyphenMinLength'], $settings['hyphenMinBefore'], $settings['hyphenMinAfter'] );
 	}
 
 	/**

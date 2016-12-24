@@ -145,8 +145,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo = $this->typo;
 
 		$typo->set_classes_to_ignore( 'foo bar' );
-		$this->assertContains( 'foo', $this->typo->settings['ignoreClasses'] );
-		$this->assertContains( 'bar', $this->typo->settings['ignoreClasses'] );
+		$this->assertContains( 'foo', $typo->settings['ignoreClasses'] );
+		$this->assertContains( 'bar', $typo->settings['ignoreClasses'] );
 
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
@@ -154,7 +154,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 			     <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
-		$this->typo->set_smart_quotes( true );
+		$typo->set_smart_quotes( true );
 		$this->assertSame( $expected, clean_html( $typo->process( $html ) ) );
     }
 
@@ -168,8 +168,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo = $this->typo;
 
 		$typo->set_ids_to_ignore( 'foobar barfoo' );
-		$this->assertContains( 'foobar', $this->typo->settings['ignoreIDs'] );
-		$this->assertContains( 'barfoo', $this->typo->settings['ignoreIDs'] );
+		$this->assertContains( 'foobar', $typo->settings['ignoreIDs'] );
+		$this->assertContains( 'barfoo', $typo->settings['ignoreIDs'] );
 
 		$html = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 			     <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
@@ -177,7 +177,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$expected = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 			     <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
-		$this->typo->set_smart_quotes( true );
+		$typo->set_smart_quotes( true );
 		$this->assertSame( $expected, clean_html( $typo->process( $html ) ) );
     }
 
@@ -901,7 +901,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_length_hyphenation( 2 );
 		$this->assertSame( 2, $this->typo->settings['hyphenMinLength'] );
 
-		$this->typo->get_hyphenator();
+		$this->typo->get_hyphenator( $this->typo->settings );
 		$this->typo->set_min_length_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinLength'] );
     }
@@ -919,7 +919,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_before_hyphenation( 1 );
 		$this->assertSame( 1, $this->typo->settings['hyphenMinBefore'] );
 
-		$this->typo->get_hyphenator();
+		$this->typo->get_hyphenator( $this->typo->settings );
 		$this->typo->set_min_before_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinBefore'] );
 
@@ -938,7 +938,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$this->typo->set_min_after_hyphenation( 1 );
 		$this->assertSame( 1, $this->typo->settings['hyphenMinAfter'] );
 
-		$this->typo->get_hyphenator();
+		$this->typo->get_hyphenator( $this->typo->settings );
 		$this->typo->set_min_after_hyphenation( 66 );
 		$this->assertSame( 66, $this->typo->settings['hyphenMinAfter'] );
     }
@@ -1006,7 +1006,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
  		$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
  		$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
 
- 		$this->typo->get_hyphenator();
+ 		$this->typo->get_hyphenator( $this->typo->settings );
  		$exceptions = array( "bar-foo" );
  		$typo->set_hyphenation_exceptions( $exceptions );
  		$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
@@ -1027,20 +1027,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_hyphenation_exceptions( $exceptions );
     	$this->assertContainsOnly( 'string', $typo->settings['hyphenationCustomExceptions'] );
     	$this->assertCount( 2, $typo->settings['hyphenationCustomExceptions'] );
-    }
-
-    public function test_update_state() {
-    	$typo = $this->typo;
-
-    	$this->assertAttributeEmpty( 'chr', $typo );
-    	$this->assertAttributeEmpty( 'components', $typo );
-    	$this->assertAttributeEmpty( 'regex', $typo );
-
-    	$typo->update_state( $typo->settings );
-
-    	$this->assertAttributeNotEmpty( 'chr', $typo );
-    	$this->assertAttributeNotEmpty( 'components', $typo );
-    	$this->assertAttributeNotEmpty( 'regex', $typo );
     }
 
     /**
@@ -1258,10 +1244,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
     	$typo = $this->typo;
     	$typo->set_defaults( true );
-    	$typo->update_state( $typo->settings );
 
    		$node = new \DOMText( $text );
-   		$typo->process_words( $node, $is_title );
+   		$typo->process_words( $node, $typo->settings, $is_title );
 
     	$this->assertSame( $result, clean_html( $node->data ) );
     }
@@ -1351,7 +1336,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_get_prev_chr()
     {
     	$typo = $this->typo;
-    	$typo->update_state( $typo->settings );
 
     	$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
     	$doc = $typo->get_html5_parser()->loadHTML( $html );
@@ -1371,7 +1355,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function test_get_previous_textnode_null() {
     	$typo = $this->typo;
-    	$typo->update_state( $typo->settings );
 
     	$typo->process('');
 
@@ -1386,7 +1369,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_get_next_chr()
     {
     	$typo = $this->typo;
-		$typo->update_state( $typo->settings );
 
     	$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
     	$doc = $typo->get_html5_parser()->loadHTML( $html );
@@ -2321,7 +2303,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo->process( '' );
 		$typo->set_wrap_hard_hyphens( true );
 
-		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
+		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $typo->settings ) );
 
     }
 
@@ -2339,7 +2321,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_wrap_hard_hyphens( true );
     	$typo->set_smart_dashes( true );
 
-    	$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
+    	$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $typo->settings ) );
 
     }
 
@@ -2356,7 +2338,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 		$typo->process( '' );
 		$typo->set_wrap_hard_hyphens( false );
 
-		$this->assertTokenSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ) ) );
+		$this->assertTokenSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $typo->settings ) );
     }
 
     public function provide_dewidow_data() {
@@ -2465,9 +2447,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo = $this->typo;
     	$typo->set_url_wrap( true );
     	$typo->set_min_after_url_wrap( $min_after );
-    	$typo->update_state( $this->typo->settings );
 
-    	$this->assertTokenSame( $result, $typo->wrap_urls( $this->tokenize( $html ) ) );
+    	$this->assertTokenSame( $result, $typo->wrap_urls( $this->tokenize( $html ), $typo->settings ) );
     }
 
     /**
@@ -2482,9 +2463,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo = $this->typo;
     	$typo->set_url_wrap( false );
     	$typo->set_min_after_url_wrap( $min_after );
-    	$typo->update_state( $this->typo->settings );
 
-    	$this->assertTokenSame( $html, $typo->wrap_urls( $this->tokenize( $html ) ) );
+    	$this->assertTokenSame( $html, $typo->wrap_urls( $this->tokenize( $html ), $typo->settings ) );
     }
 
     public function provide_wrap_emails_data() {
@@ -2506,9 +2486,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     {
     	$typo = $this->typo;
     	$typo->set_email_wrap( true );
-    	$typo->update_state( $this->typo->settings );
 
-    	$this->assertTokenSame( $result, $typo->wrap_emails( $this->tokenize( $html ) ) );
+    	$this->assertTokenSame( $result, $typo->wrap_emails( $this->tokenize( $html ), $typo->settings ) );
     }
 
     /**
@@ -2523,7 +2502,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo = $this->typo;
     	$typo->set_email_wrap( false );
 
-    	$this->assertTokenSame( $html, $typo->wrap_emails( $this->tokenize( $html ) ) );
+    	$this->assertTokenSame( $html, $typo->wrap_emails( $this->tokenize( $html ), $typo->settings ) );
     }
 
     public function provide_style_caps_data() {
@@ -2873,7 +2852,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$typo->set_hyphenate_title_case( $hyphenate_title_case );
     	$typo->set_hyphenate_compounds( $hyphenate_compunds );
     	$typo->set_hyphenation_exceptions( $exceptions );
-    	$typo->update_state( $this->typo->settings );
 
     	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
@@ -2897,7 +2875,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
     	$this->typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
-    	$this->typo->update_state( $this->typo->settings );
 
     	$html = '<h2>A few words to hyphenate, like KINGdesk. Really, there should be no hyphenation here!</h2>';
     	$this->assertSame( $html, clean_html( $this->typo->process( $html ) ) );
@@ -2918,14 +2895,13 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_headings( false );
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( true ); // added in version 1.5
-    	$this->typo->update_state( $this->typo->settings );
 
     	$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
-    	$hyphenated = $this->typo->do_hyphenate( $tokens );
+    	$hyphenated = $this->typo->do_hyphenate( $tokens, $this->typo->settings );
 	   	$this->assertEquals( $hyphenated, $tokens );
 
 	   	$tokens = $this->tokenize( 'Änderungsmeldung' );
-	   	$hyphenated = $this->typo->do_hyphenate( $tokens );
+	   	$hyphenated = $this->typo->do_hyphenate( $tokens, $this->typo->settings );
 	   	$this->assertNotEquals( $hyphenated, $tokens );
     }
 
@@ -2944,10 +2920,9 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->set_hyphenate_headings( false );
     	$this->typo->set_hyphenate_all_caps( true );
     	$this->typo->set_hyphenate_title_case( false ); // added in version 1.5
-    	$this->typo->update_state( $this->typo->settings );
 
     	$tokens = $this->tokenize( 'Änderungsmeldung' );
-    	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+    	$hyphenated  = $this->typo->do_hyphenate( $tokens, $this->typo->settings );
     	$this->assertEquals( $tokens, $hyphenated);
     }
 
@@ -2970,7 +2945,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->typo->settings['hyphenMinBefore'] = 0; // invalid value
 
     	$tokens = $this->tokenize( 'Änderungsmeldung' );
-    	$hyphenated  = $this->typo->do_hyphenate( $tokens );
+    	$hyphenated  = $this->typo->do_hyphenate( $tokens, $this->typo->settings );
     	$this->assertEquals( $tokens, $hyphenated);
     }
 
@@ -3047,17 +3022,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_init() {
     	$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
     	$this->assertAttributeEmpty( 'settings', $second_typo );
-    	$this->assertAttributeEmpty( 'chr', $second_typo );
-    	$this->assertAttributeEmpty( 'regex', $second_typo );
-    	$this->assertAttributeEmpty( 'components', $second_typo );
 
     	$second_typo->init();
-    	$second_typo->update_state( $second_typo->settings );
 
     	$this->assertAttributeNotEmpty( 'settings', $second_typo );
-    	$this->assertAttributeNotEmpty( 'chr', $second_typo );
-    	$this->assertAttributeNotEmpty( 'regex', $second_typo );
-    	$this->assertAttributeNotEmpty( 'components', $second_typo );
     }
 
     /**
@@ -3176,17 +3144,17 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function test_get_hyphenator() {
 		$typo = $this->typo;
-		$typo->settings['hyphenMinLength'] = 2;
-		$typo->settings['hyphenMinBefore'] = 2;
-		$typo->settings['hyphenMinAfter'] = 2;
+		$typo->settings['hyphenMinLength']             = 2;
+		$typo->settings['hyphenMinBefore']             = 2;
+		$typo->settings['hyphenMinAfter']              = 2;
 		$typo->settings['hyphenationCustomExceptions'] = array( 'foo-bar' );
-		$typo->settings['hyphenLanguage'] = 'en-US';
-		$h = $typo->get_hyphenator();
+		$typo->settings['hyphenLanguage']              = 'en-US';
+		$h = $typo->get_hyphenator( $typo->settings );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 
 		$typo->settings['hyphenationCustomExceptions'] = array( 'bar-foo' );
-		$h = $typo->get_hyphenator();
+		$h = $typo->get_hyphenator( $typo->settings );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
     }
