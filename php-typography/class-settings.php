@@ -246,7 +246,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $name The character name.
 	 *
-	 * @return string|boolean Returns the character or false if it does not exist.
+	 * @return string|bool Returns the character or false if it does not exist.
 	 */
 	public function chr( $name ) {
 		if ( isset( $this->chr[ $name ] ) ) {
@@ -266,12 +266,42 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
+	 * Retrieve the named component string.
+	 *
+	 * @param string $name The component name.
+	 *
+	 * @return string|bool Returns the component or false if it does not exist.
+	 */
+	public function component( $name ) {
+		if ( isset( $this->components[ $name ] ) ) {
+			return $this->components[ $name ];
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Retrieve the regular expressions calculated from the current settings.
 	 *
 	 * @return array
 	 */
 	public function get_regular_expressions() {
 		return $this->regex;
+	}
+
+	/**
+	 * Retrieve the named regular expression.
+	 *
+	 * @param string $name The regex name.
+	 *
+	 * @return string|bool Returns the regular expression or false if it does not exist.
+	 */
+	public function regex( $name ) {
+		if ( isset( $this->regex[ $name ] ) ) {
+			return $this->regex[ $name ];
+		} else {
+			return false;
+		}
 	}
 
 	/**
