@@ -1804,7 +1804,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::smart_math
-     * @covers ::_smart_math_callback
      *
      * @uses PHP_Typography\Parse_Text
      *
@@ -2367,7 +2366,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::dewidow
-     * @covers ::_dewidow_callback
      *
      * @uses PHP_Typography\Parse_Text
      *
@@ -2385,7 +2383,6 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::dewidow
-     * @covers ::_dewidow_callback
      *
      * @uses PHP_Typography\Parse_Text
      * @uses PHP_Typography\Hyphenator
