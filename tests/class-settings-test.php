@@ -242,6 +242,17 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::component
+     */
+    public function test_component() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( $s->component( 'DoesNotExist' ) );
+    	$this->assertEquals( $s->component( 'numbersPrime' ), '\b(?:\d+\/)?\d{1,3}' );
+    	$this->assertEquals( $s->component( 'urlScheme' ), '(?:https?|ftps?|file|nfs|feed|itms|itpc)' );
+    }
+
+    /**
      * @covers ::get_regular_expressions
      */
     public function test_get_regular_expressions() {
@@ -250,6 +261,17 @@ class Settings_Test extends PHPUnit_Framework_TestCase
 
     	$this->assertTrue( is_array( $regexs ) );
     	$this->assertGreaterThan( 0, count( $regexs ) );
+    }
+
+    /**
+     * @covers ::regex
+     */
+    public function test_regex() {
+    	$s = $this->settings;
+
+    	$this->assertFalse( $s->regex( 'DoesNotExist' ) );
+    	$this->assertEquals( $s->regex( 'smartQuotesSingleQuotedNumbers' ), "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/uS" );
+    	$this->assertEquals( $s->regex( 'smartDashesEnDashNumbers' ), "/(\b\d+)\-(\d+\b)/S" );
     }
 
     /**
