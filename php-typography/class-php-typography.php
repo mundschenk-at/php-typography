@@ -780,9 +780,14 @@ class PHP_Typography {
 
 		// Parse the HTML.
 		$dom = $this->parse_html( $html5_parser, $html );
-		$xpath = new \DOMXPath( $dom );
+
+		// Abort if there were parsing errors.
+		if ( empty( $dom ) ) {
+			return $html;
+		}
 
 		// Query some nodes in the DOM.
+		$xpath = new \DOMXPath( $dom );
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
 		$all_textnodes = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
@@ -927,7 +932,7 @@ class PHP_Typography {
 	 * @param \Masterminds\HTML5 $parser An intialized parser object.
 	 * @param string             $html The HTML fragment to parse (not a complete document).
 	 *
-	 * @return \DOMDocument The encoding has already been set to UTF-8.
+	 * @return \DOMDocument The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
 	function parse_html( \Masterminds\HTML5 $parser, $html ) {
 		// Silence some parsing errors for invalid HTML.
@@ -935,13 +940,19 @@ class PHP_Typography {
 		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// Do the actual parsing.
-		$dom = $parser->loadHTML( '<body>' . $html . '</body>' );
+		$dom = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
 		$dom->encoding = 'UTF-8';
 
 		// Restore original error handling.
 		libxml_clear_errors();
 		libxml_use_internal_errors( $xml_error_handling );
 		restore_error_handler();
+
+		// Return null if there were parsing errors.
+		$errors = $parser->getErrors();
+		if ( ! empty( $errors ) ) {
+			$dom = null;
+		}
 
 		return $dom;
 	}

@@ -1094,6 +1094,16 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     		array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails
     		array( '<span> </span>', '<span> </span>', true ), // whitespace is ignored
     		array( '<span class="noTypo">123</span>', '<span class="noTypo">123</span>', true ), // skipped class
+    		array( '<section id="main-content" class="container">
+    				<!-- Start Page Content -->
+    				<div class="row-wrapper-x"></div></section><section class="blox aligncenter  page-title-x  " style=" padding-top:px; padding-bottom:px;  background: url(\'http://www.feinschliff.hamburg/wp-content/uploads/2014/09/nails_02.jpg\') no-repeat ; background-position: center center;background-size: cover; min-height:px; "></section>',
+    				'<section id="main-content" class="container">
+    				<!-- Start Page Content -->
+    				<div class="row-wrapper-x"></div></section><section class="blox aligncenter  page-title-x  " style=" padding-top:px; padding-bottom:px;  background: url(\'http://www.feinschliff.hamburg/wp-content/uploads/2014/09/nails_02.jpg\') no-repeat ; background-position: center center;background-size: cover; min-height:px; "></section>',
+    				true ),
+    		array( '<section id="main"></section>', '<section id="main"></section>', true ),
+    		array( '<section id="main"><!-- comment --></section>', '<section id="main"><!-- comment --></section>', true ),
+    		array( '<section id="main"><!-- comment --><div></div></section>', '<section id="main"><!-- comment --><div></div></section>', true ),
     	);
     }
 
@@ -3087,6 +3097,26 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     	$this->assertInstanceOf( '\DOMDocument', $dom );
     	$this->assertEquals( 1, $dom->getElementsByTagName( 'p' )->length );
     }
+
+    /**
+     * @covers ::parse_html
+     *
+     * @dataProvider provide_process_data
+     */
+    public function test_parse_html_extended( $html, $ignore1, $ignore2 ) {
+    	$typo = $this->typo;
+    	$p    = $typo->get_html5_parser();
+    	$dom  = $typo->parse_html( $p, $html );
+
+    	$this->assertInstanceOf( '\DOMDocument', $dom );
+
+    	// Serialize the stuff again.
+    	$xpath      = new \DOMXPath( $dom );
+    	$body_node = $xpath->query( '/html/body' )->item( 0 );
+
+    	$this->assertEquals( $html, $p->saveHTML( $body_node->childNodes ) );
+    }
+
 
     /**
      * @covers ::get_block_parent
