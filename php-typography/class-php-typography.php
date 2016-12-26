@@ -195,63 +195,7 @@ class PHP_Typography {
 	 * (Re)set various options to their default values.
 	 */
 	function set_defaults() {
-		// General attributes.
-		$this->set_tags_to_ignore();
-		$this->set_classes_to_ignore();
-		$this->set_ids_to_ignore();
-
-		// Smart characters.
-		$this->set_smart_quotes();
-		$this->set_smart_quotes_primary();   // added in version 1.15.
-		$this->set_smart_quotes_secondary(); // added in version 1.15.
-		$this->set_smart_dashes();
-		$this->set_smart_dashes_style();
-		$this->set_smart_ellipses();
-		$this->set_smart_diacritics();
-		$this->set_diacritic_language();
-		$this->set_diacritic_custom_replacements();
-		$this->set_smart_marks();
-		$this->set_smart_ordinal_suffix();
-		$this->set_smart_math();
-		$this->set_smart_fractions();
-		$this->set_smart_exponents();
-
-		// Smart spacing.
-		$this->set_single_character_word_spacing();
-		$this->set_fraction_spacing();
-		$this->set_unit_spacing();
-		$this->set_french_punctuation_spacing();
-		$this->set_units();
-		$this->set_dash_spacing();
-		$this->set_dewidow();
-		$this->set_max_dewidow_length();
-		$this->set_max_dewidow_pull();
-		$this->set_wrap_hard_hyphens();
-		$this->set_url_wrap();
-		$this->set_email_wrap();
-		$this->set_min_after_url_wrap();
-		$this->set_space_collapse();
-		$this->set_true_no_break_narrow_space();
-
-		// Character styling.
-		$this->set_style_ampersands();
-		$this->set_style_caps();
-		$this->set_style_initial_quotes();
-		$this->set_style_numbers();
-		$this->set_style_hanging_punctuation();
-		$this->set_initial_quote_tags();
-
-		// Hyphenation.
-		$this->set_hyphenation();
-		$this->set_hyphenation_language();
-		$this->set_min_length_hyphenation();
-		$this->set_min_before_hyphenation();
-		$this->set_min_after_hyphenation();
-		$this->set_hyphenate_headings();
-		$this->set_hyphenate_all_caps();
-		$this->set_hyphenate_title_case();   // added in version 1.5.
-		$this->set_hyphenate_compounds();
-		$this->set_hyphenation_exceptions();
+		$this->settings->set_defaults();
 	}
 
 	/**

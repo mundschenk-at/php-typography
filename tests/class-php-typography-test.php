@@ -1332,7 +1332,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process( $html, $result, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
     	$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
     }
@@ -1350,7 +1350,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_feed( $html, $result, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
 		if ( is_string( $feed ) ) {
    			$this->assertSame( $feed, clean_html( $typo->process_feed( $html ) ) );
@@ -1381,7 +1381,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_textnodes( $html, $result, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
     	$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function( $node ) {} ) ) );
     }
@@ -1404,7 +1404,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_textnodes_invalid_html( $html, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
     	$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function( $node ) { return 'XXX'; } ) ) );
     }
@@ -1422,7 +1422,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_textnodes_no_fixer( $html, $result, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
     	$typo->process_textnodes( $html, 'bar' );
     }
@@ -1438,7 +1438,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_textnodes_no_fixer_return_value( $html, $result, $feed )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
 
     	$this->assertSame( $html, clean_html( @$typo->process_textnodes( $html, 'bar' ) ) );
     }
@@ -1488,7 +1488,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_words( $text, $result, $is_title )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
     	$s = $typo->get_settings();
 
    		$node = new \DOMText( $text );
@@ -1515,7 +1515,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_with_title( $html, $result, $feed, $skip_tags )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
     	$typo->set_tags_to_ignore( $skip_tags );
 
     	$this->assertSame( $result, clean_html( $typo->process( $html, true ) ) );
@@ -1532,7 +1532,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     public function test_process_feed_with_title( $html, $result, $feed, $skip_tags )
     {
     	$typo = $this->typo;
-    	$typo->set_defaults( true );
+    	$typo->set_defaults();
     	$typo->set_tags_to_ignore( $skip_tags );
 
     	if ( is_string( $feed ) ) {
