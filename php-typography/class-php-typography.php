@@ -248,6 +248,19 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Retrieve a copy (suitable for modification) of the internal settings.
+	 *
+	 * @return Settings A clone of the internal settings. Returns null if the settings object has not been initialized yet.
+	 */
+	public function get_settings() {
+		if ( ! empty( $this->settings ) ) {
+			return clone $this->settings;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
 	 *
 	 * @param boolean $on Optional. Default false.
