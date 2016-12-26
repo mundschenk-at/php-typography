@@ -268,6 +268,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Enable lenient parser error handling (like it was before release 3.5.2).
+	 *
+	 * @param bool $on Optional. Default false.
+	 */
+	function set_ignore_parser_errors( $on = false ) {
+		$this->settings['ignoreParserErrors'] = $on;
+	}
+
+	/**
 	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
 	 *
 	 * @param boolean $on Optional. Default false.
@@ -970,7 +979,7 @@ class PHP_Typography {
 
 		// Return null if there were parsing errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $errors ) ) {
+		if ( ! empty( $errors ) && ! $this->settings['ignoreParserErrors'] ) {
 			$dom = null;
 		}
 
