@@ -89,6 +89,20 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     //{
 //    }
 
+    /**
+     * @covers ::set_ignore_parser_errors
+     */
+	public function test_set_ignore_parser_errors() {
+		$typo = $this->typo;
+
+		$typo->set_ignore_parser_errors( true );
+		$this->assertTrue( $typo->settings['ignoreParserErrors'] );
+
+		$typo->set_ignore_parser_errors( false );
+		$this->assertFalse( $typo->settings['ignoreParserErrors'] );
+
+	}
+
 
     /**
      * @covers ::set_tags_to_ignore
@@ -212,7 +226,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \PHP_Typography\PHP_Typography::set_smart_quotes
+     * @covers ::set_smart_quotes
      */
     public function test_set_smart_quotes()
     {
