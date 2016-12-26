@@ -4,7 +4,7 @@
  *
  *	Copyright 2014-2016 Peter Putzer.
  *	Copyright 2012-2013 Marie Hogebrandt.
- *	Coypright 2009-2011 KINGdesk, LLC.
+ *	Copyright 2009-2011 KINGdesk, LLC.
  *
  *	This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ namespace PHP_Typography;
  * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;).
  * If multibyte characters are passed, they must be encoded as UTF-8.
  */
-class Parse_Text {
+class Text_Parser {
 
 	/**
 	 * An array of encodings to check.

@@ -142,12 +142,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$this->assertNotNull( $h );
     	$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h );
 
-    	$h2 = new \PHP_Typography\Hyphenator( 3, 4, 5, 'en-US', array( 'foo-bar' ) );
+    	$h2 = new \PHP_Typography\Hyphenator( 'en-US', array( 'foo-bar' ) );
     	$this->assertNotNull( $h2 );
     	$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h2 );
-    	$this->assertAttributeSame( 3, 'min_length', $h2 );
-    	$this->assertAttributeSame( 4, 'min_before', $h2 );
-    	$this->assertAttributeSame( 5, 'min_after', $h2 );
     	$this->assertAttributeSame( 'en-US', 'language', $h2 );
     	$this->assertAttributeCount( 1, 'custom_exceptions', $h2 );
     }
@@ -216,51 +213,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	$h->set_language( 'en-US' );
     	$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
     	$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
-    }
-
-    /**
-     * @covers ::set_min_length
-     */
-    public function test_set_min_length()
-    {
-		$this->h->set_min_length( 1 );
-		$this->assertAttributeSame( 1, 'min_length', $this->h );
-
-		$this->h->set_min_length( 2 );
-		$this->assertAttributeSame( 2, 'min_length', $this->h );
-
-		$this->h->set_min_length( 66 );
-		$this->assertAttributeSame( 66, 'min_length', $this->h );
-    }
-
-    /**
-     * @covers ::set_min_before
-     */
-    public function test_set_min_before()
-    {
-		$this->h->set_min_before( 0 );
-		$this->assertAttributeSame( 0, 'min_before', $this->h );
-
-		$this->h->set_min_before( 1 );
-		$this->assertAttributeSame( 1, 'min_before', $this->h );
-
-		$this->h->set_min_before( 66 );
-		$this->assertAttributeSame( 66, 'min_before', $this->h );
-    }
-
-    /**
-     * @covers ::set_min_after
-     */
-    public function test_set_min_after()
-    {
-		$this->h->set_min_after( 0 );
-		$this->assertAttributeSame( 0, 'min_after', $this->h );
-
-		$this->h->set_min_after( 1 );
-		$this->assertAttributeSame( 1, 'min_after', $this->h );
-
-		$this->h->set_min_after( 66 );
-		$this->assertAttributeSame( 66, 'min_after', $this->h );
     }
 
 
@@ -342,12 +294,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     {
     	$h = $this->h;
     	$h->set_language( $lang );
-    	$h->set_min_length(2);
-    	$h->set_min_before(2);
-    	$h->set_min_after(2);
     	$h->set_custom_exceptions( array( 'KING-desk' ) );
 
-    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
+    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case, 2, 2, 2 ) );
     }
 
     public function provide_hyphenate_with_exceptions_data() {
@@ -373,12 +322,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     {
     	$h = $this->h;
     	$h->set_language( $lang );
-    	$h->set_min_length(2);
-    	$h->set_min_before(2);
-    	$h->set_min_after(2);
     	$h->set_custom_exceptions( $exceptions );
 
-    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case ) );
+    	$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case, 2, 2, 2 ) );
     }
 
     /**
@@ -391,16 +337,13 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_hyphenate_wrong_encoding()
     {
     	$this->h->set_language( 'de' );
-    	$this->h->set_min_length(2);
-    	$this->h->set_min_before(2);
-    	$this->h->set_min_after(2);
 
     	$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
-    	$hyphenated  = $this->h->hyphenate( $tokens, '|', true );
+    	$hyphenated  = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
 	   	$this->assertSame( $hyphenated, $tokens, 'Wrong encoding, value should be unchanged' );
 
 	   	$tokens = $this->tokenize( 'Änderungsmeldung' );
-	   	$hyphenated  = $this->h->hyphenate( $tokens, '|', true );
+	   	$hyphenated  = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
 	   	$this->assertNotSame( $hyphenated, $tokens, 'Correct encoding, string should have been hyphenated' );
     }
 
@@ -412,12 +355,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_hyphenate_no_title_case()
     {
     	$this->h->set_language( 'de' );
-    	$this->h->set_min_length(2);
-    	$this->h->set_min_before(2);
-    	$this->h->set_min_after(2);
 
     	$tokens = $this->tokenize( 'Änderungsmeldung' );
-    	$hyphenated  = $this->h->hyphenate( $tokens, '|', false );
+    	$hyphenated  = $this->h->hyphenate( $tokens, '|', false, 2, 2, 2 );
     	$this->assertEquals( $tokens, $hyphenated);
     }
 
@@ -429,12 +369,9 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_hyphenate_invalid()
     {
     	$this->h->set_language( 'de' );
-    	$this->h->set_min_length(2);
-    	$this->h->set_min_before(0);
-    	$this->h->set_min_after(2);
 
     	$tokens = $this->tokenize( 'Änderungsmeldung' );
-    	$hyphenated  = $this->h->hyphenate( $tokens );
+    	$hyphenated  = $this->h->hyphenate( $tokens,  '|', true, 2, 0, 2 );
     	$this->assertEquals( $tokens, $hyphenated);
     }
 
@@ -447,14 +384,11 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_hyphenate_no_custom_exceptions()
     {
     	$this->h->set_language( 'en-US' );
-    	$this->h->set_min_length(2);
-    	$this->h->set_min_before(2);
-    	$this->h->set_min_after(2);
 
     	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
     		'A few words to hy|phen|ate like KINGdesk Re|al|ly there should be more hy|phen|ation here',
-    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
+    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true, 2, 2, 2 )
     	);
     }
 
@@ -469,9 +403,6 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     public function test_hyphenate_no_exceptions_at_all()
     {
     	$this->h->set_language( 'en-US' );
-    	$this->h->set_min_length(2);
-    	$this->h->set_min_before(2);
-    	$this->h->set_min_after(2);
 
     	// Unset some internal stuff.
     	$ref = new ReflectionClass( '\PHP_Typography\Hyphenator' );
@@ -485,7 +416,7 @@ class Hyphenator_Test extends PHPUnit_Framework_TestCase
     	// Again, no punctuation due to the fake tokenization.
     	$this->assertTokensSame(
     		'A few words to hy|phen|ate like KINGdesk Re|al|ly there should be more hy|phen|ation here',
-    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true )
+    		$this->h->hyphenate( $this->tokenize_sentence( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here' ), '|', true, 2, 2, 2 )
     	);
     }
 
