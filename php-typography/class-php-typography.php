@@ -58,7 +58,14 @@ class PHP_Typography {
 	 *
 	 * @var Settings
 	 */
-	public $settings;
+	protected $settings;
+
+	/**
+	 * The hyphenator instance.
+	 *
+	 * @var Hyphenator $hyphenator
+	 */
+	protected $hyphenator;
 
 	/**
 	 * A custom parser for \DOMText to separate words, whitespace etc. for HTML injection.
