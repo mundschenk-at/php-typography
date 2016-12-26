@@ -1036,10 +1036,10 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      */
     public function test_get_hyphenation_languages()
     {
-    	$expected = array( 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'el-Mono', 'el-Poly', 'en-GB', 'en-US',
-    					   'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'ia', 'id', 'is',
-    					   'it', 'la', 'lt', 'mn-Cyrl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn',
-    					   'sk', 'sl', 'sr-Cyrl', 'sv', 'tr', 'uk', 'zh-Latn' );
+    	$expected = array( 'af', 'bg', 'ca', 'cs', 'cy', 'da', 'de', 'de-1901', 'el-Mono', 'el-Poly', 'en-GB', 'en-US',
+    					   'es', 'et', 'eu', 'fi', 'fr', 'ga', 'gl', 'grc', 'hr', 'hu', 'hy', 'ia', 'id', 'is',
+    					   'it', 'ka', 'la', 'la-classic', 'la-liturgic', 'lt', 'lv', 'mn-Cyrl', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sa', 'sh-Cyrl', 'sh-Latn',
+    					   'sk', 'sl', 'sr-Cyrl', 'sv', 'th', 'tr', 'uk', 'zh-Latn' );
     	$not_expected = array( 'klingon', 'de-DE' );
 
     	$actual = $this->typo->get_hyphenation_languages();
