@@ -273,7 +273,7 @@ class PHP_Typography {
 	 * @param bool $on Optional. Default false.
 	 */
 	function set_ignore_parser_errors( $on = false ) {
-		$this->settings['ignoreParserErrors'] = $on;
+		$this->settings->set_ignore_parser_errors( $on );
 	}
 
 	/**
@@ -808,7 +808,7 @@ class PHP_Typography {
 		$html5_parser = $this->get_html5_parser();
 
 		// Parse the HTML.
-		$dom = $this->parse_html( $html5_parser, $html );
+		$dom = $this->parse_html( $html5_parser, $html, $settings );
 
 		// Abort if there were parsing errors.
 		if ( empty( $dom ) ) {
@@ -958,12 +958,13 @@ class PHP_Typography {
 	/**
 	 * Parse HTML5 fragment while ignoring certain warnings for invalid HTML code (e.g. duplicate IDs).
 	 *
-	 * @param \Masterminds\HTML5 $parser An intialized parser object.
-	 * @param string             $html The HTML fragment to parse (not a complete document).
+	 * @param \Masterminds\HTML5 $parser   An intialized parser object.
+	 * @param string             $html     The HTML fragment to parse (not a complete document).
+	 * @param Settings           $settings The settings to apply.
 	 *
 	 * @return \DOMDocument The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
-	function parse_html( \Masterminds\HTML5 $parser, $html ) {
+	function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
 		// Silence some parsing errors for invalid HTML.
 		set_error_handler( array( $this, 'handle_parsing_errors' ) );
 		$xml_error_handling = libxml_use_internal_errors( true );
@@ -979,7 +980,7 @@ class PHP_Typography {
 
 		// Return null if there were parsing errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $errors ) && ! $this->settings['ignoreParserErrors'] ) {
+		if ( ! empty( $errors ) && ! $settings['ignoreParserErrors'] ) {
 			$dom = null;
 		}
 

@@ -509,6 +509,9 @@ class Settings implements \ArrayAccess {
 		$this->set_hyphenate_title_case();
 		$this->set_hyphenate_compounds();
 		$this->set_hyphenation_exceptions();
+
+		// Parser error handling.
+		$this->set_ignore_parser_errors();
 	}
 
 	/**
@@ -1245,6 +1248,15 @@ class Settings implements \ArrayAccess {
 		foreach ( $this->regex as &$regex ) {
 			$regex .= 'S';
 		}
+	}
+
+	/**
+	 * Enable lenient parser error handling (HTML is "best guess" if enabled).
+	 *
+	 * @param bool $on Optional. Default false.
+	 */
+	function set_ignore_parser_errors( $on = false ) {
+		$this->data['ignoreParserErrors'] = $on;
 	}
 
 	/**

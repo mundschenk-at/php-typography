@@ -286,6 +286,19 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::set_ignore_parser_errors
+     */
+    public function test_set_ignore_parser_errors() {
+    	$s = $this->settings;
+
+    	$s->set_ignore_parser_errors( true );
+    	$this->assertTrue( $s['ignoreParserErrors'] );
+
+    	$s->set_ignore_parser_errors( false );
+    	$this->assertFalse( $s['ignoreParserErrors'] );
+    }
+
+    /**
      * @covers ::set_tags_to_ignore
      */
     public function test_set_tags_to_ignore()
