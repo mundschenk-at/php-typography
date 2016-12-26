@@ -34,7 +34,7 @@ namespace PHP_Typography;
  * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;).
  * If multibyte characters are passed, they must be encoded as UTF-8.
  */
-class Parse_Text {
+class Text_Parser {
 
 	/**
 	 * An array of encodings to check.

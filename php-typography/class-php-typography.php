@@ -70,7 +70,7 @@ class PHP_Typography {
 	/**
 	 * A custom parser for \DOMText to separate words, whitespace etc. for HTML injection.
 	 *
-	 * @var Parse_Text
+	 * @var Text_Parser
 	 */
 	private $text_parser;
 
@@ -2172,12 +2172,12 @@ class PHP_Typography {
 	/**
 	 * Retrieve the text parser instance.
 	 *
-	 * @return \PHP_Typography\Parse_Text
+	 * @return \PHP_Typography\Text_Parser
 	 */
 	public function get_text_parser() {
 		// Lazy-load text parser.
 		if ( ! isset( $this->text_parser ) ) {
-			$this->text_parser = new Parse_Text( $this->encodings );
+			$this->text_parser = new Text_Parser( $this->encodings );
 		}
 
 		return $this->text_parser;
