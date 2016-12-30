@@ -152,7 +152,7 @@ class Hyphenator {
 		$this->custom_exceptions = array_flip( $exception_keys );
 
 		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		unset( $this->merged_exception_patterns );
+		$this->merged_exception_patterns = null;
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Hyphenator {
 		}
 
 		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		unset( $this->merged_exception_patterns );
+		$this->merged_exception_patterns = null;
 
 		return $success;
 	}
