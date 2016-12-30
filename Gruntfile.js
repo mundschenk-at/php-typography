@@ -8,20 +8,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-	    makepot: {
-	        target: {
-	            options: {
-	                domainPath: '/translations/', // Where to save the POT file.
-	                potFilename: 'wp-typography.pot', // Name of the POT file.
-	                type: 'wp-plugin',
-	                exclude: ['build/.*'],
-	                updateTimestamp: false,
-	                updatePoFiles: true
-	            }
-	        }
-	    },
-
-	    shell: {
+		shell: {
 	    	update_html5: {
 	    		tmpDir: 'vendor/tmp',
 	    		sourceDir: '<%= shell.update_html5.tmpDir %>/src',
@@ -218,7 +205,6 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
 		'regex_extract:language_names',
-		'makepot',
 		'sass:dev'
     ]);
 };
