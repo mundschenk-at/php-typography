@@ -308,7 +308,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
-	function init( $set_defaults = true ) {
+	private function init( $set_defaults = true ) {
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
 										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
 
