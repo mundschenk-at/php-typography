@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2016 Peter Putzer.
+ *	Copyright 2014-2017 Peter Putzer.
  *	Copyright 2009-2011 KINGdesk, LLC.
  *
  *	This program is free software; you can redistribute it and/or
@@ -51,9 +51,10 @@ function arrays_intersect( array $array1, array $array2 ) {
 }
 
 /**
- * Convert \DOMNodeList to array;
+ * Converts \DOMNodeList to array;
  *
  * @param \DOMNodeList $list Required.
+ *
  * @return array An associative array in the form ( $spl_object_hash => $node ).
  */
 function nodelist_to_array( \DOMNodeList $list ) {
@@ -67,10 +68,11 @@ function nodelist_to_array( \DOMNodeList $list ) {
 }
 
 /**
- * Retrieve an array containing all the ancestors of the node. This could be done
+ * Retrieves an array containing all the ancestors of the node. This could be done
  * via an XPath query for "ancestor::*", but DOM walking is in all likelyhood faster.
  *
  * @param \DOMNode $node Required.
+ *
  * @return array An array of \DOMNode.
  */
 function get_ancestors( \DOMNode $node ) {
@@ -121,9 +123,10 @@ function has_class( \DOMNode $tag, $classnames ) {
 }
 
 /**
- * Convert decimal value to unicode character.
+ * Converts decimal value to unicode character.
  *
  * @param string|array $codes Decimal value(s) coresponding to unicode character(s).
+ *
  * @return string Unicode character(s).
  */
 function uchr( $codes ) {
@@ -142,7 +145,8 @@ function uchr( $codes ) {
 /**
  * Is a number odd?
  *
- * @param integer $number Required.
+ * @param ubt $number Required.
+ *
  * @return boolean true if $number is odd, false if it is even.
  */
 function is_odd( $number ) {
@@ -171,9 +175,10 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 }
 
 /**
- * Retrieve the list of valid language plugins in the given directory.
+ * Retrieves the list of valid language plugins in the given directory.
  *
- * @param string $path                   The path in which to look for language plugin files.
+ * @param string $path The path in which to look for language plugin files.
+ *
  * @return array An array in the form ( $language_code => $translated_language_name ).
  */
 function get_language_plugin_list( $path ) {
@@ -202,7 +207,7 @@ function get_language_plugin_list( $path ) {
 }
 
 /**
- * Include debugging helpers
+ * Include debugging helpers.
  */
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) { // @codeCoverageIgnoreStart
 	define( 'WP_TYPOGRAPHY_DEBUG', true );

@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2016 Peter Putzer.
+ *	Copyright 2014-2017 Peter Putzer.
  *	Copyright 2012-2013 Marie Hogebrandt.
  *	Copyright 2009-2011 KINGdesk, LLC.
  *
@@ -308,10 +308,11 @@ class Text_Parser {
 	}
 
 	/**
-	 * Tokenize a string and store the tokens in $this->text.
+	 * Tokenizes a string and stores the tokens in $this->text.
 	 *
 	 * @param string $raw_text A text fragment without any HTML markup.
-	 * @return boolean Returns `true` on successful completion, `false` otherwise.
+	 *
+	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
 	function load( $raw_text ) {
 		if ( ! is_string( $raw_text ) ) {
@@ -415,7 +416,7 @@ class Text_Parser {
 	 *
 	 * Warning: Tokens previously acquired through 'get' methods may not match new tokenization.
 	 *
-	 * @return boolean Returns true on successful completion.
+	 * @return bool Returns true on successful completion.
 	 */
 	function reload() {
 		return $this->load( $this->unload() );
@@ -462,7 +463,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the currently set text.
+	 * Retrieves all tokens of the currently set text.
 	 *
 	 * @return array An array of tokens.
 	 */
@@ -471,7 +472,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the type "space".
+	 * Retrieves all tokens of the type "space".
 	 *
 	 * @return array An array of tokens.
 	 */
@@ -480,7 +481,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the type "punctuation".
+	 * Retrieves all tokens of the type "punctuation".
 	 *
 	 * @return array An array of tokens.
 	 */
@@ -489,11 +490,11 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the type "word".
+	 * Retrieves all tokens of the type "word".
 	 *
-	 * @param string $abc   Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Optional. Default 'allow-all-letters'.
-	 * @param string $caps  Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Optional. Default 'allow-all-caps'.
-	 * @param string $comps Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Optional. Default 'no-compounds'.
+	 * @param string $abc   Optional. Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Default 'allow-all-letters'.
+	 * @param string $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Default 'allow-all-caps'.
+	 * @param string $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Default 'no-compounds'.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
 		$tokens = array();
@@ -543,7 +544,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the type "other".
+	 * Retrieves all tokens of the type "other".
 	 *
 	 * @return array An array of tokens.
 	 */
@@ -552,7 +553,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Retrieve all tokens of the given type.
+	 * Retrieves all tokens of the given type.
 	 *
 	 * @param string $type The type to get.
 	 */

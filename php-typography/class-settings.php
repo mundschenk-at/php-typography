@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2016 Peter Putzer.
+ *	Copyright 2014-2017 Peter Putzer.
  *	Copyright 2009-2011 KINGdesk, LLC.
  *
  *	This program is free software; you can redistribute it and/or
@@ -133,9 +133,9 @@ class Settings implements \ArrayAccess {
 	protected $block_tags = array();
 
 	/**
-	 * Set up a new Settings object.
+	 * Sets up a new Settings object.
 	 *
-	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
+	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	function __construct( $set_defaults = true ) {
 
@@ -150,7 +150,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Provide access to named settings (object syntax).
+	 * Provides access to named settings (object syntax).
 	 *
 	 * @param string $key The settings key.
 	 *
@@ -161,7 +161,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Change a named setting (object syntax).
+	 * Changes a named setting (object syntax).
 	 *
 	 * @param string $key   The settings key.
 	 * @param mixed  $value The settings value.
@@ -171,7 +171,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Check if a named setting exists (object syntax).
+	 * Checks if a named setting exists (object syntax).
 	 *
 	 * @param string $key The settings key.
 	 */
@@ -180,7 +180,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Unset a named setting.
+	 * Unsets a named setting.
 	 *
 	 * @param string $key The settings key.
 	 */
@@ -189,7 +189,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Change a named setting (array syntax).
+	 * Changes a named setting (array syntax).
 	 *
 	 * @param string $offset The settings key.
 	 * @param mixed  $value  The settings value.
@@ -203,7 +203,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Check if a named setting exists (array syntax).
+	 * Checks if a named setting exists (array syntax).
 	 *
 	 * @param string $offset The settings key.
 	 */
@@ -212,7 +212,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Unset a named setting (array syntax).
+	 * Unsets a named setting (array syntax).
 	 *
 	 * @param string $offset The settings key.
 	 */
@@ -221,7 +221,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Provide access to named settings (array syntax).
+	 * Provides access to named settings (array syntax).
 	 *
 	 * @param string $offset The settings key.
 	 *
@@ -232,7 +232,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the array of named characters.
+	 * Retrieves the array of named characters.
 	 *
 	 * @return array
 	 */
@@ -241,7 +241,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the named character.
+	 * Retrieves the named character.
 	 *
 	 * @param string $name The character name.
 	 *
@@ -256,7 +256,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the named components calculated from the current settings.
+	 * Retrieves the named components calculated from the current settings.
 	 *
 	 * @return array
 	 */
@@ -265,7 +265,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the named component string.
+	 * Retrieves the named component string.
 	 *
 	 * @param string $name The component name.
 	 *
@@ -280,7 +280,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the regular expressions calculated from the current settings.
+	 * Retrieves the regular expressions calculated from the current settings.
 	 *
 	 * @return array
 	 */
@@ -289,7 +289,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve the named regular expression.
+	 * Retrieves the named regular expression.
 	 *
 	 * @param string $name The regex name.
 	 *
@@ -306,9 +306,9 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Initialize the PHP_Typography object.
 	 *
-	 * @param boolean $set_defaults If true, set default values for various properties. Defaults to true.
+	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
-	function init( $set_defaults = true ) {
+	private function init( $set_defaults = true ) {
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
 										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
 
@@ -509,10 +509,13 @@ class Settings implements \ArrayAccess {
 		$this->set_hyphenate_title_case();
 		$this->set_hyphenate_compounds();
 		$this->set_hyphenation_exceptions();
+
+		// Parser error handling.
+		$this->set_ignore_parser_errors();
 	}
 
 	/**
-	 * Set up our regex components for later use.
+	 * Sets up our regex components for later use.
 	 *
 	 * Call before initialize_patterns().
 	 */
@@ -836,7 +839,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set up our regex patterns for later use.
+	 * Sets up our regex patterns for later use.
 	 *
 	 * Call after intialize_components().
 	 */
@@ -1248,9 +1251,18 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
+	 * Enable lenient parser error handling (HTML is "best guess" if enabled).
+	 *
+	 * @param bool $on Optional. Default false.
+	 */
+	function set_ignore_parser_errors( $on = false ) {
+		$this->data['ignoreParserErrors'] = $on;
+	}
+
+	/**
 	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
 	 *
-	 * @param boolean $on Optional. Default false.
+	 * @param bool $on Optional. Default false.
 	 */
 	function set_true_no_break_narrow_space( $on = false ) {
 
@@ -1309,16 +1321,16 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable typographic quotes.
+	 * Enables/disables typographic quotes.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_quotes( $on = true ) {
 		$this->data['smartQuotes'] = $on;
 	}
 
 	/**
-	 * Set the style for primary ('double') quotemarks.
+	 * Sets the style for primary ('double') quotemarks.
 	 *
 	 * Allowed values for $style:
 	 * "doubleCurled" => "&ldquo;foo&rdquo;",
@@ -1356,7 +1368,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the style for secondary ('single') quotemarks.
+	 * Sets the style for secondary ('single') quotemarks.
 	 *
 	 * Allowed values for $style:
 	 * "doubleCurled" => "&ldquo;foo&rdquo;",
@@ -1394,9 +1406,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
+	 * Enables/disables replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_dashes( $on = true ) {
 		$this->data['smartDashes'] = $on;
@@ -1448,25 +1460,25 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable replacement of "..." with "…".
+	 * Enables/disables replacement of "..." with "…".
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_ellipses( $on = true ) {
 		$this->data['smartEllipses'] = $on;
 	}
 
 	/**
-	 * Enable/disable replacement "creme brulee" with "crème brûlée".
+	 * Enables/disables replacement "creme brulee" with "crème brûlée".
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_diacritics( $on = true ) {
 		$this->data['smartDiacritics'] = $on;
 	}
 
 	/**
-	 * Set the language used for diacritics replacements.
+	 * Sets the language used for diacritics replacements.
 	 *
 	 * @param string $lang Has to correspond to a filename in 'diacritics'. Optional. Default 'en-US'.
 	 */
@@ -1489,7 +1501,7 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set up custom diacritics replacements.
+	 * Sets up custom diacritics replacements.
 	 *
 	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...),
 	 *                                          or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
@@ -1559,88 +1571,88 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
+	 * Enables/disables replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_marks( $on = true ) {
 		$this->data['smartMarks'] = $on;
 	}
 
 	/**
-	 * Enable/disable proper mathematical symbols.
+	 * Enables/disables proper mathematical symbols.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_math( $on = true ) {
 		$this->data['smartMath'] = $on;
 	}
 
 	/**
-	 * Enable/disable replacement of 2^2 with 2<sup>2</sup>
+	 * Enables/disables replacement of 2^2 with 2<sup>2</sup>
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_exponents( $on = true ) {
 		$this->data['smartExponents'] = $on;
 	}
 
 	/**
-	 * Enable/disable replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
+	 * Enables/disables replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_fractions( $on = true ) {
 		$this->data['smartFractions'] = $on;
 	}
 
 	/**
-	 * Enable/disable replacement of 1st with 1<sup>st</sup>.
+	 * Enables/disables replacement of 1st with 1<sup>st</sup>.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_smart_ordinal_suffix( $on = true ) {
 		$this->data['smartOrdinalSuffix'] = $on;
 	}
 
 	/**
-	 * Enable/disable forcing single character words to next line with the insertion of &nbsp;.
+	 * Enables/disables forcing single character words to next line with the insertion of &nbsp;.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_single_character_word_spacing( $on = true ) {
 		$this->data['singleCharacterWordSpacing'] = $on;
 	}
 
 	/**
-	 * Enable/disable fraction spacing.
+	 * Enables/disables fraction spacing.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_fraction_spacing( $on = true ) {
 		$this->data['fractionSpacing'] = $on;
 	}
 
 	/**
-	 * Enable/disable keeping units and values together with the insertion of &nbsp;.
+	 * Enables/disables keeping units and values together with the insertion of &nbsp;.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_unit_spacing( $on = true ) {
 		$this->data['unitSpacing'] = $on;
 	}
 
 	/**
-	 * Enable/disable extra whitespace before certain punction marks, as is the French custom.
+	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_french_punctuation_spacing( $on = true ) {
 		$this->data['frenchPunctuationSpacing'] = $on;
 	}
 
 	/**
-	 * Set the list of units to keep together with their values.
+	 * Sets the list of units to keep together with their values.
 	 *
 	 * @param string|array $units A comma separated list or an array of units.
 	 */
@@ -1671,36 +1683,36 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable wrapping of Em and En dashes are in thin spaces.
+	 * Enables/disables wrapping of Em and En dashes are in thin spaces.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_dash_spacing( $on = true ) {
 		$this->data['dashSpacing'] = $on;
 	}
 
 	/**
-	 * Enable/disable removal of extra whitespace characters.
+	 * Enables/disables removal of extra whitespace characters.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_space_collapse( $on = true ) {
 		$this->data['spaceCollapse'] = $on;
 	}
 
 	/**
-	 * Enable/disable widow handling.
+	 * Enables/disables widow handling.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_dewidow( $on = true ) {
 		$this->data['dewidow'] = $on;
 	}
 
 	/**
-	 * Set the maximum length of widows that will be protected.
+	 * Sets the maximum length of widows that will be protected.
 	 *
-	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_max_dewidow_length( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
@@ -1709,9 +1721,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the maximum length of pulled text to keep widows company.
+	 * Sets the maximum length of pulled text to keep widows company.
 	 *
-	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_max_dewidow_pull( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
@@ -1720,36 +1732,36 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable wrapping at internal hard hyphens with the insertion of a zero-width-space.
+	 * Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_wrap_hard_hyphens( $on = true ) {
 		$this->data['hyphenHardWrap'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping of urls.
+	 * Enables/disables wrapping of urls.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_url_wrap( $on = true ) {
 		$this->data['urlWrap'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping of email addresses.
+	 * Enables/disables wrapping of email addresses.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_email_wrap( $on = true ) {
 		$this->data['emailWrap'] = $on;
 	}
 
 	/**
-	 * Set the minimum character requirement after an URL wrapping point.
+	 * Sets the minimum character requirement after an URL wrapping point.
 	 *
-	 * @param number $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
+	 * @param int $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_after_url_wrap( $length = 5 ) {
 		$length = ( $length > 0 ) ? $length : 5;
@@ -1758,52 +1770,52 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable wrapping of ampersands in <span class="amp">.
+	 * Enables/disables wrapping of ampersands in <span class="amp">.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_style_ampersands( $on = true ) {
 		$this->data['styleAmpersands'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping caps in <span class="caps">.
+	 * Enables/disables wrapping caps in <span class="caps">.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_style_caps( $on = true ) {
 		$this->data['styleCaps'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
+	 * Enables/disables wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_style_initial_quotes( $on = true ) {
 		$this->data['styleInitialQuotes'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping of numbers in <span class="numbers">.
+	 * Enables/disables wrapping of numbers in <span class="numbers">.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_style_numbers( $on = true ) {
 		$this->data['styleNumbers'] = $on;
 	}
 
 	/**
-	 * Enable/disable wrapping of punctiation and wide characters in <span class="pull-*">.
+	 * Enables/disables wrapping of punctiation and wide characters in <span class="pull-*">.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_style_hanging_punctuation( $on = true ) {
 		$this->data['styleHangingPunctuation'] = $on;
 	}
 
 	/**
-	 * Set the list of tags where initial quotes and guillemets should be styled.
+	 * Sets the list of tags where initial quotes and guillemets should be styled.
 	 *
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
@@ -1818,16 +1830,16 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable hyphenation.
+	 * Enables/disables hyphenation.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_hyphenation( $on = true ) {
 		$this->data['hyphenation'] = $on;
 	}
 
 	/**
-	 * Set the hyphenation pattern language.
+	 * Sets the hyphenation pattern language.
 	 *
 	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
 	 */
@@ -1840,9 +1852,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the minimum length of a word that may be hyphenated.
+	 * Sets the minimum length of a word that may be hyphenated.
 	 *
-	 * @param number $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
+	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
 	function set_min_length_hyphenation( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
@@ -1851,9 +1863,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the minimum character requirement before a hyphenation point.
+	 * Sets the minimum character requirement before a hyphenation point.
 	 *
-	 * @param number $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
+	 * @param int $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_before_hyphenation( $length = 3 ) {
 		$length = ( $length > 0 ) ? $length : 3;
@@ -1862,9 +1874,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the minimum character requirement after a hyphenation point.
+	 * Sets the minimum character requirement after a hyphenation point.
 	 *
-	 * @param number $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
+	 * @param int $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
 	 */
 	function set_min_after_hyphenation( $length = 2 ) {
 		$length = ( $length > 0 ) ? $length : 2;
@@ -1873,36 +1885,36 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Enable/disable hyphenation of titles and headings.
+	 * Enables/disables hyphenation of titles and headings.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_hyphenate_headings( $on = true ) {
 		$this->data['hyphenateTitle'] = $on;
 	}
 
 	/**
-	 * Enable/disable hyphenation of words set completely in capital letters.
+	 * Enables/disables hyphenation of words set completely in capital letters.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_hyphenate_all_caps( $on = true ) {
 		$this->data['hyphenateAllCaps'] = $on;
 	}
 
 	/**
-	 * Enable/disable hyphenation of words starting with a capital letter.
+	 * Enables/disables hyphenation of words starting with a capital letter.
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_hyphenate_title_case( $on = true ) {
 		$this->data['hyphenateTitleCase'] = $on;
 	}
 
 	/**
-	 * Enable/disable hyphenation of compound words (e.g. "editor-in-chief").
+	 * Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
 	 *
-	 * @param boolean $on Optional. Default true.
+	 * @param bool $on Optional. Default true.
 	 */
 	function set_hyphenate_compounds( $on = true ) {
 		$this->data['hyphenateCompounds'] = $on;
@@ -1923,9 +1935,9 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieve a unique hash value for the current settings.
+	 * Retrieves a unique hash value for the current settings.
 	 *
-	 * @param number $max_length The maximum number of bytes returned. Optional. Default 16.
+	 * @param int $max_length The maximum number of bytes returned. Optional. Default 16.
 	 *
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */

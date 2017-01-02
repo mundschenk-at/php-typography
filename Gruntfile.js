@@ -8,20 +8,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-	    makepot: {
-	        target: {
-	            options: {
-	                domainPath: '/translations/', // Where to save the POT file.
-	                potFilename: 'wp-typography.pot', // Name of the POT file.
-	                type: 'wp-plugin',
-	                exclude: ['build/.*'],
-	                updateTimestamp: false,
-	                updatePoFiles: true
-	            }
-	        }
-	    },
-
-	    shell: {
+		shell: {
 	    	update_html5: {
 	    		tmpDir: 'vendor/tmp',
 	    		sourceDir: '<%= shell.update_html5.tmpDir %>/src',
@@ -39,8 +26,8 @@ module.exports = function(grunt) {
 	    		targetDir: 'php-typography/lang',
 	    		command: (function() {
 	    			var cli = [];
-	    			grunt.file.readJSON('php-typography/lang_unformatted/patterns.json').list.forEach(function(element, index) {
-	    				cli.push('php php-typography/lang_unformatted/pattern2json.php -l "' + element.name + '" -f ' + element.url + ' > <%= shell.update_patterns.targetDir %>/' + element.short + '.json');
+	    			grunt.file.readJSON('php-typography/bin/patterns.json').list.forEach(function(element, index) {
+	    				cli.push('php php-typography/bin/pattern2json.php -l "' + element.name + '" -f ' + element.url + ' > <%= shell.update_patterns.targetDir %>/' + element.short + '.json');
 	    			});
 
 
@@ -218,7 +205,6 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'default', [
 	    'phpunit:default',
 		'regex_extract:language_names',
-		'makepot',
 		'sass:dev'
     ]);
 };
