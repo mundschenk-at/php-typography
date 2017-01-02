@@ -1,4 +1,4 @@
-{ 
+{
   "list" : [
 	{
 		"short" : "af",
@@ -9,256 +9,291 @@
 		"short" : "bg",
 		"name"  : "Bulgarian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex"
-	}, 
+	},
 	{
 		"short" : "ca",
 		"name"  : "Catalan",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ca.tex"
-	}, 
+	},
 	{
 		"short" : "cs",
 		"name"  : "Czech",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-cs.tex"
-	}, 
+	},
 	{
 		"short" : "cy",
 		"name"  : "Welsh",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-cy.tex"
-	}, 
+	},
 	{
 		"short" : "da",
 		"name"  : "Danish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-da.tex"
-	}, 
+	},
 	{
 		"short" : "de-1901",
 		"name"  : "German (Traditional)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-de-1901.tex"
-	}, 
+	},
 	{
 		"short" : "de",
 		"name"  : "German",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-de-1996.tex"
-	}, 
+	},
 	{
 		"short" : "el-Mono",
 		"name"  : "Greek (Modern Monotonic)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-el-monoton.tex"
-	}, 
+	},
 	{
 		"short" : "el-Poly",
 		"name"  : "Greek (Modern Polytonic)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-el-polyton.tex"
-	}, 
+	},
 	{
 		"short" : "en-GB",
 		"name"  : "English (United Kingdom)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-en-gb.tex"
-	}, 
+	},
 	{
 		"short" : "en-US",
 		"name"  : "English (United States)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex"
-	}, 
+	},
 	{
 		"short" : "es",
 		"name"  : "Spanish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-es.tex"
-	}, 
+	},
 	{
 		"short" : "et",
 		"name"  : "Estonian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-et.tex"
-	}, 
+	},
 	{
 		"short" : "eu",
 		"name"  : "Basque",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-eu.tex"
-	}, 
+	},
 	{
 		"short" : "fi",
 		"name"  : "Finnish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex"
-	}, 
+	},
 	{
 		"short" : "fr",
 		"name"  : "French",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-fr.tex"
-	}, 
+	},
 	{
 		"short" : "ga",
 		"name"  : "Irish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ga.tex"
-	}, 
+	},
 	{
 		"short" : "gl",
 		"name"  : "Galician",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-gl.tex"
-	}, 
+	},
 	{
 		"short" : "grc",
 		"name"  : "Greek (Ancient)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-grc.tex"
-	}, 
+	},
+	{
+		"short" : "hi",
+		"name"  : "Hindi",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hi.tex"
+	},
 	{
 		"short" : "hr",
 		"name"  : "Croatian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hr.tex"
-	}, 
+	},
 	{
 		"short" : "hu",
 		"name"  : "Hungarian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hu.tex"
-	}, 
+	},
 	{
 		"short" : "hy",
 		"name"  : "Armenian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hy.tex"
-	}, 
+	},
 	{
 		"short" : "ia",
 		"name"  : "Interlingua",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ia.tex"
-	}, 
+	},
 	{
 		"short" : "id",
 		"name"  : "Indonesian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-id.tex"
-	}, 
+	},
 	{
 		"short" : "is",
 		"name"  : "Icelandic",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-is.tex"
-	}, 
+	},
 	{
 		"short" : "it",
 		"name"  : "Italian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-it.tex"
-	}, 
+	},
 	{
 		"short" : "ka",
 		"name"  : "Georgian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ka.tex"
-	}, 
+	},
 	{
 		"short" : "la-classic",
 		"name"  : "Latin (Classical)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-classic.tex"
-	}, 
+	},
 	{
 		"short" : "la-liturgic",
 		"name"  : "Latin (Liturgical)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-liturgic.tex"
-	}, 
+	},
 	{
 		"short" : "la",
 		"name"  : "Latin",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la.tex"
-	}, 
+	},
 	{
 		"short" : "lt",
 		"name"  : "Lithuanian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-lt.tex"
-	}, 
+	},
 	{
 		"short" : "lv",
 		"name"  : "Latvian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-lv.tex"
-	}, 
+	},
 	{
 		"short" : "mn-Cyrl",
 		"name"  : "Mongolian (Cyrillic)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl.tex"
-	}, 
+	},
+	{
+		"short" : "mr",
+		"name"  : "Marathi",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-mr.tex"
+	},
 	{
 		"short" : "nl",
 		"name"  : "Dutch",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-nl.tex"
-	}, 
+	},
 	{
 		"short" : "no",
 		"name"  : "Norwegian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex"
-	}, 
+	},
+	{
+		"short" : "oc",
+		"name"  : "Occitan",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-oc.tex"
+	},
+	{
+		"short" : "or",
+		"name"  : "Oriya",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-or.tex"
+	},
+	{
+		"short" : "pa",
+		"name"  : "Panjabi",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-pa.tex"
+	},
 	{
 		"short" : "pl",
 		"name"  : "Polish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-pl.tex"
-	}, 
+	},
 	{
 		"short" : "pt",
 		"name"  : "Portuguese",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-pt.tex"
-	}, 
+	},
 	{
 		"short" : "ro",
 		"name"  : "Romanian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ro.tex"
-	}, 
+	},
 	{
 		"short" : "ru",
 		"name"  : "Russian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ru.tex"
-	}, 
+	},
 	{
 		"short" : "sa",
 		"name"  : "Sanskrit",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sa.tex"
-	}, 
+	},
 	{
 		"short" : "sh-Cyrl",
 		"name"  : "Serbocroatian (Cyrillic)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sh-cyrl.tex"
-	}, 
+	},
 	{
 		"short" : "sh-Latn",
 		"name"  : "Serbocroatian (Latin)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sh-latn.tex"
-	}, 
+	},
 	{
 		"short" : "sk",
 		"name"  : "Slovak",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sk.tex"
-	}, 
+	},
 	{
 		"short" : "sl",
 		"name"  : "Slovenian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sl.tex"
-	}, 
+	},
 	{
 		"short" : "sr-Cyrl",
 		"name"  : "Serbian (Cyrillic)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sr-cyrl.tex"
-	}, 
+	},
 	{
 		"short" : "sv",
 		"name"  : "Swedish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sv.tex"
-	}, 
+	},
+	{
+		"short" : "ta",
+		"name"  : "Tamil",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ta.tex"
+	},
+	{
+		"short" : "te",
+		"name"  : "Telugu",
+		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-te.tex"
+	},
 	{
 		"short" : "th",
 		"name"  : "Thai",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-th.tex"
-	}, 
+	},
 	{
 		"short" : "tk",
 		"name"  : "Turkmen",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-tk.tex"
-	}, 
+	},
 	{
 		"short" : "tr",
 		"name"  : "Turkish",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-tr.tex"
-	}, 
+	},
 	{
 		"short" : "uk",
 		"name"  : "Ukrainian",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-uk.tex"
-	}, 
+	},
 	{
 		"short" : "zh-Latn",
 		"name"  : "Chinese pinyin (Latin)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-zh-latn-pinyin.tex"
 	}
-	] 
+	]
 }
