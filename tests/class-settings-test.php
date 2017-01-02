@@ -86,19 +86,18 @@ class Settings_Test extends PHPUnit_Framework_TestCase
      * @covers ::init
      * @covers ::initialize_components
      * @covers ::initialize_patterns
-
      * @covers ::__construct
      *
-     * @uses PHP_Typography\Hyphenator
+     * @uses ::set_defaults
      */
-    public function test_init() {
+    public function test_initialization() {
     	$second_settings = new \PHP_Typography\Settings( false );
     	$this->assertAttributeNotEmpty( 'chr', $second_settings );
     	$this->assertAttributeNotEmpty( 'regex', $second_settings );
     	$this->assertAttributeNotEmpty( 'components', $second_settings );
     	$this->assertAttributeEmpty( 'data', $second_settings );
 
-    	$second_settings->init( true );
+    	$second_settings->set_defaults();
 		$this->assertAttributeNotEmpty( 'chr', $second_settings );
     	$this->assertAttributeNotEmpty( 'regex', $second_settings );
     	$this->assertAttributeNotEmpty( 'components', $second_settings );
