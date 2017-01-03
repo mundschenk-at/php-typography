@@ -36,6 +36,29 @@ module.exports = function(grunt) {
 	    	}
 	    },
 
+	    jshint: {
+            files: [
+                'js/**/*.js',
+            ],
+            options: {
+                expr: true,
+                globals: {
+                    jQuery: true,
+                    console: true,
+                    module: true,
+                    document: true
+                }
+            }
+        },
+
+        jscs: {
+            src: [
+                'js/**/*.js'
+            ],
+            options: {
+            }
+        },
+
 	    phpcs: {
 	        plugin: {
 	            src: ['includes/**/*.php', 'php-typography/**/*.php']
@@ -111,6 +134,14 @@ module.exports = function(grunt) {
             	}
             }
 	    },
+
+        delegate: {
+        	sass: {
+                src: [ '<%= sass.dev.files.src %>**/*.scss' ],
+                dest: '<%= sass.dev.files.dest %>'
+        	}
+        },
+
         sass: {
             dist: {
                 options: {
@@ -145,6 +176,21 @@ module.exports = function(grunt) {
 		                   ext: '.css' } ]
             }
         },
+
+        uglify: {
+            dist: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.js <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+                    report: 'gzip'
+                },
+                files: grunt.file.expandMapping(['js/**/*.js', '!js/**/*min.js'], '', {
+                    rename: function(destBase, destPath) {
+                        return destBase+destPath.replace('.js', '.min.js');
+                    }
+                })
+            },
+        },
+
         curl: {
         	'update-iana': {
         		src: 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt',
@@ -176,17 +222,25 @@ module.exports = function(grunt) {
     grunt.registerTask( 'update:html5', ['shell:update_html5'] );
     grunt.registerTask( 'update:patterns', ['shell:update_patterns'] );
 
+    // delegate stuff
+    grunt.registerTask( 'delegate', function() {
+        grunt.task.run( this.args.join( ':' ) );
+    } );
+
+
 	grunt.registerTask( 'build', [
 //		'wp_readme_to_markdown',
 		'clean:build',
 		'regex_extract:language_names',
 		'copy',
-		'sass:dist'
+		'newer:delegate:sass:dist',
+		'newer:uglify'
   	]);
 
   	grunt.registerTask('deploy', [
  	    'phpunit:default',
  	    'phpcs',
+ 	    'jscs',
 		'build',
   		'wp_deploy:release'
   	]);
@@ -203,8 +257,11 @@ module.exports = function(grunt) {
 	]);
 
 	grunt.registerTask( 'default', [
-	    'phpunit:default',
+	    //'phpunit:default',
+ 	    'phpcs',
+ 	    'jscs',
 		'regex_extract:language_names',
-		'sass:dev'
+		'newer:delegate:sass:dev',
+		'newer:uglify'
     ]);
 };
