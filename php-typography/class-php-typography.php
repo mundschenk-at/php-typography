@@ -453,9 +453,9 @@ class PHP_Typography {
 	/**
 	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
 	 *
-	 * @param bool $on Optional. Default true.
+	 * @param bool $on Optional. Default false.
 	 */
-	function set_french_punctuation_spacing( $on = true ) {
+	function set_french_punctuation_spacing( $on = false ) {
 		$this->settings->set_french_punctuation_spacing( $on );
 	}
 
