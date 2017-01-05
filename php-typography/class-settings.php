@@ -1256,7 +1256,20 @@ class Settings implements \ArrayAccess {
 	 * @param bool $on Optional. Default false.
 	 */
 	function set_ignore_parser_errors( $on = false ) {
-		$this->data['ignoreParserErrors'] = $on;
+		$this->data['parserErrorsIgnore'] = $on;
+	}
+
+	/**
+	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
+	 *
+	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
+	 */
+	function set_parser_errors_handler( $handler = null ) {
+		if ( ! empty( $handler ) && ! is_callable( $handler ) ) {
+			return; // Invalid handler, abort.
+		}
+
+		$this->data['parserErrorsHandler'] = $handler;
 	}
 
 	/**

@@ -300,10 +300,30 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     	$s = $this->settings;
 
     	$s->set_ignore_parser_errors( true );
-    	$this->assertTrue( $s['ignoreParserErrors'] );
+    	$this->assertTrue( $s['parserErrorsIgnore'] );
 
     	$s->set_ignore_parser_errors( false );
-    	$this->assertFalse( $s['ignoreParserErrors'] );
+    	$this->assertFalse( $s['parserErrorsIgnore'] );
+    }
+
+    /**
+     * @covers ::set_parser_errors_handler
+     */
+    public function test_set_parser_errors_handler() {
+    	$s = $this->settings;
+
+    	// Default: no handler.
+    	$this->assertEmpty( $s['parserErrorsHandler'] );
+
+    	// Valid handler.
+    	$s->set_parser_errors_handler( function( $errors ) { return array(); } );
+    	$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+    	$old_handler = $s['parserErrorsHandler'];
+
+    	// Invalid handler, previous handler not changed.
+    	$s->set_parser_errors_handler( 'foobar' );
+    	$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+    	$this->assertSame( $old_handler, $s['parserErrorsHandler'] );
     }
 
     /**
