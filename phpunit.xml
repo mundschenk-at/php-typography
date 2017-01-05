@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit 
+<phpunit
 	bootstrap="tests/bootstrap.php"
 	beStrictAboutTestsThatDoNotTestAnything="true"
-	beStrictAboutCoversAnnotation="true" 
+	beStrictAboutCoversAnnotation="true"
 	stopOnRisky="true"
 	verbose="true"
 >
@@ -15,7 +15,7 @@
 		<whitelist processUncoveredFilesFromWhitelist="true">
 	    	<directory suffix=".php">php-typography</directory>
 	    	<exclude>
-	    		<directory>php-typography/lang_unformatted</directory>
+	    		<directory>php-typography/bin</directory>
 	    		<directory>php-typography/lang</directory>
 	    		<directory>php-typography/diacritics</directory>
 	    		<file>php-typography/php-typography-autoload.php</file>
