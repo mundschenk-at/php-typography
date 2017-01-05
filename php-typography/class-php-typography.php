@@ -221,6 +221,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
+	 *
+	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
+	 */
+	function set_parser_errors_handler( $handler = null ) {
+		$this->settings->set_parser_errors_handler( $handler );
+	}
+
+	/**
 	 * Enables usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
 	 *
 	 * @param bool $on Optional. Default false.
@@ -453,9 +462,9 @@ class PHP_Typography {
 	/**
 	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
 	 *
-	 * @param bool $on Optional. Default true.
+	 * @param bool $on Optional. Default false.
 	 */
-	function set_french_punctuation_spacing( $on = true ) {
+	function set_french_punctuation_spacing( $on = false ) {
 		$this->settings->set_french_punctuation_spacing( $on );
 	}
 
@@ -927,7 +936,8 @@ class PHP_Typography {
 
 		// Return null if there were parsing errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $errors ) && ! $settings['ignoreParserErrors'] ) {
+		$errors = ! empty( $settings['parserErrorsHandler'] ) ? call_user_func( $settings['parserErrorsHandler'], $errors ) : $errors;
+		if ( ! empty( $errors ) && ! $settings['parserErrorsIgnore'] ) {
 			$dom = null;
 		}
 

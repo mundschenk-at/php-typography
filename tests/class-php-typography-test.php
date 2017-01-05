@@ -105,11 +105,34 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
 		$typo->set_ignore_parser_errors( true );
 		$s = $typo->get_settings();
-		$this->assertTrue( $s['ignoreParserErrors'] );
+		$this->assertTrue( $s['parserErrorsIgnore'] );
 
 		$typo->set_ignore_parser_errors( false );
 		$s = $typo->get_settings();
-		$this->assertFalse( $s['ignoreParserErrors'] );
+		$this->assertFalse( $s['parserErrorsIgnore'] );
+	}
+
+	/**
+	 * @covers ::set_parser_errors_handler
+	 */
+ 	public function test_set_parser_errors_handler() {
+		$typo = $this->typo;
+
+		// Default: no handler.
+		$s = $typo->get_settings();
+		$this->assertEmpty( $s['parserErrorsHandler'] );
+
+		// Valid handler.
+		$typo->set_parser_errors_handler( function( $errors ) { return array(); } );
+		$s = $typo->get_settings();
+		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+		$old_handler = $s['parserErrorsHandler'];
+
+		// Invalid handler, previous handler not changed.
+		$typo->set_parser_errors_handler( 'foobar' );
+		$s = $typo->get_settings();
+		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+		$this->assertSame( $old_handler, $s['parserErrorsHandler'] );
 	}
 
     /**
