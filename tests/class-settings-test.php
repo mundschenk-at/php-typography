@@ -91,14 +91,23 @@ class Settings_Test extends PHPUnit_Framework_TestCase
      * @uses ::set_defaults
      */
     public function test_initialization() {
-    	$second_settings = new \PHP_Typography\Settings( false );
-    	$this->assertAttributeNotEmpty( 'chr', $second_settings );
-    	$this->assertAttributeNotEmpty( 'regex', $second_settings );
-    	$this->assertAttributeNotEmpty( 'components', $second_settings );
-    	$this->assertAttributeEmpty( 'data', $second_settings );
+    	$s = $this->settings;
 
-    	$second_settings->set_defaults();
-		$this->assertAttributeNotEmpty( 'chr', $second_settings );
+    	// no defaults
+    	$this->assertAttributeNotEmpty( 'chr', $s );
+    	$this->assertAttributeNotEmpty( 'regex', $s );
+    	$this->assertAttributeNotEmpty( 'components', $s );
+    	$this->assertAttributeEmpty( 'data', $s );
+
+    	// after set_defaults()
+    	$s->set_defaults();
+    	$this->assertAttributeNotEmpty( 'chr', $s );
+    	$this->assertAttributeNotEmpty( 'regex', $s );
+    	$this->assertAttributeNotEmpty( 'components', $s );
+    	$this->assertAttributeNotEmpty( 'data', $s );
+
+    	$second_settings = new \PHP_Typography\Settings( true );
+    	$this->assertAttributeNotEmpty( 'chr', $second_settings );
     	$this->assertAttributeNotEmpty( 'regex', $second_settings );
     	$this->assertAttributeNotEmpty( 'components', $second_settings );
     	$this->assertAttributeNotEmpty( 'data', $second_settings );
