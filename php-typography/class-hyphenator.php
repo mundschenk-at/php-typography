@@ -237,12 +237,12 @@ class Hyphenator {
 	/**
 	 * Hyphenates parsed text tokens.
 	 *
-	 * @param array   $parsed_text_tokens   An array of text tokens.
-	 * @param string  $hyphen               The hyphen character. Optional. Default '-'.
-	 * @param bool $hyphenate_title_case Whether words in Title Case should be hyphenated. Optional. Default false.
-	 * @param int     $min_length           Minimum word length for hyphenation. Optional. Default 2.
-	 * @param int     $min_before           Minimum number of characters before a hyphenation point. Optional. Default 2.
-	 * @param int     $min_after            Minimum number of characters after a hyphenation point. Optional. Default 2.
+	 * @param array  $parsed_text_tokens   An array of text tokens.
+	 * @param string $hyphen               Optional. The hyphen character. Default '-'.
+	 * @param bool   $hyphenate_title_case Optional. Whether words in Title Case should be hyphenated. Default false.
+	 * @param int    $min_length           Optional. Minimum word length for hyphenation. Default 2.
+	 * @param int    $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
+	 * @param int    $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
 	 *
 	 * @return array The modified text tokens.
 	 */
