@@ -205,7 +205,6 @@ class PHP_Typography_Functions_Test extends PHPUnit_Framework_TestCase {
 	 */
 	public function test_get_language_plugin_list() {
 		$path = dirname( __DIR__ ) . '/php-typography/diacritics/';
-		error_log($path);
 		$languages = \PHP_Typography\get_language_plugin_list( $path, 'diacriticLanguage' );
 
 		$this->assertCount( 2, $languages );
