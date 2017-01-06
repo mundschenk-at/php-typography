@@ -3408,8 +3408,8 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
 
     function provide_parse_html_with_errors_data() {
     	return array(
-    		array( '<div>foobar</div></p>' ),
-    		array( '<a href="http://example.org?foo=xx&bar=yy">foobar</a>' ),
+    		array( '<div>foobar</div></p>', 'Line 0, Col 0: Could not find closing tag for p' ),
+    		array( '<a href="http://example.org?foo=xx&bar=yy">foobar</a>', "Line 1, Col 65: No match in entity table for 'bar'" ),
     	);
     }
 
@@ -3418,11 +3418,26 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      *
      * @dataProvider provide_parse_html_with_errors_data
      */
-    public function test_parse_html_with_errors( $html ) {
+    public function test_parse_html_with_errors( $html, $error_msg ) {
     	$typo = $this->typo;
-    	$dom = $typo->parse_html( $typo->get_html5_parser(), $html, $typo->get_settings() );
+    	$s = $typo->get_settings();
 
+    	// Without an error handler.
+    	$dom = $typo->parse_html( $typo->get_html5_parser(), $html, $s );
     	$this->assertNull( $dom );
+
+    	// With error handler.
+    	$s->set_parser_errors_handler( function( $errors ) {
+    		foreach ( $errors as $error ) {
+    			echo $error;
+    		}
+
+    		return array();
+    	} );
+
+    	$this->expectOutputString( $error_msg );
+    	$dom = $typo->parse_html( $typo->get_html5_parser(), $html, $s );
+    	$this->assertInstanceOf( 'DOMDocument', $dom );
     }
 
     /**
