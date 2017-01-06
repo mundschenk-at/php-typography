@@ -934,9 +934,13 @@ class PHP_Typography {
 		libxml_use_internal_errors( $xml_error_handling );
 		restore_error_handler();
 
-		// Return null if there were parsing errors.
+		// Handle any parser errors.
 		$errors = $parser->getErrors();
-		$errors = ! empty( $settings['parserErrorsHandler'] ) ? call_user_func( $settings['parserErrorsHandler'], $errors ) : $errors;
+		if ( ! empty( $settings['parserErrorsHandler'] ) && ! empty( $errors ) ) {
+			$errors = call_user_func( $settings['parserErrorsHandler'], $errors );
+		}
+
+		// Return null if there are still unhandled parsing errors.
 		if ( ! empty( $errors ) && ! $settings['parserErrorsIgnore'] ) {
 			$dom = null;
 		}
