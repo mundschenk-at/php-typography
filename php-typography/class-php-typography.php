@@ -1669,10 +1669,11 @@ class PHP_Typography {
 
 		if ( '' === $this->get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$that = $this;
-			$chr  = $settings->get_named_characters();
-			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $that, $chr ) {
-				$func = $that->str_functions[ mb_detect_encoding( $widow[0], $that->encodings, true ) ];
+			$encodings = $this->encodings;
+			$str_funcs = $this->str_functions;
+			$chr       = $settings->get_named_characters();
+			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $encodings, $str_funcs, $chr ) {
+				$func = $str_funcs[ mb_detect_encoding( $widow[0], $encodings, true ) ];
 
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped
