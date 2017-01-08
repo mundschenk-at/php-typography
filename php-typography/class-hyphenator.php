@@ -68,6 +68,13 @@ class Hyphenator {
 	protected $custom_exceptions;
 
 	/**
+	 * A binary hash of $custom_exceptions array.
+	 *
+	 * @var string
+	 */
+	protected $custom_exceptions_hash;
+
+	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
 	 * @var array
@@ -138,6 +145,17 @@ class Hyphenator {
 	 *                                 Default empty array.
 	 */
 	public function set_custom_exceptions( array $exceptions = array() ) {
+		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
+			return; // Nothing to do at all.
+		}
+
+		// Calculate hash & check against previous exceptions.
+		$new_hash = get_object_hash( $exceptions );
+		if ( $this->custom_exceptions_hash === $new_hash ) {
+			return; // No need to update exceptions.
+		}
+
+		// Do our thing.
 		$exception_keys = array();
 		$func = array();
 		foreach ( $exceptions as $exception ) {
@@ -150,9 +168,11 @@ class Hyphenator {
 			$exception_keys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );
 		}
 
-		$this->custom_exceptions = array_flip( $exception_keys );
+		// Update exceptions.
+		$this->custom_exceptions      = array_flip( $exception_keys );
+		$this->custom_exceptions_hash = $new_hash;
 
-		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
+		// Force remerging of patgen and custom exception patterns.
 		$this->merged_exception_patterns = null;
 	}
 

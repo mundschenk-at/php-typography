@@ -207,6 +207,17 @@ function get_language_plugin_list( $path ) {
 }
 
 /**
+ * Calculates binary-safe hash from data object.
+ *
+ * @param mixed $object Any datatype.
+ *
+ * @return string
+ */
+function get_object_hash( $object ) {
+	return md5( json_encode( $object ), false );
+}
+
+/**
  * Include debugging helpers.
  */
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) { // @codeCoverageIgnoreStart

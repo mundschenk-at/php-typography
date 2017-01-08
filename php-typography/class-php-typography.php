@@ -2091,6 +2091,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Injects an existing Hyphenator instance (to facilitate language caching).
+	 *
+	 * @param Hyphenator $hyphenator A hyphenator instance.
+	 */
+	public function set_hyphenator( Hyphenator $hyphenator ) {
+		$this->hyphenator = $hyphenator;
+	}
+
+	/**
 	 * Really hyphenates given text fragment.
 	 *
 	 * @param array    $parsed_text_tokens Filtered to words.
