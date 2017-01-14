@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2015-2016 Peter Putzer.
+ *	Copyright 2015-2017 Peter Putzer.
  *
  *	This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -99,7 +99,7 @@ class Pattern_Converter {
 		$sequence = implode( $result );
 
 		if ( $count !== $count_seg + 1 ) {
-			error_log( "Invalid segment length $count for pattern $pattern (result sequence $sequence)" );
+			trigger_error( "Invalid segment length $count for pattern $pattern (result sequence $sequence)", E_USER_ERROR ); // @codingStandardsIgnoreLine
 
 			die( -3000 );
 		}
