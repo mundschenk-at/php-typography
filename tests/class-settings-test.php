@@ -15,7 +15,7 @@
  * @uses PHP_Typography\is_odd
  * @uses PHP_Typography\mb_str_split
  */
-class Settings_Test extends PHPUnit_Framework_TestCase
+class Settings_Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Settings
@@ -435,7 +435,7 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_quotes_primary
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
      */
     public function test_set_smart_quotes_primary_invalid()
@@ -480,7 +480,7 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_quotes_secondary
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
      */
     public function test_set_smart_quotes_secondary_invalid()
@@ -524,7 +524,7 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     		foreach ( $quote_styles as $secondary_style ) {
     			$s->set_smart_quotes_secondary( $secondary_style );
 
-    			$comp = PHPUnit_Framework_Assert::readAttribute( $s, 'components' );
+    			$comp = \PHPUnit\Framework\Assert::readAttribute( $s, 'components' );
 
     			$this->assertSmartQuotesStyle( $secondary_style,
     										   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
@@ -681,7 +681,7 @@ class Settings_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_dashes_style
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
      */
     public function test_set_smart_dashes_style_invalid()
