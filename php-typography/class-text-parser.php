@@ -356,7 +356,7 @@ class Text_Parser {
 							'type'	=> 'other',
 							'value'	=> $old_part . $part,
 						);
-						$index = $index - 1;
+						$index--;
 
 					// Not preceeded by a non-space + punctuation.
 					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
@@ -378,7 +378,7 @@ class Text_Parser {
 					// Make sure that things like email addresses and URLs are not broken up into words
 					// and punctuation not preceeded by an 'other' or 'word'.
 					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
-						$index = $index - 1;
+						$index--;
 						$old_part = $tokens[ $index ]['value'];
 						$tokens[ $index ] = array(
 							'type'	=> 'other',

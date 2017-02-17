@@ -746,8 +746,7 @@ class PHP_Typography {
 	public function process_textnodes( $html, $fixer, $is_title = false, Settings $settings = null ) {
 		// Don't do aynthing if there is no valid callback.
 		if ( ! is_callable( $fixer ) ) {
-			trigger_error( 'PHP_Typography::process_textnodes called without a valid callback.', E_USER_WARNING );
-
+			trigger_error( 'PHP_Typography::process_textnodes called without a valid callback.', E_USER_WARNING ); // @codingStandardsIgnoreLine
 			return $html;
 		}
 
@@ -922,7 +921,7 @@ class PHP_Typography {
 	 */
 	function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
 		// Silence some parsing errors for invalid HTML.
-		set_error_handler( array( $this, 'handle_parsing_errors' ) );
+		set_error_handler( array( $this, 'handle_parsing_errors' ) ); // @codingStandardsIgnoreLine
 		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// Do the actual parsing.
@@ -998,7 +997,8 @@ class PHP_Typography {
 		if ( ! empty( $query_parts ) ) {
 			$ignore_query = implode( ' | ', $query_parts );
 
-			if ( false !== ( $nodelist = $xpath->query( $ignore_query, $initial_node ) ) ) {
+			$nodelist = $xpath->query( $ignore_query, $initial_node );
+			if ( false !== $nodelist ) {
 				$elements = nodelist_to_array( $nodelist );
 			}
 		}
@@ -1833,7 +1833,7 @@ class PHP_Typography {
 			return $node; // abort early to save cycles.
 		}
 
-		set_error_handler( array( $this, 'handle_parsing_errors' ) );
+		set_error_handler( array( $this, 'handle_parsing_errors' ) ); // @codingStandardsIgnoreLine.
 
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
