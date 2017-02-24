@@ -8,7 +8,7 @@
  *
  * @uses PHP_Typography\Hyphenator
  */
-class Hyphenator_Test extends PHPUnit_Framework_TestCase
+class Hyphenator_Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Hyphenator

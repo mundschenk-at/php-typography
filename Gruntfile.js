@@ -58,33 +58,33 @@ module.exports = function(grunt) {
             options: {}
         },
 
-        phpcs: {
-            plugin: {
-                src: ['includes/**/*.php', 'php-typography/**/*.php', 'admin/**/*.php']
-            },
-            options: {
-                bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
-                standard: './phpcs.xml'
-            }
-        },
+	    phpcs: {
+	        plugin: {
+	            src: ['includes/**/*.php', 'php-typography/**/*.php', 'admin/**/*.php']
+	        },
+	        options: {
+	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
+	            standard: './phpcs.xml'
+	        }
+	    },
 
-        phpunit: {
-            default: {
-                options: {
-                    testsuite: 'wpTypography',
-                }
-            },
-            coverage: {
-                options: {
-                    testsuite: 'wpTypography',
-                    coverageHtml: 'tests/coverage/',
-                }
-            },
-            options: {
-                colors: true,
-                configuration: 'phpunit.xml',
-            }
-        },
+	    phpunit: {
+	        default: {
+	            options: {
+	            	testsuite: 'wpTypography',
+	            }
+	        },
+	        coverage: {
+	            options: {
+	            	testsuite: 'wpTypography',
+	            	coverageHtml: 'tests/coverage/',
+	            }
+	        },
+	        options: {
+	            colors: true,
+	            configuration: 'phpunit.xml',
+	        }
+	    },
 
         copy: {
             main: {

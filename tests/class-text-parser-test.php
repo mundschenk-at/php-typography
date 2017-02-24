@@ -8,7 +8,7 @@
  *
  * @uses PHP_Typography\Text_Parser
  */
-class Text_ParserTest extends PHPUnit_Framework_TestCase
+class Text_ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Text_Parser

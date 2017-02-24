@@ -27,7 +27,7 @@ class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
  * @uses PHP_Typography\is_odd
  * @uses PHP_Typography\mb_str_split
  */
-class PHP_Typography_Test extends PHPUnit_Framework_TestCase
+class PHP_Typography_Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var PHP_Typography
@@ -314,7 +314,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_quotes_primary
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
      */
     public function test_set_smart_quotes_primary_invalid()
@@ -359,7 +359,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_quotes_secondary
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
      */
     public function test_set_smart_quotes_secondary_invalid()
@@ -501,7 +501,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
     /**
      * @covers ::set_smart_dashes_style
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
      */
     public function test_set_smart_dashes_style_invalid()
@@ -1438,7 +1438,7 @@ class PHP_Typography_Test extends PHPUnit_Framework_TestCase
      * @uses PHP_Typography\Hyphenator
      * @uses PHP_Typography\Text_Parser
      *
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      *
      * @dataProvider provide_process_data
      */

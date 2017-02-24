@@ -5,7 +5,7 @@ require_once dirname( __DIR__ ) . '/php-typography/php-typography-functions.php'
 /**
  * Test cases for php-typography/php-typography-functions.php
  */
-class PHP_Typography_Functions_Test extends PHPUnit_Framework_TestCase {
+class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
