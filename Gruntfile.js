@@ -65,7 +65,7 @@ module.exports = function(grunt) {
 	        },
 	        options: {
 	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
-	            standard: './codesniffer.ruleset.xml'
+	            standard: './phpcs.xml'
 	        }
 	    },
 
