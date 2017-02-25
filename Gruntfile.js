@@ -60,10 +60,10 @@ module.exports = function(grunt) {
 
 	    phpcs: {
 	        plugin: {
-	            src: ['includes/**/*.php', 'php-typography/**/*.php', 'admin/**/*.php']
+	            src: ['includes/**/*.php', 'php-typography/**/*.php', 'admin/**/*.php', 'tests/**/*.php']
 	        },
 	        options: {
-	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php',
+	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php --ignore=tests/perf.php',
 	            standard: './phpcs.xml'
 	        }
 	    },
