@@ -309,8 +309,9 @@ class Settings implements \ArrayAccess {
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	private function init( $set_defaults = true ) {
-		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
-										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
+		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
+			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
+		} ) + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
 
 		$this->chr['noBreakSpace']            = uchr( 160 );
 		$this->chr['noBreakNarrowSpace']      = uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
@@ -439,8 +440,9 @@ class Settings implements \ArrayAccess {
 		$this->initialize_patterns();
 
 		// Set up some arrays for quick HTML5 introspection.
-		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),	function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
-} );
+		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),	function( $tag ) {
+			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
+		} );
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
 
 		if ( $set_defaults ) {
@@ -1580,7 +1582,10 @@ class Settings implements \ArrayAccess {
 	 		}
 		}
 
-		$this->data['diacriticReplacement'] = array( 'patterns' => $patterns, 'replacements' => $replacements );
+		$this->data['diacriticReplacement'] = array(
+			'patterns'     => $patterns,
+			'replacements' => $replacements,
+		);
 	}
 
 	/**
