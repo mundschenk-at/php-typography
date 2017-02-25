@@ -22,7 +22,7 @@
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
 		<properties>
-			<property name="customPropertiesWhitelist" type="array" value="nodeValue,parentNode,childNodes" />
+			<property name="customPropertiesWhitelist" type="array" value="nodeValue,parentNode,childNodes,tagName,ownerDocument,nextSibling,previousSibling" />
 		</properties>
 	</rule>
 
