@@ -27,9 +27,6 @@
 
 namespace PHP_Typography\Bin;
 
-use function \PHP_Typography\mb_str_split;
-use function \PHP_Typography\uchr;
-
 require_once( dirname( __DIR__ ) . '/php-typography-functions.php' );
 
 /**
@@ -77,7 +74,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	function get_sequence( $pattern ) {
-		$characters = mb_str_split( str_replace( '.', '_', $pattern ) );
+		$characters = \PHP_Typography\mb_str_split( str_replace( '.', '_', $pattern ) );
 		$result = array();
 
 		foreach ( $characters as $index => $chr ) {
@@ -160,8 +157,8 @@ class Pattern_Converter {
 		$this->word_characters = join(
 			array(
 				"\w.'ʼ᾽ʼ᾿’",
-				uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-				'\p{Devanagari}' . uchr( 2385, 2386 ),
+				\PHP_Typography\uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+				'\p{Devanagari}' . \PHP_Typography\uchr( 2385, 2386 ),
 				'\p{Bengali}',
 				'\p{Gujarati}',
 				'\p{Gurmukhi}',
