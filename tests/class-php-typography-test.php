@@ -1565,6 +1565,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			array( '<section id="main"></section>', '<section id="main"></section>', true ),
 			array( '<section id="main"><!-- comment --></section>', '<section id="main"><!-- comment --></section>', true ),
 			array( '<section id="main"><!-- comment --><div></div></section>', '<section id="main"><!-- comment --><div></div></section>', true ),
+			array( 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ333', 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ<span class="numbers">333</span>', false ), // Unicode characters in regular expressions.
 		);
 	}
 

@@ -31,10 +31,14 @@ if ( ! function_exists( 'clean_html' ) ) {
 	 * @param string $html A HTML fragment.
 	 */
 	function clean_html( $html ) {
-		// Convert everything except Latin and Cyrillic.
+		// Convert everything except Latin and Cyrillic and Thai.
 		static $convmap = array(
+			// Simple Latin characters.
 			0x80,   0x03ff,   0, 0xffffff, // @codingStandardsIgnoreLine.
-			0x0514, 0x10ffff, 0, 0xffffff, // @codingStandardsIgnoreLine.
+			// Cyrillic characters.
+			0x0514, 0x0dff, 0, 0xffffff, // @codingStandardsIgnoreLine.
+			// Thai characters.
+			0x0e7f, 0x10ffff, 0, 0xffffff, // @codingStandardsIgnoreLine.
 		);
 
 		return str_replace( array( '&lt;', '&gt;' ), array( '<', '>' ), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
