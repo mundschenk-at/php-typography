@@ -1165,10 +1165,11 @@ class Settings implements \ArrayAccess {
 		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : array() );
 
 		// French punctuation spacing.
-		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+)(\s?)([?!»])(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingFull']         = '/(\w+)(\s?)(:)(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingSemicolon']    = '/(\w+)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingFull']         = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
+		$this->regex['frenchPunctuationSpacingSemicolon']    = '/(\w+(?:\s?»)?)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
 		$this->regex['frenchPunctuationSpacingOpeningQuote'] = '/(\s|\A)(«)(\s?)(\w+)/u';
+		$this->regex['frenchPunctuationSpacingClosingQuote'] = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
 
 		// Wrap hard hyphens.
 		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";

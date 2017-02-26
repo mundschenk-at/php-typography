@@ -3097,6 +3097,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			array( '5 > 3', '5 > 3', false ),
 			array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".', false ),
 			array( '"diabète de type 3"', '&laquo;&#8239;diab&egrave;te de type 3&#8239;&raquo;', true ),
+			array( '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;', false ),
+			array( 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', false ),
+			array( 'À "programmer"?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', true ),
+			array( 'À "programmer":', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&nbsp;:', true ),
 		);
 	}
 

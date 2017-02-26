@@ -1622,6 +1622,7 @@ class PHP_Typography {
 		$chr   = $settings->get_named_characters();
 		$regex = $settings->get_regular_expressions();
 
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingClosingQuote'], '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . $chr['noBreakSpace'] . '$3$4',       $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
