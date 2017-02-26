@@ -878,7 +878,6 @@ class Settings implements \ArrayAccess {
 
 		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- '.
 		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - '.
-		$this->regex['smartDashesEnDashAll']                 = "/(\A|\s)\-([\w|{$this->components['nonEnglishWordCharacters']}])/u";
 		$this->regex['smartDashesEnDashWords']               = "/([\w|{$this->components['nonEnglishWordCharacters']}])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
 		$this->regex['smartDashesEnDashNumbers']             = "/(\b\d+)\-(\d+\b)/";
 		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})" . $this->chr['enDash'] . "(\d{4}\b)/";

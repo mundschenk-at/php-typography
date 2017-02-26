@@ -2914,6 +2914,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function provide_dash_spacing_unchanged_data() {
 		return array(
 			array( 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ),
+			array( 'Bananen-Milch und -Brot' ),
+			array( 'pick-me-up' ),
+			array( 'You may see a yield that is two-, three-, or fourfold.' ),
 		);
 	}
 
