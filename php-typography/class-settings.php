@@ -517,12 +517,11 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Sets up our regex components for later use.
+	 * Sets up our regex components (but not complete patterns) for later use.
 	 *
 	 * Call before initialize_patterns().
 	 */
 	private function initialize_components() {
-		// Various regex components (but not complete patterns).
 
 		/**
 		 * Find the HTML character representation for the following characters:
@@ -851,8 +850,8 @@ class Settings implements \ArrayAccess {
 		$this->regex['smartQuotesSingleQuoteClose']          = "/(?<=[\w])'/u";
 		$this->regex['smartQuotesSingleQuoteOpenSpecial']    = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_.
 		$this->regex['smartQuotesSingleQuoteCloseSpecial']   = "/(?<=\S)'(?=\s|\Z)/";
-		$this->regex['smartQuotesDoubleQuoteOpen']           = "/\"(?=[\w])/u";
-		$this->regex['smartQuotesDoubleQuoteClose']          = "/(?<=[\w])\"/u";
+		$this->regex['smartQuotesDoubleQuoteOpen']           = '/"(?=[\w])/u';
+		$this->regex['smartQuotesDoubleQuoteClose']          = '/(?<=[\w])"/u';
 		$this->regex['smartQuotesDoubleQuoteOpenSpecial']    = '/(?<=\s|\A)"(?=\S)/';
 		$this->regex['smartQuotesDoubleQuoteCloseSpecial']   = '/(?<=\S)"(?=\s|\Z)/';
 
