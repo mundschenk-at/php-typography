@@ -1,29 +1,29 @@
 {
-    "name": "wp-Typography",
-    "devDependencies": {
-        "autoprefixer": "^6.7.5",
-        "grunt": "^1.0.1",
-        "grunt-cli": "^1.2.0",
-        "grunt-contrib-clean": "^1.0.0",
-        "grunt-contrib-copy": "^1.0.0",
-        "grunt-contrib-jshint": "^1.1.0",
-        "grunt-contrib-uglify": "^2.1.0",
-        "grunt-curl": "^2.2.0",
-        "grunt-jscs": "^3.0.1",
-        "grunt-newer": "^1.2.0",
-        "grunt-phpcs": "^0.4.0",
-        "grunt-phpunit": "^0.3.6",
-        "grunt-postcss": "^0.8.0",
-        "grunt-regex-extract": "git://github.com/DavidMoritz/grunt-regex-extract.git#patch-1",
-        "grunt-sass": "^2.0.0",
-        "grunt-shell": "^2.1.0",
-        "grunt-wp-deploy": "^1.2.1",
-        "grunt-wp-i18n": "^1.0.0",
-        "load-grunt-tasks": "^3.5.2"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mundschenk-at/wp-typography.git"
-    },
-    "license": "GPL-2.0+"
+  "name": "wp-Typography",
+  "devDependencies": {
+    "autoprefixer": "^6.7.6",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^2.2.0",
+    "grunt-curl": "^2.2.0",
+    "grunt-jscs": "^3.0.1",
+    "grunt-newer": "^1.2.0",
+    "grunt-phpcs": "^0.4.0",
+    "grunt-phpunit": "^0.3.6",
+    "grunt-postcss": "^0.8.0",
+    "grunt-regex-extract": "git://github.com/mpau23/grunt-regex-extract.git",
+    "grunt-sass": "^2.0.0",
+    "grunt-shell": "^2.1.0",
+    "grunt-wp-deploy": "^1.2.1",
+    "grunt-wp-i18n": "^1.0.0",
+    "load-grunt-tasks": "^3.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mundschenk-at/wp-typography.git"
+  },
+  "license": "GPL-2.0+"
 }
