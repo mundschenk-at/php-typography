@@ -2265,10 +2265,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_dash_spacing( false );
 
 		$typo->set_smart_dashes_style( 'traditionalUS' );
-		$this->assertSame( $input, clean_html( $typo->process( $input ) ) );
+		$this->assertSame( clean_html( $input ), clean_html( $typo->process( $input ) ) );
 
 		$typo->set_smart_dashes_style( 'international' );
-		$this->assertSame( $input, clean_html( $typo->process( $input ) ) );
+		$this->assertSame( clean_html( $input ), clean_html( $typo->process( $input ) ) );
 	}
 
 	/**
@@ -2879,6 +2879,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				"We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;",
 				"We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;",
 			),
+			array(
+				'Auch 3.-8. März sollte die - richtigen - Gedankenstriche verwenden.',
+				'Auch 3.&thinsp;&ndash;&thinsp;8. M&auml;rz sollte die&thinsp;&mdash;&thinsp;richtigen&thinsp;&mdash;&thinsp;Gedankenstriche verwenden.',
+				'Auch 3.&#8202;&ndash;&#8202;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
+			),
 		);
 	}
 
@@ -2903,6 +2908,16 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				'что природа жизни - это Блаженство',
 				'что природа жизни &mdash; это Блаженство',
 				'что природа жизни &ndash; это Блаженство',
+			),
+			array(
+				'Auch 3.-8. März sollte die - richtigen - Gedankenstriche verwenden.',
+				'Auch 3.&ndash;8. M&auml;rz sollte die &mdash; richtigen &mdash; Gedankenstriche verwenden.',
+				'Auch 3.&ndash;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
+			),
+			array(
+				'20.-30.',
+				'20.&ndash;30.',
+				'20.&ndash;30.',
 			),
 		);
 	}

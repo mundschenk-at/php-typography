@@ -328,7 +328,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 
 		$this->assertFalse( $s->regex( 'DoesNotExist' ) );
 		$this->assertEquals( $s->regex( 'smartQuotesSingleQuotedNumbers' ), "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/uS" );
-		$this->assertEquals( $s->regex( 'smartDashesEnDashNumbers' ), "/(\b\d+)\-(\d+\b)/S" );
+		$this->assertEquals( $s->regex( 'smartDashesEnDashNumbers' ), "/(\b\d+(\.?))\-(\d+\\2)/S" );
 	}
 
 	/**

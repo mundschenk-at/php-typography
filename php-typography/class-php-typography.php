@@ -1299,7 +1299,7 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
 
 		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . $chr['enDash'] . '$2',        $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$2',  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$3',  $textnode->data );
 		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . $chr['noBreakHyphen'] . '$2', $textnode->data ); // phone numbers.
 		$textnode->data = str_replace( "xn{$chr['enDash']}",                     'xn--',                              $textnode->data ); // revert messed-up punycode.
 
