@@ -1358,6 +1358,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_set_hyphenation_exceptions_array() {
 		$typo = $this->typo;
@@ -3854,6 +3855,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_data
 	 *
@@ -3906,6 +3908,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
 	 *
@@ -4345,10 +4348,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @uses PHP_Typography\Hyphenator::build_trie
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
 	 * @uses PHP_Typography\Hyphenator::set_language
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_get_hyphenator() {
 		$typo = $this->typo;
-		$s = $typo->get_settings();
+		$s    = $typo->get_settings();
 
 		$s['hyphenMinLength']			  = 2;
 		$s['hyphenMinBefore']			  = 2;
@@ -4363,5 +4367,30 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$h = $typo->get_hyphenator( $s );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
+	}
+
+	/**
+	 * Test set_hyphenator.
+	 *
+	 * @covers ::set_hyphenator()
+	 *
+	 * @uses PHP_Typography\Hyphenator::__construct
+	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+	 * @uses PHP_Typography\Hyphenator::set_language
+	 */
+	public function test_set_hyphenator() {
+
+		// Initial set-up.
+		$typo = $this->typo;
+		$s    = $typo->get_settings();
+		$h1   = $typo->get_hyphenator( $s );
+
+		// Create external Hyphenator.
+		$h2 = new \PHP_Typography\Hyphenator();
+		$typo->set_hyphenator( $h2 );
+
+		// Retrieve Hyphenator and assert results.
+		$this->assertEquals( $h2, $typo->get_hyphenator( $s ) );
+		$this->assertNotEquals( $h1, $typo->get_hyphenator( $s ) );
 	}
 }

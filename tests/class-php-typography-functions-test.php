@@ -307,4 +307,21 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertArrayHasKey( 'de-DE', $languages );
 		$this->assertContains( 'German', $languages );
 	}
+
+	/**
+	 * Test get_object_hash function.
+	 *
+	 * @covers \PHP_Typography\get_object_hash
+	 */
+	public function test_get_object_hash() {
+		$hash1 = \PHP_Typography\get_object_hash( 666 );
+		$this->assertInternalType( 'string', $hash1 );
+		$this->assertGreaterThan( 0, strlen( $hash1 ) );
+
+		$hash2 = \PHP_Typography\get_object_hash( new stdClass() );
+		$this->assertInternalType( 'string', $hash2 );
+		$this->assertGreaterThan( 0, strlen( $hash2 ) );
+
+		$this->assertNotEquals( $hash1, $hash2 );
+	}
 }

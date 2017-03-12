@@ -157,6 +157,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_constructor() {
 		$h = $this->h;
@@ -206,6 +207,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @uses ::set_custom_exceptions
 	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_set_language_with_custom_exceptions() {
 		$h = $this->h;
@@ -242,21 +244,54 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 	}
 
+	/**
+	 * Provides data for testing set_custom_exceptions.
+	 *
+	 * @return array
+	 */
+	function provide_set_custom_exceptions_data() {
+		return array(
+			array( array( 'Hu-go', 'Fö-ba-ß' ), 2, 2 ),
+			array( array(),                     0, 2 ),
+		);
+	}
 
 	/**
 	 * Tests set_custom_exceptions.
 	 *
 	 * @covers ::set_custom_exceptions
+	 *
+	 * @uses PHP_Typography\get_object_hash
+	 *
+	 * @dataProvider provide_set_custom_exceptions_data
+	 *
+	 * @param array $exceptions Custom exceptions.
+	 * @param int   $count      Number of exceptions to expect.
+	 * @param int   $times      Number of iterations.
 	 */
-	public function test_set_custom_exceptions() {
+	public function test_set_custom_exceptions( $exceptions, $count, $times ) {
 		$h = $this->h;
-		$exceptions = array( 'Hu-go', 'Fö-ba-ß' );
-		$h->set_custom_exceptions( $exceptions );
 
-		$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
-		$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
-		$this->assertAttributeContains( 'fö-ba-ß', 'custom_exceptions', $h );
-		$this->assertAttributeCount( 2, 'custom_exceptions', $h );
+		for ( $i = 0; $i < $times; ++$i ) {
+			$h->set_custom_exceptions( $exceptions );
+
+			if ( ! empty( $exceptions ) ) {
+
+				// Exceptions have to be strings.
+				$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
+
+				// Assert count.
+				$this->assertAttributeCount( $count, 'custom_exceptions', $h );
+			} else {
+				$this->assertAttributeEmpty( 'custom_exceptions', $h );
+			}
+
+			// Assert existence of individual exceptions.
+			foreach ( $exceptions as $exception ) {
+				$exception = mb_strtolower( $exception ); // Exceptions are stored all lowercase.
+				$this->assertAttributeContains( $exception, 'custom_exceptions', $h, "Exception $exception not found in round $i" );
+			}
+		}
 	}
 
 	/**
@@ -266,6 +301,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_set_custom_exceptions_again() {
 		$h = $this->h;
@@ -288,6 +324,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * Tests set_custom_exceptions.
 	 *
 	 * @covers ::set_custom_exceptions
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_set_custom_exceptions_unknown_encoding() {
 		$h = $this->h;
@@ -324,6 +361,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses PHP_Typography\is_odd
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_data
 	 *
@@ -363,6 +401,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses PHP_Typography\is_odd
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
 	 *
@@ -513,6 +552,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::merge_hyphenation_exceptions
 	 *
 	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\get_object_hash
 	 */
 	public function test_merge_hyphenation_exceptions() {
 		$h = $this->h;
