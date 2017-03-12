@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *	Copyright 2016-2017 Peter Putzer.
  *
  *	This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -23,17 +23,20 @@
  */
 
 /**
- * Include debug helpers.
+ * Subclass of PHP_Typography for setting custom CSS classes.
  */
-require_once dirname( __DIR__ ) . '/php-typography/php-typography-debug.php';
+class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
 
-/**
- * Autoloading.
- */
-require_once dirname( __DIR__ ) . '/php-typography/php-typography-autoload.php';
+	/**
+	 * Create new instance of PHP_Typography_CSS_Classes.
+	 *
+	 * @param boolean $set_defaults Optional. Set default values. Default true.
+	 * @param string  $init		 Optional. Initialize immediately. Default 'now'.
+	 * @param array   $css_classes  Optional. An array of CSS classes. Default [].
+	 */
+	public function __construct( $set_defaults = true, $init = 'now', $css_classes = array() ) {
+		parent::__construct( $set_defaults, $init );
 
-/**
- * Load HTML parser for function testing.
- */
-require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';
-require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5/autoload.php';
+		$this->css_classes = array_merge( $this->css_classes, $css_classes );
+	}
+}

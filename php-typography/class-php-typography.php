@@ -86,7 +86,14 @@ class PHP_Typography {
 	 *
 	 * @var array
 	 */
-	private $heading_tags = array( 'h1' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'h5' => true, 'h6' => true );
+	private $heading_tags = array(
+		'h1' => true,
+		'h2' => true,
+		'h3' => true,
+		'h4' => true,
+		'h5' => true,
+		'h6' => true,
+	);
 
 	/**
 	 * An array of encodings in detection order.
@@ -185,8 +192,9 @@ class PHP_Typography {
 	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
 	 */
 	function init( $set_defaults = true ) {
-		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) { return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG ); } )
-										+ array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
+		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
+			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
+		} ) + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
 
 		$this->settings = new Settings( $set_defaults );
 	}
@@ -797,7 +805,7 @@ class PHP_Typography {
 			$this->replace_node_with_html( $textnode, $textnode->data );
 		}
 
-		return $html5_parser->saveHTML( $body_node->childNodes );  // @codingStandardsIgnoreLine.
+		return $html5_parser->saveHTML( $body_node->childNodes );
 	}
 
 	/**
@@ -1064,7 +1072,7 @@ class PHP_Typography {
 		$previous_textnode = null;
 		$node = $element;
 
-		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) { // @codingStandardsIgnoreLine.
+		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
 			return null;
 		}
 
@@ -1073,7 +1081,7 @@ class PHP_Typography {
 		}
 
 		if ( ! $previous_textnode ) {
-			$previous_textnode = $this->get_previous_textnode( $element->parentNode ); // @codingStandardsIgnoreLine.
+			$previous_textnode = $this->get_previous_textnode( $element->parentNode );
 		}
 
 		return $previous_textnode;
@@ -1094,7 +1102,7 @@ class PHP_Typography {
 		$next_textnode = null;
 		$node = $element;
 
-		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) { // @codingStandardsIgnoreLine.
+		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
 			return null;
 		}
 
@@ -1103,7 +1111,7 @@ class PHP_Typography {
 		}
 
 		if ( ! $next_textnode ) {
-			$next_textnode = $this->get_next_textnode( $element->parentNode ); // @codingStandardsIgnoreLine.
+			$next_textnode = $this->get_next_textnode( $element->parentNode );
 		}
 
 		return $next_textnode;
@@ -1127,14 +1135,14 @@ class PHP_Typography {
 		} elseif ( ! $element instanceof \DOMElement ) {
 			// Return null if $element is neither \DOMText nor \DOMElement.
 			return null;
-		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) { // @codingStandardsIgnoreLine.
+		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
 		$first_textnode = null;
 
 		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes; // @codingStandardsIgnoreLine.
+			$children = $element->childNodes;
 			$i = 0;
 
 			while ( $i < $children->length && empty( $first_textnode ) ) {
@@ -1164,14 +1172,14 @@ class PHP_Typography {
 		} elseif ( ! $element instanceof \DOMElement ) {
 			// Return null if $element is neither \DOMText nor \DOMElement.
 			return null;
-		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) { // @codingStandardsIgnoreLine.
+		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
 		$last_textnode = null;
 
 		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes; // @codingStandardsIgnoreLine.
+			$children = $element->childNodes;
 			$i = $children->length - 1;
 
 			while ( $i >= 0 && empty( $last_textnode ) ) {
@@ -1290,9 +1298,8 @@ class PHP_Typography {
 		$textnode->data = str_replace( '--', $chr['enDash'], $textnode->data );
 		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
 
-		$textnode->data = preg_replace( $regex['smartDashesEnDashAll'],          '$1' . $chr['enDash'] . '$2',        $textnode->data );
 		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . $chr['enDash'] . '$2',        $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$2',  $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$3',  $textnode->data );
 		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . $chr['noBreakHyphen'] . '$2', $textnode->data ); // phone numbers.
 		$textnode->data = str_replace( "xn{$chr['enDash']}",                     'xn--',                              $textnode->data ); // revert messed-up punycode.
 
@@ -1615,6 +1622,7 @@ class PHP_Typography {
 		$chr   = $settings->get_named_characters();
 		$regex = $settings->get_regular_expressions();
 
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingClosingQuote'], '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . $chr['noBreakSpace'] . '$3$4',       $textnode->data );
 		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
@@ -1828,7 +1836,7 @@ class PHP_Typography {
 	function replace_node_with_html( \DOMNode $node, $content ) {
 		$result = $node;
 
-		$parent = $node->parentNode; // @codingStandardsIgnoreLine.
+		$parent = $node->parentNode;
 		if ( empty( $parent ) ) {
 			return $node; // abort early to save cycles.
 		}
@@ -1837,11 +1845,11 @@ class PHP_Typography {
 
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
-			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true ); // @codingStandardsIgnoreLine.
+			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
 
 			if ( ! empty( $imported_fragment ) ) {
 				// Save the children of the imported DOMDocumentFragment before replacement.
-				$children = nodelist_to_array( $imported_fragment->childNodes ); // @codingStandardsIgnoreLine.
+				$children = nodelist_to_array( $imported_fragment->childNodes );
 
 				if ( false !== $parent->replaceChild( $imported_fragment, $node ) ) {
 				 	// Success! We return the saved array of DOMNodes as
@@ -1968,7 +1976,7 @@ class PHP_Typography {
 				case $chr['doubleLow9Quote']:
 
 					$block_level_parent = $this->get_block_parent( $textnode );
-					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false; // @codingStandardsIgnoreLine.
+					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 
 					if ( $is_title ) {
 						// Assume page title is h2.
@@ -2010,9 +2018,9 @@ class PHP_Typography {
 		}
 
 		$is_heading = false;
-		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) { // @codingStandardsIgnoreLine.
+		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
 			$block_level_parent = $this->get_block_parent( $textnode );
-			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false; // @codingStandardsIgnoreLine.
+			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 
 			if ( $block_level_parent && isset( $this->heading_tags[ $block_level_parent ] ) ) {
 				$is_heading = true;
@@ -2046,12 +2054,14 @@ class PHP_Typography {
 		foreach ( $parsed_text_tokens as $key => $word_token ) {
 			$component_words = array();
 			foreach ( preg_split( '/(-)/', $word_token['value'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
-				$component_words[] = array( 'value' => $word_part );
+				$component_words[] = array(
+					'value' => $word_part,
+				);
 			}
 
 			$parsed_text_tokens[ $key ]['value'] = array_reduce( $this->hyphenate( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
 				return $carry . $item['value'];
-			});
+			} );
 		}
 
 		return $parsed_text_tokens;
@@ -2078,6 +2088,15 @@ class PHP_Typography {
 		}
 
 		return $this->hyphenator;
+	}
+
+	/**
+	 * Injects an existing Hyphenator instance (to facilitate language caching).
+	 *
+	 * @param Hyphenator $hyphenator A hyphenator instance.
+	 */
+	public function set_hyphenator( Hyphenator $hyphenator ) {
+		$this->hyphenator = $hyphenator;
 	}
 
 	/**
@@ -2110,10 +2129,10 @@ class PHP_Typography {
 	 * @return \DOMElement
 	 */
 	function get_block_parent( \DOMNode $element ) {
-		$parent = $element->parentNode; // @codingStandardsIgnoreLine.
+		$parent = $element->parentNode;
 
-		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) { // @codingStandardsIgnoreLine.
-			$parent = $parent->parentNode; // @codingStandardsIgnoreLine.
+		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
+			$parent = $parent->parentNode;
 		}
 
 		return $parent;
@@ -2138,7 +2157,9 @@ class PHP_Typography {
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( array( 'disable_html_ns' => true ) );
+			$this->html5_parser = new \Masterminds\HTML5( array(
+				'disable_html_ns' => true,
+			) );
 		}
 
 		return $this->html5_parser;
