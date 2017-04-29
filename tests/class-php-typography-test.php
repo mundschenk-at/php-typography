@@ -2330,6 +2330,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		return array(
 			array( '<p>creme brulee</p>', '<p>crème brûlée</p>', 'en-US' ),
 			array( 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ),
+			array( 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'de-DE' ),
+			array( 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'de-DE' ),
 		);
 	}
 

@@ -760,6 +760,10 @@ class Settings implements \ArrayAccess {
 
 		// Marker for strings that should not be replaced.
 		$this->components['escapeMarker'] = '_E_S_C_A_P_E_D_';
+
+		// Smart diacritics "word non-boundaries".
+		$this->components['smartDiacriticsWordBoundaryInitial'] = '\b(?<!\w[' . $this->chr['noBreakSpace'] . $this->chr['softHyphen'] . '])';
+		$this->components['smartDiacriticsWordBoundaryFinal'] = '\b(?![' . $this->chr['noBreakSpace'] . $this->chr['softHyphen'] . ']\w)';
 	}
 
 	/**
@@ -1550,13 +1554,13 @@ class Settings implements \ArrayAccess {
 
 		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
 			foreach ( $this->data['diacriticCustomReplacements'] as $needle => $replacement ) {
-				$patterns[] = "/\b$needle\b/u";
+				$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
 				$replacements[ $needle ] = $replacement;
 			}
 		}
 		if ( ! empty( $this->data['diacriticWords'] ) ) {
 	 		foreach ( $this->data['diacriticWords'] as $needle => $replacement ) {
-				$patterns[] = "/\b$needle\b/u";
+				$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
 				$replacements[ $needle ] = $replacement;
 	 		}
 		}
