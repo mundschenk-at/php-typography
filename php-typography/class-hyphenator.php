@@ -2,10 +2,10 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2017 Peter Putzer.
- *	Copyright 2009-2011 KINGdesk, LLC.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
@@ -302,36 +302,36 @@ class Hyphenator {
 			}
 
 			if ( ! isset( $word_pattern ) ) {
-		        // Add underscores to make out-of-index checks unnecessary,
-		        // also hyphenation is done in lower case.
-		        $search        = '_' . $the_key . '_';
-		        $search_length = $func['strlen']( $search );
-		        $chars         = $func['str_split']( $search );
-		        $word_pattern  = array();
+				// Add underscores to make out-of-index checks unnecessary,
+				// also hyphenation is done in lower case.
+				$search        = '_' . $the_key . '_';
+				$search_length = $func['strlen']( $search );
+				$chars         = $func['str_split']( $search );
+				$word_pattern  = array();
 
-		        for ( $start = 0; $start < $search_length; ++$start ) {
-		            // Start from the trie root node.
-		            $node = $this->pattern_trie;
+				for ( $start = 0; $start < $search_length; ++$start ) {
+					// Start from the trie root node.
+					$node = $this->pattern_trie;
 
-		            // Walk through the trie while storing detected patterns.
-		            for ( $step = $start; $step < $search_length; ++$step ) {
-		                if ( isset( $node['_pattern'] ) ) {
-		                    // Merge different offset values and keep maximum.
-		                    foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
-		                        $value = $pattern_offset[0];
-		                        $offset = $pattern_offset[1] + $start - 1;
-		                        $word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
-		                    }
-		                }
+					// Walk through the trie while storing detected patterns.
+					for ( $step = $start; $step < $search_length; ++$step ) {
+						if ( isset( $node['_pattern'] ) ) {
+							// Merge different offset values and keep maximum.
+							foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
+								$value = $pattern_offset[0];
+								$offset = $pattern_offset[1] + $start - 1;
+								$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
+							}
+						}
 
-		                // No further path in the trie.
-		                if ( ! isset( $node[ $chars[ $step ] ] ) ) {
-		                    break;
-		                }
+						// No further path in the trie.
+						if ( ! isset( $node[ $chars[ $step ] ] ) ) {
+							break;
+						}
 
-		                $node = $node[ $chars[ $step ] ];
-		            }
-		        }
+						$node = $node[ $chars[ $step ] ];
+					}
+				}
 			}
 
 			// Add soft-hyphen based on $word_pattern.

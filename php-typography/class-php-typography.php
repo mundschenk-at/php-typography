@@ -2,10 +2,10 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2017 Peter Putzer.
- *	Copyright 2009-2011 KINGdesk, LLC.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
@@ -1017,7 +1017,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves the last character of the previous \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element	The content node.
+	 * @param \DOMNode $element The content node.
 	 * @return string A single character (or the empty string).
 	 */
 	function get_prev_chr( \DOMNode $element ) {
@@ -1038,7 +1038,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves the first character of the next \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element	The content node.
+	 * @param \DOMNode $element The content node.
 	 *
 	 * @return string A single character (or the empty string).
 	 */
@@ -1060,7 +1060,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves the previous \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element	Optional. The content node. Default null.
+	 * @param \DOMNode $element Optional. The content node. Default null.
 	 *
 	 * @return \DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
@@ -1090,7 +1090,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves the next \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element	Optional. The content node. Default null.
+	 * @param \DOMNode $element Optional. The content node. Default null.
 	 *
 	 * @return \DOMText Null if $element is a block-level element or no text sibling exists.
 	 */
@@ -1347,12 +1347,12 @@ class PHP_Typography {
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
 			$replacements = $settings['diacriticReplacement']['replacements'];
 			$textnode->data = preg_replace_callback( $settings['diacriticReplacement']['patterns'], function( $match ) use ( $replacements ) {
-		 		if ( isset( $replacements[ $match[0] ] ) ) {
-		 			return $replacements[ $match[0] ];
-		 		} else {
-		 			return $match[0];
-		 		}
-		 	}, $textnode->data );
+				if ( isset( $replacements[ $match[0] ] ) ) {
+					return $replacements[ $match[0] ];
+				} else {
+					return $match[0];
+				}
+			}, $textnode->data );
 		}
 	}
 
@@ -1852,9 +1852,9 @@ class PHP_Typography {
 				$children = nodelist_to_array( $imported_fragment->childNodes );
 
 				if ( false !== $parent->replaceChild( $imported_fragment, $node ) ) {
-				 	// Success! We return the saved array of DOMNodes as
-				 	// $imported_fragment is just an empty DOMDocumentFragment now.
-				 	$result = $children;
+					// Success! We return the saved array of DOMNodes as
+					// $imported_fragment is just an empty DOMDocumentFragment now.
+					$result = $children;
 				}
 			}
 		}

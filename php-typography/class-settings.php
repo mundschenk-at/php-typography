@@ -2,10 +2,10 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2017 Peter Putzer.
- *	Copyright 2009-2011 KINGdesk, LLC.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
@@ -440,7 +440,7 @@ class Settings implements \ArrayAccess {
 		$this->initialize_patterns();
 
 		// Set up some arrays for quick HTML5 introspection.
-		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ),	function( $tag ) {
+		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
 		} );
 		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
@@ -525,16 +525,16 @@ class Settings implements \ArrayAccess {
 
 		/**
 		 * Find the HTML character representation for the following characters:
-		 *		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
-		 *		ogham space mark | en quad space | em quad space | en-space | three-per-em space
-		 *		four-per-em space | six-per-em space | figure space | punctuation space | em-space
-		 *		thin space | hair space | narrow no-break space
-		 *		medium mathematical space | ideographic space
+		 *      tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
+		 *      ogham space mark | en quad space | em quad space | en-space | three-per-em space
+		 *      four-per-em space | six-per-em space | figure space | punctuation space | em-space
+		 *      thin space | hair space | narrow no-break space
+		 *      medium mathematical space | ideographic space
 		 * Some characters are used inside words, we will not count these as a space for the purpose
 		 * of finding word boundaries:
-		 *		zero-width-space ("&#8203;", "&#x200b;")
-		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 *      zero-width-space ("&#8203;", "&#x200b;")
+		 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
 		 */
 		$this->components['htmlSpaces'] = '
 			\x{00a0}		# no-break space
@@ -667,8 +667,8 @@ class Settings implements \ArrayAccess {
 				(
 					(?:							# CASE 1: " 9A "
 						[0-9]+					# starts with at least one number
-					    (?:\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
-					    	                    # may contain hyphens, underscores, zero width spaces, or soft hyphens,
+						(?:\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
+								                # may contain hyphens, underscores, zero width spaces, or soft hyphens,
 						[A-ZÀ-ÖØ-Ý]				# but must contain at least one capital letter
 						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
 												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
@@ -1087,7 +1087,7 @@ class Settings implements \ArrayAccess {
 			(\d+)
 			(
 				(?:{$this->chr['singlePrime']}|{$this->chr['doublePrime']})? # handle fractions followed by prime symbols
-				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?	                         # handle ordinals after fractions
+				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?                          # handle ordinals after fractions
 				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 			)
 			/xu";
@@ -1559,10 +1559,10 @@ class Settings implements \ArrayAccess {
 			}
 		}
 		if ( ! empty( $this->data['diacriticWords'] ) ) {
-	 		foreach ( $this->data['diacriticWords'] as $needle => $replacement ) {
+			foreach ( $this->data['diacriticWords'] as $needle => $replacement ) {
 				$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
 				$replacements[ $needle ] = $replacement;
-	 		}
+			}
 		}
 
 		$this->data['diacriticReplacement'] = array(

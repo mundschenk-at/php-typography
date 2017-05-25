@@ -2,11 +2,11 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2014-2017 Peter Putzer.
- *	Copyright 2012-2013 Marie Hogebrandt.
- *	Copyright 2009-2011 KINGdesk, LLC.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2012-2013 Marie Hogebrandt.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
@@ -47,7 +47,7 @@ class Text_Parser {
 	 * A hash map for string functions according to encoding.
 	 *
 	 * @var array $str_functions {
-	 * 		@type string $encoding The name of the strtoupper function to use.
+	 *      @type string $encoding The name of the strtoupper function to use.
 	 * }
 	 */
 	private $str_functions = array(
@@ -67,12 +67,12 @@ class Text_Parser {
 	 * The tokenized text.
 	 *
 	 * @var array $text {
-	 * 		@type array $index {
-	 * 			Tokenized text.
+	 *      @type array $index {
+	 *          Tokenized text.
 	 *
-	 * 			@type string $type  'space' | 'punctuation' | 'word' | 'other'. Required.
-	 * 			@type string $value Token content. Required.
-	 * 		}
+	 *          @type string $type  'space' | 'punctuation' | 'word' | 'other'. Required.
+	 *          @type string $value Token content. Required.
+	 *      }
 	 * }
 	 */
 	private $text = array();
@@ -103,16 +103,16 @@ class Text_Parser {
 		 * Find spacing FIRST (as it is the primary delimiter)
 		 *
 		 * Find the HTML character representation for the following characters:
-		 *		tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
-		 *		ogham space mark | en quad space | em quad space | en-space | three-per-em space
-		 *		four-per-em space | six-per-em space | figure space | punctuation space | em-space
-		 *		thin space | hair space | narrow no-break space
-		 *		medium mathematical space | ideographic space
+		 *      tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
+		 *      ogham space mark | en quad space | em quad space | en-space | three-per-em space
+		 *      four-per-em space | six-per-em space | figure space | punctuation space | em-space
+		 *      thin space | hair space | narrow no-break space
+		 *      medium mathematical space | ideographic space
 		 * Some characters are used inside words, we will not count these as a space for the purpose
 		 * of finding word boundaries:
-		 *		zero-width-space ("&#8203;", "&#x200b;")
-		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 *      zero-width-space ("&#8203;", "&#x200b;")
+		 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
 		 */
 		$this->components['htmlSpacing'] = '
 				(?:
@@ -148,15 +148,15 @@ class Text_Parser {
 		 * @see http://www.unicode.org/charts/PDF/U2000.pdf
 		 *
 		 * Find punctuation and symbols
-		 *	dec matches =   33-44|46-47|58-60|62-64|91-94|96|123-126|161-172|174-191|215|247|710|732|977-978|982|8211-8231|8240-8286|8289-8292|8352-8399|8448-8527|8592-9215|9632-9983|11776-11903
-		 * 	hex matches = 	0021-002c|002e-002f|003a-003c|003e-0040|005b-e|0060|007b-007e|00a1-00ac|00ae-00bf|00d7|00f7|02c6|02dc|03d1-03d2|
-		 *					03d6|2013-2027|2030-205e|2061-2064|20a0-20cf|2100-214f|2190-23ff|25a0-26ff|2e00-2e7f
+		 *  dec matches =   33-44|46-47|58-60|62-64|91-94|96|123-126|161-172|174-191|215|247|710|732|977-978|982|8211-8231|8240-8286|8289-8292|8352-8399|8448-8527|8592-9215|9632-9983|11776-11903
+		 *  hex matches =   0021-002c|002e-002f|003a-003c|003e-0040|005b-e|0060|007b-007e|00a1-00ac|00ae-00bf|00d7|00f7|02c6|02dc|03d1-03d2|
+		 *                  03d6|2013-2027|2030-205e|2061-2064|20a0-20cf|2100-214f|2190-23ff|25a0-26ff|2e00-2e7f
 		 *
 		 * Some characters are used inside words, we will not count these as a space for the purpose
 		 * of finding word boundaries:
-		 * 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
-	 	 *		underscore ("&#95;", "&#x005f;")
-	 	 */
+		 *      hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
+		 *      underscore ("&#95;", "&#x005f;")
+		 */
 		$this->components['htmlPunctuation'] = '
 				(?:
 					(?:										# alpha matches
@@ -181,23 +181,23 @@ class Text_Parser {
 		$this->components['punctuation'] = "
 		(?:
 			(?:
-				[^\w\s\&\/\@]			# assume characters that are not word spaces or whitespace are punctuation
-				# exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
-				# exclude slash \/as to not include the last slash in a URL
-				# exclude @ as to keep twitter names together
+				[^\w\s\&\/\@]  # assume characters that are not word spaces or whitespace are punctuation
+				               # exclude & as that is an illegal stand-alone character (and would interfere with HTML character representations
+				               # exclude slash \/as to not include the last slash in a URL
+				               # exclude @ as to keep twitter names together
 				|
-				{$this->components['htmlPunctuation']}			# catch any HTML reps of punctuation
+				{$this->components['htmlPunctuation']}  # catch any HTML reps of punctuation
 			)+
 		)
 		";// required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 		/**
 		 * Letter connectors allowed in words
-		 * 		hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
-		 *		underscore ("&#95;", "&#x005f;")
-		 *		zero-width-space ("&#8203;", "&#x200b;")
-		 *		zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		 *		zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
+		 *      hyphens ("&#45;", "&#173;", "&#8208;", "&#8209;", "&#8210;", "&#x002d;", "&#x00ad;", "&#x2010;", "&#x2011;", "&#x2012;", "&shy;")
+		 *      underscore ("&#95;", "&#x005f;")
+		 *      zero-width-space ("&#8203;", "&#x200b;")
+		 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
+		 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
 		 */
 		$this->components['htmlLetterConnectors'] = '
 			(?:
@@ -228,8 +228,8 @@ class Text_Parser {
 		/**
 		 * Word character html entities
 		 *   characters  0-9__ A-Z__ a-z___ other_special_chrs_____
-		 *   decimal	 48-57 65-90 97-122 192-214,216-246,248-255, 256-383
-		 *   hex		 31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
+		 *   decimal     48-57 65-90 97-122 192-214,216-246,248-255, 256-383
+		 *   hex         31-39 41-5a 61-7a  c0-d6   d8-f6   f8-ff    0100-017f
 		 */
 		$this->components['htmlLetters'] = '
 			(?:
@@ -283,8 +283,8 @@ class Text_Parser {
 		$this->components['word'] = "
 		(?:
 			(?<![\w\&])	 # negative lookbehind to ensure
-		                 #	1) we are proceeded by a non-word-character, and
-			             #	2) we are not inside an HTML character def
+						 #	1) we are proceeded by a non-word-character, and
+						 #	2) we are not inside an HTML character def
 			(?:
 				[\w\-\_\/]
 				|
@@ -339,13 +339,13 @@ class Text_Parser {
 
 				if ( preg_match( $this->regex['space'], $part ) ) {
 					$tokens[ $index ] = array(
-						'type'	=> 'space',
-						'value'	=> $part,
+						'type'  => 'space',
+						'value' => $part,
 					);
 				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {
 					$tokens[ $index ] = array(
-						'type'	=> 'punctuation',
-						'value'	=> $part,
+						'type'  => 'punctuation',
+						'value' => $part,
 					);
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
 					// Make sure that things like email addresses and URLs are not broken up
@@ -353,8 +353,8 @@ class Text_Parser {
 					if ( $index - 1 >= 0 && 'other' === $tokens[ $index - 1 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
 						$tokens[ $index - 1 ] = array(
-							'type'	=> 'other',
-							'value'	=> $old_part . $part,
+							'type'  => 'other',
+							'value' => $old_part . $part,
 						);
 						$index--;
 
@@ -363,15 +363,15 @@ class Text_Parser {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
-							'type'	=> 'other',
-							'value'	=> $older_part . $old_part . $part,
+							'type'  => 'other',
+							'value' => $older_part . $old_part . $part,
 						);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
 						$tokens[ $index ] = array(
-							'type'	=> 'word',
-							'value'	=> $part,
+							'type'  => 'word',
+							'value' => $part,
 						);
 					}
 				} else {
@@ -381,23 +381,23 @@ class Text_Parser {
 						$index--;
 						$old_part = $tokens[ $index ]['value'];
 						$tokens[ $index ] = array(
-							'type'	=> 'other',
-							'value'	=> $old_part . $part,
+							'type'  => 'other',
+							'value' => $old_part . $part,
 						);
 					// Not preceeded by a non-space + punctuation.
 					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
 						$tokens[ $index - 2 ] = array(
-							'type'	=> 'other',
-							'value'	=> $older_part . $old_part . $part,
+							'type'  => 'other',
+							'value' => $older_part . $old_part . $part,
 						);
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
 						$tokens[ $index ] = array(
-							'type'	=> 'other',
-							'value'	=> $part,
+							'type'  => 'other',
+							'value' => $part,
 						);
 					}
 				}
@@ -451,9 +451,9 @@ class Text_Parser {
 	 * Updates the 'value' field for all matching tokens.
 	 *
 	 * @param array $tokens {
-	 * 		An array of tokens.
+	 *      An array of tokens.
 	 *
-	 * 		@type string $value
+	 *      @type string $value
 	 * }
 	 */
 	function update( $tokens ) {
@@ -525,7 +525,7 @@ class Text_Parser {
 				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
 					   ( 'allow-all-caps'   === $caps ) ||
 					   ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) &&
-				     ( ( 'no-compounds'      === $comps && $compound !== $token['value'] ) ||
+					 ( ( 'no-compounds'      === $comps && $compound !== $token['value'] ) ||
 					   ( 'allow-compounds'   === $comps ) ||
 					   ( 'require-compounds' === $comps && $compound === $token['value'] ) ) ) {
 					$tokens[ $index ] = $token;
