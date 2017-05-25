@@ -78,7 +78,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			array(
 				'type'  => $type,
 				'value' => $value,
-			 ),
+			),
 		);
 	}
 
@@ -104,7 +104,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_get_settings() {
 		$typo = $this->typo;
-		$s	= $typo->get_settings();
+		$s    = $typo->get_settings();
 
 		$this->assertInstanceOf( \PHP_Typography\Settings::class, $s );
 
@@ -367,7 +367,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		 );
+		);
 
 		foreach ( $quote_styles as $style ) {
 			$typo->set_smart_quotes_primary( $style );
@@ -414,7 +414,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		 );
+		);
 
 		foreach ( $quote_styles as $style ) {
 			$typo->set_smart_quotes_secondary( $style );
@@ -448,78 +448,78 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	private function assertSmartQuotesStyle( $style, $open, $close ) { // @codingStandardsIgnoreLine
 		switch ( $style ) {
 			case 'doubleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8220 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8220 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8216 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8217 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8216 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 171 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 187 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 171 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8249 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8250 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8250 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 8249 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'cornerBrackets':
-				$this->assertSame( \PHP_Typography\uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 12300 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 12301 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'whiteCornerBracket':
-				$this->assertSame( \PHP_Typography\uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 12302 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( \PHP_Typography\uchr( 12303 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			default:
@@ -1164,8 +1164,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		return array(
 			array( 'en-US',  true ),
 			array( 'foobar', true ),
-			array( 'no',	 true ),
-			array( 'de',	 true ),
+			array( 'no',     true ),
+			array( 'de',     true ),
 		);
 	}
 
@@ -1668,8 +1668,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_process_textnodes_invalid_html_data() {
 		return array(
-				array( '<div>foo-bar</div></p>', false ),
-				array( '<div>foo-bar</div></p>', true ),
+			array( '<div>foo-bar</div></p>', false ),
+			array( '<div>foo-bar</div></p>', true ),
 		);
 	}
 
@@ -1759,7 +1759,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_process_textnodes_alternate_settings( $html, $result, $feed ) {
 		$typo = $this->typo;
-		$s	= new \PHP_Typography\Settings( true );
+		$s    = new \PHP_Typography\Settings( true );
 
 		$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function ( $node ) {
 		}, false, $s ) ) );
@@ -1782,7 +1782,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_process_textnodes_alternate_settings_title( $html, $result, $feed ) {
 		$typo = $this->typo;
-		$s	= new \PHP_Typography\Settings( true );
+		$s    = new \PHP_Typography\Settings( true );
 		$s->set_tags_to_ignore( array( 'h1', 'h2' ) );
 
 		$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function ( $node ) {
@@ -1890,7 +1890,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		return array(
 			array( E_USER_WARNING, 'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), true ),
 			array( E_USER_ERROR,   'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), false ),
-			array( E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',	      '666', array(), false ),
+			array( E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',       '666', array(), false ),
 			array( E_USER_NOTICE,  'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), false ),
 		);
 	}
@@ -1945,7 +1945,6 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$prev_char = $typo->get_prev_chr( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
 	}
-
 
 	/**
 	 * Test get_previous_textnode.
@@ -2432,8 +2431,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			array( '(SM)', '&#8480;' ),
 			array( '(tm)', '&trade;' ),
 			array( '(TM)', '&trade;' ),
-			array( '501(c)(1)', '501(c)(1)' ),	    // protected.
-			array( '501(c)(29)', '501(c)(29)' ),	// protected.
+			array( '501(c)(1)', '501(c)(1)' ),      // protected.
+			array( '501(c)(29)', '501(c)(29)' ),    // protected.
 			array( '501(c)(30)', '501&copy;(30)' ), // not protected.
 		);
 	}
@@ -2585,28 +2584,28 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;<sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
 				'',
 				'',
-			 ),
+			),
 			array(
 				'1/2 4/2015 1999/2000 999/1000',
 				'<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>',
 				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;4/2015 1999/2000&#8239;<sup>999</sup>&frasl;<sub>1000</sub>',
 				'',
 				'',
-			 ),
+			),
 			array(
 				'1/2 3/300 999/1000',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;<sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'num',
 				'denom',
-			 ),
+			),
 			array(
 				'1/2 4/2015 1999/2000 999/1000',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;4/2015 1999/2000&#8239;<sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'num',
 				'denom',
-			 ),
+			),
 		);
 	}
 
@@ -2679,7 +2678,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&Prime; <sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&prime; <sup class="num">3</sup>&frasl;<sub class="denom">4</sub>&Prime;',
 				'num',
 				'denom',
-			 ),
+			),
 		);
 	}
 
@@ -2720,11 +2719,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			array(
 				'1/2 3/300 999/1000',
 				'1/2&nbsp;3/300 999/1000',
-			 ),
+			),
 			array(
 				'1/2 4/2015 1999/2000 999/1000',
 				'1/2&nbsp;4/2015 1999/2000&nbsp;999/1000',
-			 ),
+			),
 		);
 	}
 
@@ -2756,14 +2755,14 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_smart_ordinal_suffix() {
 		return array(
-			array( 'in the 1st instance', 'in the 1<sup>st</sup> instance', '' ),
-			array( 'in the 2nd degree',   'in the 2<sup>nd</sup> degree', '' ),
-			array( 'a 3rd party',		 'a 3<sup>rd</sup> party', '' ),
-			array( '12th Night',		  '12<sup>th</sup> Night', '' ),
-			array( 'in the 1st instance, we', 'in the 1<sup class="ordinal">st</sup> instance, we', 'ordinal' ),
-			array( 'murder in the 2nd degree',   'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
-			array( 'a 3rd party',		 'a 3<sup class="ordinal">rd</sup> party', 'ordinal' ),
-			array( 'the 12th Night',		  'the 12<sup class="ordinal">th</sup> Night', 'ordinal' ),
+			array( 'in the 1st instance',      'in the 1<sup>st</sup> instance', '' ),
+			array( 'in the 2nd degree',        'in the 2<sup>nd</sup> degree',   '' ),
+			array( 'a 3rd party',              'a 3<sup>rd</sup> party',         '' ),
+			array( '12th Night',               '12<sup>th</sup> Night',          '' ),
+			array( 'in the 1st instance, we',  'in the 1<sup class="ordinal">st</sup> instance, we',  'ordinal' ),
+			array( 'murder in the 2nd degree', 'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
+			array( 'a 3rd party',              'a 3<sup class="ordinal">rd</sup> party',              'ordinal' ),
+			array( 'the 12th Night',           'the 12<sup class="ordinal">th</sup> Night',           'ordinal' ),
 		);
 	}
 
@@ -3368,11 +3367,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_wrap_urls_data() {
 		return array(
-			array( 'https://example.org/',		  'https://&#8203;example&#8203;.org/',		  2 ),
-			array( 'http://example.org/',		   'http://&#8203;example&#8203;.org/',		   2 ),
-			array( 'https://my-example.org',		'https://&#8203;my&#8203;-example&#8203;.org', 2 ),
+			array( 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ),
+			array( 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ),
+			array( 'https://my-example.org',              'https://&#8203;my&#8203;-example&#8203;.org', 2 ),
 			array( 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ),
-			array( 'https://example.org:8080/',	 'https://&#8203;example&#8203;.org:8080/',	 2 ),
+			array( 'https://example.org:8080/',           'https://&#8203;example&#8203;.org:8080/',     2 ),
 		);
 	}
 
@@ -3536,7 +3535,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_replace_node_with_html() {
 		$typo = $this->typo;
-		$s	= $typo->get_settings();
+		$s = $typo->get_settings();
 		$dom = $typo->parse_html( $typo->get_html5_parser(), '<p>foo</p>', $s );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
@@ -3892,11 +3891,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_hyphenate_with_exceptions_data() {
 		return array(
-				array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', array( 'KING-desk' ), 'en-US', true, true, true, false ),
-				array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array(), 'de', true, true, true, false ),
-				array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array( 'Ge-schäfts-über-nah-me' ), 'de', true, true, true, false ),
-				array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', array(), 'de', true, true, true, false ),
-				array( 'Trinkwasserinstallation', 'Trink&shy;wasser&shy;in&shy;stal&shy;la&shy;tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true, true, true, false ),
+			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', array( 'KING-desk' ), 'en-US', true, true, true, false ),
+			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array(), 'de', true, true, true, false ),
+			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array( 'Ge-schäfts-über-nah-me' ), 'de', true, true, true, false ),
+			array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', array(), 'de', true, true, true, false ),
+			array( 'Trinkwasserinstallation', 'Trink&shy;wasser&shy;in&shy;stal&shy;la&shy;tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true, true, true, false ),
 		);
 	}
 
@@ -4231,13 +4230,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_parse_html_extended( $html, $ignore1, $ignore2 ) {
 		$typo = $this->typo;
-		$p	= $typo->get_html5_parser();
+		$p    = $typo->get_html5_parser();
 		$dom  = $typo->parse_html( $p, $html, $typo->get_settings() );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
 
 		// Serialize the stuff again.
-		$xpath	  = new \DOMXPath( $dom );
+		$xpath     = new \DOMXPath( $dom );
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
 
 		$this->assertEquals( $html, $p->saveHTML( $body_node->childNodes ) );
@@ -4356,11 +4355,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo = $this->typo;
 		$s    = $typo->get_settings();
 
-		$s['hyphenMinLength']			  = 2;
-		$s['hyphenMinBefore']			  = 2;
-		$s['hyphenMinAfter']			  = 2;
+		$s['hyphenMinLength']             = 2;
+		$s['hyphenMinBefore']             = 2;
+		$s['hyphenMinAfter']              = 2;
 		$s['hyphenationCustomExceptions'] = array( 'foo-bar' );
-		$s['hyphenLanguage']			  = 'en-US';
+		$s['hyphenLanguage']              = 'en-US';
 		$h = $typo->get_hyphenator( $s );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
