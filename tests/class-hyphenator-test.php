@@ -4,7 +4,7 @@
  *
  *  Copyright 2016-2017 Peter Putzer.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or ( at your option ) any later version.
@@ -351,6 +351,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 			array( 'A', 'A', 'de', true ),
 			array( 'table', 'ta|ble', 'en-US', false ),
 			array( 'KINGdesk', 'KINGdesk', 'en-US', false ),
+			array( 'italienisch', 'ita|lie|nisch', 'de', false ),
 		);
 	}
 
@@ -385,12 +386,12 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_hyphenate_with_exceptions_data() {
 		return array(
-				array( 'KINGdesk', 'KING|desk', array( 'KING-desk' ), 'en-US', true ),
-				array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array(), 'de', true ),
-				array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array( 'Ge-schäfts-über-nah-me' ), 'de', true ),
-				array( 'Trinkwasserinstallation', 'Trink|was|ser|in|stal|la|ti|on', array(), 'de', true, true, true, false ),
-				array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true ),
-				array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'en-US', true ),
+			array( 'KINGdesk', 'KING|desk', array( 'KING-desk' ), 'en-US', true ),
+			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array(), 'de', true ),
+			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array( 'Ge-schäfts-über-nah-me' ), 'de', true ),
+			array( 'Trinkwasserinstallation', 'Trink|was|ser|in|stal|la|ti|on', array(), 'de', true, true, true, false ),
+			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true ),
+			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'en-US', true ),
 		);
 	}
 

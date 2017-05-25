@@ -2,9 +2,9 @@
 /**
  *  This file is part of wp-Typography.
  *
- *	Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2017 Peter Putzer.
  *
- *	This program is free software; you can redistribute it and/or
+ *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
@@ -110,9 +110,9 @@ class Pattern_Converter {
 	 *
 	 * @param array $patterns An array of TeX hyphenation patterns.
 	 * @param array $exceptions {
-	 * 		An array of hyphenation exceptions.
+	 *      An array of hyphenation exceptions.
 	 *
-	 * 		@type string $key Hyphenated key (e.g. 'something' => 'some-thing').
+	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
 	 * @param array $comments An array of TeX comments.
 	 */
@@ -178,9 +178,9 @@ class Pattern_Converter {
 	 *
 	 * @param string $line A line from the TeX pattern file.
 	 * @param array  $exceptions {
-	 * 		An array of hyphenation exceptions.
+	 *      An array of hyphenation exceptions.
 	 *
-	 * 		@type string $key Hyphenated key (e.g. 'something' => 'some-thing').
+	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
 	 * @return boolean
 	 */

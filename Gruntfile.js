@@ -63,7 +63,7 @@ module.exports = function(grunt) {
 	            src: ['includes/**/*.php', 'php-typography/**/*.php', 'admin/**/*.php', 'tests/**/*.php']
 	        },
 	        options: {
-	        	bin: 'phpcs -p -s -v -n --ignore=php-typography/_language_names.php --ignore=tests/perf.php',
+	        	bin: '/usr/local/opt/php-code-sniffer@2.9/bin/phpcs -p -s -v -n --ignore=php-typography/_language_names.php --ignore=tests/perf.php',
 	            standard: './phpcs.xml'
 	        }
 	    },
