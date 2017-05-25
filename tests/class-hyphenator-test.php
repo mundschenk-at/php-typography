@@ -351,6 +351,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 			array( 'A', 'A', 'de', true ),
 			array( 'table', 'ta|ble', 'en-US', false ),
 			array( 'KINGdesk', 'KINGdesk', 'en-US', false ),
+			array( 'italienisch', 'ita|lie|nisch', 'de', false ),
 		);
 	}
 
