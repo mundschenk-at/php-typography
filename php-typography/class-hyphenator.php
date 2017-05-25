@@ -315,21 +315,22 @@ class Hyphenator {
 
 					// Walk through the trie while storing detected patterns.
 					for ( $step = $start; $step < $search_length; ++$step ) {
-						if ( isset( $node['_pattern'] ) ) {
-							// Merge different offset values and keep maximum.
-							foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
-								$value = $pattern_offset[0];
-								$offset = $pattern_offset[1] + $start - 1;
-								$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
-							}
-						}
-
 						// No further path in the trie.
 						if ( ! isset( $node[ $chars[ $step ] ] ) ) {
 							break;
 						}
 
+						// Look for next character.
 						$node = $node[ $chars[ $step ] ];
+
+						if ( isset( $node['_pattern'] ) ) {
+							// Merge different offset values and keep maximum.
+							foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
+								$value  = $pattern_offset[0];
+								$offset = $pattern_offset[1] + $start - 1;
+								$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
+							}
+						}
 					}
 				}
 			}
