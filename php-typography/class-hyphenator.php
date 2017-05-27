@@ -94,31 +94,31 @@ class Hyphenator {
 	 *
 	 * @var array
 	 */
-	private $encodings = array( 'ASCII', 'UTF-8' );
+	private $encodings = [ 'ASCII', 'UTF-8' ];
 
 	/**
 	 * A hash map for string functions according to encoding.
 	 * Initialized in the constructor for compatibility with PHP 5.3.
 	 *
-	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
+	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
 	 */
-	private $str_functions = array(
-		'UTF-8' => array(
+	private $str_functions = [
+		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
 			'str_split'  => '\PHP_Typography\mb_str_split',
 			'strtolower' => 'mb_strtolower',
 			'substr'     => 'mb_substr',
 			'u'          => 'u',
-		),
-		'ASCII' => array(
+		],
+		'ASCII' => [
 			'strlen'     => 'strlen',
 			'str_split'  => 'str_split',
 			'strtolower' => 'strtolower',
 			'substr'     => 'substr',
 			'u'          => '',
-		),
-		false   => array(),
-	);
+		],
+		false   => [],
+	];
 
 	/**
 	 * Constructs new Hyphenator instance.
@@ -126,7 +126,7 @@ class Hyphenator {
 	 * @param string $language   Optional. Short-form language name. Default null.
 	 * @param array  $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
-	public function __construct( $language = null, array $exceptions = array() ) {
+	public function __construct( $language = null, array $exceptions = [] ) {
 
 		if ( ! empty( $language ) ) {
 			$this->set_language( $language );
@@ -144,7 +144,7 @@ class Hyphenator {
 	 *                                 of such words). In the latter case, only alphanumeric characters and hyphens are recognized.
 	 *                                 Default empty array.
 	 */
-	public function set_custom_exceptions( array $exceptions = array() ) {
+	public function set_custom_exceptions( array $exceptions = [] ) {
 		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
 			return; // Nothing to do at all.
 		}
@@ -156,8 +156,8 @@ class Hyphenator {
 		}
 
 		// Do our thing.
-		$exception_keys = array();
-		$func = array();
+		$exception_keys = [];
+		$func = [];
 		foreach ( $exceptions as $exception ) {
 			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
@@ -232,23 +232,23 @@ class Hyphenator {
 	 */
 	protected function build_trie( array $patterns ) {
 		$node = null;
-		$trie = array();
+		$trie = [];
 
 		foreach ( $patterns as $key => $pattern ) {
 			$node = &$trie;
 
 			foreach ( mb_str_split( $key ) as $char ) {
 				if ( ! isset( $node[ $char ] ) ) {
-					$node[ $char ] = array();
+					$node[ $char ] = [];
 				}
 				$node = &$node[ $char ];
 			}
 
 			preg_match_all( '/([1-9])/', $pattern, $offsets, PREG_OFFSET_CAPTURE );
 
-			$node['_pattern'] = array(
+			$node['_pattern'] = [
 				'offsets' => $offsets[1],
-			);
+			];
 		}
 
 		return $trie;
@@ -276,7 +276,7 @@ class Hyphenator {
 			$this->merge_hyphenation_exceptions();
 		}
 
-		$func = array(); // quickly reference string functions according to encoding.
+		$func = []; // quickly reference string functions according to encoding.
 		foreach ( $parsed_text_tokens as &$text_token ) {
 			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
 			if ( empty( $func ) || empty( $func['strlen'] ) ) {
@@ -307,7 +307,7 @@ class Hyphenator {
 				$search        = '_' . $the_key . '_';
 				$search_length = $func['strlen']( $search );
 				$chars         = $func['str_split']( $search );
-				$word_pattern  = array();
+				$word_pattern  = [];
 
 				for ( $start = 0; $start < $search_length; ++$start ) {
 					// Start from the trie root node.
@@ -359,7 +359,7 @@ class Hyphenator {
 	 * generates patterns for all of them.
 	 */
 	function merge_hyphenation_exceptions() {
-		$exceptions = array();
+		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
 		if ( ! empty( $this->pattern_exceptions ) && ! empty( $this->custom_exceptions ) ) {
@@ -371,7 +371,7 @@ class Hyphenator {
 		}
 
 		// Update patterns as well.
-		$exception_patterns = array();
+		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
 			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
 		}
@@ -395,7 +395,7 @@ class Hyphenator {
 		$lowercase_hyphened_word_parts  = $func['str_split']( $exception, 1 );
 		$lowercase_hyphened_word_length = $func['strlen']( $exception );
 
-		$word_pattern = array();
+		$word_pattern = [];
 		$index = 0;
 
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {

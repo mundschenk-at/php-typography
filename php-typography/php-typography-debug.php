@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2015 Peter Putzer.
+ *  Copyright 2015, 2017 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -32,16 +32,16 @@ if ( ! function_exists( 'clean_html' ) ) {
 	 */
 	function clean_html( $html ) {
 		// Convert everything except Latin and Cyrillic and Thai.
-		static $convmap = array(
+		static $convmap = [
 			// Simple Latin characters.
 			0x80,   0x03ff,   0, 0xffffff, // @codingStandardsIgnoreLine.
 			// Cyrillic characters.
 			0x0514, 0x0dff, 0, 0xffffff, // @codingStandardsIgnoreLine.
 			// Thai characters.
 			0x0e7f, 0x10ffff, 0, 0xffffff, // @codingStandardsIgnoreLine.
-		);
+		];
 
-		return str_replace( array( '&lt;', '&gt;' ), array( '<', '>' ), mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
+		return str_replace( [ '&lt;', '&gt;' ], [ '<', '>' ], mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
 	}
 }
 

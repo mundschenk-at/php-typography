@@ -59,7 +59,7 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$parser = new \PHP_Typography\Text_Parser( array( 'UTF-8' ) );
+		$parser = new \PHP_Typography\Text_Parser( [ 'UTF-8' ] );
 
 		$this->assertAttributeContains( 'UTF-8', 'encodings', $parser );
 		$this->assertAttributeCount( 1, 'encodings', $parser );
@@ -93,24 +93,24 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 
 		$tokens = $parser->get_all();
 		$this->assertCount( 13, $tokens );
-		$this->assertArraySubset( array(
-			0 => array(
+		$this->assertArraySubset( [
+			0 => [
 				'type' => 'word',
 				'value' => 'Quoth',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			5 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			5 => [
 				'type'  => 'punctuation',
 				'value' => ',',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			11 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			11 => [
 				'type'  => 'word',
 				'value' => 'Äöüß',
-			),
-		), $tokens );
+			],
+		], $tokens );
 
 		return $parser;
 	}
@@ -131,24 +131,24 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 19, $tokens );
 
-		$this->assertArraySubset( array(
-			0 => array(
+		$this->assertArraySubset( [
+			0 => [
 				'type'  => 'word',
 				'value' => 'Quoth',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			5 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			5 => [
 				'type'  => 'punctuation',
 				'value' => ',',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			17 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			17 => [
 				'type'  => 'other',
 				'value' => 'someone@example.org',
-			),
-		), $tokens );
+			],
+		], $tokens );
 
 		return $parser;
 	}
@@ -169,48 +169,48 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 33, $tokens );
 
-		$this->assertArraySubset( array(
-			0 => array(
+		$this->assertArraySubset( [
+			0 => [
 				'type'  => 'word',
 				'value' => 'Quoth',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			5 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			5 => [
 				'type'  => 'punctuation',
 				'value' => ',',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			15 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			15 => [
 				'type'  => 'other',
 				'value' => 'http://example.org',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			19 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			19 => [
 				'type'  => 'other',
 				'value' => 'wordpress:wordpress',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			23 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			23 => [
 				'type'  => 'other',
 				'value' => 'wordpress:w@rdpress',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			27 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			27 => [
 				'type'  => 'other',
 				'value' => '@example',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			31 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			31 => [
 				'type'  => 'other',
 				'value' => '@:@:@:risk',
-			),
-		), $tokens );
+			],
+		], $tokens );
 
 		return $parser;
 	}
@@ -231,24 +231,24 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 10, $tokens );
 
-		$this->assertArraySubset( array(
-			0 => array(
+		$this->assertArraySubset( [
+			0 => [
 				'type'  => 'word',
 				'value' => 'Some',
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			2 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			2 => [
 				'type'  => 'other',
 				'value' => "don't",
-			),
-		), $tokens );
-		$this->assertArraySubset( array(
-			8 => array(
+			],
+		], $tokens );
+		$this->assertArraySubset( [
+			8 => [
 				'type'  => 'word',
 				'value' => 'captain-owner',
-			),
-		), $tokens );
+			],
+		], $tokens );
 
 		return $parser;
 	}
@@ -273,7 +273,7 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 	public function test_load_not_a_string() {
 		$parser = $this->parser;
 
-		$this->assertFalse( $parser->load( array() ) );
+		$this->assertFalse( $parser->load( [] ) );
 	}
 
 	/**
@@ -420,94 +420,94 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 		$parser->load( 'A few m1xed W0RDS.' );
 		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'few',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'allow-all-letters', 'no-all-caps' );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'few',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'm1xed',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'no-all-letters', 'no-all-caps' );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'm1xed',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'require-all-letters', 'allow-all-caps' );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'A',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'few',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'allow-all-letters', 'allow-all-caps' );
 		$this->assertCount( 4, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'A',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'few',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'm1xed',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'W0RDS',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'no-all-letters', 'allow-all-caps' );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'm1xed',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'W0RDS',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'require-all-letters', 'require-all-caps' );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'A',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'allow-all-letters', 'require-all-caps' );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'A',
-		), $tokens );
-		$this->assertContains( array(
+		], $tokens );
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'W0RDS',
-		), $tokens );
+		], $tokens );
 
 		$tokens = $parser->get_words( 'no-all-letters', 'require-all-caps' );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( array(
+		$this->assertContains( [
 			'type'  => 'word',
 			'value' => 'W0RDS',
-		), $tokens );
+		], $tokens );
 	}
 
 	/**
@@ -534,7 +534,7 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_type( \PHP_Typography\Text_Parser $parser ) {
-		$words = array();
+		$words = [];
 		$tokens = $parser->get_all();
 		foreach ( $tokens as $token ) {
 			if ( 'word' === $token['value'] ) {

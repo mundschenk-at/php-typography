@@ -58,7 +58,7 @@ function arrays_intersect( array $array1, array $array2 ) {
  * @return array An associative array in the form ( $spl_object_hash => $node ).
  */
 function nodelist_to_array( \DOMNodeList $list ) {
-	$out = array();
+	$out = [];
 
 	foreach ( $list as $node ) {
 		$out[ spl_object_hash( $node ) ] = $node;
@@ -76,7 +76,7 @@ function nodelist_to_array( \DOMNodeList $list ) {
  * @return array An array of \DOMNode.
  */
 function get_ancestors( \DOMNode $node ) {
-	$result = array();
+	$result = [];
 
 	while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // @codingStandardsIgnoreLine.
 		$result[] = $node;
@@ -106,7 +106,7 @@ function has_class( \DOMNode $tag, $classnames ) {
 
 	// Ensure we always have an array of classnames.
 	if ( ! is_array( $classnames ) ) {
-		$classnames = array( $classnames );
+		$classnames = [ $classnames ];
 	}
 
 	if ( $tag->hasAttribute( 'class' ) ) {
@@ -165,7 +165,7 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 		return false;
 	}
 
-	$result = array();
+	$result = [];
 	$multibyte_length = mb_strlen( $str, $encoding );
 	for ( $i = 0; $i < $multibyte_length; $i += $length ) {
 		$result[] = mb_substr( $str, $i, $length, $encoding );
@@ -183,7 +183,7 @@ function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
  */
 function get_language_plugin_list( $path ) {
 	$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-	$languages = array();
+	$languages = [];
 	$handler = opendir( $path );
 
 	// Read all files in directory.

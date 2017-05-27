@@ -74,12 +74,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	protected function tokenize( $value, $type = 'word' ) {
-		return array(
-			array(
+		return [
+			[
 				'type'  => $type,
 				'value' => $value,
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -145,7 +145,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		// Valid handler.
 		$typo->set_parser_errors_handler( function ( $errors ) {
-			return array();
+			return [];
 		} );
 		$s = $typo->get_settings();
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
@@ -167,7 +167,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_tags_to_ignore() {
 		$typo = $this->typo;
-		$always_ignore = array(
+		$always_ignore = [
 			'iframe',
 			'textarea',
 			'button',
@@ -182,8 +182,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'applet',
 			'object',
 			'param',
-		);
-		$self_closing_tags = array(
+		];
+		$self_closing_tags = [
 			'area',
 			'base',
 			'basefont',
@@ -194,10 +194,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'input',
 			'link',
 			'meta',
-		);
+		];
 
 		// Default tags.
-		$typo->set_tags_to_ignore( array(
+		$typo->set_tags_to_ignore( [
 			'code',
 			'head',
 			'kbd',
@@ -214,11 +214,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'title',
 			'var',
 			'math',
-		) );
+		] );
 
 		// Inspect settings.
 		$s = $typo->get_settings();
-		$this->assertArraySubset( array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ), $s['ignoreTags'] );
+		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
@@ -227,7 +227,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		}
 
 		// Auto-close tag and something else.
-		$typo->set_tags_to_ignore( array( 'img', 'foo' ) );
+		$typo->set_tags_to_ignore( [ 'img', 'foo' ] );
 		$s = $typo->get_settings();
 		$this->assertContains( 'foo', $s['ignoreTags'] );
 		foreach ( $self_closing_tags as $tag ) {
@@ -315,7 +315,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$typo->set_ids_to_ignore( 'foobar barfoo' );
 		$typo->set_classes_to_ignore( 'foo bar' );
-		$typo->set_tags_to_ignore( array( 'img', 'foo' ) );
+		$typo->set_tags_to_ignore( [ 'img', 'foo' ] );
 
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
@@ -351,7 +351,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_smart_quotes_primary() {
 		$typo = $this->typo;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -367,7 +367,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$typo->set_smart_quotes_primary( $style );
@@ -398,7 +398,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$typo = $this->typo;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -414,7 +414,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$typo->set_smart_quotes_secondary( $style );
@@ -661,9 +661,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertContains( 'bâr', $s['diacriticCustomReplacements'] );
 		$this->assertContains( 'hä', $s['diacriticCustomReplacements'] );
 
-		$typo->set_diacritic_custom_replacements( array(
+		$typo->set_diacritic_custom_replacements( [
 			'fööbar' => 'fúbar',
-		) );
+		] );
 		$s = $typo->get_settings();
 		$this->assertArrayNotHasKey( 'foo', $s['diacriticCustomReplacements'] );
 		$this->assertArrayNotHasKey( 'bar', $s['diacriticCustomReplacements'] );
@@ -834,7 +834,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_units() {
 		$typo = $this->typo;
 
-		$units_as_array = array( 'foo', 'bar', 'xx/yy' );
+		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
 		$units_as_string = implode( ', ', $units_as_array );
 
 		$typo->set_units( $units_as_array );
@@ -843,7 +843,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertContains( $unit, $s['units'] );
 		}
 
-		$typo->set_units( array() );
+		$typo->set_units( [] );
 		$s = $typo->get_settings();
 		foreach ( $units_as_array as $unit ) {
 			$this->assertNotContains( $unit, $s['units'] );
@@ -1116,7 +1116,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_initial_quote_tags() {
 		$typo = $this->typo;
 
-		$tags_as_array = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' );
+		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$typo->set_initial_quote_tags( $tags_as_array );
@@ -1125,7 +1125,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertArrayHasKey( $tag, $s['initialQuoteTags'] );
 		}
 
-		$typo->set_initial_quote_tags( array() );
+		$typo->set_initial_quote_tags( [] );
 		$s = $typo->get_settings();
 		foreach ( $tags_as_array as $tag ) {
 			$this->assertArrayNotHasKey( $tag, $s['initialQuoteTags'] );
@@ -1161,12 +1161,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenation_language_data() {
-		return array(
-			array( 'en-US',  true ),
-			array( 'foobar', true ),
-			array( 'no',     true ),
-			array( 'de',     true ),
-		);
+		return [
+			[ 'en-US',  true ],
+			[ 'foobar', true ],
+			[ 'no',     true ],
+			[ 'de',     true ],
+		];
 	}
 
 
@@ -1191,7 +1191,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$prop = $ref->getProperty( 'settings' );
 		$prop->setAccessible( true );
 		$s = $prop->getValue( $typo );
-		$s['hyphenationExceptions'] = array(); // necessary for full coverage.
+		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		$typo->set_hyphenation_language( $lang );
 
@@ -1363,14 +1363,14 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_hyphenation_exceptions_array() {
 		$typo = $this->typo;
 
-		$exceptions = array( 'Hu-go', 'Fö-ba-ß' );
+		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$typo->set_hyphenation_exceptions( $exceptions );
 		$s = $typo->get_settings();
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
 
 		$typo->get_hyphenator( $s );
-		$exceptions = array( 'bar-foo' );
+		$exceptions = [ 'bar-foo' ];
 		$typo->set_hyphenation_exceptions( $exceptions );
 		$s = $typo->get_settings();
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
@@ -1407,7 +1407,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_get_hyphenation_languages() {
 		$typo = $this->typo;
 
-		$expected = array(
+		$expected = [
 			'af',
 			'bg',
 			'ca',
@@ -1459,8 +1459,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'tr',
 			'uk',
 			'zh-Latn',
-		);
-		$not_expected = array( 'klingon', 'de-DE' );
+		];
+		$not_expected = [ 'klingon', 'de-DE' ];
 
 		$actual = $typo->get_hyphenation_languages();
 		foreach ( $expected as $lang_code ) {
@@ -1482,8 +1482,8 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_get_diacritic_languages() {
 		$typo = $this->typo;
 
-		$expected = array( 'de-DE', 'en-US' );
-		$not_expected = array(
+		$expected = [ 'de-DE', 'en-US' ];
+		$not_expected = [
 			'es',
 			'et',
 			'eu',
@@ -1516,7 +1516,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 			'tr',
 			'uk',
 			'zh-Latn',
-		);
+		];
 
 		$actual = $typo->get_diacritic_languages();
 		foreach ( $expected as $lang_code ) {
@@ -1533,28 +1533,28 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_process_data() {
-		return array(
-			array( '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false ), // smart math.
-			array( '"Hey there!"', '<span class="pull-double">&ldquo;</span>Hey there!&rdquo;', '&ldquo;Hey there!&rdquo;' ), // smart quotes.
-			array( 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ), // smart dashes.
-			array( 'Hey...', 'Hey&hellip;', true ), // smart ellipses.
-			array( '(c)', '&copy;', true ), // smart marks.
-			array( 'creme', 'cr&egrave;me', false ), // diacritics.
-			array( 'a a a', 'a a&nbsp;a', false ), // single characgter word spacing.
-			array( '3 cm', '<span class="numbers">3</span>&nbsp;cm', false ), // unit spacing without true no-break narrow space.
-			array( 'a/b', 'a/&#8203;b', false ), // dash spacing.
-			array( '<span class="numbers">5</span>', '<span class="numbers">5</span>', true ), // class present, no change.
-			array( '1st', '<span class="numbers">1</span><sup class="ordinal">st</sup>', false ), // smart ordinal suffixes.
-			array( '1^1', '<span class="numbers">1</span><sup><span class="numbers">1</span></sup>', false ), // smart exponents.
-			array( 'a &amp; b', 'a <span class="amp">&amp;</span>&nbsp;b', false ), // wrap amps.
-			array( 'a  b', 'a b', false ), // space collapse.
-			array( 'NATO', '<span class="caps">NATO</span>', false ), // style caps.
-			array( 'superfluous', 'super&shy;flu&shy;ous', false ), // hyphenate.
-			array( 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ), // wrap URLs.
-			array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails.
-			array( '<span> </span>', '<span> </span>', true ), // whitespace is ignored.
-			array( '<span class="noTypo">123</span>', '<span class="noTypo">123</span>', true ), // skipped class.
-			array(
+		return [
+			[ '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false ], // smart math.
+			[ '"Hey there!"', '<span class="pull-double">&ldquo;</span>Hey there!&rdquo;', '&ldquo;Hey there!&rdquo;' ], // smart quotes.
+			[ 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ], // smart dashes.
+			[ 'Hey...', 'Hey&hellip;', true ], // smart ellipses.
+			[ '(c)', '&copy;', true ], // smart marks.
+			[ 'creme', 'cr&egrave;me', false ], // diacritics.
+			[ 'a a a', 'a a&nbsp;a', false ], // single characgter word spacing.
+			[ '3 cm', '<span class="numbers">3</span>&nbsp;cm', false ], // unit spacing without true no-break narrow space.
+			[ 'a/b', 'a/&#8203;b', false ], // dash spacing.
+			[ '<span class="numbers">5</span>', '<span class="numbers">5</span>', true ], // class present, no change.
+			[ '1st', '<span class="numbers">1</span><sup class="ordinal">st</sup>', false ], // smart ordinal suffixes.
+			[ '1^1', '<span class="numbers">1</span><sup><span class="numbers">1</span></sup>', false ], // smart exponents.
+			[ 'a &amp; b', 'a <span class="amp">&amp;</span>&nbsp;b', false ], // wrap amps.
+			[ 'a  b', 'a b', false ], // space collapse.
+			[ 'NATO', '<span class="caps">NATO</span>', false ], // style caps.
+			[ 'superfluous', 'super&shy;flu&shy;ous', false ], // hyphenate.
+			[ 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ], // wrap URLs.
+			[ 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ], // wrap emails.
+			[ '<span> </span>', '<span> </span>', true ], // whitespace is ignored.
+			[ '<span class="noTypo">123</span>', '<span class="noTypo">123</span>', true ], // skipped class.
+			[
 				'<section id="main-content" class="container">
 				<!-- Start Page Content -->
 				<div class="row-wrapper-x"></div></section><section class="blox aligncenter  page-title-x  " style=" padding-top:px; padding-bottom:px;  background: url( \'http://www.feinschliff.hamburg/wp-content/uploads/2014/09/nails_02.jpg\' ) no-repeat ; background-position: center center;background-size: cover; min-height:px; "></section>',
@@ -1562,12 +1562,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				<!-- Start Page Content -->
 				<div class="row-wrapper-x"></div></section><section class="blox aligncenter  page-title-x  " style=" padding-top:px; padding-bottom:px;  background: url( \'http://www.feinschliff.hamburg/wp-content/uploads/2014/09/nails_02.jpg\' ) no-repeat ; background-position: center center;background-size: cover; min-height:px; "></section>',
 				true,
-			),
-			array( '<section id="main"></section>', '<section id="main"></section>', true ),
-			array( '<section id="main"><!-- comment --></section>', '<section id="main"><!-- comment --></section>', true ),
-			array( '<section id="main"><!-- comment --><div></div></section>', '<section id="main"><!-- comment --><div></div></section>', true ),
-			array( 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ333', 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ<span class="numbers">333</span>', false ), // Unicode characters in regular expressions.
-		);
+			],
+			[ '<section id="main"></section>', '<section id="main"></section>', true ],
+			[ '<section id="main"><!-- comment --></section>', '<section id="main"><!-- comment --></section>', true ],
+			[ '<section id="main"><!-- comment --><div></div></section>', '<section id="main"><!-- comment --><div></div></section>', true ],
+			[ 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ333', 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ<span class="numbers">333</span>', false ], // Unicode characters in regular expressions.
+		];
 	}
 
 
@@ -1630,12 +1630,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_process_words_data() {
-		return array(
-			array( 'superfluous', 'super&shy;flu&shy;ous', false ), // hyphenate.
-			array( 'super-policemen', 'super-police&shy;men', false ), // hyphenate compounds.
-			array( 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ), // wrap URLs.
-			array( 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ), // wrap emails.
-		);
+		return [
+			[ 'superfluous', 'super&shy;flu&shy;ous', false ], // hyphenate.
+			[ 'super-policemen', 'super-police&shy;men', false ], // hyphenate compounds.
+			[ 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ], // wrap URLs.
+			[ 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ], // wrap emails.
+		];
 	}
 
 
@@ -1667,10 +1667,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_process_textnodes_invalid_html_data() {
-		return array(
-			array( '<div>foo-bar</div></p>', false ),
-			array( '<div>foo-bar</div></p>', true ),
-		);
+		return [
+			[ '<div>foo-bar</div></p>', false ],
+			[ '<div>foo-bar</div></p>', true ],
+		];
 	}
 
 
@@ -1783,7 +1783,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	public function test_process_textnodes_alternate_settings_title( $html, $result, $feed ) {
 		$typo = $this->typo;
 		$s    = new \PHP_Typography\Settings( true );
-		$s->set_tags_to_ignore( array( 'h1', 'h2' ) );
+		$s->set_tags_to_ignore( [ 'h1', 'h2' ] );
 
 		$this->assertSame( $html, clean_html( $typo->process_textnodes( $html, function ( $node ) {
 		}, true, $s ) ) );
@@ -1821,10 +1821,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_process_with_title_data() {
-		return array(
-			array( 'Really...', 'Real&shy;ly&hellip;', 'Really&hellip;', '' ), // processed.
-			array( 'Really...', 'Really...', true, array( 'h1' ) ), // skipped.
-		);
+		return [
+			[ 'Really...', 'Real&shy;ly&hellip;', 'Really&hellip;', '' ], // processed.
+			[ 'Really...', 'Really...', true, [ 'h1' ] ], // skipped.
+		];
 	}
 
 
@@ -1884,15 +1884,15 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Provide data for testing handle_parsing_errors.
 	 *
-	 * @return array( $errno, $errstr, $errfile, $errline, $errcontext, $result )
+	 * @return [ $errno, $errstr, $errfile, $errline, $errcontext, $result ]
 	 */
 	public function provide_handle_parsing_errors() {
-		return array(
-			array( E_USER_WARNING, 'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), true ),
-			array( E_USER_ERROR,   'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), false ),
-			array( E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',       '666', array(), false ),
-			array( E_USER_NOTICE,  'Fake error message', '/some/path/DOMTreeBuilder.php', '666', array(), false ),
-		);
+		return [
+			[ E_USER_WARNING, 'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], true ],
+			[ E_USER_ERROR,   'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], false ],
+			[ E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',       '666', [], false ],
+			[ E_USER_NOTICE,  'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], false ],
+		];
 	}
 
 	/**
@@ -2128,19 +2128,19 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function provide_smart_quotes_data() {
 		return array(
-			array( '<span>"Double", \'single\'</span>', '<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>' ),
-			array( '<p>"<em>This is nuts.</em>"</p>',   '<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>' ),
-			array( '"This is so 1996", he said.',       '&ldquo;This is so 1996&rdquo;, he said.' ),
-			array( '6\'5"',                             '6&prime;5&Prime;' ),
-			array( '6\' 5"',                            '6&prime; 5&Prime;' ),
-			array( '6\'&nbsp;5"',                       '6&prime;&nbsp;5&Prime;' ),
-			array( " 6'' ",                             ' 6&Prime; ' ), // nobody uses this for quotes, so it should be OK to keep the primes here.
-			array( 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ),
-			array( "der 8'-Ölbohrer",                   'der 8&prime;-&Ouml;lbohrer' ),
-			array( "der 1/4'-Bohrer",                   'der 1/4&prime;-Bohrer' ),
-			array( 'Hier 1" "Typ 2" einsetzen',         'Hier 1&Prime; &ldquo;Typ 2&rdquo; einsetzen' ),
-			array( "2/4'",                              '2/4&prime;' ),
-			array( '3/44"',                             '3/44&Prime;' ),
+			[ '<span>"Double", \'single\'</span>', '<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>' ],
+			[ '<p>"<em>This is nuts.</em>"</p>',   '<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>' ],
+			[ '"This is so 1996", he said.',       '&ldquo;This is so 1996&rdquo;, he said.' ],
+			[ '6\'5"',                             '6&prime;5&Prime;' ],
+			[ '6\' 5"',                            '6&prime; 5&Prime;' ],
+			[ '6\'&nbsp;5"',                       '6&prime;&nbsp;5&Prime;' ],
+			[ " 6'' ",                             ' 6&Prime; ' ], // nobody uses this for quotes, so it should be OK to keep the primes here.
+			[ 'ein 32"-Fernseher',                 'ein 32&Prime;-Fernseher' ],
+			[ "der 8'-Ölbohrer",                   'der 8&prime;-&Ouml;lbohrer' ],
+			[ "der 1/4'-Bohrer",                   'der 1/4&prime;-Bohrer' ],
+			[ 'Hier 1" "Typ 2" einsetzen',         'Hier 1&Prime; &ldquo;Typ 2&rdquo; einsetzen' ],
+			[ "2/4'",                              '2/4&prime;' ],
+			[ '3/44"',                             '3/44&Prime;' ],
 			array( '("Some" word',                      '(&ldquo;Some&rdquo; word' ),
 		);
 	}
@@ -2277,9 +2277,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_ellipses_data() {
-		return array(
-			array( 'Where are we going... Really....?', 'Where are we going&hellip; Really.&hellip;?' ),
-		);
+		return [
+			[ 'Where are we going... Really....?', 'Where are we going&hellip; Really.&hellip;?' ],
+		];
 	}
 
 	/**
@@ -2326,12 +2326,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_diacritics_data() {
-		return array(
-			array( '<p>creme brulee</p>', '<p>crème brûlée</p>', 'en-US' ),
-			array( 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ),
-			array( 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'de-DE' ),
-			array( 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'de-DE' ),
-		);
+		return [
+			[ '<p>creme brulee</p>', '<p>crème brûlée</p>', 'en-US' ],
+			[ 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ],
+			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'de-DE' ],
+			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'de-DE' ],
+		];
 	}
 
 	/**
@@ -2382,9 +2382,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_diacritics_error_in_pattern_data() {
-		return array(
-			array( 'no diacritics to replace, except creme', 'en-US', 'creme' ),
-		);
+		return [
+			[ 'no diacritics to replace, except creme', 'en-US', 'creme' ],
+		];
 	}
 
 	/**
@@ -2420,21 +2420,21 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_marks_data() {
-		return array(
-			array( '(c)',  '&copy;' ),
-			array( '(C)',  '&copy;' ),
-			array( '(r)',  '&reg;' ),
-			array( '(R)',  '&reg;' ),
-			array( '(p)',  '&#8471;' ),
-			array( '(P)',  '&#8471;' ),
-			array( '(sm)', '&#8480;' ),
-			array( '(SM)', '&#8480;' ),
-			array( '(tm)', '&trade;' ),
-			array( '(TM)', '&trade;' ),
-			array( '501(c)(1)', '501(c)(1)' ),      // protected.
-			array( '501(c)(29)', '501(c)(29)' ),    // protected.
-			array( '501(c)(30)', '501&copy;(30)' ), // not protected.
-		);
+		return [
+			[ '(c)',  '&copy;' ],
+			[ '(C)',  '&copy;' ],
+			[ '(r)',  '&reg;' ],
+			[ '(R)',  '&reg;' ],
+			[ '(p)',  '&#8471;' ],
+			[ '(P)',  '&#8471;' ],
+			[ '(sm)', '&#8480;' ],
+			[ '(SM)', '&#8480;' ],
+			[ '(tm)', '&trade;' ],
+			[ '(TM)', '&trade;' ],
+			[ '501(c)(1)', '501(c)(1)' ],      // protected.
+			[ '501(c)(29)', '501(c)(29)' ],    // protected.
+			[ '501(c)(30)', '501&copy;(30)' ], // not protected.
+		];
 	}
 
 	/**
@@ -2479,24 +2479,24 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * Data provider for smarth_math test.
 	 */
 	public function provide_smart_math_data() {
-		return array(
-			array( 'xx 7&minus;3=4 xx',              'xx 7-3=4 xx',      true ),
-			array( 'xx 3&times;3=5&divide;2 xx',     'xx 3*3=5/2 xx',    true ),
-			array( 'xx 0815-4711 xx',                'xx 0815-4711 xx',  true ),
-			array( 'xx 1/2 xx',                      'xx 1/2 xx',        true ),
-			array( 'xx 2001-13-12 xx',               'xx 2001-13-12 xx', false ), // not a valid date.
-			array( 'xx 2001-12-13 xx',               'xx 2001-12-13 xx', true ),
-			array( 'xx 2001-13-13 xx',               'xx 2001-13-13 xx', false ), // not a valid date.
-			array( 'xx 13-12-2002 xx',               'xx 13-12-2002 xx', true ),
-			array( 'xx 12-13-2002 xx',               'xx 12-13-2002 xx', true ),
-			array( 'xx 13-13-2002 xx',               'xx 13-13-2002 xx', false ), // not a valid date.
-			array( 'xx 2001-12 xx',                  'xx 2001-12 xx',    true ),
-			array( 'xx 2001-13 xx',                  'xx 2001-13 xx',    true ), // apparently a valid day count.
-			array( 'xx 2001-100 xx',                 'xx 2001-100 xx',   true ),
-			array( 'xx 12/13/2010 xx',               'xx 12/13/2010 xx', true ),
-			array( 'xx 13/12/2010 xx',               'xx 13/12/2010 xx', true ),
-			array( 'xx 13&divide;13&divide;2010 xx', 'xx 13/13/2010 xx', true ), // not a valid date.
-		);
+		return [
+			[ 'xx 7&minus;3=4 xx',              'xx 7-3=4 xx',      true ],
+			[ 'xx 3&times;3=5&divide;2 xx',     'xx 3*3=5/2 xx',    true ],
+			[ 'xx 0815-4711 xx',                'xx 0815-4711 xx',  true ],
+			[ 'xx 1/2 xx',                      'xx 1/2 xx',        true ],
+			[ 'xx 2001-13-12 xx',               'xx 2001-13-12 xx', false ], // not a valid date.
+			[ 'xx 2001-12-13 xx',               'xx 2001-12-13 xx', true ],
+			[ 'xx 2001-13-13 xx',               'xx 2001-13-13 xx', false ], // not a valid date.
+			[ 'xx 13-12-2002 xx',               'xx 13-12-2002 xx', true ],
+			[ 'xx 12-13-2002 xx',               'xx 12-13-2002 xx', true ],
+			[ 'xx 13-13-2002 xx',               'xx 13-13-2002 xx', false ], // not a valid date.
+			[ 'xx 2001-12 xx',                  'xx 2001-12 xx',    true ],
+			[ 'xx 2001-13 xx',                  'xx 2001-13 xx',    true ], // apparently a valid day count.
+			[ 'xx 2001-100 xx',                 'xx 2001-100 xx',   true ],
+			[ 'xx 12/13/2010 xx',               'xx 12/13/2010 xx', true ],
+			[ 'xx 13/12/2010 xx',               'xx 13/12/2010 xx', true ],
+			[ 'xx 13&divide;13&divide;2010 xx', 'xx 13/13/2010 xx', true ], // not a valid date.
+		];
 	}
 
 	/**
@@ -2577,36 +2577,36 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_fractions_data() {
-		return array(
-			array(
+		return [
+			[
 				'1/2 3/300 999/1000',
 				'<sup>1</sup>&frasl;<sub>2</sub> <sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
 				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;<sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
 				'',
 				'',
-			),
-			array(
+			],
+			[
 				'1/2 4/2015 1999/2000 999/1000',
 				'<sup>1</sup>&frasl;<sub>2</sub> 4/2015 1999/2000 <sup>999</sup>&frasl;<sub>1000</sub>',
 				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;4/2015 1999/2000&#8239;<sup>999</sup>&frasl;<sub>1000</sub>',
 				'',
 				'',
-			),
-			array(
+			],
+			[
 				'1/2 3/300 999/1000',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> <sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;<sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'num',
 				'denom',
-			),
-			array(
+			],
+			[
 				'1/2 4/2015 1999/2000 999/1000',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub> 4/2015 1999/2000 <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;4/2015 1999/2000&#8239;<sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
 				'num',
 				'denom',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -2625,10 +2625,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( false, 'now', array(
+		$typo = new PHP_Typography_CSS_Classes( false, 'now', [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
-		) );
+		] );
 		$typo->set_smart_fractions( true );
 		$typo->set_true_no_break_narrow_space( true );
 
@@ -2656,10 +2656,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_off( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( false, 'now', array(
+		$typo = new PHP_Typography_CSS_Classes( false, 'now', [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
-		) );
+		] );
 		$typo->set_smart_fractions( false );
 		$typo->set_fraction_spacing( false );
 
@@ -2672,14 +2672,14 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_fractions_smart_quotes_data() {
-		return array(
-			array(
+		return [
+			[
 				'1/2" 1/2\' 3/4″',
 				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&Prime; <sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&prime; <sup class="num">3</sup>&frasl;<sub class="denom">4</sub>&Prime;',
 				'num',
 				'denom',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -2697,10 +2697,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_with_smart_quotes( $input, $result, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( false, 'now', array(
+		$typo = new PHP_Typography_CSS_Classes( false, 'now', [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
-		) );
+		] );
 		$typo->set_smart_fractions( true );
 		$typo->set_smart_quotes( true );
 		$typo->set_true_no_break_narrow_space( true );
@@ -2715,16 +2715,16 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_fraction_spacing_data() {
-		return array(
-			array(
+		return [
+			[
 				'1/2 3/300 999/1000',
 				'1/2&nbsp;3/300 999/1000',
-			),
-			array(
+			],
+			[
 				'1/2 4/2015 1999/2000 999/1000',
 				'1/2&nbsp;4/2015 1999/2000&nbsp;999/1000',
-			),
-		);
+			],
+		];
 	}
 
 
@@ -2754,16 +2754,16 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_ordinal_suffix() {
-		return array(
-			array( 'in the 1st instance',      'in the 1<sup>st</sup> instance', '' ),
-			array( 'in the 2nd degree',        'in the 2<sup>nd</sup> degree',   '' ),
-			array( 'a 3rd party',              'a 3<sup>rd</sup> party',         '' ),
-			array( '12th Night',               '12<sup>th</sup> Night',          '' ),
-			array( 'in the 1st instance, we',  'in the 1<sup class="ordinal">st</sup> instance, we',  'ordinal' ),
-			array( 'murder in the 2nd degree', 'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ),
-			array( 'a 3rd party',              'a 3<sup class="ordinal">rd</sup> party',              'ordinal' ),
-			array( 'the 12th Night',           'the 12<sup class="ordinal">th</sup> Night',           'ordinal' ),
-		);
+		return [
+			[ 'in the 1st instance',      'in the 1<sup>st</sup> instance', '' ],
+			[ 'in the 2nd degree',        'in the 2<sup>nd</sup> degree',   '' ],
+			[ 'a 3rd party',              'a 3<sup>rd</sup> party',         '' ],
+			[ '12th Night',               '12<sup>th</sup> Night',          '' ],
+			[ 'in the 1st instance, we',  'in the 1<sup class="ordinal">st</sup> instance, we',  'ordinal' ],
+			[ 'murder in the 2nd degree', 'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ],
+			[ 'a 3rd party',              'a 3<sup class="ordinal">rd</sup> party',              'ordinal' ],
+			[ 'the 12th Night',           'the 12<sup class="ordinal">th</sup> Night',           'ordinal' ],
+		];
 	}
 
 	/**
@@ -2780,9 +2780,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( false, 'now', array(
+		$typo = new PHP_Typography_CSS_Classes( false, 'now', [
 			'ordinal' => $css_class,
-		) );
+		] );
 		$typo->set_smart_ordinal_suffix( true );
 
 		$this->assertSame( $result, clean_html( $typo->process( $input ) ) );
@@ -2803,9 +2803,9 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix_off( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( false, 'now', array(
+		$typo = new PHP_Typography_CSS_Classes( false, 'now', [
 			'ordinal' => $css_class,
-		) );
+		] );
 		$typo->set_smart_ordinal_suffix( false );
 
 		$this->assertSame( $input, clean_html( $typo->process( $input ) ) );
@@ -2817,12 +2817,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_single_character_word_spacing_data() {
-		return array(
-			array( 'A cat in a tree', 'A cat in a&nbsp;tree' ),
-			array( 'Works with strange characters like ä too. But not Ä or does it?', 'Works with strange characters like &auml;&nbsp;too. But not &Auml;&nbsp;or does it?' ),
-			array( 'Should work even here: <span>a word</span> does not want to be alone.', 'Should work even here: <span>a&nbsp;word</span> does not want to be alone.' ),
-			array( 'And here:<span> </span>a word does not want to be alone.', 'And here:<span> </span>a&nbsp;word does not want to be alone.' ),
-		);
+		return [
+			[ 'A cat in a tree', 'A cat in a&nbsp;tree' ],
+			[ 'Works with strange characters like ä too. But not Ä or does it?', 'Works with strange characters like &auml;&nbsp;too. But not &Auml;&nbsp;or does it?' ],
+			[ 'Should work even here: <span>a word</span> does not want to be alone.', 'Should work even here: <span>a&nbsp;word</span> does not want to be alone.' ],
+			[ 'And here:<span> </span>a word does not want to be alone.', 'And here:<span> </span>a&nbsp;word does not want to be alone.' ],
+		];
 	}
 
 	/**
@@ -2870,23 +2870,23 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_dash_spacing_data() {
-		return array(
-			array(
+		return [
+			[
 				'Ein - mehr oder weniger - guter Gedanke, 1908-2008',
 				'Ein&thinsp;&mdash;&thinsp;mehr oder weniger&thinsp;&mdash;&thinsp;guter Gedanke, 1908&thinsp;&ndash;&thinsp;2008',
 				'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&#8202;&ndash;&#8202;2008',
-			),
-			array(
+			],
+			[
 				"We just don't know --- really---, but you know, --",
 				"We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;",
 				"We just don't know&#8202;&mdash;&#8202;really&#8202;&mdash;&#8202;, but you know, &ndash;",
-			),
-			array(
+			],
+			[
 				'Auch 3.-8. März sollte die - richtigen - Gedankenstriche verwenden.',
 				'Auch 3.&thinsp;&ndash;&thinsp;8. M&auml;rz sollte die&thinsp;&mdash;&thinsp;richtigen&thinsp;&mdash;&thinsp;Gedankenstriche verwenden.',
 				'Auch 3.&#8202;&ndash;&#8202;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -2895,33 +2895,33 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_smart_dashes_data() {
-		return array(
-			array(
+		return [
+			[
 				'Ein - mehr oder weniger - guter Gedanke, 1908-2008',
 				'Ein &mdash; mehr oder weniger &mdash; guter Gedanke, 1908&ndash;2008',
 				'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&ndash;2008',
-			),
-			array(
+			],
+			[
 				"We just don't know --- really---, but you know, --",
 				"We just don't know &mdash; really&mdash;, but you know, &ndash;",
 				"We just don't know &mdash; really&mdash;, but you know, &ndash;",
-			),
-			array(
+			],
+			[
 				'что природа жизни - это Блаженство',
 				'что природа жизни &mdash; это Блаженство',
 				'что природа жизни &ndash; это Блаженство',
-			),
-			array(
+			],
+			[
 				'Auch 3.-8. März sollte die - richtigen - Gedankenstriche verwenden.',
 				'Auch 3.&ndash;8. M&auml;rz sollte die &mdash; richtigen &mdash; Gedankenstriche verwenden.',
 				'Auch 3.&ndash;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
-			),
-			array(
+			],
+			[
 				'20.-30.',
 				'20.&ndash;30.',
 				'20.&ndash;30.',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -2930,12 +2930,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_dash_spacing_unchanged_data() {
-		return array(
-			array( 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ),
-			array( 'Bananen-Milch und -Brot' ),
-			array( 'pick-me-up' ),
-			array( 'You may see a yield that is two-, three-, or fourfold.' ),
-		);
+		return [
+			[ 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ],
+			[ 'Bananen-Milch und -Brot' ],
+			[ 'pick-me-up' ],
+			[ 'You may see a yield that is two-, three-, or fourfold.' ],
+		];
 	}
 
 
@@ -2994,11 +2994,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_space_collapse_data() {
-		return array(
-			array( 'A  new hope&nbsp;  arises.', 'A new hope&nbsp;arises.' ),
-			array( 'A &thinsp;new hope &nbsp;  arises.', 'A&thinsp;new hope&nbsp;arises.' ),
-			array( '<p>  &nbsp;A  new hope&nbsp;  arises.</p>', '<p>A new hope&nbsp;arises.</p>' ),
-		);
+		return [
+			[ 'A  new hope&nbsp;  arises.', 'A new hope&nbsp;arises.' ],
+			[ 'A &thinsp;new hope &nbsp;  arises.', 'A&thinsp;new hope&nbsp;arises.' ],
+			[ '<p>  &nbsp;A  new hope&nbsp;  arises.</p>', '<p>A new hope&nbsp;arises.</p>' ],
+		];
 	}
 
 
@@ -3047,12 +3047,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_unit_spacing_data() {
-		return array(
-			array( 'It was 2 m from', 'It was 2&#8239;m from' ),
-			array( '3 km/h', '3&#8239;km/h' ),
-			array( '5 sg 44 kg', '5 sg 44&#8239;kg' ),
-			array( '100 &deg;C', '100&#8239;&deg;C' ),
-		);
+		return [
+			[ 'It was 2 m from', 'It was 2&#8239;m from' ],
+			[ '3 km/h', '3&#8239;km/h' ],
+			[ '5 sg 44 kg', '5 sg 44&#8239;kg' ],
+			[ '100 &deg;C', '100&#8239;&deg;C' ],
+		];
 	}
 
 
@@ -3102,23 +3102,23 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_french_punctuation_spacing_data() {
-		return array(
-			array( "Je t'aime ; m'aimes-tu ?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ),
-			array( "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ),
-			array( 'Au secours !', 'Au secours&#8239;!', false ),
-			array( 'Au secours!', 'Au secours&#8239;!', false ),
-			array( 'Jean a dit : Foo', 'Jean a dit&nbsp;: Foo', false ),
-			array( 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo', false ),
-			array( 'http://example.org', 'http://example.org', false ),
-			array( 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar', false ),
-			array( '5 > 3', '5 > 3', false ),
-			array( 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".', false ),
-			array( '"diabète de type 3"', '&laquo;&#8239;diab&egrave;te de type 3&#8239;&raquo;', true ),
-			array( '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;', false ),
-			array( 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', false ),
-			array( 'À "programmer"?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', true ),
-			array( 'À "programmer":', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&nbsp;:', true ),
-		);
+		return [
+			[ "Je t'aime ; m'aimes-tu ?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ],
+			[ "Je t'aime; m'aimes-tu?", "Je t'aime&#8239;; m'aimes-tu&#8239;?", false ],
+			[ 'Au secours !', 'Au secours&#8239;!', false ],
+			[ 'Au secours!', 'Au secours&#8239;!', false ],
+			[ 'Jean a dit : Foo', 'Jean a dit&nbsp;: Foo', false ],
+			[ 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo', false ],
+			[ 'http://example.org', 'http://example.org', false ],
+			[ 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar', false ],
+			[ '5 > 3', '5 > 3', false ],
+			[ 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".', false ],
+			[ '"diabète de type 3"', '&laquo;&#8239;diab&egrave;te de type 3&#8239;&raquo;', true ],
+			[ '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;', false ],
+			[ 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', false ],
+			[ 'À "programmer"?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', true ],
+			[ 'À "programmer":', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&nbsp;:', true ],
+		];
 	}
 
 
@@ -3176,11 +3176,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_wrap_hard_hyphens_data() {
-		return array(
-			array( 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ),
-			array( 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-' ),
+		return [
+			[ 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ],
+			[ 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-' ],
 
-		);
+		];
 	}
 
 
@@ -3256,20 +3256,20 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_dewidow_data() {
-		return array(
-			array( 'bla foo b', 'bla foo&nbsp;b', 3, 2 ),
-			array( 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2 ), // don't replace thin space...
-			array( 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2 ),   // ... or hair space.
-			array( 'bla foo bar', 'bla foo bar', 2, 2 ),
-			array( 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ),
-			array( 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ),
-			array( 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2 ),
-			array( 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2 ),
-			array( 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3 ), // &shy; not matched.
-			array( 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3 ), // &shy; not matched, but syllable after is.
-			array( 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3 ),
-			array( 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3 ), // widow not replaced because the &nbsp; would pull too many letters from previous.
-		);
+		return [
+			[ 'bla foo b', 'bla foo&nbsp;b', 3, 2 ],
+			[ 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2 ], // don't replace thin space...
+			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2 ],   // ... or hair space.
+			[ 'bla foo bar', 'bla foo bar', 2, 2 ],
+			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
+			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
+			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2 ],
+			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2 ],
+			[ 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3 ], // &shy; not matched.
+			[ 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3 ], // &shy; not matched, but syllable after is.
+			[ 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3 ],
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+		];
 	}
 
 	/**
@@ -3278,10 +3278,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_dewidow_with_hyphenation_data() {
-		return array(
-			array( 'this is fucking ri...', 'this is fuck&shy;ing&nbsp;ri...', 4, 2 ),
-			array( 'this is fucking fucking', 'this is fuck&shy;ing fuck&shy;ing', 4, 2 ),
-		);
+		return [
+			[ 'this is fucking ri...', 'this is fuck&shy;ing&nbsp;ri...', 4, 2 ],
+			[ 'this is fucking fucking', 'this is fuck&shy;ing fuck&shy;ing', 4, 2 ],
+		];
 	}
 
 	/**
@@ -3366,13 +3366,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_wrap_urls_data() {
-		return array(
-			array( 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ),
-			array( 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ),
-			array( 'https://my-example.org',              'https://&#8203;my&#8203;-example&#8203;.org', 2 ),
-			array( 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ),
-			array( 'https://example.org:8080/',           'https://&#8203;example&#8203;.org:8080/',     2 ),
-		);
+		return [
+			[ 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ],
+			[ 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ],
+			[ 'https://my-example.org',              'https://&#8203;my&#8203;-example&#8203;.org', 2 ],
+			[ 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ],
+			[ 'https://example.org:8080/',           'https://&#8203;example&#8203;.org:8080/',     2 ],
+		];
 	}
 
 	/**
@@ -3426,11 +3426,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_wrap_emails_data() {
-		return array(
-			array( 'code@example.org',         'code@&#8203;example.&#8203;org' ),
-			array( 'some.name@sub.domain.org', 'some.&#8203;name@&#8203;sub.&#8203;domain.&#8203;org' ),
-			array( 'funny123@summer1.org',     'funny1&#8203;2&#8203;3&#8203;@&#8203;summer1&#8203;.&#8203;org' ),
-		);
+		return [
+			[ 'code@example.org',         'code@&#8203;example.&#8203;org' ],
+			[ 'some.name@sub.domain.org', 'some.&#8203;name@&#8203;sub.&#8203;domain.&#8203;org' ],
+			[ 'funny123@summer1.org',     'funny1&#8203;2&#8203;3&#8203;@&#8203;summer1&#8203;.&#8203;org' ],
+		];
 	}
 
 	/**
@@ -3480,12 +3480,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_style_caps_data() {
-		return array(
-			array( 'foo BAR bar', 'foo <span class="caps">BAR</span> bar' ),
-			array( 'foo BARbaz', 'foo BARbaz' ),
-			array( 'foo BAR123 baz', 'foo <span class="caps">BAR123</span> baz' ),
-			array( 'foo 123BAR baz', 'foo <span class="caps">123BAR</span> baz' ),
-		);
+		return [
+			[ 'foo BAR bar', 'foo <span class="caps">BAR</span> bar' ],
+			[ 'foo BARbaz', 'foo BARbaz' ],
+			[ 'foo BAR123 baz', 'foo <span class="caps">BAR123</span> baz' ],
+			[ 'foo 123BAR baz', 'foo <span class="caps">123BAR</span> baz' ],
+		];
 	}
 
 	/**
@@ -3572,12 +3572,12 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_style_numbers_data() {
-		return array(
-			array( 'foo 123 bar', 'foo <span class="numbers">123</span> bar' ),
-			array( 'foo 123bar baz', 'foo <span class="numbers">123</span>bar baz' ),
-			array( 'foo bar123 baz', 'foo bar<span class="numbers">123</span> baz' ),
-			array( 'foo 123BAR baz', 'foo <span class="numbers">123</span>BAR baz' ),
-		);
+		return [
+			[ 'foo 123 bar', 'foo <span class="numbers">123</span> bar' ],
+			[ 'foo 123bar baz', 'foo <span class="numbers">123</span>bar baz' ],
+			[ 'foo bar123 baz', 'foo bar<span class="numbers">123</span> baz' ],
+			[ 'foo 123BAR baz', 'foo <span class="numbers">123</span>BAR baz' ],
+		];
 	}
 
 
@@ -3626,13 +3626,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_style_caps_and_numbers_data() {
-		return array(
-			array( 'foo 123 BAR', 'foo <span class="numbers">123</span> <span class="caps">BAR</span>' ),
-			array( 'FOO-BAR', '<span class="caps">FOO-BAR</span>' ),
-			array( 'foo 123-BAR baz', 'foo <span class="caps"><span class="numbers">123</span>-BAR</span> baz' ),
-			array( 'foo BAR123 baz', 'foo <span class="caps">BAR<span class="numbers">123</span></span> baz' ),
-			array( 'foo 123BAR baz', 'foo <span class="caps"><span class="numbers">123</span>BAR</span> baz' ),
-		);
+		return [
+			[ 'foo 123 BAR', 'foo <span class="numbers">123</span> <span class="caps">BAR</span>' ],
+			[ 'FOO-BAR', '<span class="caps">FOO-BAR</span>' ],
+			[ 'foo 123-BAR baz', 'foo <span class="caps"><span class="numbers">123</span>-BAR</span> baz' ],
+			[ 'foo BAR123 baz', 'foo <span class="caps">BAR<span class="numbers">123</span></span> baz' ],
+			[ 'foo 123BAR baz', 'foo <span class="caps"><span class="numbers">123</span>BAR</span> baz' ],
+		];
 	}
 
 	/**
@@ -3661,11 +3661,11 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_style_hanging_punctuation_data() {
-		return array(
-			array( '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.' ),
-			array( '<span>"only pull"</span><span>"push & pull"</span>', '<span><span class="pull-double">"</span>only pull"</span><span><span class="push-double"></span>&#8203;<span class="pull-double">"</span>push &amp; pull"</span>' ),
-			array( '<p><span>"Pull"</span> <span>\'Single Push\'</span></p>', '<p><span><span class="pull-double">"</span>Pull"</span> <span><span class="push-single"></span>&#8203;<span class="pull-single">\'</span>Single Push\'</span></p>' ),
-		);
+		return [
+			[ '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.' ],
+			[ '<span>"only pull"</span><span>"push & pull"</span>', '<span><span class="pull-double">"</span>only pull"</span><span><span class="push-double"></span>&#8203;<span class="pull-double">"</span>push &amp; pull"</span>' ],
+			[ '<p><span>"Pull"</span> <span>\'Single Push\'</span></p>', '<p><span><span class="pull-double">"</span>Pull"</span> <span><span class="push-single"></span>&#8203;<span class="pull-single">\'</span>Single Push\'</span></p>' ],
+		];
 	}
 
 	/**
@@ -3743,13 +3743,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_style_initial_quotes_data() {
-		return array(
-			array( '<p>no quote</p>', '<p>no quote</p>', false ),
-			array( '<p>"double quote"</p>', '<p><span class="dquo">"</span>double quote"</p>', false ),
-			array( "<p>'single quote'</p>", "<p><span class=\"quo\">'</span>single quote'</p>", false ),
-			array( '"no title quote"', '"no title quote"', false ),
-			array( '"title quote"', '<span class="dquo">"</span>title quote"', true ),
-		);
+		return [
+			[ '<p>no quote</p>', '<p>no quote</p>', false ],
+			[ '<p>"double quote"</p>', '<p><span class="dquo">"</span>double quote"</p>', false ],
+			[ "<p>'single quote'</p>", "<p><span class=\"quo\">'</span>single quote'</p>", false ],
+			[ '"no title quote"', '"no title quote"', false ],
+			[ '"title quote"', '<span class="dquo">"</span>title quote"', true ],
+		];
 	}
 
 	/**
@@ -3801,14 +3801,14 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenate_data() {
-		return array(
-			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ),
-			array( 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ),
-			array( 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ),
-			array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ),
-			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ),
-			array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ),
-		);
+		return [
+			[ 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ],
+			[ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],
+			[ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
+			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
+			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ],
+		];
 	}
 
 
@@ -3841,7 +3841,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$typo->set_hyphenate_title_case( $hyphenate_title_case );
 		$typo->set_hyphenate_compounds( $hyphenate_compunds );
-		$typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+		$typo->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertSame( $html, $typo->process( $html ) );
 	}
@@ -3879,7 +3879,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$typo->set_hyphenate_title_case( $hyphenate_title_case );
 		$typo->set_hyphenate_compounds( $hyphenate_compunds );
-		$typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+		$typo->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertSame( $result, clean_html( $typo->process( $html ) ) );
 	}
@@ -3890,13 +3890,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenate_with_exceptions_data() {
-		return array(
-			array( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', array( 'KING-desk' ), 'en-US', true, true, true, false ),
-			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array(), 'de', true, true, true, false ),
-			array( 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', array( 'Ge-schäfts-über-nah-me' ), 'de', true, true, true, false ),
-			array( 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', array(), 'de', true, true, true, false ),
-			array( 'Trinkwasserinstallation', 'Trink&shy;wasser&shy;in&shy;stal&shy;la&shy;tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true, true, true, false ),
-		);
+		return [
+			[ 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', [ 'KING-desk' ], 'en-US', true, true, true, false ],
+			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', [], 'de', true, true, true, false ],
+			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', [ 'Ge-schäfts-über-nah-me' ], 'de', true, true, true, false ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', [], 'de', true, true, true, false ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;wasser&shy;in&shy;stal&shy;la&shy;tion', [ 'Trink-wasser-in-stal-la-tion' ], 'de', true, true, true, false ],
+		];
 	}
 
 
@@ -3957,7 +3957,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_hyphenate_headings( false );
 		$typo->set_hyphenate_all_caps( true );
 		$typo->set_hyphenate_title_case( true );
-		$typo->set_hyphenation_exceptions( array( 'KING-desk' ) );
+		$typo->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$html = '<h2>A few words to hyphenate, like KINGdesk. Really, there should be no hyphenation here!</h2>';
 		$this->assertSame( $html, clean_html( $typo->process( $html ) ) );
@@ -4095,7 +4095,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_hyphenate_title_case( true );
 		$s = $typo->get_settings();
 
-		$s['hyphenationPatternExceptions'] = array();
+		$s['hyphenationPatternExceptions'] = [];
 		unset( $s['hyphenationExceptions'] );
 
 		$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
@@ -4248,10 +4248,10 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_parse_html_with_errors_data() {
-		return array(
-			array( '<div>foobar</div></p>', 'Line 0, Col 0: Could not find closing tag for p' ),
-			array( '<a href="http://example.org?foo=xx&bar=yy">foobar</a>', "Line 1, Col 65: No match in entity table for 'bar'" ),
-		);
+		return [
+			[ '<div>foobar</div></p>', 'Line 0, Col 0: Could not find closing tag for p' ],
+			[ '<a href="http://example.org?foo=xx&bar=yy">foobar</a>', "Line 1, Col 65: No match in entity table for 'bar'" ],
+		];
 	}
 
 	/**
@@ -4278,7 +4278,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 				echo $error; // WPCS: XSS ok.
 			}
 
-			return array();
+			return [];
 		});
 
 		$this->expectOutputString( $error_msg );
@@ -4326,18 +4326,18 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_true_no_break_narrow_space(); // defaults to false.
 		$s = $typo->get_settings();
 		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), \PHP_Typography\uchr( 160 ) );
-		$this->assertAttributeContains( array(
+		$this->assertAttributeContains( [
 			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ),
 			'close' => \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		], 'quote_styles', $s );
 
 		$typo->set_true_no_break_narrow_space( true ); // defaults to false.
 		$s = $typo->get_settings();
 		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), \PHP_Typography\uchr( 8239 ) );
-		$this->assertAttributeContains( array(
+		$this->assertAttributeContains( [
 			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 8239 ),
 			'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		], 'quote_styles', $s );
 	}
 
 	/**
@@ -4358,13 +4358,13 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$s['hyphenMinLength']             = 2;
 		$s['hyphenMinBefore']             = 2;
 		$s['hyphenMinAfter']              = 2;
-		$s['hyphenationCustomExceptions'] = array( 'foo-bar' );
+		$s['hyphenationCustomExceptions'] = [ 'foo-bar' ];
 		$s['hyphenLanguage']              = 'en-US';
 		$h = $typo->get_hyphenator( $s );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 
-		$s['hyphenationCustomExceptions'] = array( 'bar-foo' );
+		$s['hyphenationCustomExceptions'] = [ 'bar-foo' ];
 		$h = $typo->get_hyphenator( $s );
 
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );

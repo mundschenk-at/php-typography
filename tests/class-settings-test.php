@@ -69,12 +69,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	protected function tokenize( $value, $type = 'word' ) {
-		return array(
-			array(
+		return [
+			[
 				'type'  => $type,
 				'value' => $value,
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -372,7 +372,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler( function( $errors ) {
-			return array();
+			return [];
 		} );
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
@@ -390,12 +390,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_tags_to_ignore() {
 		$s = $this->settings;
-		$always_ignore = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
-		$self_closing_tags = array( 'area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta' );
+		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' ];
+		$self_closing_tags = [ 'area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta' ];
 
 		// Default tags.
-		$s->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ) );
-		$this->assertArraySubset( array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ), $s['ignoreTags'] );
+		$s->set_tags_to_ignore( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] );
+		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
@@ -404,7 +404,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		}
 
 		// Auto-close tag and something else.
-		$s->set_tags_to_ignore( array( 'img', 'foo' ) );
+		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
 		$this->assertContains( 'foo', $s['ignoreTags'] );
 		foreach ( $self_closing_tags as $tag ) {
 			$this->assertNotContains( $tag, $s['ignoreTags'] );
@@ -463,7 +463,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_smart_quotes_primary() {
 		$s = $this->settings;
 
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -479,7 +479,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
@@ -510,7 +510,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$s = $this->settings;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -526,7 +526,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
@@ -561,7 +561,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_update_smart_quotes_brackets() {
 		$s = $this->settings;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -577,7 +577,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $primary_style ) {
 			$s->set_smart_quotes_primary( $primary_style );
@@ -821,9 +821,9 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertContains( 'bâr', $s['diacriticCustomReplacements'] );
 		$this->assertContains( 'hä', $s['diacriticCustomReplacements'] );
 
-		$s->set_diacritic_custom_replacements( array(
+		$s->set_diacritic_custom_replacements( [
 			'fööbar' => 'fúbar',
-		) );
+		] );
 		$this->assertArrayNotHasKey( 'foo', $s['diacriticCustomReplacements'] );
 		$this->assertArrayNotHasKey( 'bar', $s['diacriticCustomReplacements'] );
 		$this->assertArrayHasKey( 'fööbar', $s['diacriticCustomReplacements'] );
@@ -954,7 +954,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::update_unit_pattern
 	 */
 	public function test_set_units() {
-		$units_as_array = array( 'foo', 'bar', 'xx/yy' );
+		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
 		$units_as_string = implode( ', ', $units_as_array );
 
 		$this->settings->set_units( $units_as_array );
@@ -962,7 +962,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertContains( $unit, $this->settings['units'] );
 		}
 
-		$this->settings->set_units( array() );
+		$this->settings->set_units( [] );
 		foreach ( $units_as_array as $unit ) {
 			$this->assertNotContains( $unit, $this->settings['units'] );
 		}
@@ -1170,7 +1170,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::set_initial_quote_tags
 	 */
 	public function test_set_initial_quote_tags() {
-		$tags_as_array = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' );
+		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
@@ -1178,7 +1178,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertArrayHasKey( $tag, $this->settings['initialQuoteTags'] );
 		}
 
-		$this->settings->set_initial_quote_tags( array() );
+		$this->settings->set_initial_quote_tags( [] );
 		foreach ( $tags_as_array as $tag ) {
 			$this->assertArrayNotHasKey( $tag, $this->settings['initialQuoteTags'] );
 		}
@@ -1208,12 +1208,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenation_language_data() {
-		return array(
-			array( 'en-US',  true ),
-			array( 'foobar', false ),
-			array( 'no',     true ),
-			array( 'de',     true ),
-		);
+		return [
+			[ 'en-US',  true ],
+			[ 'foobar', false ],
+			[ 'no',     true ],
+			[ 'de',     true ],
+		];
 	}
 
 	/**
@@ -1231,7 +1231,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$s = $this->settings;
-		$s['hyphenationExceptions'] = array(); // necessary for full coverage.
+		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		$s->set_hyphenation_language( $lang );
 
@@ -1259,7 +1259,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_hyphenation_language_again( $lang, $success ) {
 		$s = $this->settings;
-		$s['hyphenationExceptions'] = array(); // necessary for full coverage.
+		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		for ( $i = 0; $i < 2; ++$i ) {
 			$s->set_hyphenation_language( $lang );
@@ -1392,12 +1392,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_hyphenation_exceptions_array() {
 		$s = $this->settings;
 
-		$exceptions = array( 'Hu-go', 'Fö-ba-ß' );
+		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$s->set_hyphenation_exceptions( $exceptions );
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
 
-		$exceptions = array( 'bar-foo' );
+		$exceptions = [ 'bar-foo' ];
 		$s->set_hyphenation_exceptions( $exceptions );
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 1, $s['hyphenationCustomExceptions'] );
@@ -1450,18 +1450,18 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		$s->set_true_no_break_narrow_space(); // defaults to false.
 		$chr = $s->get_named_characters();
 		$this->assertSame( $chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 160 ) );
-		$this->assertAttributeContains( array(
+		$this->assertAttributeContains( [
 			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ),
 			'close' => \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		], 'quote_styles', $s );
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
 		$chr = $s->get_named_characters();
 		$this->assertSame( $chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 8239 ) );
-		$this->assertAttributeContains( array(
+		$this->assertAttributeContains( [
 			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 8239 ),
 			'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		], 'quote_styles', $s );
 	}
 
 

@@ -86,72 +86,72 @@ class PHP_Typography {
 	 *
 	 * @var array
 	 */
-	private $heading_tags = array(
+	private $heading_tags = [
 		'h1' => true,
 		'h2' => true,
 		'h3' => true,
 		'h4' => true,
 		'h5' => true,
 		'h6' => true,
-	);
+	];
 
 	/**
 	 * An array of encodings in detection order.
 	 *
 	 * @var array
 	 */
-	private $encodings = array( 'ASCII', 'UTF-8' );
+	private $encodings = [ 'ASCII', 'UTF-8' ];
 
 	/**
 	 * A hash map for string functions according to encoding.
 	 *
-	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
+	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
 	 */
-	private $str_functions = array(
-		'UTF-8' => array(
+	private $str_functions = [
+		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
 			'str_split'  => '\PHP_Typography\mb_str_split',
 			'strtolower' => 'mb_strtolower',
 			'substr'     => 'mb_substr',
 			'u'          => 'u', // unicode flag for regex.
-		),
-		'ASCII' => array(
+		],
+		'ASCII' => [
 			'strlen'     => 'strlen',
 			'str_split'  => 'str_split',
 			'strtolower' => 'strtolower',
 			'substr'     => 'substr',
 			'u'          => '', // no regex flag needed.
-		),
-		false   => array(),
-	);
+		],
+		false   => [],
+	];
 
 	/**
 	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	private $quote_styles = array();
+	private $quote_styles = [];
 
 	/**
 	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	private $dash_styles = array();
+	private $dash_styles = [];
 
 	/**
 	 * An array in the form of [ '$tag' => true ]
 	 *
 	 * @var array
 	 */
-	private $block_tags = array();
+	private $block_tags = [];
 
 	/**
 	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
 	 *
 	 * @var array
 	 */
-	protected $css_classes = array(
+	protected $css_classes = [
 		'caps'        => 'caps',
 		'numbers'     => 'numbers',
 		'amp'         => 'amp',
@@ -164,7 +164,7 @@ class PHP_Typography {
 		'numerator'   => 'numerator',
 		'denominator' => 'denominator',
 		'ordinal'     => 'ordinal',
-	);
+	];
 
 	/**
 	 * Sets up a new PHP_Typography object.
@@ -194,7 +194,7 @@ class PHP_Typography {
 	function init( $set_defaults = true ) {
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
-		} ) + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
+		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
 
 		$this->settings = new Settings( $set_defaults );
 	}
@@ -250,18 +250,18 @@ class PHP_Typography {
 	 * Sets tags for which the typography of their children will be left untouched.
 	 *
 	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
-	 *                           Default array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ).
+	 *                           Default [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ].
 	 */
-	function set_tags_to_ignore( $tags = array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ) ) {
+	function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
 		$this->settings->set_tags_to_ignore( $tags );
 	}
 
 	/**
 	 * Sets classes for which the typography of their children will be left untouched.
 	 *
-	 * @param string|array $classes Optional. A comma separated list or an array of class names. Default array( 'vcard', 'noTypo' ).
+	 * @param string|array $classes Optional. A comma separated list or an array of class names. Default [ 'vcard', 'noTypo' ].
 	 */
-	 function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
+	 function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
 		$this->settings->set_classes_to_ignore( $classes );
 	}
 
@@ -270,7 +270,7 @@ class PHP_Typography {
 	 *
 	 * @param string|array $ids Optional. A comma separated list or an array of tag names. Default empty array.
 	 */
-	function set_ids_to_ignore( $ids = array() ) {
+	function set_ids_to_ignore( $ids = [] ) {
 		$this->settings->set_ids_to_ignore( $ids );
 	}
 
@@ -387,11 +387,11 @@ class PHP_Typography {
 	/**
 	 * Sets up custom diacritics replacements.
 	 *
-	 * @param string|array $replacements Optional An array formatted array(needle=>replacement, needle=>replacement...),
+	 * @param string|array $replacements Optional An array formatted [needle=>replacement, needle=>replacement...],
 	 *                                   or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 *                                   Default empty array.
 	 */
-	function set_diacritic_custom_replacements( $replacements = array() ) {
+	function set_diacritic_custom_replacements( $replacements = [] ) {
 		$this->settings->set_diacritic_custom_replacements( $replacements );
 	}
 
@@ -481,7 +481,7 @@ class PHP_Typography {
 	 *
 	 * @param string|array $units Optional. A comma separated list or an array of units. Default empty array.
 	 */
-	function set_units( $units = array() ) {
+	function set_units( $units = [] ) {
 		$this->settings->set_units( $units );
 	}
 
@@ -615,9 +615,9 @@ class PHP_Typography {
 	 * Sets the list of tags where initial quotes and guillemets should be styled.
 	 *
 	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
-	 *                           Default array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ).
+	 *                           Default [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ].
 	 */
-	function set_initial_quote_tags( $tags = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ) ) {
+	function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
 		$this->settings->set_initial_quote_tags( $tags );
 	}
 
@@ -710,7 +710,7 @@ class PHP_Typography {
 	 * @param string|array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
 	 *                                 In the latter case, only alphanumeric characters and hyphens are recognized. Default empty array.
 	 */
-	function set_hyphenation_exceptions( $exceptions = array() ) {
+	function set_hyphenation_exceptions( $exceptions = [] ) {
 		$this->settings->set_hyphenation_exceptions( $exceptions );
 	}
 
@@ -724,7 +724,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	function process( $html, $is_title = false, Settings $settings = null ) {
-		return $this->process_textnodes( $html, array( $this, 'apply_fixes_to_html_node' ), $is_title, $settings );
+		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $is_title, $settings );
 	}
 
 	/**
@@ -738,7 +738,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	function process_feed( $html, $is_title = false, Settings $settings = null ) {
-		return $this->process_textnodes( $html, array( $this, 'apply_fixes_to_feed_node' ), $is_title, $settings );
+		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $is_title, $settings );
 	}
 
 	/**
@@ -853,10 +853,10 @@ class PHP_Typography {
 		if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
 			$this->style_ampersands( $textnode, $settings );
 		}
-		if ( ! has_class( $textnode, array( $this->css_classes['quo'], $this->css_classes['dquo'] ) ) ) {
+		if ( ! has_class( $textnode, [ $this->css_classes['quo'], $this->css_classes['dquo'] ] ) ) {
 			$this->style_initial_quotes( $textnode, $settings, $is_title );
 		}
-		if ( ! has_class( $textnode, array( $this->css_classes['pull-single'], $this->css_classes['pull-double'] ) ) ) {
+		if ( ! has_class( $textnode, [ $this->css_classes['pull-single'], $this->css_classes['pull-double'] ] ) ) {
 			$this->style_hanging_punctuation( $textnode, $settings );
 		}
 	}
@@ -902,7 +902,7 @@ class PHP_Typography {
 		// Break text down for a bit more granularity.
 		$text_parser->load( $textnode->data );
 		$parsed_mixed_words    = $text_parser->get_words( 'no-all-letters', $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
-		$parsed_compound_words = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : array();
+		$parsed_compound_words = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : [];
 		$parsed_words          = $text_parser->get_words( 'require-all-letters', $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
 		$parsed_other          = $text_parser->get_other();
 
@@ -929,7 +929,7 @@ class PHP_Typography {
 	 */
 	function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
 		// Silence some parsing errors for invalid HTML.
-		set_error_handler( array( $this, 'handle_parsing_errors' ) ); // @codingStandardsIgnoreLine
+		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
 		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// Do the actual parsing.
@@ -990,8 +990,8 @@ class PHP_Typography {
 	 * @return array An array of \DOMNode (can be empty).
 	 */
 	function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
-		$elements = array();
-		$query_parts = array();
+		$elements = [];
+		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
 			$query_parts[] = '//' . implode( ' | //', $settings['ignoreTags'] );
 		}
@@ -1325,8 +1325,8 @@ class PHP_Typography {
 
 		$ellipses = $settings->chr( 'ellipses' );
 
-		$textnode->data = str_replace( array( '....', '. . . .' ), '.' . $ellipses, $textnode->data );
-		$textnode->data = str_replace( array( '...', '. . .' ),          $ellipses, $textnode->data );
+		$textnode->data = str_replace( [ '....', '. . . .' ], '.' . $ellipses, $textnode->data );
+		$textnode->data = str_replace( [ '...', '. . .' ],          $ellipses, $textnode->data );
 	}
 
 	/**
@@ -1376,11 +1376,11 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $regex['smartMarksEscape501(c)'], '$1' . $components['escapeMarker'] . '$2' . $components['escapeMarker'] . '$3', $textnode->data );
 
 		// Replace marks.
-		$textnode->data = str_replace( array( '(c)', '(C)' ),   $chr['copyright'],      $textnode->data );
-		$textnode->data = str_replace( array( '(r)', '(R)' ),   $chr['registeredMark'], $textnode->data );
-		$textnode->data = str_replace( array( '(p)', '(P)' ),   $chr['soundCopyMark'],  $textnode->data );
-		$textnode->data = str_replace( array( '(sm)', '(SM)' ), $chr['serviceMark'],    $textnode->data );
-		$textnode->data = str_replace( array( '(tm)', '(TM)' ), $chr['tradeMark'],      $textnode->data );
+		$textnode->data = str_replace( [ '(c)', '(C)' ],   $chr['copyright'],      $textnode->data );
+		$textnode->data = str_replace( [ '(r)', '(R)' ],   $chr['registeredMark'], $textnode->data );
+		$textnode->data = str_replace( [ '(p)', '(P)' ],   $chr['soundCopyMark'],  $textnode->data );
+		$textnode->data = str_replace( [ '(sm)', '(SM)' ], $chr['serviceMark'],    $textnode->data );
+		$textnode->data = str_replace( [ '(tm)', '(TM)' ], $chr['tradeMark'],      $textnode->data );
 
 		// Un-escape escaped sequences.
 		$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );
@@ -1744,7 +1744,7 @@ class PHP_Typography {
 
 				// This is a hack, but it works.
 				// First, we hyphenate each part, we need it formated like a group of words.
-				$parsed_words_like = array();
+				$parsed_words_like = [];
 				foreach ( $domain_parts as $key => $part ) {
 					$parsed_words_like[ $key ]['value'] = $part;
 				}
@@ -1841,7 +1841,7 @@ class PHP_Typography {
 			return $node; // abort early to save cycles.
 		}
 
-		set_error_handler( array( $this, 'handle_parsing_errors' ) ); // @codingStandardsIgnoreLine.
+		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
 
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
@@ -2052,11 +2052,11 @@ class PHP_Typography {
 
 		// Hyphenate compound words.
 		foreach ( $parsed_text_tokens as $key => $word_token ) {
-			$component_words = array();
+			$component_words = [];
 			foreach ( preg_split( '/(-)/', $word_token['value'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
-				$component_words[] = array(
+				$component_words[] = [
 					'value' => $word_part,
-				);
+				];
 			}
 
 			$parsed_text_tokens[ $key ]['value'] = array_reduce( $this->hyphenate( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
@@ -2080,11 +2080,11 @@ class PHP_Typography {
 			// Create and initialize our hyphenator instance.
 			$this->hyphenator = new Hyphenator(
 				isset( $settings['hyphenLanguage'] )              ? $settings['hyphenLanguage'] : null,
-				isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : array()
+				isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : []
 			);
 		} else {
 			$this->hyphenator->set_language( $settings['hyphenLanguage'] );
-			$this->hyphenator->set_custom_exceptions( isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : array() );
+			$this->hyphenator->set_custom_exceptions( isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : [] );
 		}
 
 		return $this->hyphenator;
@@ -2157,9 +2157,9 @@ class PHP_Typography {
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( array(
+			$this->html5_parser = new \Masterminds\HTML5( [
 				'disable_html_ns' => true,
-			) );
+			] );
 		}
 
 		return $this->html5_parser;

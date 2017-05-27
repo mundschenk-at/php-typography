@@ -41,7 +41,7 @@ class Text_Parser {
 	 *
 	 * @var array $encodings An array of encoding names.
 	 */
-	private $encodings = array();
+	private $encodings = [];
 
 	/**
 	 * A hash map for string functions according to encoding.
@@ -50,11 +50,11 @@ class Text_Parser {
 	 *      @type string $encoding The name of the strtoupper function to use.
 	 * }
 	 */
-	private $str_functions = array(
+	private $str_functions = [
 		'UTF-8' => 'mb_strtoupper',
 		'ASCII' => 'strtoupper',
 		false   => false,
-	);
+	];
 
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
@@ -75,28 +75,28 @@ class Text_Parser {
 	 *      }
 	 * }
 	 */
-	private $text = array();
+	private $text = [];
 
 	/**
 	 * An array of various regex components (not complete patterns).
 	 *
 	 * @var array $components
 	 */
-	private $components = array();
+	private $components = [];
 
 	/**
 	 * An array of regex patterns.
 	 *
 	 * @var array $regex
 	 */
-	private $regex = array();
+	private $regex = [];
 
 	/**
 	 * Creates a new parser object.
 	 *
 	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8' ].
 	 */
-	function __construct( $encodings = array( 'ASCII', 'UTF-8' ) ) {
+	function __construct( $encodings = [ 'ASCII', 'UTF-8' ] ) {
 		$this->encodings = $encodings;
 
 		/**
@@ -330,7 +330,7 @@ class Text_Parser {
 			return false; // unknown encoding.
 		}
 
-		$tokens = array();
+		$tokens = [];
 		$parts = preg_split( $this->regex['anyText'], $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 		$index = 0;
@@ -338,41 +338,41 @@ class Text_Parser {
 			if ( '' !== $part ) {
 
 				if ( preg_match( $this->regex['space'], $part ) ) {
-					$tokens[ $index ] = array(
+					$tokens[ $index ] = [
 						'type'  => 'space',
 						'value' => $part,
-					);
+					];
 				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {
-					$tokens[ $index ] = array(
+					$tokens[ $index ] = [
 						'type'  => 'punctuation',
 						'value' => $part,
-					);
+					];
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
 					// Make sure that things like email addresses and URLs are not broken up
 					// into words and punctuation not preceeded by an 'other'.
 					if ( $index - 1 >= 0 && 'other' === $tokens[ $index - 1 ]['type'] ) {
 						$old_part = $tokens[ $index - 1 ]['value'];
-						$tokens[ $index - 1 ] = array(
+						$tokens[ $index - 1 ] = [
 							'type'  => 'other',
 							'value' => $old_part . $part,
-						);
+						];
 						$index--;
 
 					// Not preceeded by a non-space + punctuation.
 					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
-						$tokens[ $index - 2 ] = array(
+						$tokens[ $index - 2 ] = [
 							'type'  => 'other',
 							'value' => $older_part . $old_part . $part,
-						);
+						];
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
-						$tokens[ $index ] = array(
+						$tokens[ $index ] = [
 							'type'  => 'word',
 							'value' => $part,
-						);
+						];
 					}
 				} else {
 					// Make sure that things like email addresses and URLs are not broken up into words
@@ -380,25 +380,25 @@ class Text_Parser {
 					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
 						$index--;
 						$old_part = $tokens[ $index ]['value'];
-						$tokens[ $index ] = array(
+						$tokens[ $index ] = [
 							'type'  => 'other',
 							'value' => $old_part . $part,
-						);
+						];
 					// Not preceeded by a non-space + punctuation.
 					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
 						$old_part   = $tokens[ $index - 1 ]['value'];
 						$older_part = $tokens[ $index - 2 ]['value'];
-						$tokens[ $index - 2 ] = array(
+						$tokens[ $index - 2 ] = [
 							'type'  => 'other',
 							'value' => $older_part . $old_part . $part,
-						);
+						];
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
-						$tokens[ $index ] = array(
+						$tokens[ $index ] = [
 							'type'  => 'other',
 							'value' => $part,
-						);
+						];
 					}
 				}
 
@@ -443,7 +443,7 @@ class Text_Parser {
 	 * Clears the currently set text from the parser.
 	 */
 	function clear() {
-		$this->text = array();
+		$this->text = [];
 		$this->current_strtoupper = false;
 	}
 
@@ -497,7 +497,7 @@ class Text_Parser {
 	 * @param string $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Default 'no-compounds'.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
-		$tokens = array();
+		$tokens = [];
 		$strtoupper = $this->current_strtoupper; // cannot call class properties.
 
 		// Initialize helper variables outside the loop.
@@ -558,7 +558,7 @@ class Text_Parser {
 	 * @param string $type The type to get.
 	 */
 	function get_type( $type ) {
-		$tokens = array();
+		$tokens = [];
 
 		foreach ( $this->text as $index => $token ) {
 			if ( $token['type'] === $type ) {

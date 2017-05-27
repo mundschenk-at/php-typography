@@ -49,12 +49,12 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_arrays_intersect_data() {
-		return array(
-			array( array(), array(), false ),
-			array( array( 1, 2, 3 ), array( 2, 4, 1 ), true ),
-			array( array( 1, 2, 3 ), array(), false ),
-			array( array(), array( 1, 2, 3 ), false ),
-		);
+		return [
+			[ [], [], false ],
+			[ [ 1, 2, 3 ], [ 2, 4, 1 ], true ],
+			[ [ 1, 2, 3 ], [], false ],
+			[ [], [ 1, 2, 3 ], false ],
+		];
 	}
 
 	/**
@@ -68,19 +68,19 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @param  bool  $result Expected result.
 	 */
 	public function test_arrays_intersect( array $a1, array $a2, $result ) {
-		$nodes = array();
+		$nodes = [];
 		for ( $i = 0; $i < 10; ++$i ) {
 			$nodes[] = new \DOMText( "foo $i" );
 		}
 
-		$array1 = array();
+		$array1 = [];
 		foreach ( $a1 as $index ) {
 			if ( isset( $nodes[ $index ] ) ) {
 				$array1[] = $nodes[ $index ];
 			}
 		}
 
-		$array2 = array();
+		$array2 = [];
 		foreach ( $a2 as $index ) {
 			if ( isset( $nodes[ $index ] ) ) {
 				$array2[ spl_object_hash( $nodes[ $index ] ) ] = $nodes[ $index ];
@@ -96,9 +96,9 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers \PHP_Typography\nodelist_to_array
 	 */
 	public function test_nodelist_to_array() {
-		$parser = new \Masterminds\HTML5( array(
+		$parser = new \Masterminds\HTML5( [
 			'disable_html_ns' => true,
-		) );
+		] );
 		$dom = $parser->loadHTML( '<body><p>blabla</p><ul><li>foo</li><li>bar</li></ul></body>' );
 		$xpath = new \DOMXPath( $dom );
 
@@ -119,9 +119,9 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_get_ancestors_data() {
-		return array(
-			array( '<div class="ancestor"><p class="ancestor">bar <span id="origin">foo</span></p></div><p>foo <span>bar</span></p>', '//*[@id="origin"]' ),
-		);
+		return [
+			[ '<div class="ancestor"><p class="ancestor">bar <span id="origin">foo</span></p></div><p>foo <span>bar</span></p>', '//*[@id="origin"]' ],
+		];
 	}
 
 	/**
@@ -137,9 +137,9 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @param  string $xpath_query XPath query.
 	 */
 	public function test_get_ancestors( $html, $xpath_query ) {
-		$parser = new \Masterminds\HTML5( array(
+		$parser = new \Masterminds\HTML5( [
 			'disable_html_ns' => true,
-		) );
+		] );
 		$dom = $parser->loadHTML( '<body>' . $html . '</body>' );
 		$xpath = new \DOMXPath( $dom );
 
@@ -159,18 +159,18 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_has_class_data() {
-		return array(
-			array( '<span class="foo bar"></span>', '//span', 'bar', true ),
-			array( '<span class="foo bar"></span>', '//span', 'foo', true ),
-			array( '<span class="foo bar"></span>', '//span', 'foobar', false ),
-			array( '<span class="foo bar"></span>', '//span', array( 'foo' ), true ),
-			array( '<span class="foo bar"></span>', '//span', array( 'foo', 'bar' ), true ),
-			array( '<span class="foo bar"></span>', '//span', '', false ),
-			array( '<span class="foo bar"></span>', '//span', array(), false ),
-			array( '<span class="foo bar"></span>', '//span', array( '' ), false ),
-			array( '<span class="foo bar">something</span>', '//span/text()', 'bar', true ),
-			array( '<span>something</span>', '//span', 'foo', false ),
-		);
+		return [
+			[ '<span class="foo bar"></span>', '//span', 'bar', true ],
+			[ '<span class="foo bar"></span>', '//span', 'foo', true ],
+			[ '<span class="foo bar"></span>', '//span', 'foobar', false ],
+			[ '<span class="foo bar"></span>', '//span', [ 'foo' ], true ],
+			[ '<span class="foo bar"></span>', '//span', [ 'foo', 'bar' ], true ],
+			[ '<span class="foo bar"></span>', '//span', '', false ],
+			[ '<span class="foo bar"></span>', '//span', [], false ],
+			[ '<span class="foo bar"></span>', '//span', [ '' ], false ],
+			[ '<span class="foo bar">something</span>', '//span/text()', 'bar', true ],
+			[ '<span>something</span>', '//span', 'foo', false ],
+		];
 	}
 
 	/**
@@ -185,9 +185,9 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @param  bool   $result      Expected result.
 	 */
 	public function test_has_class( $html, $xpath_query, $classnames, $result ) {
-		$parser = new \Masterminds\HTML5( array(
+		$parser = new \Masterminds\HTML5( [
 			'disable_html_ns' => true,
-		) );
+		] );
 		$dom = $parser->loadHTML( '<body>' . $html . '</body>' );
 		$xpath = new \DOMXPath( $dom );
 
@@ -203,17 +203,17 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_uchr_data() {
-		return array(
-			array( 33,   '!' ),
-			array( 9,    "\t" ),
-			array( 10,   "\n" ),
-			array( 35,   '#' ),
-			array( 103,  'g' ),
-			array( 336,  'Ő' ),
-			array( 497,  'Ǳ' ),
-			array( 1137, 'ѱ' ),
-			array( 2000, 'ߐ' ),
-		);
+		return [
+			[ 33,   '!' ],
+			[ 9,    "\t" ],
+			[ 10,   "\n" ],
+			[ 35,   '#' ],
+			[ 103,  'g' ],
+			[ 336,  'Ő' ],
+			[ 497,  'Ǳ' ],
+			[ 1137, 'ѱ' ],
+			[ 2000, 'ߐ' ],
+		];
 	}
 
 	/**
@@ -235,14 +235,14 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_is_odd_data() {
-		return array(
-			array( 0, false ),
-			array( 1, true ),
-			array( 2, false ),
-			array( 5, true ),
-			array( 68, false ),
-			array( 781, true ),
-		);
+		return [
+			[ 0, false ],
+			[ 1, true ],
+			[ 2, false ],
+			[ 5, true ],
+			[ 68, false ],
+			[ 781, true ],
+		];
 	}
 
 	/**
@@ -268,13 +268,13 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_mb_str_split_data() {
-		return array(
-			array( '', 1, 'UTF-8', array() ),
-			array( 'A ship', 1, 'UTF-8', array( 'A', ' ', 's', 'h', 'i', 'p' ) ),
-			array( 'Äöüß', 1, 'UTF-8', array( 'Ä', 'ö', 'ü', 'ß' ) ),
-			array( 'Äöüß', 2, 'UTF-8', array( 'Äö', 'üß' ) ),
-			array( 'Äöüß', 0, 'UTF-8', false ),
-		);
+		return [
+			[ '', 1, 'UTF-8', [] ],
+			[ 'A ship', 1, 'UTF-8', [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
+			[ 'Äöüß', 1, 'UTF-8', [ 'Ä', 'ö', 'ü', 'ß' ] ],
+			[ 'Äöüß', 2, 'UTF-8', [ 'Äö', 'üß' ] ],
+			[ 'Äöüß', 0, 'UTF-8', false ],
+		];
 	}
 
 	/**
