@@ -304,7 +304,7 @@ class Hyphenator {
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];
@@ -371,5 +371,16 @@ class Hyphenator {
 		}
 
 		return $word_pattern;
+	}
+
+	/**
+	 * Is a number odd?
+	 *
+	 * @param ubt $number Required.
+	 *
+	 * @return boolean true if $number is odd, false if it is even.
+	 */
+	private static function is_odd( $number ) {
+		return (boolean) ( $number % 2 );
 	}
 }

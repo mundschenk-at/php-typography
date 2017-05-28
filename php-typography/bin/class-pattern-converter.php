@@ -27,7 +27,7 @@
 
 namespace PHP_Typography\Bin;
 
-require_once( dirname( __DIR__ ) . '/php-typography-functions.php' );
+use \PHP_Typography\Strings as Strings;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.
@@ -74,7 +74,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	function get_sequence( $pattern ) {
-		$characters = \PHP_Typography\mb_str_split( str_replace( '.', '_', $pattern ) );
+		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
 		$result = array();
 
 		foreach ( $characters as $index => $chr ) {
@@ -157,8 +157,8 @@ class Pattern_Converter {
 		$this->word_characters = join(
 			array(
 				"\w.'ʼ᾽ʼ᾿’",
-				\PHP_Typography\uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-				'\p{Devanagari}' . \PHP_Typography\uchr( 2385, 2386 ),
+				Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+				'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
 				'\p{Bengali}',
 				'\p{Gujarati}',
 				'\p{Gurmukhi}',

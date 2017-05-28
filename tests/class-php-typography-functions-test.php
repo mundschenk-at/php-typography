@@ -91,39 +91,6 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provide data for testing is_odd.
-	 *
-	 * @return array
-	 */
-	public function provide_is_odd_data() {
-		return [
-			[ 0, false ],
-			[ 1, true ],
-			[ 2, false ],
-			[ 5, true ],
-			[ 68, false ],
-			[ 781, true ],
-		];
-	}
-
-	/**
-	 * Test is_odd.
-	 *
-	 * @covers \PHP_Typography\is_odd
-	 * @dataProvider provide_is_odd_data
-	 *
-	 * @param  int  $number A number.
-	 * @param  bool $result Expected result.
-	 */
-	public function test_is_odd( $number, $result ) {
-		if ( $result ) {
-			$this->assertTrue( \PHP_Typography\is_odd( $number ) );
-		} else {
-			$this->assertFalse( \PHP_Typography\is_odd( $number ) );
-		}
-	}
-
-	/**
 	 * Test get_object_hash function.
 	 *
 	 * @covers \PHP_Typography\get_object_hash

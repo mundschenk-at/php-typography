@@ -51,17 +51,6 @@ function arrays_intersect( array $array1, array $array2 ) {
 }
 
 /**
- * Is a number odd?
- *
- * @param ubt $number Required.
- *
- * @return boolean true if $number is odd, false if it is even.
- */
-function is_odd( $number ) {
-	return (boolean) ( $number % 2 );
-}
-
-/**
  * Calculates binary-safe hash from data object.
  *
  * @param mixed $object Any datatype.
