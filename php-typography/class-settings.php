@@ -28,11 +28,6 @@
 namespace PHP_Typography;
 
 /**
- * A few utility functions.
- */
-require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
-
-/**
  * Store settings for the PHP_Typography class.
  *
  *  @author Peter Putzer <github@mundschenk.at>
@@ -66,36 +61,6 @@ class Settings implements \ArrayAccess {
 	 * @var array
 	 */
 	protected $inappropriate_tags = [];
-
-	/**
-	 * An array of encodings in detection order.
-	 *
-	 * @var array
-	 */
-	protected $encodings = [ 'ASCII', 'UTF-8' ];
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 *
-	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
-	 */
-	protected $str_functions = [
-		'UTF-8' => [
-			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u', // unicode flag for regex.
-		],
-		'ASCII' => [
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '', // no regex flag needed.
-		],
-		false   => [],
-	];
 
 	/**
 	 * An array of various regex components (not complete patterns).
@@ -138,14 +103,6 @@ class Settings implements \ArrayAccess {
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	function __construct( $set_defaults = true ) {
-
-		// ASCII has to be first to have chance at detection.
-		mb_detect_order( $this->encodings );
-
-		// Not sure if this is necessary - but error_log seems to have problems with the strings.
-		// Used as the default encoding for mb_* functions.
-		$encoding_set = mb_internal_encoding( 'UTF-8' );
-
 		$this->init( $set_defaults );
 	}
 
@@ -313,81 +270,81 @@ class Settings implements \ArrayAccess {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
 		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
 
-		$this->chr['noBreakSpace']            = uchr( 160 );
-		$this->chr['noBreakNarrowSpace']      = uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
-		$this->chr['copyright']               = uchr( 169 );
-		$this->chr['guillemetOpen']           = uchr( 171 );
-		$this->chr['softHyphen']              = uchr( 173 );
-		$this->chr['registeredMark']          = uchr( 174 );
-		$this->chr['guillemetClose']          = uchr( 187 );
-		$this->chr['multiplication']          = uchr( 215 );
-		$this->chr['division']                = uchr( 247 );
-		$this->chr['figureSpace']             = uchr( 8199 );
-		$this->chr['thinSpace']               = uchr( 8201 );
-		$this->chr['hairSpace']               = uchr( 8202 );
-		$this->chr['zeroWidthSpace']          = uchr( 8203 );
-		$this->chr['hyphen']                  = '-';          // should be uchr(8208), but IE6 chokes.
-		$this->chr['noBreakHyphen']           = uchr( 8209 );
-		$this->chr['enDash']                  = uchr( 8211 );
-		$this->chr['emDash']                  = uchr( 8212 );
-		$this->chr['parentheticalDash']       = uchr( 8212 ); // defined separate from emDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['intervalDash']            = uchr( 8211 ); // defined separate from enDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['parentheticalDashSpace']  = uchr( 8201 );
-		$this->chr['intervalDashSpace']       = uchr( 8201 );
-		$this->chr['singleQuoteOpen']         = uchr( 8216 );
-		$this->chr['singleQuoteClose']        = uchr( 8217 );
-		$this->chr['apostrophe']              = uchr( 8217 ); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
-		$this->chr['singleLow9Quote']         = uchr( 8218 );
-		$this->chr['doubleQuoteOpen']         = uchr( 8220 );
-		$this->chr['doubleQuoteClose']        = uchr( 8221 );
-		$this->chr['doubleLow9Quote']         = uchr( 8222 );
-		$this->chr['ellipses']                = uchr( 8230 );
-		$this->chr['singlePrime']             = uchr( 8242 );
-		$this->chr['doublePrime']             = uchr( 8243 );
-		$this->chr['singleAngleQuoteOpen']    = uchr( 8249 );
-		$this->chr['singleAngleQuoteClose']   = uchr( 8250 );
-		$this->chr['fractionSlash']           = uchr( 8260 );
-		$this->chr['soundCopyMark']           = uchr( 8471 );
-		$this->chr['serviceMark']             = uchr( 8480 );
-		$this->chr['tradeMark']               = uchr( 8482 );
-		$this->chr['minus']                   = uchr( 8722 );
-		$this->chr['leftCornerBracket']       = uchr( 12300 );
-		$this->chr['rightCornerBracket']      = uchr( 12301 );
-		$this->chr['leftWhiteCornerBracket']  = uchr( 12302 );
-		$this->chr['rightWhiteCornerBracket'] = uchr( 12303 );
+		$this->chr['noBreakSpace']            = Strings::uchr( 160 );
+		$this->chr['noBreakNarrowSpace']      = Strings::uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
+		$this->chr['copyright']               = Strings::uchr( 169 );
+		$this->chr['guillemetOpen']           = Strings::uchr( 171 );
+		$this->chr['softHyphen']              = Strings::uchr( 173 );
+		$this->chr['registeredMark']          = Strings::uchr( 174 );
+		$this->chr['guillemetClose']          = Strings::uchr( 187 );
+		$this->chr['multiplication']          = Strings::uchr( 215 );
+		$this->chr['division']                = Strings::uchr( 247 );
+		$this->chr['figureSpace']             = Strings::uchr( 8199 );
+		$this->chr['thinSpace']               = Strings::uchr( 8201 );
+		$this->chr['hairSpace']               = Strings::uchr( 8202 );
+		$this->chr['zeroWidthSpace']          = Strings::uchr( 8203 );
+		$this->chr['hyphen']                  = '-';          // should be Strings::uchr(8208), but IE6 chokes.
+		$this->chr['noBreakHyphen']           = Strings::uchr( 8209 );
+		$this->chr['enDash']                  = Strings::uchr( 8211 );
+		$this->chr['emDash']                  = Strings::uchr( 8212 );
+		$this->chr['parentheticalDash']       = Strings::uchr( 8212 ); // defined separate from emDash so it can be redefined in set_smart_dashes_style.
+		$this->chr['intervalDash']            = Strings::uchr( 8211 ); // defined separate from enDash so it can be redefined in set_smart_dashes_style.
+		$this->chr['parentheticalDashSpace']  = Strings::uchr( 8201 );
+		$this->chr['intervalDashSpace']       = Strings::uchr( 8201 );
+		$this->chr['singleQuoteOpen']         = Strings::uchr( 8216 );
+		$this->chr['singleQuoteClose']        = Strings::uchr( 8217 );
+		$this->chr['apostrophe']              = Strings::uchr( 8217 ); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
+		$this->chr['singleLow9Quote']         = Strings::uchr( 8218 );
+		$this->chr['doubleQuoteOpen']         = Strings::uchr( 8220 );
+		$this->chr['doubleQuoteClose']        = Strings::uchr( 8221 );
+		$this->chr['doubleLow9Quote']         = Strings::uchr( 8222 );
+		$this->chr['ellipses']                = Strings::uchr( 8230 );
+		$this->chr['singlePrime']             = Strings::uchr( 8242 );
+		$this->chr['doublePrime']             = Strings::uchr( 8243 );
+		$this->chr['singleAngleQuoteOpen']    = Strings::uchr( 8249 );
+		$this->chr['singleAngleQuoteClose']   = Strings::uchr( 8250 );
+		$this->chr['fractionSlash']           = Strings::uchr( 8260 );
+		$this->chr['soundCopyMark']           = Strings::uchr( 8471 );
+		$this->chr['serviceMark']             = Strings::uchr( 8480 );
+		$this->chr['tradeMark']               = Strings::uchr( 8482 );
+		$this->chr['minus']                   = Strings::uchr( 8722 );
+		$this->chr['leftCornerBracket']       = Strings::uchr( 12300 );
+		$this->chr['rightCornerBracket']      = Strings::uchr( 12301 );
+		$this->chr['leftWhiteCornerBracket']  = Strings::uchr( 12302 );
+		$this->chr['rightWhiteCornerBracket'] = Strings::uchr( 12303 );
 
 		$this->quote_styles = [
 			'doubleCurled'             => [
-				'open'  => uchr( 8220 ),
-				'close' => uchr( 8221 ),
+				'open'  => Strings::uchr( 8220 ),
+				'close' => Strings::uchr( 8221 ),
 			],
 			'doubleCurledReversed'     => [
-				'open'  => uchr( 8221 ),
-				'close' => uchr( 8221 ),
+				'open'  => Strings::uchr( 8221 ),
+				'close' => Strings::uchr( 8221 ),
 			],
 			'doubleLow9'               => [
 				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => uchr( 8221 ),
+				'close' => Strings::uchr( 8221 ),
 			],
 			'doubleLow9Reversed'       => [
 				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => uchr( 8220 ),
+				'close' => Strings::uchr( 8220 ),
 			],
 			'singleCurled'             => [
-				'open'  => uchr( 8216 ),
-				'close' => uchr( 8217 ),
+				'open'  => Strings::uchr( 8216 ),
+				'close' => Strings::uchr( 8217 ),
 			],
 			'singleCurledReversed'     => [
-				'open'  => uchr( 8217 ),
-				'close' => uchr( 8217 ),
+				'open'  => Strings::uchr( 8217 ),
+				'close' => Strings::uchr( 8217 ),
 			],
 			'singleLow9'               => [
 				'open'  => $this->chr['singleLow9Quote'],
-				'close' => uchr( 8217 ),
+				'close' => Strings::uchr( 8217 ),
 			],
 			'singleLow9Reversed'       => [
 				'open'  => $this->chr['singleLow9Quote'],
-				'close' => uchr( 8216 ),
+				'close' => Strings::uchr( 8216 ),
 			],
 			'doubleGuillemetsFrench'   => [
 				'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
@@ -1265,9 +1222,9 @@ class Settings implements \ArrayAccess {
 	function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
-			$this->chr['noBreakNarrowSpace'] = uchr( 8239 );
+			$this->chr['noBreakNarrowSpace'] = Strings::uchr( 8239 );
 		} else {
-			$this->chr['noBreakNarrowSpace'] = uchr( 160 );
+			$this->chr['noBreakNarrowSpace'] = Strings::uchr( 160 );
 		}
 
 		// Update French guillemets.

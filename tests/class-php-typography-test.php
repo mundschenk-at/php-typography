@@ -25,6 +25,8 @@
 // Required for some test cases.
 require_once( 'class-php-typography-css-classes.php' );
 
+use \PHP_Typography\Strings;
+
 /**
  * PHP_Typography unit test.
  *
@@ -448,78 +450,78 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	private function assertSmartQuotesStyle( $style, $open, $close ) { // @codingStandardsIgnoreLine
 		switch ( $style ) {
 			case 'doubleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ) . Strings::uchr( 160 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 160 ) . Strings::uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'cornerBrackets':
-				$this->assertSame( \PHP_Typography\uchr( 12300 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12301 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12300 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12301 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			case 'whiteCornerBracket':
-				$this->assertSame( \PHP_Typography\uchr( 12302 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12303 ), $close, "Closing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12302 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12303 ), $close, "Closing quote $close did not match quote style $style." );
 				break;
 
 			default:
@@ -4325,18 +4327,18 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$typo->set_true_no_break_narrow_space(); // defaults to false.
 		$s = $typo->get_settings();
-		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), \PHP_Typography\uchr( 160 ) );
+		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), Strings::uchr( 160 ) );
 		$this->assertAttributeContains( [
-			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ),
-			'close' => \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ),
+			'open'  => Strings::uchr( 171 ) . Strings::uchr( 160 ),
+			'close' => Strings::uchr( 160 ) . Strings::uchr( 187 ),
 		], 'quote_styles', $s );
 
 		$typo->set_true_no_break_narrow_space( true ); // defaults to false.
 		$s = $typo->get_settings();
-		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), \PHP_Typography\uchr( 8239 ) );
+		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), Strings::uchr( 8239 ) );
 		$this->assertAttributeContains( [
-			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 8239 ),
-			'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr( 187 ),
+			'open'  => Strings::uchr( 171 ) . Strings::uchr( 8239 ),
+			'close' => Strings::uchr( 8239 ) . Strings::uchr( 187 ),
 		], 'quote_styles', $s );
 	}
 

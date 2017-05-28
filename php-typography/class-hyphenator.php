@@ -28,11 +28,6 @@
 namespace PHP_Typography;
 
 /**
- * A few utility functions.
- */
-require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
-
-/**
  * Hyphenates tokenized text.
  *
  * If used with multibyte language, UTF-8 encoding is required.
@@ -90,37 +85,6 @@ class Hyphenator {
 	protected $language;
 
 	/**
-	 * An array of encodings in detection order.
-	 *
-	 * @var array
-	 */
-	private $encodings = [ 'ASCII', 'UTF-8' ];
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 * Initialized in the constructor for compatibility with PHP 5.3.
-	 *
-	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
-	 */
-	private $str_functions = [
-		'UTF-8' => [
-			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u',
-		],
-		'ASCII' => [
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '',
-		],
-		false   => [],
-	];
-
-	/**
 	 * Constructs new Hyphenator instance.
 	 *
 	 * @param string $language   Optional. Short-form language name. Default null.
@@ -159,8 +123,8 @@ class Hyphenator {
 		$exception_keys = [];
 		$func = [];
 		foreach ( $exceptions as $exception ) {
-			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+			$func = Strings::functions( $exception );
+			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.
 			}
 
@@ -237,7 +201,7 @@ class Hyphenator {
 		foreach ( $patterns as $key => $pattern ) {
 			$node = &$trie;
 
-			foreach ( mb_str_split( $key ) as $char ) {
+			foreach ( Strings::mb_str_split( $key ) as $char ) {
 				if ( ! isset( $node[ $char ] ) ) {
 					$node[ $char ] = [];
 				}
@@ -278,8 +242,8 @@ class Hyphenator {
 
 		$func = []; // quickly reference string functions according to encoding.
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+			$func = Strings::functions( $text_token['value'] );
+			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.
 			}
 
@@ -386,8 +350,8 @@ class Hyphenator {
 	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
 	function convert_hyphenation_exception_to_pattern( $exception ) {
-		$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-		if ( empty( $func ) || empty( $func['strlen'] ) ) {
+		$func = Strings::functions( $exception );
+		if ( empty( $func ) ) {
 			return; // unknown encoding, abort.
 		}
 

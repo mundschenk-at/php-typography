@@ -61,8 +61,6 @@ class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
 	public function test_constructor() {
 		$parser = new \PHP_Typography\Text_Parser( [ 'UTF-8' ] );
 
-		$this->assertAttributeContains( 'UTF-8', 'encodings', $parser );
-		$this->assertAttributeCount( 1, 'encodings', $parser );
 		$this->assertAttributeCount( 0, 'text', $parser );
 		$this->assertAttributeCount( 6, 'regex', $parser );
 		$this->assertAttributeCount( 8, 'components', $parser );

@@ -123,26 +123,6 @@ function has_class( \DOMNode $tag, $classnames ) {
 }
 
 /**
- * Converts decimal value to unicode character.
- *
- * @param string|array $codes Decimal value(s) coresponding to unicode character(s).
- *
- * @return string Unicode character(s).
- */
-function uchr( $codes ) {
-	if ( is_scalar( $codes ) ) {
-		$codes = func_get_args();
-	}
-
-	$str = '';
-	foreach ( $codes as $code ) {
-		$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
-	}
-
-	return $str;
-}
-
-/**
  * Is a number odd?
  *
  * @param ubt $number Required.
@@ -151,27 +131,6 @@ function uchr( $codes ) {
  */
 function is_odd( $number ) {
 	return (boolean) ( $number % 2 );
-}
-
-/**
- * Multibyte-safe str_split function.
- *
- * @param string $str      Required.
- * @param int    $length   Optional. Default 1.
- * @param string $encoding Optional. Default 'UTF-8'.
- */
-function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
-	if ( $length < 1 ) {
-		return false;
-	}
-
-	$result = [];
-	$multibyte_length = mb_strlen( $str, $encoding );
-	for ( $i = 0; $i < $multibyte_length; $i += $length ) {
-		$result[] = mb_substr( $str, $i, $length, $encoding );
-	}
-
-	return $result;
 }
 
 /**

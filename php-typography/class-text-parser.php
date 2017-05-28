@@ -35,27 +35,6 @@ namespace PHP_Typography;
  * If multibyte characters are passed, they must be encoded as UTF-8.
  */
 class Text_Parser {
-
-	/**
-	 * An array of encodings to check.
-	 *
-	 * @var array $encodings An array of encoding names.
-	 */
-	private $encodings = [];
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 *
-	 * @var array $str_functions {
-	 *      @type string $encoding The name of the strtoupper function to use.
-	 * }
-	 */
-	private $str_functions = [
-		'UTF-8' => 'mb_strtoupper',
-		'ASCII' => 'strtoupper',
-		false   => false,
-	];
-
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
 	 *
@@ -93,12 +72,8 @@ class Text_Parser {
 
 	/**
 	 * Creates a new parser object.
-	 *
-	 * @param array $encodings Optional. Default [ 'ASCII', 'UTF-8' ].
 	 */
-	function __construct( $encodings = [ 'ASCII', 'UTF-8' ] ) {
-		$this->encodings = $encodings;
-
+	function __construct() {
 		/**
 		 * Find spacing FIRST (as it is the primary delimiter)
 		 *
@@ -325,10 +300,11 @@ class Text_Parser {
 		}
 
 		// Detect encoding.
-		$this->current_strtoupper = $this->str_functions[ mb_detect_encoding( $raw_text, $this->encodings, true ) ];
-		if ( ! $this->current_strtoupper ) {
+		$str_functions = Strings::functions( $raw_text );
+		if ( empty( $str_functions ) ) {
 			return false; // unknown encoding.
 		}
+		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		$tokens = [];
 		$parts = preg_split( $this->regex['anyText'], $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE );

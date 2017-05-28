@@ -198,38 +198,6 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Provide data for testing uchr.
-	 *
-	 * @return array
-	 */
-	public function provide_uchr_data() {
-		return [
-			[ 33,   '!' ],
-			[ 9,    "\t" ],
-			[ 10,   "\n" ],
-			[ 35,   '#' ],
-			[ 103,  'g' ],
-			[ 336,  'Ő' ],
-			[ 497,  'Ǳ' ],
-			[ 1137, 'ѱ' ],
-			[ 2000, 'ߐ' ],
-		];
-	}
-
-	/**
-	 * Test uchr.
-	 *
-	 * @covers \PHP_Typography\uchr
-	 * @dataProvider provide_uchr_data
-	 *
-	 * @param  int    $code   Character code.
-	 * @param  string $result Expected result.
-	 */
-	public function test_uchr( $code, $result ) {
-		$this->assertSame( $result, \PHP_Typography\uchr( $code ) );
-	}
-
-	/**
 	 * Provide data for testing is_odd.
 	 *
 	 * @return array
@@ -260,36 +228,6 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 		} else {
 			$this->assertFalse( \PHP_Typography\is_odd( $number ) );
 		}
-	}
-
-	/**
-	 * Provide data for testing mb_str_split.
-	 *
-	 * @return array
-	 */
-	public function provide_mb_str_split_data() {
-		return [
-			[ '', 1, 'UTF-8', [] ],
-			[ 'A ship', 1, 'UTF-8', [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
-			[ 'Äöüß', 1, 'UTF-8', [ 'Ä', 'ö', 'ü', 'ß' ] ],
-			[ 'Äöüß', 2, 'UTF-8', [ 'Äö', 'üß' ] ],
-			[ 'Äöüß', 0, 'UTF-8', false ],
-		];
-	}
-
-	/**
-	 * Test mb_str_split.
-	 *
-	 * @covers \PHP_Typography\mb_str_split
-	 * @dataProvider provide_mb_str_split_data
-	 *
-	 * @param  string $string   A multibyte string.
-	 * @param  int    $length   Split length.
-	 * @param  string $encoding Encoding to use.
-	 * @param  array  $result   Expected result.
-	 */
-	public function test_mb_str_split( $string, $length, $encoding, $result ) {
-		$this->assertSame( $result, \PHP_Typography\mb_str_split( $string, $length, $encoding ) );
 	}
 
 	/**

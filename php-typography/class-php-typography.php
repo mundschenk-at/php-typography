@@ -96,36 +96,6 @@ class PHP_Typography {
 	];
 
 	/**
-	 * An array of encodings in detection order.
-	 *
-	 * @var array
-	 */
-	private $encodings = [ 'ASCII', 'UTF-8' ];
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 *
-	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
-	 */
-	private $str_functions = [
-		'UTF-8' => [
-			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u', // unicode flag for regex.
-		],
-		'ASCII' => [
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '', // no regex flag needed.
-		],
-		false   => [],
-	];
-
-	/**
 	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
 	 *
 	 * @var array
@@ -173,14 +143,6 @@ class PHP_Typography {
 	 * @param string  $init         Optional. Flag to control initialization. Valid inputs are 'now' and 'lazy'. Default 'now'.
 	 */
 	function __construct( $set_defaults = true, $init = 'now' ) {
-
-		// ASCII has to be first to have chance at detection.
-		mb_detect_order( $this->encodings );
-
-		// Not sure if this is necessary - but error_log seems to have problems with the strings.
-		// Used as the default encoding for mb_* functions.
-		$encoding_set = mb_internal_encoding( 'UTF-8' );
-
 		if ( 'now' === $init ) {
 			$this->init( $set_defaults );
 		}
@@ -1025,9 +987,9 @@ class PHP_Typography {
 
 		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
 			// First determine encoding.
-			$func = $this->str_functions[ mb_detect_encoding( $previous_textnode->data, $this->encodings, true ) ];
+			$func = Strings::functions( $previous_textnode->data );
 
-			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
+			if ( ! empty( $func ) ) {
 				return preg_replace( '/\p{C}/Su', '', $func['substr']( $previous_textnode->data, - 1 ) );
 			}
 		} // @codeCoverageIgnore
@@ -1047,9 +1009,9 @@ class PHP_Typography {
 
 		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
 			// First determine encoding.
-			$func = $this->str_functions[ mb_detect_encoding( $next_textnode->data, $this->encodings, true ) ];
+			$func = Strings::functions( $next_textnode->data );
 
-			if ( ! empty( $func ) && ! empty( $func['substr'] ) ) {
+			if ( ! empty( $func ) ) {
 				return preg_replace( '/\p{C}/Su', '', $func['substr']( $next_textnode->data, 0, 1 ) );
 			}
 		} // @codeCoverageIgnore
@@ -1268,7 +1230,7 @@ class PHP_Typography {
 		$textnode->data = str_replace( '"', $chr['doubleQuoteClose'], $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
-		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+		$func = Strings::functions( $textnode->data );
 
 		if ( '' !== $previous_character ) {
 			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
@@ -1527,7 +1489,7 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $settings->regex( 'singleCharacterWordSpacing' ), '$1$2' . $settings->chr( 'noBreakSpace' ), $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
-		$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+		$func = Strings::functions( $textnode->data );
 
 		if ( '' !== $previous_character ) {
 			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
@@ -1677,11 +1639,9 @@ class PHP_Typography {
 
 		if ( '' === $this->get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$encodings = $this->encodings;
-			$str_funcs = $this->str_functions;
 			$chr       = $settings->get_named_characters();
-			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $encodings, $str_funcs, $chr ) {
-				$func = $str_funcs[ mb_detect_encoding( $widow[0], $encodings, true ) ];
+			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $chr ) {
+				$func = Strings::functions( $widow[0] );
 
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped
@@ -1922,7 +1882,7 @@ class PHP_Typography {
 
 		// Remove any added characters.
 		if ( '' !== $next_character ) {
-			$func = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+			$func = Strings::functions( $textnode->data );
 			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
 		}
 	}
@@ -1960,7 +1920,7 @@ class PHP_Typography {
 
 		if ( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
 
-			$func            = $this->str_functions[ mb_detect_encoding( $textnode->data, $this->encodings, true ) ];
+			$func            = Strings::functions( $textnode->data );
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
 			$chr             = $settings->get_named_characters();
 
@@ -2173,7 +2133,7 @@ class PHP_Typography {
 	public function get_text_parser() {
 		// Lazy-load text parser.
 		if ( ! isset( $this->text_parser ) ) {
-			$this->text_parser = new Text_Parser( $this->encodings );
+			$this->text_parser = new Text_Parser();
 		}
 
 		return $this->text_parser;
