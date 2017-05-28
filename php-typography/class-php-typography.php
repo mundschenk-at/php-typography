@@ -748,7 +748,7 @@ class PHP_Typography {
 
 		// Start processing.
 		foreach ( $all_textnodes as $textnode ) {
-			if ( arrays_intersect( get_ancestors( $textnode ), $tags_to_ignore ) ) {
+			if ( arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ) {
 				continue;
 			}
 
@@ -804,21 +804,21 @@ class PHP_Typography {
 		$this->smart_ordinal_suffix( $textnode, $settings ); // call before "style_numbers" and "smart_fractions".
 		$this->smart_exponents( $textnode, $settings );      // call before "style_numbers".
 		$this->smart_fractions( $textnode, $settings );      // call before "style_numbers" and after "smart_ordinal_suffix".
-		if ( ! has_class( $textnode, $this->css_classes['caps'] ) ) {
+		if ( ! DOM::has_class( $textnode, $this->css_classes['caps'] ) ) {
 			// Call before "style_numbers".
 			$this->style_caps( $textnode, $settings );
 		}
-		if ( ! has_class( $textnode, $this->css_classes['numbers'] ) ) {
+		if ( ! DOM::has_class( $textnode, $this->css_classes['numbers'] ) ) {
 			// Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
 			$this->style_numbers( $textnode, $settings );
 		}
-		if ( ! has_class( $textnode, $this->css_classes['amp'] ) ) {
+		if ( ! DOM::has_class( $textnode, $this->css_classes['amp'] ) ) {
 			$this->style_ampersands( $textnode, $settings );
 		}
-		if ( ! has_class( $textnode, [ $this->css_classes['quo'], $this->css_classes['dquo'] ] ) ) {
+		if ( ! DOM::has_class( $textnode, [ $this->css_classes['quo'], $this->css_classes['dquo'] ] ) ) {
 			$this->style_initial_quotes( $textnode, $settings, $is_title );
 		}
-		if ( ! has_class( $textnode, [ $this->css_classes['pull-single'], $this->css_classes['pull-double'] ] ) ) {
+		if ( ! DOM::has_class( $textnode, [ $this->css_classes['pull-single'], $this->css_classes['pull-double'] ] ) ) {
 			$this->style_hanging_punctuation( $textnode, $settings );
 		}
 	}
@@ -969,7 +969,7 @@ class PHP_Typography {
 
 			$nodelist = $xpath->query( $ignore_query, $initial_node );
 			if ( false !== $nodelist ) {
-				$elements = nodelist_to_array( $nodelist );
+				$elements = DOM::nodelist_to_array( $nodelist );
 			}
 		}
 
@@ -1809,7 +1809,7 @@ class PHP_Typography {
 
 			if ( ! empty( $imported_fragment ) ) {
 				// Save the children of the imported DOMDocumentFragment before replacement.
-				$children = nodelist_to_array( $imported_fragment->childNodes );
+				$children = DOM::nodelist_to_array( $imported_fragment->childNodes );
 
 				if ( false !== $parent->replaceChild( $imported_fragment, $node ) ) {
 					// Success! We return the saved array of DOMNodes as
