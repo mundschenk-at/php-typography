@@ -231,22 +231,6 @@ class PHP_Typography_Functions_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Test get_language_plugin_list.
-	 *
-	 * @covers \PHP_Typography\get_language_plugin_list
-	 */
-	public function test_get_language_plugin_list() {
-		$path = dirname( __DIR__ ) . '/php-typography/diacritics/';
-		$languages = \PHP_Typography\get_language_plugin_list( $path, 'diacriticLanguage' );
-
-		$this->assertCount( 2, $languages );
-		$this->assertArrayHasKey( 'en-US', $languages );
-		$this->assertContains( 'English (United States)', $languages );
-		$this->assertArrayHasKey( 'de-DE', $languages );
-		$this->assertContains( 'German', $languages );
-	}
-
-	/**
 	 * Test get_object_hash function.
 	 *
 	 * @covers \PHP_Typography\get_object_hash

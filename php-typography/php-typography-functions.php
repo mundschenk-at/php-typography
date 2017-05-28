@@ -134,38 +134,6 @@ function is_odd( $number ) {
 }
 
 /**
- * Retrieves the list of valid language plugins in the given directory.
- *
- * @param string $path The path in which to look for language plugin files.
- *
- * @return array An array in the form ( $language_code => $translated_language_name ).
- */
-function get_language_plugin_list( $path ) {
-	$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-	$languages = [];
-	$handler = opendir( $path );
-
-	// Read all files in directory.
-	while ( $file = readdir( $handler ) ) {
-		// We only want the JSON files.
-		if ( '.json' === substr( $file, -5 ) ) {
-			$file_content = file_get_contents( $path . $file );
-			if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
-				$language_name = substr( $matches[1], 1, -1 );
-				$language_code = substr( $file, 0, -5 );
-				$languages[ $language_code ] = $language_name;
-			}
-		}
-	}
-	closedir( $handler );
-
-	// Sort translated language names according to current locale.
-	asort( $languages );
-
-	return $languages;
-}
-
-/**
  * Calculates binary-safe hash from data object.
  *
  * @param mixed $object Any datatype.

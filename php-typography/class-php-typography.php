@@ -2140,6 +2140,38 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Retrieves the list of valid language plugins in the given directory.
+	 *
+	 * @param string $path The path in which to look for language plugin files.
+	 *
+	 * @return array An array in the form ( $language_code => $translated_language_name ).
+	 */
+	private static function get_language_plugin_list( $path ) {
+		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
+		$languages = [];
+		$handler = opendir( $path );
+
+		// Read all files in directory.
+		while ( $file = readdir( $handler ) ) {
+			// We only want the JSON files.
+			if ( '.json' === substr( $file, -5 ) ) {
+				$file_content = file_get_contents( $path . $file );
+				if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
+					$language_name = substr( $matches[1], 1, -1 );
+					$language_code = substr( $file, 0, -5 );
+					$languages[ $language_code ] = $language_name;
+				}
+			}
+		}
+		closedir( $handler );
+
+		// Sort translated language names according to current locale.
+		asort( $languages );
+
+		return $languages;
+	}
+
+	/**
 	 * Retrieves the list of valid hyphenation languages.
 	 *
 	 * The language names are translation-ready but not translated yet.
@@ -2147,7 +2179,7 @@ class PHP_Typography {
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	static public function get_hyphenation_languages() {
-		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/lang/', 'patgenLanguage' );
+		return self::get_language_plugin_list( __DIR__ . '/lang/' );
 	}
 
 	/**
@@ -2158,6 +2190,6 @@ class PHP_Typography {
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	static public function get_diacritic_languages() {
-		return \PHP_Typography\get_language_plugin_list( __DIR__ . '/diacritics/', 'diacriticLanguage' );
+		return self::get_language_plugin_list( __DIR__ . '/diacritics/' );
 	}
 }
