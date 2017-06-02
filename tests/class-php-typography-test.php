@@ -22,8 +22,7 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-// Required for some test cases.
-require_once( 'class-php-typography-css-classes.php' );
+namespace PHP_Typography\Tests;
 
 use \PHP_Typography\Strings;
 
@@ -43,7 +42,7 @@ use \PHP_Typography\Strings;
  * @uses PHP_Typography\is_odd
  * @uses PHP_Typography\mb_str_split
  */
-class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
+class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 	/**
 	 * The PHP_Typography instance.
@@ -65,38 +64,6 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 * This method is called after a test is executed.
 	 */
 	protected function tearDown() { // @codingStandardsIgnoreLine
-	}
-
-	/**
-	 * Helper function to generate a valid token list from strings.
-	 *
-	 * @param string $value The string to tokenize.
-	 * @param string $type  Optional. Default 'word'.
-	 *
-	 * @return array
-	 */
-	protected function tokenize( $value, $type = 'word' ) {
-		return [
-			[
-				'type'  => $type,
-				'value' => $value,
-			],
-		];
-	}
-
-	/**
-	 * Assert that a string and a token array are the same.
-	 *
-	 * @param string $expected_value The expected string.
-	 * @param array  $actual_tokens  The actual token array.
-	 * @param string $message        Optional. Message string. Default ''.
-	 */
-	protected function assertTokenSame( $expected_value, $actual_tokens, $message = '' ) { // @codingStandardsIgnoreLine
-		foreach ( $actual_tokens as &$actual ) {
-			$actual['value'] = clean_html( $actual['value'] );
-		}
-
-		return $this->assertSame( $this->tokenize( $expected_value ), $actual_tokens, $message );
 	}
 
 	/**
@@ -1189,7 +1156,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$typo = $this->typo;
-		$ref = new ReflectionClass( get_class( $typo ) );
+		$ref = new \ReflectionClass( get_class( $typo ) );
 		$prop = $ref->getProperty( 'settings' );
 		$prop->setAccessible( true );
 		$s = $prop->getValue( $typo );
@@ -1937,7 +1904,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
 		$prev_char = $typo->get_prev_chr( $textnodes->item( 0 ) );
@@ -1973,7 +1940,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
 		$prev_char = $typo->get_next_chr( $textnodes->item( 0 ) );
@@ -2008,7 +1975,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
 		$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
@@ -2040,7 +2007,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertNull( $typo->get_first_textnode( null ) );
 
 		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-		$this->assertNull( $typo->get_first_textnode( new DOMDocument() ) );
+		$this->assertNull( $typo->get_first_textnode( new \DOMDocument() ) );
 	}
 
 	/**
@@ -2053,7 +2020,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( '//div' ); // really only one.
 		$node = $typo->get_first_textnode( $textnodes->item( 0 ) );
@@ -2070,7 +2037,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
 		$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
@@ -2102,7 +2069,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertNull( $typo->get_last_textnode( null ) );
 
 		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-		$this->assertNull( $typo->get_last_textnode( new DOMDocument() ) );
+		$this->assertNull( $typo->get_last_textnode( new \DOMDocument() ) );
 	}
 
 
@@ -2116,7 +2083,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( '//div' ); // really only one.
 		$node = $typo->get_last_textnode( $textnodes->item( 0 ) );
@@ -3204,7 +3171,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_wrap_hard_hyphens( true );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertTokensSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
 	}
 
 
@@ -3227,7 +3194,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_smart_dashes( true );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertTokensSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
 	}
 
 
@@ -3249,7 +3216,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_wrap_hard_hyphens( false );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertTokensSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
 	}
 
 	/**
@@ -3396,7 +3363,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_min_after_url_wrap( $min_after );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $result, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
+		$this->assertTokensSame( $result, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
 	}
 
 
@@ -3419,7 +3386,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_min_after_url_wrap( $min_after );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $html, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
+		$this->assertTokensSame( $html, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
 	}
 
 	/**
@@ -3452,7 +3419,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_email_wrap( true );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $result, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
+		$this->assertTokensSame( $result, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
 	}
 
 
@@ -3473,7 +3440,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 		$typo->set_email_wrap( false );
 		$s = $typo->get_settings();
 
-		$this->assertTokenSame( $html, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
+		$this->assertTokensSame( $html, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
 	}
 
 	/**
@@ -4298,7 +4265,7 @@ class PHP_Typography_Test extends \PHPUnit\Framework\TestCase {
 
 		$html = '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>';
 		$doc = $typo->get_html5_parser()->loadHTML( $html );
-		$xpath = new DOMXPath( $doc );
+		$xpath = new \DOMXPath( $doc );
 
 		$outer_div  = $xpath->query( "//*[@id='outer']" )->item( 0 ); // really only one.
 		$paragraph  = $xpath->query( "//*[@id='para']" )->item( 0 );  // really only one.

@@ -22,6 +22,8 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
 /**
  * Subclass of PHP_Typography for setting custom CSS classes.
  */

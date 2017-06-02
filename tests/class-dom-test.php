@@ -22,13 +22,15 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
 /**
  * DOM unit test.
  *
  * @coversDefaultClass \PHP_Typography\DOM
  * @usesDefaultClass \PHP_Typography\DOM
  */
-class DOM_Test extends \PHPUnit\Framework\TestCase {
+class DOM_Test extends PHP_Typography_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.

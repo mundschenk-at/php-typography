@@ -22,6 +22,8 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
 /**
  * Unit test for \PHP_Typography\Text_Parser class.
  *
@@ -30,7 +32,7 @@
  *
  * @uses PHP_Typography\Text_Parser
  */
-class Text_Parser_Test extends \PHPUnit\Framework\TestCase {
+class Text_Parser_Test extends PHP_Typography_Testcase {
 	/**
 	 * The Text_Parser fixture.
 	 *

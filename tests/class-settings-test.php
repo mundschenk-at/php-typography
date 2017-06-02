@@ -22,6 +22,8 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
 use \PHP_Typography\Strings;
 
 /**
@@ -39,7 +41,7 @@ use \PHP_Typography\Strings;
  * @uses PHP_Typography\is_odd
  * @uses PHP_Typography\Strings::mb_str_split
  */
-class Settings_Test extends \PHPUnit\Framework\TestCase {
+class Settings_Test extends PHP_Typography_Testcase {
 	/**
 	 * Settings fixture.
 	 *
@@ -60,38 +62,6 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * This method is called after a test is executed.
 	 */
 	protected function tearDown() {
-	}
-
-	/**
-	 * Helper function to generate a valid token list from strings.
-	 *
-	 * @param string $value Token value.
-	 * @param string $type  Optional. Token type. Default 'word'.
-	 *
-	 * @return array
-	 */
-	protected function tokenize( $value, $type = 'word' ) {
-		return [
-			[
-				'type'  => $type,
-				'value' => $value,
-			],
-		];
-	}
-
-	/**
-	 * Asserts tokens are the same.
-	 *
-	 * @param string $expected_value A word.
-	 * @param array  $actual_tokens  A token array.
-	 * @param string $message        Optional. Default ''.
-	 */
-	protected function assertTokenSame( $expected_value, $actual_tokens, $message = '' ) {
-		foreach ( $actual_tokens as &$actual ) {
-			$actual['value'] = clean_html( $actual['value'] );
-		}
-
-		return $this->assertSame( $this->tokenize( $expected_value ) , $actual_tokens, $message );
 	}
 
 	/**
