@@ -4363,4 +4363,51 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertEquals( $h2, $typo->get_hyphenator( $s ) );
 		$this->assertNotEquals( $h1, $typo->get_hyphenator( $s ) );
 	}
+
+	/**
+	 * Provide data for testing arrays_intersect.
+	 *
+	 * @return array
+	 */
+	public function provide_arrays_intersect_data() {
+		return [
+			[ [], [], false ],
+			[ [ 1, 2, 3 ], [ 2, 4, 1 ], true ],
+			[ [ 1, 2, 3 ], [], false ],
+			[ [], [ 1, 2, 3 ], false ],
+		];
+	}
+
+	/**
+	 * $a1 and $a2 need to be arrays of object indexes < 10
+	 *
+	 * @covers \PHP_Typography\arrays_intersect
+	 * @dataProvider provide_arrays_intersect_data
+	 *
+	 * @param  array $a1     First array.
+	 * @param  array $a2     Second array.
+	 * @param  bool  $result Expected result.
+	 */
+	public function test_arrays_intersect( array $a1, array $a2, $result ) {
+		$nodes = [];
+		for ( $i = 0; $i < 10; ++$i ) {
+			$nodes[] = new \DOMText( "foo $i" );
+		}
+
+		$array1 = [];
+		foreach ( $a1 as $index ) {
+			if ( isset( $nodes[ $index ] ) ) {
+				$array1[] = $nodes[ $index ];
+			}
+		}
+
+		$array2 = [];
+		foreach ( $a2 as $index ) {
+			if ( isset( $nodes[ $index ] ) ) {
+				$array2[ spl_object_hash( $nodes[ $index ] ) ] = $nodes[ $index ];
+			}
+		}
+
+		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
+	}
 }

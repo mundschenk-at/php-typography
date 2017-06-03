@@ -32,23 +32,6 @@ namespace PHP_Typography;
  */
 require_once( __DIR__ . '/../vendor/Masterminds/HTML5/Elements.php' ); // @codeCoverageIgnore
 
-/**
- * Determines whether two object arrays intersect. The second array is expected
- * to use the spl_object_hash for its keys.
- *
- * @param array $array1 The keys are ignored.
- * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
- * @return boolean
- */
-function arrays_intersect( array $array1, array $array2 ) {
-	foreach ( $array1 as $value ) {
-		if ( isset( $array2[ spl_object_hash( $value ) ] ) ) {
-			return true;
-		}
-	}
-
-	return false;
-}
 
 /**
  * Calculates binary-safe hash from data object.

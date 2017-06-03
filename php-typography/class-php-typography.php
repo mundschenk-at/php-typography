@@ -748,7 +748,7 @@ class PHP_Typography {
 
 		// Start processing.
 		foreach ( $all_textnodes as $textnode ) {
-			if ( arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ) {
+			if ( self::arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ) {
 				continue;
 			}
 
@@ -768,6 +768,24 @@ class PHP_Typography {
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );
+	}
+
+	/**
+	 * Determines whether two object arrays intersect. The second array is expected
+	 * to use the spl_object_hash for its keys.
+	 *
+	 * @param array $array1 The keys are ignored.
+	 * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 * @return boolean
+	 */
+	protected static function arrays_intersect( array $array1, array $array2 ) {
+		foreach ( $array1 as $value ) {
+			if ( isset( $array2[ spl_object_hash( $value ) ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
