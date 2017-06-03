@@ -30,6 +30,40 @@ namespace PHP_Typography\Tests;
 abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 
 	/**
+	 * Call protected/private method of a class.
+	 *
+	 * @param object $object      Instantiated object that we will run method on.
+	 * @param string $method_name Method name to call.
+	 * @param array  $parameters  Array of parameters to pass into method.
+	 *
+	 * @return mixed Method return.
+	 */
+	protected function invokeMethod( &$object, $method_name, array $parameters = [] ) {
+		$reflection = new \ReflectionClass( get_class( $object ) );
+		$method = $reflection->getMethod( $method_name );
+		$method->setAccessible( true );
+
+		return $method->invokeArgs( $object, $parameters );
+	}
+
+	/**
+	 * Call protected/private method of a class.
+	 *
+	 * @param string $classname   Instantiated object that we will run method on.
+	 * @param string $method_name Method name to call.
+	 * @param array  $parameters  Array of parameters to pass into method.
+	 *
+	 * @return mixed Method return.
+	 */
+	protected function invokeStaticMethod( $classname, $method_name, array $parameters = [] ) {
+		$reflection = new \ReflectionClass( $classname );
+		$method = $reflection->getMethod( $method_name );
+		$method->setAccessible( true );
+
+		return $method->invokeArgs( null, $parameters );
+	}
+
+	/**
 	 * Helper function to generate a valid token list from strings.
 	 *
 	 * @param string $value The string to tokenize.
