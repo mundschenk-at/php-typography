@@ -22,6 +22,10 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
+use \PHP_Typography\Strings;
+
 /**
  * Unit test for Settings class.
  *
@@ -35,9 +39,9 @@
  * @uses PHP_Typography\uchr
  * @uses PHP_Typography\arrays_intersect
  * @uses PHP_Typography\is_odd
- * @uses PHP_Typography\mb_str_split
+ * @uses PHP_Typography\Strings::mb_str_split
  */
-class Settings_Test extends \PHPUnit\Framework\TestCase {
+class Settings_Test extends PHP_Typography_Testcase {
 	/**
 	 * Settings fixture.
 	 *
@@ -58,38 +62,6 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * This method is called after a test is executed.
 	 */
 	protected function tearDown() {
-	}
-
-	/**
-	 * Helper function to generate a valid token list from strings.
-	 *
-	 * @param string $value Token value.
-	 * @param string $type  Optional. Token type. Default 'word'.
-	 *
-	 * @return array
-	 */
-	protected function tokenize( $value, $type = 'word' ) {
-		return array(
-			array(
-				'type'  => $type,
-				'value' => $value,
-			),
-		);
-	}
-
-	/**
-	 * Asserts tokens are the same.
-	 *
-	 * @param string $expected_value A word.
-	 * @param array  $actual_tokens  A token array.
-	 * @param string $message        Optional. Default ''.
-	 */
-	protected function assertTokenSame( $expected_value, $actual_tokens, $message = '' ) {
-		foreach ( $actual_tokens as &$actual ) {
-			$actual['value'] = clean_html( $actual['value'] );
-		}
-
-		return $this->assertSame( $this->tokenize( $expected_value ) , $actual_tokens, $message );
 	}
 
 	/**
@@ -275,8 +247,8 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		$s = $this->settings;
 
 		$this->assertFalse( $s->chr( 'DoesNotExist' ) );
-		$this->assertEquals( $s->chr( 'noBreakSpace' ), \PHP_Typography\uchr( 160 ) );
-		$this->assertEquals( $s->chr( 'emDash' ), \PHP_Typography\uchr( 8212 ) );
+		$this->assertEquals( $s->chr( 'noBreakSpace' ), Strings::uchr( 160 ) );
+		$this->assertEquals( $s->chr( 'emDash' ), Strings::uchr( 8212 ) );
 	}
 
 	/**
@@ -372,7 +344,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler( function( $errors ) {
-			return array();
+			return [];
 		} );
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
@@ -390,12 +362,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_tags_to_ignore() {
 		$s = $this->settings;
-		$always_ignore = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
-		$self_closing_tags = array( 'area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta' );
+		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' ];
+		$self_closing_tags = [ 'area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta' ];
 
 		// Default tags.
-		$s->set_tags_to_ignore( array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ) );
-		$this->assertArraySubset( array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ), $s['ignoreTags'] );
+		$s->set_tags_to_ignore( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] );
+		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
@@ -404,7 +376,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		}
 
 		// Auto-close tag and something else.
-		$s->set_tags_to_ignore( array( 'img', 'foo' ) );
+		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
 		$this->assertContains( 'foo', $s['ignoreTags'] );
 		foreach ( $self_closing_tags as $tag ) {
 			$this->assertNotContains( $tag, $s['ignoreTags'] );
@@ -463,7 +435,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_smart_quotes_primary() {
 		$s = $this->settings;
 
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -479,7 +451,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
@@ -510,7 +482,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$s = $this->settings;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -526,7 +498,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
@@ -557,11 +529,11 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @uses ::set_smart_quotes_primary
 	 * @uses ::set_smart_quotes_secondary
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_update_smart_quotes_brackets() {
 		$s = $this->settings;
-		$quote_styles = array(
+		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
 			'doubleLow9',
@@ -577,7 +549,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
-		);
+		];
 
 		foreach ( $quote_styles as $primary_style ) {
 			$s->set_smart_quotes_primary( $primary_style );
@@ -588,30 +560,30 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 				$comp = \PHPUnit\Framework\Assert::readAttribute( $s, 'components' );
 
 				$this->assertSmartQuotesStyle( $secondary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
 				$this->assertSmartQuotesStyle( $secondary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
 				$this->assertSmartQuotesStyle( $secondary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
 				$this->assertSmartQuotesStyle( $secondary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
 
 				$this->assertSmartQuotesStyle( $primary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['["'] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['"]'] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['["'] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"]'] )[0] );
 				$this->assertSmartQuotesStyle( $primary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['("'] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['")'] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['("'] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['")'] )[0] );
 				$this->assertSmartQuotesStyle( $primary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['{"'] )[1],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']['"}'] )[0] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['{"'] )[1],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"}'] )[0] );
 				$this->assertSmartQuotesStyle( $primary_style,
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
-											   \PHP_Typography\mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
+											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
 			}
 		}
 	}
@@ -626,78 +598,78 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	private function assertSmartQuotesStyle( $style, $open, $close ) {
 		switch ( $style ) {
 			case 'doubleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurled':
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurledReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9Reversed':
-				$this->assertSame( \PHP_Typography\uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ) . Strings::uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 160 ) . Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemets':
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemetsReversed':
-				$this->assertSame( \PHP_Typography\uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'cornerBrackets':
-				$this->assertSame( \PHP_Typography\uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'whiteCornerBracket':
-				$this->assertSame( \PHP_Typography\uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( \PHP_Typography\uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			default:
@@ -821,9 +793,9 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertContains( 'bâr', $s['diacriticCustomReplacements'] );
 		$this->assertContains( 'hä', $s['diacriticCustomReplacements'] );
 
-		$s->set_diacritic_custom_replacements( array(
+		$s->set_diacritic_custom_replacements( [
 			'fööbar' => 'fúbar',
-		) );
+		] );
 		$this->assertArrayNotHasKey( 'foo', $s['diacriticCustomReplacements'] );
 		$this->assertArrayNotHasKey( 'bar', $s['diacriticCustomReplacements'] );
 		$this->assertArrayHasKey( 'fööbar', $s['diacriticCustomReplacements'] );
@@ -954,7 +926,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::update_unit_pattern
 	 */
 	public function test_set_units() {
-		$units_as_array = array( 'foo', 'bar', 'xx/yy' );
+		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
 		$units_as_string = implode( ', ', $units_as_array );
 
 		$this->settings->set_units( $units_as_array );
@@ -962,7 +934,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertContains( $unit, $this->settings['units'] );
 		}
 
-		$this->settings->set_units( array() );
+		$this->settings->set_units( [] );
 		foreach ( $units_as_array as $unit ) {
 			$this->assertNotContains( $unit, $this->settings['units'] );
 		}
@@ -1170,7 +1142,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @covers ::set_initial_quote_tags
 	 */
 	public function test_set_initial_quote_tags() {
-		$tags_as_array = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' );
+		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
@@ -1178,7 +1150,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 			$this->assertArrayHasKey( $tag, $this->settings['initialQuoteTags'] );
 		}
 
-		$this->settings->set_initial_quote_tags( array() );
+		$this->settings->set_initial_quote_tags( [] );
 		foreach ( $tags_as_array as $tag ) {
 			$this->assertArrayNotHasKey( $tag, $this->settings['initialQuoteTags'] );
 		}
@@ -1208,12 +1180,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenation_language_data() {
-		return array(
-			array( 'en-US',  true ),
-			array( 'foobar', false ),
-			array( 'no',     true ),
-			array( 'de',     true ),
-		);
+		return [
+			[ 'en-US',  true ],
+			[ 'foobar', false ],
+			[ 'no',     true ],
+			[ 'de',     true ],
+		];
 	}
 
 	/**
@@ -1231,7 +1203,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$s = $this->settings;
-		$s['hyphenationExceptions'] = array(); // necessary for full coverage.
+		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		$s->set_hyphenation_language( $lang );
 
@@ -1259,7 +1231,7 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_hyphenation_language_again( $lang, $success ) {
 		$s = $this->settings;
-		$s['hyphenationExceptions'] = array(); // necessary for full coverage.
+		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		for ( $i = 0; $i < 2; ++$i ) {
 			$s->set_hyphenation_language( $lang );
@@ -1392,12 +1364,12 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_hyphenation_exceptions_array() {
 		$s = $this->settings;
 
-		$exceptions = array( 'Hu-go', 'Fö-ba-ß' );
+		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$s->set_hyphenation_exceptions( $exceptions );
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
 
-		$exceptions = array( 'bar-foo' );
+		$exceptions = [ 'bar-foo' ];
 		$s->set_hyphenation_exceptions( $exceptions );
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 1, $s['hyphenationCustomExceptions'] );
@@ -1449,19 +1421,19 @@ class Settings_Test extends \PHPUnit\Framework\TestCase {
 
 		$s->set_true_no_break_narrow_space(); // defaults to false.
 		$chr = $s->get_named_characters();
-		$this->assertSame( $chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 160 ) );
-		$this->assertAttributeContains( array(
-			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 160 ),
-			'close' => \PHP_Typography\uchr( 160 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		$this->assertSame( $chr['noBreakNarrowSpace'], Strings::uchr( 160 ) );
+		$this->assertAttributeContains( [
+			'open'  => Strings::uchr( 171 ) . Strings::uchr( 160 ),
+			'close' => Strings::uchr( 160 ) . Strings::uchr( 187 ),
+		], 'quote_styles', $s );
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
 		$chr = $s->get_named_characters();
-		$this->assertSame( $chr['noBreakNarrowSpace'], \PHP_Typography\uchr( 8239 ) );
-		$this->assertAttributeContains( array(
-			'open'  => \PHP_Typography\uchr( 171 ) . \PHP_Typography\uchr( 8239 ),
-			'close' => \PHP_Typography\uchr( 8239 ) . \PHP_Typography\uchr( 187 ),
-		), 'quote_styles', $s );
+		$this->assertSame( $chr['noBreakNarrowSpace'], Strings::uchr( 8239 ) );
+		$this->assertAttributeContains( [
+			'open'  => Strings::uchr( 171 ) . Strings::uchr( 8239 ),
+			'close' => Strings::uchr( 8239 ) . Strings::uchr( 187 ),
+		], 'quote_styles', $s );
 	}
 
 

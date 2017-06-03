@@ -28,11 +28,6 @@
 namespace PHP_Typography;
 
 /**
- * A few utility functions.
- */
-require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
-
-/**
  * Store settings for the PHP_Typography class.
  *
  *  @author Peter Putzer <github@mundschenk.at>
@@ -44,93 +39,63 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @var array
 	 */
-	protected $chr = array();
+	protected $chr = [];
 
 	/**
 	 * A hashmap of settings for the various typographic options.
 	 *
 	 * @var array
 	 */
-	protected $data = array();
+	protected $data = [];
 
 	/**
 	 * An array containing all self-closing HTML5 tags.
 	 *
 	 * @var array
 	 */
-	protected $self_closing_tags = array();
+	protected $self_closing_tags = [];
 
 	/**
 	 * A array of tags we should never touch.
 	 *
 	 * @var array
 	 */
-	protected $inappropriate_tags = array();
-
-	/**
-	 * An array of encodings in detection order.
-	 *
-	 * @var array
-	 */
-	protected $encodings = array( 'ASCII', 'UTF-8' );
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 *
-	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
-	 */
-	protected $str_functions = array(
-		'UTF-8' => array(
-			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u', // unicode flag for regex.
-		),
-		'ASCII' => array(
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '', // no regex flag needed.
-		),
-		false   => array(),
-	);
+	protected $inappropriate_tags = [];
 
 	/**
 	 * An array of various regex components (not complete patterns).
 	 *
 	 * @var array $components
 	 */
-	protected $components = array();
+	protected $components = [];
 
 	/**
 	 * An array of regex patterns.
 	 *
 	 * @var array $regex
 	 */
-	protected $regex = array();
+	protected $regex = [];
 
 	/**
 	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	protected $quote_styles = array();
+	protected $quote_styles = [];
 
 	/**
 	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
 	 *
 	 * @var array
 	 */
-	protected $dash_styles = array();
+	protected $dash_styles = [];
 
 	/**
 	 * An array in the form of [ '$tag' => true ]
 	 *
 	 * @var array
 	 */
-	protected $block_tags = array();
+	protected $block_tags = [];
 
 	/**
 	 * Sets up a new Settings object.
@@ -138,14 +103,6 @@ class Settings implements \ArrayAccess {
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	function __construct( $set_defaults = true ) {
-
-		// ASCII has to be first to have chance at detection.
-		mb_detect_order( $this->encodings );
-
-		// Not sure if this is necessary - but error_log seems to have problems with the strings.
-		// Used as the default encoding for mb_* functions.
-		$encoding_set = mb_internal_encoding( 'UTF-8' );
-
 		$this->init( $set_defaults );
 	}
 
@@ -311,128 +268,128 @@ class Settings implements \ArrayAccess {
 	private function init( $set_defaults = true ) {
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
-		} ) + array( 'li', 'td', 'dt' ) ); // not included as "block tags" in current HTML5-PHP version.
+		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
 
-		$this->chr['noBreakSpace']            = uchr( 160 );
-		$this->chr['noBreakNarrowSpace']      = uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
-		$this->chr['copyright']               = uchr( 169 );
-		$this->chr['guillemetOpen']           = uchr( 171 );
-		$this->chr['softHyphen']              = uchr( 173 );
-		$this->chr['registeredMark']          = uchr( 174 );
-		$this->chr['guillemetClose']          = uchr( 187 );
-		$this->chr['multiplication']          = uchr( 215 );
-		$this->chr['division']                = uchr( 247 );
-		$this->chr['figureSpace']             = uchr( 8199 );
-		$this->chr['thinSpace']               = uchr( 8201 );
-		$this->chr['hairSpace']               = uchr( 8202 );
-		$this->chr['zeroWidthSpace']          = uchr( 8203 );
-		$this->chr['hyphen']                  = '-';          // should be uchr(8208), but IE6 chokes.
-		$this->chr['noBreakHyphen']           = uchr( 8209 );
-		$this->chr['enDash']                  = uchr( 8211 );
-		$this->chr['emDash']                  = uchr( 8212 );
-		$this->chr['parentheticalDash']       = uchr( 8212 ); // defined separate from emDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['intervalDash']            = uchr( 8211 ); // defined separate from enDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['parentheticalDashSpace']  = uchr( 8201 );
-		$this->chr['intervalDashSpace']       = uchr( 8201 );
-		$this->chr['singleQuoteOpen']         = uchr( 8216 );
-		$this->chr['singleQuoteClose']        = uchr( 8217 );
-		$this->chr['apostrophe']              = uchr( 8217 ); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
-		$this->chr['singleLow9Quote']         = uchr( 8218 );
-		$this->chr['doubleQuoteOpen']         = uchr( 8220 );
-		$this->chr['doubleQuoteClose']        = uchr( 8221 );
-		$this->chr['doubleLow9Quote']         = uchr( 8222 );
-		$this->chr['ellipses']                = uchr( 8230 );
-		$this->chr['singlePrime']             = uchr( 8242 );
-		$this->chr['doublePrime']             = uchr( 8243 );
-		$this->chr['singleAngleQuoteOpen']    = uchr( 8249 );
-		$this->chr['singleAngleQuoteClose']   = uchr( 8250 );
-		$this->chr['fractionSlash']           = uchr( 8260 );
-		$this->chr['soundCopyMark']           = uchr( 8471 );
-		$this->chr['serviceMark']             = uchr( 8480 );
-		$this->chr['tradeMark']               = uchr( 8482 );
-		$this->chr['minus']                   = uchr( 8722 );
-		$this->chr['leftCornerBracket']       = uchr( 12300 );
-		$this->chr['rightCornerBracket']      = uchr( 12301 );
-		$this->chr['leftWhiteCornerBracket']  = uchr( 12302 );
-		$this->chr['rightWhiteCornerBracket'] = uchr( 12303 );
+		$this->chr['noBreakSpace']            = Strings::uchr( 160 );
+		$this->chr['noBreakNarrowSpace']      = Strings::uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
+		$this->chr['copyright']               = Strings::uchr( 169 );
+		$this->chr['guillemetOpen']           = Strings::uchr( 171 );
+		$this->chr['softHyphen']              = Strings::uchr( 173 );
+		$this->chr['registeredMark']          = Strings::uchr( 174 );
+		$this->chr['guillemetClose']          = Strings::uchr( 187 );
+		$this->chr['multiplication']          = Strings::uchr( 215 );
+		$this->chr['division']                = Strings::uchr( 247 );
+		$this->chr['figureSpace']             = Strings::uchr( 8199 );
+		$this->chr['thinSpace']               = Strings::uchr( 8201 );
+		$this->chr['hairSpace']               = Strings::uchr( 8202 );
+		$this->chr['zeroWidthSpace']          = Strings::uchr( 8203 );
+		$this->chr['hyphen']                  = '-';          // should be Strings::uchr(8208), but IE6 chokes.
+		$this->chr['noBreakHyphen']           = Strings::uchr( 8209 );
+		$this->chr['enDash']                  = Strings::uchr( 8211 );
+		$this->chr['emDash']                  = Strings::uchr( 8212 );
+		$this->chr['parentheticalDash']       = Strings::uchr( 8212 ); // defined separate from emDash so it can be redefined in set_smart_dashes_style.
+		$this->chr['intervalDash']            = Strings::uchr( 8211 ); // defined separate from enDash so it can be redefined in set_smart_dashes_style.
+		$this->chr['parentheticalDashSpace']  = Strings::uchr( 8201 );
+		$this->chr['intervalDashSpace']       = Strings::uchr( 8201 );
+		$this->chr['singleQuoteOpen']         = Strings::uchr( 8216 );
+		$this->chr['singleQuoteClose']        = Strings::uchr( 8217 );
+		$this->chr['apostrophe']              = Strings::uchr( 8217 ); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
+		$this->chr['singleLow9Quote']         = Strings::uchr( 8218 );
+		$this->chr['doubleQuoteOpen']         = Strings::uchr( 8220 );
+		$this->chr['doubleQuoteClose']        = Strings::uchr( 8221 );
+		$this->chr['doubleLow9Quote']         = Strings::uchr( 8222 );
+		$this->chr['ellipses']                = Strings::uchr( 8230 );
+		$this->chr['singlePrime']             = Strings::uchr( 8242 );
+		$this->chr['doublePrime']             = Strings::uchr( 8243 );
+		$this->chr['singleAngleQuoteOpen']    = Strings::uchr( 8249 );
+		$this->chr['singleAngleQuoteClose']   = Strings::uchr( 8250 );
+		$this->chr['fractionSlash']           = Strings::uchr( 8260 );
+		$this->chr['soundCopyMark']           = Strings::uchr( 8471 );
+		$this->chr['serviceMark']             = Strings::uchr( 8480 );
+		$this->chr['tradeMark']               = Strings::uchr( 8482 );
+		$this->chr['minus']                   = Strings::uchr( 8722 );
+		$this->chr['leftCornerBracket']       = Strings::uchr( 12300 );
+		$this->chr['rightCornerBracket']      = Strings::uchr( 12301 );
+		$this->chr['leftWhiteCornerBracket']  = Strings::uchr( 12302 );
+		$this->chr['rightWhiteCornerBracket'] = Strings::uchr( 12303 );
 
-		$this->quote_styles = array(
-			'doubleCurled'             => array(
-				'open'  => uchr( 8220 ),
-				'close' => uchr( 8221 ),
-			),
-			'doubleCurledReversed'     => array(
-				'open'  => uchr( 8221 ),
-				'close' => uchr( 8221 ),
-			),
-			'doubleLow9'               => array(
+		$this->quote_styles = [
+			'doubleCurled'             => [
+				'open'  => Strings::uchr( 8220 ),
+				'close' => Strings::uchr( 8221 ),
+			],
+			'doubleCurledReversed'     => [
+				'open'  => Strings::uchr( 8221 ),
+				'close' => Strings::uchr( 8221 ),
+			],
+			'doubleLow9'               => [
 				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => uchr( 8221 ),
-			),
-			'doubleLow9Reversed'       => array(
+				'close' => Strings::uchr( 8221 ),
+			],
+			'doubleLow9Reversed'       => [
 				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => uchr( 8220 ),
-			),
-			'singleCurled'             => array(
-				'open'  => uchr( 8216 ),
-				'close' => uchr( 8217 ),
-			),
-			'singleCurledReversed'     => array(
-				'open'  => uchr( 8217 ),
-				'close' => uchr( 8217 ),
-			),
-			'singleLow9'               => array(
+				'close' => Strings::uchr( 8220 ),
+			],
+			'singleCurled'             => [
+				'open'  => Strings::uchr( 8216 ),
+				'close' => Strings::uchr( 8217 ),
+			],
+			'singleCurledReversed'     => [
+				'open'  => Strings::uchr( 8217 ),
+				'close' => Strings::uchr( 8217 ),
+			],
+			'singleLow9'               => [
 				'open'  => $this->chr['singleLow9Quote'],
-				'close' => uchr( 8217 ),
-			),
-			'singleLow9Reversed'       => array(
+				'close' => Strings::uchr( 8217 ),
+			],
+			'singleLow9Reversed'       => [
 				'open'  => $this->chr['singleLow9Quote'],
-				'close' => uchr( 8216 ),
-			),
-			'doubleGuillemetsFrench'   => array(
+				'close' => Strings::uchr( 8216 ),
+			],
+			'doubleGuillemetsFrench'   => [
 				'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
 				'close' => $this->chr['noBreakNarrowSpace'] . $this->chr['guillemetClose'],
-			),
-			'doubleGuillemets'         => array(
+			],
+			'doubleGuillemets'         => [
 				'open'  => $this->chr['guillemetOpen'],
 				'close' => $this->chr['guillemetClose'],
-			),
-			'doubleGuillemetsReversed' => array(
+			],
+			'doubleGuillemetsReversed' => [
 				'open'  => $this->chr['guillemetClose'],
 				'close' => $this->chr['guillemetOpen'],
-			),
-			'singleGuillemets'         => array(
+			],
+			'singleGuillemets'         => [
 				'open'  => $this->chr['singleAngleQuoteOpen'],
 				'close' => $this->chr['singleAngleQuoteClose'],
-			),
-			'singleGuillemetsReversed' => array(
+			],
+			'singleGuillemetsReversed' => [
 				'open'  => $this->chr['singleAngleQuoteClose'],
 				'close' => $this->chr['singleAngleQuoteOpen'],
-			),
-			'cornerBrackets'           => array(
+			],
+			'cornerBrackets'           => [
 				'open'  => $this->chr['leftCornerBracket'],
 				'close' => $this->chr['rightCornerBracket'],
-			),
-			'whiteCornerBracket'       => array(
+			],
+			'whiteCornerBracket'       => [
 				'open'  => $this->chr['leftWhiteCornerBracket'],
 				'close' => $this->chr['rightWhiteCornerBracket'],
-			),
-		);
+			],
+		];
 
-		$this->dash_styles = array(
-			'traditionalUS'        => array(
+		$this->dash_styles = [
+			'traditionalUS'        => [
 				'parenthetical'      => $this->chr['emDash'],
 				'interval'           => $this->chr['enDash'],
 				'parentheticalSpace' => $this->chr['thinSpace'],
 				'intervalSpace'      => $this->chr['thinSpace'],
-			),
-			'international'        => array(
+			],
+			'international'        => [
 				'parenthetical'      => $this->chr['enDash'],
 				'interval'           => $this->chr['enDash'],
 				'parentheticalSpace' => ' ',
 				'intervalSpace'      => $this->chr['hairSpace'],
-			),
-		);
+			],
+		];
 
 		// All other encodings get the empty array.
 		// Set up regex patterns.
@@ -443,7 +400,7 @@ class Settings implements \ArrayAccess {
 		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
 		} );
-		$this->inappropriate_tags = array( 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' );
+		$this->inappropriate_tags = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' ];
 
 		if ( $set_defaults ) {
 			$this->set_defaults();
@@ -628,7 +585,7 @@ class Settings implements \ArrayAccess {
 			%|pi|M?px|em|en|[NSEOW]|[NS][EOW]|mbar
 		'; // required modifiers: x (multiline pattern).
 
-		$this->components['hyphensArray'] = array_unique( array( '-', $this->chr['hyphen'] ) );
+		$this->components['hyphensArray'] = array_unique( [ '-', $this->chr['hyphen'] ] );
 		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
 
 		$this->components['numbersPrime'] = '\b(?:\d+\/)?\d{1,3}';
@@ -740,7 +697,7 @@ class Settings implements \ArrayAccess {
 			\Z
 		)"; // required modifiers: x (multiline pattern) i (case insensitive).
 
-		$this->components['smartQuotesApostropheExceptions'] = array(
+		$this->components['smartQuotesApostropheExceptions'] = [
 			"'tain" . $this->chr['apostrophe'] . 't' => $this->chr['apostrophe'] . 'tain' . $this->chr['apostrophe'] . 't',
 			"'twere"                             => $this->chr['apostrophe'] . 'twere',
 			"'twas"                              => $this->chr['apostrophe'] . 'twas',
@@ -751,7 +708,7 @@ class Settings implements \ArrayAccess {
 			"'round"                             => $this->chr['apostrophe'] . 'round',
 			"'cause"                             => $this->chr['apostrophe'] . 'cause',
 			"'splainin"                          => $this->chr['apostrophe'] . 'splainin',
-		);
+		];
 		$this->components['smartQuotesApostropheExceptionMatches']      = array_keys( $this->components['smartQuotesApostropheExceptions'] );
 		$this->components['smartQuotesApostropheExceptionReplacements'] = array_values( $this->components['smartQuotesApostropheExceptions'] );
 
@@ -802,7 +759,7 @@ class Settings implements \ArrayAccess {
 	 * @return string A list of top-level domains concatenated with '|'.
 	 */
 	function get_top_level_domains_from_file( $path ) {
-		$domains = array();
+		$domains = [];
 
 		if ( file_exists( $path ) ) {
 			$file = new \SplFileObject( $path );
@@ -1103,7 +1060,7 @@ class Settings implements \ArrayAccess {
 				)
 			/xu";
 
-		$year_regex = array();
+		$year_regex = [];
 		for ( $year = 1900; $year < 2100; ++$year ) {
 			$year_regex[] = "(?: ( $year ) (\s?\/\s?{$this->chr['zeroWidthSpace']}?) ( " . ( $year + 1 ) . ' ) )';
 		}
@@ -1165,7 +1122,7 @@ class Settings implements \ArrayAccess {
 
 		// Unit spacing.
 		$this->regex['unitSpacingEscapeSpecialChars'] = '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#';
-		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : array() );
+		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : [] );
 
 		// French punctuation spacing.
 		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
@@ -1265,16 +1222,16 @@ class Settings implements \ArrayAccess {
 	function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
-			$this->chr['noBreakNarrowSpace'] = uchr( 8239 );
+			$this->chr['noBreakNarrowSpace'] = Strings::uchr( 8239 );
 		} else {
-			$this->chr['noBreakNarrowSpace'] = uchr( 160 );
+			$this->chr['noBreakNarrowSpace'] = Strings::uchr( 160 );
 		}
 
 		// Update French guillemets.
-		$this->quote_styles['doubleGuillemetsFrench'] = array(
+		$this->quote_styles['doubleGuillemetsFrench'] = [
 			'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
 			'close' => $this->chr['noBreakNarrowSpace'] . $this->chr['guillemetClose'],
-		);
+		];
 	}
 
 	/**
@@ -1282,7 +1239,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
-	function set_tags_to_ignore( $tags = array( 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ) ) {
+	function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
 		if ( ! is_array( $tags ) ) {
 			$tags = preg_split( $this->regex['parameterSplitting'], $tags, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1299,7 +1256,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $classes A comma separated list or an array of class names.
 	 */
-	 function set_classes_to_ignore( $classes = array( 'vcard', 'noTypo' ) ) {
+	 function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
 		if ( ! is_array( $classes ) ) {
 			$classes = preg_split( $this->regex['parameterSplitting'], $classes, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1311,7 +1268,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $ids A comma separated list or an array of tag names.
 	 */
-	function set_ids_to_ignore( $ids = array() ) {
+	function set_ids_to_ignore( $ids = [] ) {
 		if ( ! is_array( $ids ) ) {
 			$ids = preg_split( $this->regex['parameterSplitting'], $ids, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1501,15 +1458,15 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Sets up custom diacritics replacements.
 	 *
-	 * @param string|array $custom_replacements An array formatted array(needle=>replacement, needle=>replacement...),
+	 * @param string|array $custom_replacements An array formatted [needle=>replacement, needle=>replacement...],
 	 *                                          or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
-	function set_diacritic_custom_replacements( $custom_replacements = array() ) {
+	function set_diacritic_custom_replacements( $custom_replacements = [] ) {
 		if ( ! is_array( $custom_replacements ) ) {
 			$custom_replacements = preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
-		$replacements = array();
+		$replacements = [];
 		foreach ( $custom_replacements as $custom_key => $custom_replacement ) {
 			// Account for single and double quotes.
 			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $custom_replacement, $double_quote_key_match );
@@ -1549,8 +1506,8 @@ class Settings implements \ArrayAccess {
 	 * when the custom replacements are updated.
 	 */
 	private function update_diacritics_replacement_arrays() {
-		$patterns = array();
-		$replacements = array();
+		$patterns = [];
+		$replacements = [];
 
 		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
 			foreach ( $this->data['diacriticCustomReplacements'] as $needle => $replacement ) {
@@ -1565,10 +1522,10 @@ class Settings implements \ArrayAccess {
 			}
 		}
 
-		$this->data['diacriticReplacement'] = array(
+		$this->data['diacriticReplacement'] = [
 			'patterns'     => $patterns,
 			'replacements' => $replacements,
-		);
+		];
 	}
 
 	/**
@@ -1657,7 +1614,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $units A comma separated list or an array of units.
 	 */
-	function set_units( $units = array() ) {
+	function set_units( $units = [] ) {
 		if ( ! is_array( $units ) ) {
 			$units = preg_split( $this->regex['parameterSplitting'], $units, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1820,7 +1777,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
-	function set_initial_quote_tags( $tags = array( 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ) ) {
+	function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
 		// Make array if handed a list of tags as a string.
 		if ( ! is_array( $tags ) ) {
 			$tags = preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
@@ -1927,7 +1884,7 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $exceptions An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
 	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
 	 */
-	function set_hyphenation_exceptions( $exceptions = array() ) {
+	function set_hyphenation_exceptions( $exceptions = [] ) {
 		if ( ! is_array( $exceptions ) ) {
 			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}

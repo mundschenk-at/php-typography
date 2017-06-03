@@ -56,7 +56,7 @@ $iterations = 100;
 
 $startTime = microtime( true );
 for ( $i = 0; $i < $iterations; ++$i ) {
-	$php_typo->set_hyphenation_exceptions( array('foo-bar', 'pre-pro-ces-sor', 'fo-ll-o-w-i-ng') );
+	$php_typo->set_hyphenation_exceptions( ['foo-bar', 'pre-pro-ces-sor', 'fo-ll-o-w-i-ng'] );
 	$php_typo->process( $testHTML, false );
 }
 $endTime = microtime( true );

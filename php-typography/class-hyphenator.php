@@ -28,11 +28,6 @@
 namespace PHP_Typography;
 
 /**
- * A few utility functions.
- */
-require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
-
-/**
  * Hyphenates tokenized text.
  *
  * If used with multibyte language, UTF-8 encoding is required.
@@ -90,43 +85,12 @@ class Hyphenator {
 	protected $language;
 
 	/**
-	 * An array of encodings in detection order.
-	 *
-	 * @var array
-	 */
-	private $encodings = array( 'ASCII', 'UTF-8' );
-
-	/**
-	 * A hash map for string functions according to encoding.
-	 * Initialized in the constructor for compatibility with PHP 5.3.
-	 *
-	 * @var array $encoding => array( 'strlen' => $function_name, ... ).
-	 */
-	private $str_functions = array(
-		'UTF-8' => array(
-			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\mb_str_split',
-			'strtolower' => 'mb_strtolower',
-			'substr'     => 'mb_substr',
-			'u'          => 'u',
-		),
-		'ASCII' => array(
-			'strlen'     => 'strlen',
-			'str_split'  => 'str_split',
-			'strtolower' => 'strtolower',
-			'substr'     => 'substr',
-			'u'          => '',
-		),
-		false   => array(),
-	);
-
-	/**
 	 * Constructs new Hyphenator instance.
 	 *
 	 * @param string $language   Optional. Short-form language name. Default null.
 	 * @param array  $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
-	public function __construct( $language = null, array $exceptions = array() ) {
+	public function __construct( $language = null, array $exceptions = [] ) {
 
 		if ( ! empty( $language ) ) {
 			$this->set_language( $language );
@@ -144,23 +108,23 @@ class Hyphenator {
 	 *                                 of such words). In the latter case, only alphanumeric characters and hyphens are recognized.
 	 *                                 Default empty array.
 	 */
-	public function set_custom_exceptions( array $exceptions = array() ) {
+	public function set_custom_exceptions( array $exceptions = [] ) {
 		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
 			return; // Nothing to do at all.
 		}
 
 		// Calculate hash & check against previous exceptions.
-		$new_hash = get_object_hash( $exceptions );
+		$new_hash = self::get_object_hash( $exceptions );
 		if ( $this->custom_exceptions_hash === $new_hash ) {
 			return; // No need to update exceptions.
 		}
 
 		// Do our thing.
-		$exception_keys = array();
-		$func = array();
+		$exception_keys = [];
+		$func = [];
 		foreach ( $exceptions as $exception ) {
-			$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+			$func = Strings::functions( $exception );
+			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.
 			}
 
@@ -174,6 +138,17 @@ class Hyphenator {
 
 		// Force remerging of patgen and custom exception patterns.
 		$this->merged_exception_patterns = null;
+	}
+
+	/**
+	 * Calculates binary-safe hash from data object.
+	 *
+	 * @param mixed $object Any datatype.
+	 *
+	 * @return string
+	 */
+	protected static function get_object_hash( $object ) {
+		return md5( json_encode( $object ), false );
 	}
 
 	/**
@@ -232,23 +207,23 @@ class Hyphenator {
 	 */
 	protected function build_trie( array $patterns ) {
 		$node = null;
-		$trie = array();
+		$trie = [];
 
 		foreach ( $patterns as $key => $pattern ) {
 			$node = &$trie;
 
-			foreach ( mb_str_split( $key ) as $char ) {
+			foreach ( Strings::mb_str_split( $key ) as $char ) {
 				if ( ! isset( $node[ $char ] ) ) {
-					$node[ $char ] = array();
+					$node[ $char ] = [];
 				}
 				$node = &$node[ $char ];
 			}
 
 			preg_match_all( '/([1-9])/', $pattern, $offsets, PREG_OFFSET_CAPTURE );
 
-			$node['_pattern'] = array(
+			$node['_pattern'] = [
 				'offsets' => $offsets[1],
-			);
+			];
 		}
 
 		return $trie;
@@ -276,10 +251,10 @@ class Hyphenator {
 			$this->merge_hyphenation_exceptions();
 		}
 
-		$func = array(); // quickly reference string functions according to encoding.
+		$func = []; // quickly reference string functions according to encoding.
 		foreach ( $parsed_text_tokens as &$text_token ) {
-			$func = $this->str_functions[ mb_detect_encoding( $text_token['value'], $this->encodings, true ) ];
-			if ( empty( $func ) || empty( $func['strlen'] ) ) {
+			$func = Strings::functions( $text_token['value'] );
+			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.
 			}
 
@@ -307,7 +282,7 @@ class Hyphenator {
 				$search        = '_' . $the_key . '_';
 				$search_length = $func['strlen']( $search );
 				$chars         = $func['str_split']( $search );
-				$word_pattern  = array();
+				$word_pattern  = [];
 
 				for ( $start = 0; $start < $search_length; ++$start ) {
 					// Start from the trie root node.
@@ -340,7 +315,7 @@ class Hyphenator {
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
+				if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
 					$hyphenated_word .= $hyphen . $word_parts[ $i ];
 				} else {
 					$hyphenated_word .= $word_parts[ $i ];
@@ -359,7 +334,7 @@ class Hyphenator {
 	 * generates patterns for all of them.
 	 */
 	function merge_hyphenation_exceptions() {
-		$exceptions = array();
+		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
 		if ( ! empty( $this->pattern_exceptions ) && ! empty( $this->custom_exceptions ) ) {
@@ -371,7 +346,7 @@ class Hyphenator {
 		}
 
 		// Update patterns as well.
-		$exception_patterns = array();
+		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
 			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
 		}
@@ -386,8 +361,8 @@ class Hyphenator {
 	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
 	function convert_hyphenation_exception_to_pattern( $exception ) {
-		$func = $this->str_functions[ mb_detect_encoding( $exception, $this->encodings, true ) ];
-		if ( empty( $func ) || empty( $func['strlen'] ) ) {
+		$func = Strings::functions( $exception );
+		if ( empty( $func ) ) {
 			return; // unknown encoding, abort.
 		}
 
@@ -395,7 +370,7 @@ class Hyphenator {
 		$lowercase_hyphened_word_parts  = $func['str_split']( $exception, 1 );
 		$lowercase_hyphened_word_length = $func['strlen']( $exception );
 
-		$word_pattern = array();
+		$word_pattern = [];
 		$index = 0;
 
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
@@ -407,5 +382,16 @@ class Hyphenator {
 		}
 
 		return $word_pattern;
+	}
+
+	/**
+	 * Is a number odd?
+	 *
+	 * @param ubt $number Required.
+	 *
+	 * @return boolean true if $number is odd, false if it is even.
+	 */
+	private static function is_odd( $number ) {
+		return (boolean) ( $number % 2 );
 	}
 }

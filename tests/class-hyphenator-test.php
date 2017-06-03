@@ -22,6 +22,8 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
 /**
  * Test Hyphenator class.
  *
@@ -30,7 +32,7 @@
  *
  * @uses PHP_Typography\Hyphenator
  */
-class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
+class Hyphenator_Test extends PHP_Typography_Testcase {
 	/**
 	 * Hyphenator fixture.
 	 *
@@ -54,104 +56,6 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Helper function to generate a valid token list from strings.
-	 *
-	 * @param string $value Token value.
-	 * @param string $type  Optional. Token type. Default 'word'.
-	 *
-	 * @return array
-	 */
-	protected function tokenize( $value, $type = 'word' ) {
-		return array(
-			array(
-				'type'  => $type,
-				'value' => $value,
-			),
-		);
-	}
-
-	/**
-	 * Helper function to generate a valid word token list from strings.
-	 *
-	 * @param string $value Token value.
-	 *
-	 * @return array
-	 */
-	protected function tokenize_sentence( $value ) {
-		$words = explode( ' ', $value );
-		$tokens = array();
-
-		foreach ( $words as $word ) {
-			$tokens[] = array(
-				'type'  => 'word',
-				'value' => $word,
-			);
-		}
-
-		return $tokens;
-	}
-
-	/**
-	 * Reports an error identified by $message if the combined token values differ from the expected value.
-	 *
-	 * @param string $expected_value Either a word or sentence.
-	 * @param array  $actual_tokens  A token array.
-	 * @param string $message        Optional. Default ''.
-	 */
-	protected function assertTokensSame( $expected_value, $actual_tokens, $message = '' ) {
-		foreach ( $actual_tokens as $index => $token ) {
-			$actual_tokens[ $index ]['value'] = clean_html( $actual_tokens[ $index ]['value'] );
-		}
-
-		if ( false !== strpos( $expected_value, ' ' ) ) {
-			$expected = $this->tokenize_sentence( $expected_value );
-		} else {
-			$expected = $this->tokenize( $expected_value );
-		}
-
-		$this->assertSame( count( $expected ), count( $actual_tokens ) );
-
-		foreach ( $actual_tokens as $key => $token ) {
-			$this->assertSame( $expected[ $key ]['value'], $token['value'], $message );
-		}
-
-		return true;
-	}
-
-	/**
-	 * Reports an error identified by $message if $attribute in $object does not have the $key.
-	 *
-	 * @param string $key       The array key.
-	 * @param string $attribute The attribute name.
-	 * @param object $object    The object.
-	 * @param string $message   Optional. Default ''.
-	 */
-	protected function assertAttributeArrayHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref = new ReflectionClass( get_class( $object ) );
-		$prop = $ref->getProperty( $attribute );
-		$prop->setAccessible( true );
-
-		return $this->assertArrayHasKey( $key, $prop->getValue( $object ), $message );
-	}
-
-	/**
-	 * Reports an error identified by $message if $attribute in $object does have the $key.
-	 *
-	 * @param string $key       The array key.
-	 * @param string $attribute The attribute name.
-	 * @param object $object    The object.
-	 * @param string $message   Optional. Default ''.
-	 */
-	protected function assertAttributeArrayNotHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref = new ReflectionClass( get_class( $object ) );
-		$prop = $ref->getProperty( $attribute );
-		$prop->setAccessible( true );
-
-		return $this->assertArrayNotHasKey( $key, $prop->getValue( $object ), $message );
-	}
-
-
-	/**
 	 * Tests __construct.
 	 *
 	 * @covers ::__construct
@@ -165,7 +69,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertNotNull( $h );
 		$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h );
 
-		$h2 = new \PHP_Typography\Hyphenator( 'en-US', array( 'foo-bar' ) );
+		$h2 = new \PHP_Typography\Hyphenator( 'en-US', [ 'foo-bar' ] );
 		$this->assertNotNull( $h2 );
 		$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h2 );
 		$this->assertAttributeSame( 'en-US', 'language', $h2 );
@@ -212,9 +116,9 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	public function test_set_language_with_custom_exceptions() {
 		$h = $this->h;
 
-		$h->set_custom_exceptions( array(
+		$h->set_custom_exceptions( [
 			'KINGdesk' => 'KING-desk',
-		) );
+		] );
 		$h->set_language( 'en-US' );
 		$h->merge_hyphenation_exceptions();
 		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
@@ -250,10 +154,10 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	function provide_set_custom_exceptions_data() {
-		return array(
-			array( array( 'Hu-go', 'Fö-ba-ß' ), 2, 2 ),
-			array( array(),                     0, 2 ),
-		);
+		return [
+			[ [ 'Hu-go', 'Fö-ba-ß' ], 2, 2 ],
+			[ [],                     0, 2 ],
+		];
 	}
 
 	/**
@@ -305,13 +209,13 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_custom_exceptions_again() {
 		$h = $this->h;
-		$exceptions = array( 'Hu-go', 'Fö-ba-ß' );
+		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$h->set_custom_exceptions( $exceptions );
 		$h->set_language( 'de' ); // German has no pattern exceptions.
 		$h->merge_hyphenation_exceptions();
 		$this->assertAttributeNotEmpty( 'merged_exception_patterns', $h );
 
-		$exceptions = array( 'Hu-go' );
+		$exceptions = [ 'Hu-go' ];
 		$h->set_custom_exceptions( $exceptions );
 		$this->assertAttributeEmpty( 'merged_exception_patterns', $h );
 
@@ -328,7 +232,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_set_custom_exceptions_unknown_encoding() {
 		$h = $this->h;
-		$exceptions = array( 'Hu-go', mb_convert_encoding( 'Fö-ba-ß', 'ISO-8859-2' ) );
+		$exceptions = [ 'Hu-go', mb_convert_encoding( 'Fö-ba-ß', 'ISO-8859-2' ) ];
 		$h->set_custom_exceptions( $exceptions );
 
 		$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
@@ -343,16 +247,16 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenate_data() {
-		return array(
-			array( 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|al|ly there should be more hy|phen|ation here', 'en-US', true ), // fake tokenizer doesn't split off punctuation.
-			array( 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ),
-			array( 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ), // Compound words would not be hyphenated separately.
-			array( 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', false ),
-			array( 'A', 'A', 'de', true ),
-			array( 'table', 'ta|ble', 'en-US', false ),
-			array( 'KINGdesk', 'KINGdesk', 'en-US', false ),
-			array( 'italienisch', 'ita|lie|nisch', 'de', false ),
-		);
+		return [
+			[ 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|al|ly there should be more hy|phen|ation here', 'en-US', true ], // fake tokenizer doesn't split off punctuation.
+			[ 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ],
+			[ 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ], // Compound words would not be hyphenated separately.
+			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', false ],
+			[ 'A', 'A', 'de', true ],
+			[ 'table', 'ta|ble', 'en-US', false ],
+			[ 'KINGdesk', 'KINGdesk', 'en-US', false ],
+			[ 'italienisch', 'ita|lie|nisch', 'de', false ],
+		];
 	}
 
 	/**
@@ -374,7 +278,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	public function test_hyphenate( $html, $result, $lang, $hyphenate_title_case ) {
 		$h = $this->h;
 		$h->set_language( $lang );
-		$h->set_custom_exceptions( array( 'KING-desk' ) );
+		$h->set_custom_exceptions( [ 'KING-desk' ] );
 
 		$this->assertTokensSame( $result, $h->hyphenate( $this->tokenize_sentence( $html ), '|', $hyphenate_title_case, 2, 2, 2 ) );
 	}
@@ -385,14 +289,14 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	public function provide_hyphenate_with_exceptions_data() {
-		return array(
-			array( 'KINGdesk', 'KING|desk', array( 'KING-desk' ), 'en-US', true ),
-			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array(), 'de', true ),
-			array( 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', array( 'Ge-schäfts-über-nah-me' ), 'de', true ),
-			array( 'Trinkwasserinstallation', 'Trink|was|ser|in|stal|la|ti|on', array(), 'de', true, true, true, false ),
-			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'de', true ),
-			array( 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', array( 'Trink-wasser-in-stal-la-tion' ), 'en-US', true ),
-		);
+		return [
+			[ 'KINGdesk', 'KING|desk', [ 'KING-desk' ], 'en-US', true ],
+			[ 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', [], 'de', true ],
+			[ 'Geschäftsübernahme', 'Ge|sch&auml;fts|&uuml;ber|nah|me', [ 'Ge-schäfts-über-nah-me' ], 'de', true ],
+			[ 'Trinkwasserinstallation', 'Trink|was|ser|in|stal|la|ti|on', [], 'de', true, true, true, false ],
+			[ 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', [ 'Trink-wasser-in-stal-la-tion' ], 'de', true ],
+			[ 'Trinkwasserinstallation', 'Trink|wasser|in|stal|la|tion', [ 'Trink-wasser-in-stal-la-tion' ], 'en-US', true ],
+		];
 	}
 
 	/**
@@ -503,10 +407,10 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 		$this->h->set_language( 'en-US' );
 
 		// Unset some internal stuff.
-		$ref = new ReflectionClass( '\PHP_Typography\Hyphenator' );
+		$ref = new \ReflectionClass( '\PHP_Typography\Hyphenator' );
 		$prop = $ref->getProperty( 'pattern_exceptions' );
 		$prop->setAccessible( true );
-		$prop->setValue( $this->h, array() );
+		$prop->setValue( $this->h, [] );
 		$prop = $ref->getProperty( 'merged_exception_patterns' );
 		$prop->setAccessible( true );
 		$prop->setValue( $this->h, null );
@@ -525,12 +429,12 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_convert_hyphenation_exception_to_pattern() {
 		$h = $this->h;
-		$this->assertSame( array(
+		$this->assertSame( [
 			4 => 9,
-		), $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
-		$this->assertSame( array(
+		], $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
+		$this->assertSame( [
 			2 => 9,
-		), $h->convert_hyphenation_exception_to_pattern( 'ta-ble' ) );
+		], $h->convert_hyphenation_exception_to_pattern( 'ta-ble' ) );
 	}
 
 	/**
@@ -557,7 +461,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_merge_hyphenation_exceptions() {
 		$h = $this->h;
-		$h->set_custom_exceptions( array( 'Hu-go', 'Fä-vi-ken' ) );
+		$h->set_custom_exceptions( [ 'Hu-go', 'Fä-vi-ken' ] );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
 		$h->merge_hyphenation_exceptions();
@@ -574,7 +478,7 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertAttributeArrayHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
-		$h->set_custom_exceptions( array() );
+		$h->set_custom_exceptions( [] );
 		$h->merge_hyphenation_exceptions();
 		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
@@ -585,5 +489,55 @@ class Hyphenator_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertAttributeCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'fäviken', 'merged_exception_patterns', $h );
+	}
+
+	/**
+	 * Provide data for testing is_odd.
+	 *
+	 * @return array
+	 */
+	public function provide_is_odd_data() {
+		return [
+			[ 0, false ],
+			[ 1, true ],
+			[ 2, false ],
+			[ 5, true ],
+			[ 68, false ],
+			[ 781, true ],
+		];
+	}
+
+	/**
+	 * Test is_odd.
+	 *
+	 * @covers \PHP_Typography\is_odd
+	 * @dataProvider provide_is_odd_data
+	 *
+	 * @param  int  $number A number.
+	 * @param  bool $result Expected result.
+	 */
+	public function test_is_odd( $number, $result ) {
+		if ( $result ) {
+			$this->assertTrue( $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'is_odd', [ $number ] ) );
+		} else {
+			$this->assertFalse( $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'is_odd', [ $number ] ) );
+		}
+	}
+
+	/**
+	 * Test get_object_hash function.
+	 *
+	 * @covers \PHP_Typography\get_object_hash
+	 */
+	public function test_get_object_hash() {
+		$hash1 = $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ 666 ] );
+		$this->assertInternalType( 'string', $hash1 );
+		$this->assertGreaterThan( 0, strlen( $hash1 ) );
+
+		$hash2 = $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ new \stdClass() ] );
+		$this->assertInternalType( 'string', $hash2 );
+		$this->assertGreaterThan( 0, strlen( $hash2 ) );
+
+		$this->assertNotEquals( $hash1, $hash2 );
 	}
 }

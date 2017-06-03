@@ -29,6 +29,6 @@
 
 	<!-- Include sniffs for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibility">
-		<config name="testVersion" value="5.3-7.1"/>
+		<config name="testVersion" value="5.4-7.1"/>
 	</rule>
 </ruleset>
