@@ -523,4 +523,21 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 			$this->assertFalse( $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'is_odd', [ $number ] ) );
 		}
 	}
+
+	/**
+	 * Test get_object_hash function.
+	 *
+	 * @covers \PHP_Typography\get_object_hash
+	 */
+	public function test_get_object_hash() {
+		$hash1 = $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ 666 ] );
+		$this->assertInternalType( 'string', $hash1 );
+		$this->assertGreaterThan( 0, strlen( $hash1 ) );
+
+		$hash2 = $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ new \stdClass() ] );
+		$this->assertInternalType( 'string', $hash2 );
+		$this->assertGreaterThan( 0, strlen( $hash2 ) );
+
+		$this->assertNotEquals( $hash1, $hash2 );
+	}
 }

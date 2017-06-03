@@ -114,7 +114,7 @@ class Hyphenator {
 		}
 
 		// Calculate hash & check against previous exceptions.
-		$new_hash = get_object_hash( $exceptions );
+		$new_hash = self::get_object_hash( $exceptions );
 		if ( $this->custom_exceptions_hash === $new_hash ) {
 			return; // No need to update exceptions.
 		}
@@ -138,6 +138,17 @@ class Hyphenator {
 
 		// Force remerging of patgen and custom exception patterns.
 		$this->merged_exception_patterns = null;
+	}
+
+	/**
+	 * Calculates binary-safe hash from data object.
+	 *
+	 * @param mixed $object Any datatype.
+	 *
+	 * @return string
+	 */
+	protected static function get_object_hash( $object ) {
+		return md5( json_encode( $object ), false );
 	}
 
 	/**
