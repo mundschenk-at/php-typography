@@ -28,6 +28,24 @@ namespace PHP_Typography\Tests;
  * Abstract base class for \PHP_Typography\* unit tests.
  */
 abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
+	/**
+	 * Return encoded HTML string (everything except <>"').
+	 *
+	 * @param string $html A HTML fragment.
+	 */
+	protected function clean_html( $html ) {
+		// Convert everything except Latin and Cyrillic and Thai.
+		static $convmap = [
+			// Simple Latin characters.
+			0x80,   0x03ff,   0, 0xffffff, // @codingStandardsIgnoreLine.
+			// Cyrillic characters.
+			0x0514, 0x0dff, 0, 0xffffff, // @codingStandardsIgnoreLine.
+			// Thai characters.
+			0x0e7f, 0x10ffff, 0, 0xffffff, // @codingStandardsIgnoreLine.
+		];
+
+		return str_replace( [ '&lt;', '&gt;' ], [ '<', '>' ], mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
+	}
 
 	/**
 	 * Call protected/private method of a class.
@@ -110,7 +128,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 */
 	protected function assertTokensSame( $expected_value, $actual_tokens, $message = '' ) {
 		foreach ( $actual_tokens as $index => $token ) {
-			$actual_tokens[ $index ]['value'] = clean_html( $actual_tokens[ $index ]['value'] );
+			$actual_tokens[ $index ]['value'] = $this->clean_html( $actual_tokens[ $index ]['value'] );
 		}
 
 		if ( false !== strpos( $expected_value, ' ' ) ) {

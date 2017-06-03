@@ -28,11 +28,6 @@
 namespace PHP_Typography;
 
 /**
- * A few utility functions.
- */
-require_once __DIR__ . '/php-typography-functions.php'; // @codeCoverageIgnore
-
-/**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
 require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';          // @codeCoverageIgnore

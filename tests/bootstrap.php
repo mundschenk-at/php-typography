@@ -23,11 +23,6 @@
  */
 
 /**
- * Include debug helpers.
- */
-require_once dirname( __DIR__ ) . '/php-typography/php-typography-debug.php';
-
-/**
  * An autoloader implementation for the PHP_Typography test scaffolding.
  *
  * @param string $class_name Required.
