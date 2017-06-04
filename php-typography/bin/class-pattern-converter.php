@@ -75,7 +75,7 @@ class Pattern_Converter {
 	 */
 	function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
-		$result = array();
+		$result = [];
 
 		foreach ( $characters as $index => $chr ) {
 			if ( ctype_digit( $chr ) ) {
@@ -117,7 +117,7 @@ class Pattern_Converter {
 	 * @param array $comments An array of TeX comments.
 	 */
 	function write_results( array $patterns, array $exceptions, array $comments ) {
-		$pattern_mapping = array();
+		$pattern_mapping = [];
 
 		foreach ( $patterns as $pattern ) {
 			$segment = $this->get_segment( $pattern );
@@ -128,18 +128,18 @@ class Pattern_Converter {
 		}
 
 		// Produce a nice exceptions mapping.
-		$json_exceptions = array();
+		$json_exceptions = [];
 		foreach ( $exceptions as $exception ) {
 			$json_exceptions[ mb_strtolower( str_replace( '-', '', $exception ) ) ] = mb_strtolower( $exception );
 		}
 
-		$json_results = array(
+		$json_results = [
 			'language'         => $this->language,
 			'source_url'       => $this->url,
 			'copyright'        => array_map( 'rtrim', $comments ),
 			'exceptions'       => $json_exceptions,
 			'patterns'         => $pattern_mapping,
-		);
+		];
 
 		echo json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 	}
@@ -154,23 +154,21 @@ class Pattern_Converter {
 		$this->url      = $url;
 		$this->language = $language;
 
-		$this->word_characters = join(
-			array(
-				"\w.'ʼ᾽ʼ᾿’",
-				Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-				'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
-				'\p{Bengali}',
-				'\p{Gujarati}',
-				'\p{Gurmukhi}',
-				'\p{Kannada}',
-				'\p{Oriya}',
-				'\p{Tamil}',
-				'\p{Telugu}',
-				'\p{Malayalam}',
-				'\p{Thai}',
-				'-',
-			)
-		);
+		$this->word_characters = join( [
+			"\w.'ʼ᾽ʼ᾿’",
+			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
+			'\p{Bengali}',
+			'\p{Gujarati}',
+			'\p{Gurmukhi}',
+			'\p{Kannada}',
+			'\p{Oriya}',
+			'\p{Tamil}',
+			'\p{Telugu}',
+			'\p{Malayalam}',
+			'\p{Thai}',
+			'-',
+		] );
 	}
 
 	/**
@@ -255,9 +253,9 @@ class Pattern_Converter {
 		}
 
 		// Results.
-		$comments   = array();
-		$patterns   = array();
-		$exceptions = array();
+		$comments   = [];
+		$patterns   = [];
+		$exceptions = [];
 
 		// Status indicators.
 		$reading_patterns   = false;
