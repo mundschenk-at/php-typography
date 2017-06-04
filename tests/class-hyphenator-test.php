@@ -249,8 +249,10 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	public function provide_hyphenate_data() {
 		return [
 			[ 'A few words to hyphenate like KINGdesk Really there should be more hyphenation here', 'A few words to hy|phen|ate like KING|desk Re|al|ly there should be more hy|phen|ation here', 'en-US', true ], // fake tokenizer doesn't split off punctuation.
-			[ 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ],
-			[ 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ], // Compound words would not be hyphenated separately.
+			// Not working with newer de pattern file: [ 'Sauerstofffeldflasche', 'Sau|er|stoff|feld|fla|sche', 'de', true ],.
+			[ 'Sauerstofffeldflasche', 'Sauer|stoff|feld|fla|sche', 'de', true ],
+			// Not working with newer de pattern file: [ 'Sauerstoff Feldflasche', 'Sau|er|stoff Feld|fla|sche', 'de', true ],.
+			[ 'Sauerstoff Feldflasche', 'Sauer|stoff Feld|fla|sche', 'de', true ], // Compound words would not be hyphenated separately.
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', false ],
 			[ 'A', 'A', 'de', true ],
 			[ 'table', 'ta|ble', 'en-US', false ],
