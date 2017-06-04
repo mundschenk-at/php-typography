@@ -35,7 +35,7 @@ define( 'WP_TYPOGRAPHY_DEBUG', true );
 require_once dirname( __DIR__ ) . '/php-typography-autoload.php';
 
 $shortopts = 'l:f:hv';
-$longopts = array( 'lang:', 'file:', 'help', 'version' );
+$longopts = [ 'lang:', 'file:', 'help', 'version' ];
 
 $options = getopt( $shortopts, $longopts );
 

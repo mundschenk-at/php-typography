@@ -32,7 +32,7 @@ namespace PHP_Typography;
  *
  * @since 4.2.0
  */
-class DOM {
+abstract class DOM {
 
 	/**
 	 * Converts \DOMNodeList to array;

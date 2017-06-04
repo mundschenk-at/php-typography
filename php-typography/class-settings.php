@@ -727,7 +727,7 @@ class Settings implements \ArrayAccess {
 	 * Update smartQuotesBrackets component after quote style change.
 	 */
 	private function update_smart_quotes_brackets() {
-		$this->components['smartQuotesBrackets'] = array(
+		$this->components['smartQuotesBrackets'] = [
 			// Single quotes.
 			"['"  => '[' . $this->chr['singleQuoteOpen'],
 			"{'"  => '{' . $this->chr['singleQuoteOpen'],
@@ -747,7 +747,7 @@ class Settings implements \ArrayAccess {
 			// Quotes & quotes.
 			"\"'" => $this->chr['doubleQuoteOpen'] . $this->chr['singleQuoteOpen'],
 			"'\"" => $this->chr['singleQuoteClose'] . $this->chr['doubleQuoteClose'],
-		);
+		];
 		$this->components['smartQuotesBracketMatches']      = array_keys( $this->components['smartQuotesBrackets'] );
 		$this->components['smartQuotesBracketReplacements'] = array_values( $this->components['smartQuotesBrackets'] );
 	}
