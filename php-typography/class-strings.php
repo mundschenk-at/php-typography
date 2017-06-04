@@ -30,7 +30,7 @@ namespace PHP_Typography;
 /**
  * A utility class to handle fast and save string function access.
  */
-class Strings {
+abstract class Strings {
 	/**
 	 * An array of encodings in detection order.
 	 *
