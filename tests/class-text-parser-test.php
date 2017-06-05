@@ -31,6 +31,7 @@ namespace PHP_Typography\Tests;
  * @usesDefaultClass \PHP_Typography\Text_Parser
  *
  * @uses PHP_Typography\Text_Parser
+ * @uses PHP_Typography\Strings::functions
  */
 class Text_Parser_Test extends PHP_Typography_Testcase {
 	/**
