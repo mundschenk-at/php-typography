@@ -126,6 +126,10 @@ abstract class Strings {
 	}
 }
 
-// Not sure if this is necessary - but error_log seems to have problems with the strings.
-// Used as the default encoding for mb_* functions.
-mb_internal_encoding( 'UTF-8' );
+/**
+ * Set UTF-8 as the default encoding for mb_* functions.
+ *
+ * Not sure if this is necessary - but error_log seems to have problems with
+ * the strings otherwise.
+ */
+mb_internal_encoding( 'UTF-8' );  // @codeCoverageIgnore
