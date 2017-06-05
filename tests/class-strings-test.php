@@ -22,6 +22,10 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace PHP_Typography\Tests;
+
+use PHP_Typography\Strings;
+
 /**
  * DOM unit test.
  *
@@ -35,7 +39,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
-		$this->typo = new \PHP_Typography\PHP_Typography( false );
 	}
 
 	/**
@@ -43,6 +46,46 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 * This method is called after a test is executed.
 	 */
 	protected function tearDown() { // @codingStandardsIgnoreLine
+	}
+
+	/**
+	 * Reports an error identified by $message if the given function array contains a non-callable.
+	 *
+	 * @param array  $func    An array of string functions.
+	 * @param string $message Optional. Default ''.
+	 */
+	protected function assertStringFunctions( array $func, $message = '' ) {
+		// Each function is a callable (except for the 'u' modifier string).
+		foreach ( $func as $name => $function ) {
+			if ( 'u' !== $name ) {
+				$this->assertTrue( is_callable( $function ) );
+			}
+		}
+	}
+
+	/**
+	 * Test ::functions.
+	 *
+	 * @covers ::functions
+	 */
+	public function test_functions() {
+		$func_ascii = Strings::functions( 'ASCII' );
+		$func_utf8  = Strings::functions( 'UTF-8 üäß' );
+
+		// We are dealing with ararys.
+		$this->assertTrue( is_array( $func_ascii ) );
+		$this->assertTrue( is_array( $func_utf8 ) );
+
+		// The arrays are not (almost) empty.
+		$this->assertGreaterThan( 1, count( $func_ascii ), 'ASCII array contains fewer than 2 functions.' );
+		$this->assertGreaterThan( 1, count( $func_utf8 ),  'UTF-8 array contains fewer than 2 functions.' );
+
+		// The keys are identical.
+		$this->assertSame( array_keys( $func_ascii ), array_keys( $func_utf8 ) );
+
+		// Each function is a callable (except for the 'u' modifier string).
+		$this->assertStringFunctions( $func_ascii );
+		$this->assertStringFunctions( $func_utf8 );
 	}
 
 	/**
@@ -67,14 +110,14 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Test uchr.
 	 *
-	 * @covers \PHP_Typography\uchr
+	 * @covers ::uchr
 	 * @dataProvider provide_uchr_data
 	 *
 	 * @param  int    $code   Character code.
 	 * @param  string $result Expected result.
 	 */
 	public function test_uchr( $code, $result ) {
-		$this->assertSame( $result, \PHP_Typography\Strings::uchr( $code ) );
+		$this->assertSame( $result, Strings::uchr( $code ) );
 	}
 
 	/**
@@ -95,7 +138,7 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Test mb_str_split.
 	 *
-	 * @covers \PHP_Typography\mb_str_split
+	 * @covers ::mb_str_split
 	 * @dataProvider provide_mb_str_split_data
 	 *
 	 * @param  string $string   A multibyte string.
@@ -104,6 +147,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 * @param  array  $result   Expected result.
 	 */
 	public function test_mb_str_split( $string, $length, $encoding, $result ) {
-		$this->assertSame( $result, \PHP_Typography\Strings::mb_str_split( $string, $length, $encoding ) );
+		$this->assertSame( $result, Strings::mb_str_split( $string, $length, $encoding ) );
 	}
 }

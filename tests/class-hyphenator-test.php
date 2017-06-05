@@ -60,8 +60,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::__construct
 	 *
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_constructor() {
 		$h = $this->h;
@@ -82,7 +82,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_language
 	 * @covers ::build_trie
 	 *
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language() {
 		$h = $this->h;
@@ -110,8 +110,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ::set_custom_exceptions
 	 * @uses ::merge_hyphenation_exceptions
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language_with_custom_exceptions() {
 		$h = $this->h;
@@ -134,7 +134,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_language
 	 *
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_same_hyphenation_language() {
 		$h = $this->h;
@@ -165,7 +165,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_custom_exceptions
 	 *
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::functions
 	 *
 	 * @dataProvider provide_set_custom_exceptions_data
 	 *
@@ -204,8 +204,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_custom_exceptions
 	 *
 	 * @uses ::merge_hyphenation_exceptions
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_custom_exceptions_again() {
 		$h = $this->h;
@@ -228,7 +228,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests set_custom_exceptions.
 	 *
 	 * @covers ::set_custom_exceptions
-	 * @uses PHP_Typography\get_object_hash
+	 *
+	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_set_custom_exceptions_unknown_encoding() {
 		$h = $this->h;
@@ -266,9 +267,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses PHP_Typography\is_odd
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::mb_str_split
+	 * @uses PHP_Typography\Strings::functions
 	 *
 	 * @dataProvider provide_hyphenate_data
 	 *
@@ -306,9 +306,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses PHP_Typography\is_odd
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::mb_str_split
+	 * @uses PHP_Typography\Strings::functions
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
 	 *
@@ -331,8 +330,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses \PHP_Typography\is_odd
-	 * @uses \PHP_Typography\mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
+	 * @uses \PHP_Typography\Strings::mb_str_split
 	 * @uses \mb_convert_encoding
 	 */
 	public function test_hyphenate_wrong_encoding() {
@@ -352,7 +351,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_title_case() {
 		$this->h->set_language( 'de' );
@@ -367,7 +367,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_invalid() {
 		$this->h->set_language( 'de' );
@@ -382,8 +383,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
-	 * @uses PHP_Typography\is_odd
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_custom_exceptions() {
 		$this->h->set_language( 'en-US' );
@@ -402,8 +403,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ReflectionClass
 	 * @uses ReflectionProperty
-	 * @uses PHP_Typography\is_odd
-	 * @uses PHP_Typography\mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_exceptions_at_all() {
 		$this->h->set_language( 'en-US' );
@@ -428,6 +429,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests convert_hyphenation_exception_to_pattern.
 	 *
 	 * @covers ::convert_hyphenation_exception_to_pattern
+	 *
+	 * @uses \PHP_Typography\Strings::functions
 	 */
 	public function test_convert_hyphenation_exception_to_pattern() {
 		$h = $this->h;
@@ -444,6 +447,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::convert_hyphenation_exception_to_pattern
 	 *
+	 * @uses \PHP_Typography\Strings::functions
 	 * @uses \mb_convert_encoding
 	 */
 	public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
@@ -458,8 +462,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::merge_hyphenation_exceptions
 	 *
-	 * @uses PHP_Typography\mb_str_split
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Strings::mb_str_split
+	 * @uses \PHP_Typography\Strings::functions
 	 */
 	public function test_merge_hyphenation_exceptions() {
 		$h = $this->h;
@@ -512,7 +516,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test is_odd.
 	 *
-	 * @covers \PHP_Typography\is_odd
+	 * @covers ::is_odd
 	 * @dataProvider provide_is_odd_data
 	 *
 	 * @param  int  $number A number.
@@ -529,7 +533,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test get_object_hash function.
 	 *
-	 * @covers \PHP_Typography\get_object_hash
+	 * @covers ::get_object_hash
 	 */
 	public function test_get_object_hash() {
 		$hash1 = $this->invokeStaticMethod( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ 666 ] );

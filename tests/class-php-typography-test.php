@@ -34,13 +34,8 @@ use \PHP_Typography\Strings;
  *
  * @uses PHP_Typography\PHP_Typography
  * @uses PHP_Typography\Settings
- * @uses PHP_Typography\get_ancestors
- * @uses PHP_Typography\has_class
- * @uses PHP_Typography\nodelist_to_array
- * @uses PHP_Typography\uchr
- * @uses PHP_Typography\arrays_intersect
- * @uses PHP_Typography\is_odd
- * @uses PHP_Typography\mb_str_split
+ * @uses PHP_Typography\Strings
+ * @uses PHP_Typography\DOM
  */
 class PHP_Typography_Test extends PHP_Typography_Testcase {
 
@@ -1327,7 +1322,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Hyphenator::get_object_hash
 	 */
 	public function test_set_hyphenation_exceptions_array() {
 		$typo = $this->typo;
@@ -1354,6 +1349,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+	 * @uses PHP_Typography\Hyphenator::get_object_hash
 	 */
 	public function test_set_hyphenation_exceptions_string() {
 		$typo = $this->typo;
@@ -1370,8 +1366,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test get_hyphenation_languages.
 	 *
 	 * @covers ::get_hyphenation_languages
-	 *
-	 * @uses PHP_Typography\get_language_plugin_list
+	 * @covers ::get_language_plugin_list
 	 */
 	public function test_get_hyphenation_languages() {
 		$typo = $this->typo;
@@ -1445,8 +1440,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test get_diacritic_languages.
 	 *
 	 * @covers ::get_diacritic_languages
-	 *
-	 * @uses PHP_Typography\get_language_plugin_list
+	 * @covers ::get_language_plugin_list
 	 */
 	public function test_get_diacritic_languages() {
 		$typo = $this->typo;
@@ -3827,7 +3821,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_data
 	 *
@@ -3880,7 +3873,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\get_object_hash
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
 	 *
@@ -4320,7 +4312,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator::build_trie
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
 	 * @uses PHP_Typography\Hyphenator::set_language
-	 * @uses PHP_Typography\get_object_hash
+	 * @uses PHP_Typography\Hyphenator::get_object_hash
 	 */
 	public function test_get_hyphenator() {
 		$typo = $this->typo;
@@ -4383,7 +4375,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * $a1 and $a2 need to be arrays of object indexes < 10
 	 *
-	 * @covers \PHP_Typography\arrays_intersect
+	 * @covers ::arrays_intersect
 	 * @dataProvider provide_arrays_intersect_data
 	 *
 	 * @param  array $a1     First array.

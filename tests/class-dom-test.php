@@ -24,6 +24,8 @@
 
 namespace PHP_Typography\Tests;
 
+use \PHP_Typography\DOM;
+
 /**
  * DOM unit test.
  *
@@ -37,7 +39,6 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
-		$this->typo = new \PHP_Typography\PHP_Typography( false );
 	}
 
 	/**
@@ -61,7 +62,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 		$xpath = new \DOMXPath( $dom );
 
 		$node_list = $xpath->query( '//*' );
-		$node_array = \PHP_Typography\DOM::nodelist_to_array( $node_list );
+		$node_array = DOM::nodelist_to_array( $node_list );
 
 		$this->assertGreaterThan( 1, $node_list->length );
 		$this->assertSame( $node_list->length, count( $node_array ) );
@@ -85,9 +86,9 @@ class DOM_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test get_ancestors.
 	 *
-	 * @covers \PHP_Typography\get_ancestors
+	 * @covers ::get_ancestors
 	 *
-	 * @uses PHP_Typography\nodelist_to_array
+	 * @uses ::nodelist_to_array
 	 *
 	 * @dataProvider provide_get_ancestors_data
 	 *
@@ -102,8 +103,8 @@ class DOM_Test extends PHP_Typography_Testcase {
 		$xpath = new \DOMXPath( $dom );
 
 		$origin = $xpath->query( $xpath_query )->item( 0 );
-		$ancestor_array = \PHP_Typography\DOM::get_ancestors( $origin );
-		$ancestor_array_xpath = \PHP_Typography\DOM::nodelist_to_array( $xpath->query( 'ancestor::*', $origin ) );
+		$ancestor_array = DOM::get_ancestors( $origin );
+		$ancestor_array_xpath = DOM::nodelist_to_array( $xpath->query( 'ancestor::*', $origin ) );
 
 		$this->assertSame( count( $ancestor_array ), count( $ancestor_array_xpath ) );
 		foreach ( $ancestor_array as $ancestor ) {
@@ -134,7 +135,8 @@ class DOM_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test has_class.
 	 *
-	 * @covers \PHP_Typography\has_class
+	 * @covers ::has_class
+	 *
 	 * @dataProvider provide_has_class_data
 	 *
 	 * @param  string $html        HTML input.
@@ -151,7 +153,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 
 		$nodes = $xpath->query( $xpath_query );
 		foreach ( $nodes as $node ) {
-			$this->assertSame( $result, \PHP_Typography\DOM::has_class( $node, $classnames ) );
+			$this->assertSame( $result, DOM::has_class( $node, $classnames ) );
 		}
 	}
 }

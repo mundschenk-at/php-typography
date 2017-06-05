@@ -33,13 +33,7 @@ use \PHP_Typography\Strings;
  * @usesDefaultClass \PHP_Typography\Settings
  *
  * @uses PHP_Typography\Settings
- * @uses PHP_Typography\get_ancestors
- * @uses PHP_Typography\has_class
- * @uses PHP_Typography\nodelist_to_array
- * @uses PHP_Typography\uchr
- * @uses PHP_Typography\arrays_intersect
- * @uses PHP_Typography\is_odd
- * @uses PHP_Typography\Strings::mb_str_split
+ * @uses PHP_Typography\Strings::uchr
  */
 class Settings_Test extends PHP_Typography_Testcase {
 	/**
