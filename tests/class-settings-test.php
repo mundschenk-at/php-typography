@@ -901,6 +901,19 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests set_numbered_abbreviation_spacing.
+	 *
+	 * @covers ::set_numbered_abbreviation_spacing
+	 */
+	public function test_set_numbered_abbreviation_spacing() {
+		$this->settings->set_numbered_abbreviation_spacing( true );
+		$this->assertTrue( $this->settings['numberedAbbreviationSpacing'] );
+
+		$this->settings->set_numbered_abbreviation_spacing( false );
+		$this->assertFalse( $this->settings['numberedAbbreviationSpacing'] );
+	}
+
+	/**
 	 * Tests set_french_punctuation_spacing.
 	 *
 	 * @covers ::set_french_punctuation_spacing

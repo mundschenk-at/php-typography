@@ -425,6 +425,15 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Enables/disables numbered abbreviations like "ISO 9000" together with the insertion of &nbsp;.
+	 *
+	 * @param bool $on Optional. Default true.
+	 */
+	function set_numbered_abbreviation_spacing( $on = true ) {
+		$this->settings->set_numbered_abbreviation_spacing( $on );
+	}
+
+	/**
 	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
 	 *
 	 * @param bool $on Optional. Default false.
@@ -803,6 +812,7 @@ class PHP_Typography {
 		$this->single_character_word_spacing( $textnode, $settings );
 		$this->dash_spacing( $textnode, $settings );
 		$this->unit_spacing( $textnode, $settings );
+		$this->numbered_abbreviation_spacing( $textnode, $settings );
 		$this->french_punctuation_spacing( $textnode, $settings );
 
 		// Parse and process individual words.
@@ -1574,6 +1584,23 @@ class PHP_Typography {
 		}
 
 		$textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->chr( 'noBreakNarrowSpace' ) . '$2', $textnode->data );
+	}
+
+	/**
+	 * Prevents the number part of numbered abbreviations from being split from the basename (if enabled).
+	 *
+	 * E.G. "ISO 9000" gets replaced with "ISO&nbsp;9000".
+	 *
+	 * @param \DOMText $textnode The content node.
+	 * @param Settings $settings The settings to apply.
+	 */
+	function numbered_abbreviation_spacing( \DOMText $textnode, Settings $settings ) {
+		if ( empty( $settings['numberedAbbreviationSpacing'] ) ) {
+			return;
+		}
+
+		$textnode->data = preg_replace( $settings->regex( 'numberedAbbreviationSpacing' ), '$1' . $settings->chr( 'noBreakSpace' ) . '$2', $textnode->data );
+		// $textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->chr( 'noBreakNarrowSpace' ) . '$2', $textnode->data );
 	}
 
 	/**

@@ -771,6 +771,22 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertFalse( $s['unitSpacing'] );
 	}
 
+	/**
+	 * Test set_numbered_abbreviation_spacing.
+	 *
+	 * @covers ::set_numbered_abbreviation_spacing
+	 */
+	public function test_set_numbered_abbreviation_spacing() {
+		$typo = $this->typo;
+
+		$typo->set_numbered_abbreviation_spacing( true );
+		$s = $typo->get_settings();
+		$this->assertTrue( $s['numberedAbbreviationSpacing'] );
+
+		$typo->set_numbered_abbreviation_spacing( false );
+		$s = $typo->get_settings();
+		$this->assertFalse( $s['numberedAbbreviationSpacing'] );
+	}
 
 	/**
 	 * Test set_french_punctuation_spacing.
@@ -3018,7 +3034,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		];
 	}
 
-
 	/**
 	 * Test unit_spacing.
 	 *
@@ -3039,7 +3054,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
 	}
 
-
 	/**
 	 * Test unit_spacing.
 	 *
@@ -3057,6 +3071,67 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo->set_unit_spacing( false );
 
 		$this->assertSame( $input, $this->clean_html( $typo->process( $input ) ) );
+	}
+
+	/**
+	 * Provide data for testing unit_spacing.
+	 *
+	 * @return array
+	 */
+	public function provide_numbered_abbreviation_spacing_data() {
+		return [
+			[ 'ÖNORM A 1080:2007', '&Ouml;NORM A&nbsp;1080:2007' ],
+			[ 'Das steht in der ÖNORM EN ISO 13920!', 'Das steht in der &Ouml;NORM EN ISO&nbsp;13920!' ],
+			[ 'ONR 191160:2010', 'ONR&nbsp;191160:2010' ],
+			[ 'DIN ISO 2936', 'DIN ISO&nbsp;2936' ],
+			[ 'DIN ISO/IEC 10561', 'DIN ISO/IEC&nbsp;10561' ],
+			[ 'VG 96936', 'VG&nbsp;96936' ],
+			[ 'LN 9118-2', 'LN&nbsp;9118-2' ],
+			[ 'DIN 5032 Lichtmessung', 'DIN&nbsp;5032 Lichtmessung' ],
+			[ 'DIN EN 118 Holzschutzmittel', 'DIN EN&nbsp;118 Holzschutzmittel' ],
+			[ 'DIN EN ISO 9001 Qualitätsmanagementsysteme', 'DIN EN ISO&nbsp;9001 Qualit&auml;tsmanagementsysteme' ],
+			[ 'Enthält E 100.', 'Enth&auml;lt E&nbsp;100.' ],
+			[ 'E 160a', 'E&nbsp;160a' ],
+			[ 'ISO/IEC 13818', 'ISO/IEC&nbsp;13818' ],
+		];
+	}
+
+	/**
+	 * Test numbered_abbreviation_spacing.
+	 *
+	 * @covers ::numbered_abbreviation_spacing
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 *
+	 * @dataProvider provide_numbered_abbreviation_spacing_data
+	 *
+	 * @param string $input  HTML input.
+	 * @param string $result Expected result.
+	 */
+	public function test_numbered_abbreviation_spacing( $input, $result ) {
+		$typo = $this->typo;
+		$typo->set_numbered_abbreviation_spacing( true );
+
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
+	}
+
+	/**
+	 * Test numbered_abbreviation_spacing.
+	 *
+	 * @covers ::numbered_abbreviation_spacing
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 *
+	 * @dataProvider provide_numbered_abbreviation_spacing_data
+	 *
+	 * @param string $input  HTML input.
+	 * @param string $result Expected result.
+	 */
+	public function test_numbered_abbreviation_spacing_off( $input, $result ) {
+		$typo = $this->typo;
+		$typo->set_numbered_abbreviation_spacing( false );
+
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $typo->process( $input ) ) );
 	}
 
 	/**

@@ -585,6 +585,37 @@ class Settings implements \ArrayAccess {
 			%|pi|M?px|em|en|[NSEOW]|[NS][EOW]|mbar
 		'; // required modifiers: x (multiline pattern).
 
+		// Numbered abbreviations.
+		$this->components['numberedAbbreviationsISO'] = 'ISO(?:\/(?:IEC|TR|TS))?';
+		$this->components['numberedAbbreviations'] = "
+			### Internationl standards
+			{$this->components['numberedAbbreviationsISO']}|
+
+			### German standards
+			DIN|
+			DIN[ ]EN(?:[ ]{$this->components['numberedAbbreviationsISO']})?|
+			DIN[ ]EN[ ]ISP
+			DIN[ ]{$this->components['numberedAbbreviationsISO']}|
+			DIN[ ]IEC|
+			DIN[ ]CEN\/TS|
+			DIN[ ]CLC\/TS|
+			DIN[ ]CWA|
+			DIN[ ]VDE|
+
+			LN|VG|VDE|VDI
+
+			### Austrian standards
+			ÖNORM|
+			ÖNORM[ ](?:A|B|C|E|F|G|H|K|L|M|N|O|S|V|Z)|
+			ÖNORM[ ]EN(?:[ ]{$this->components['numberedAbbreviationsISO']})?|
+			ÖNORM[ ]ETS|
+
+			ÖVE|ONR|
+
+			### Food additives
+			E
+		"; // required modifiers: x (multiline pattern).
+
 		$this->components['hyphensArray'] = array_unique( [ '-', $this->chr['hyphen'] ] );
 		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
 
@@ -1124,6 +1155,9 @@ class Settings implements \ArrayAccess {
 		$this->regex['unitSpacingEscapeSpecialChars'] = '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#';
 		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : [] );
 
+		// Numbered abbreviations spacing.
+		$this->regex['numberedAbbreviationSpacing'] = "/\b({$this->components['numberedAbbreviations']})[{$this->components['normalSpaces']}]+([0-9]+)/xu";
+
 		// French punctuation spacing.
 		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
 		$this->regex['frenchPunctuationSpacingFull']         = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
@@ -1598,6 +1632,15 @@ class Settings implements \ArrayAccess {
 	 */
 	function set_unit_spacing( $on = true ) {
 		$this->data['unitSpacing'] = $on;
+	}
+
+	/**
+	 * Enables/disables numbered abbreviations like "ISO 9000" together with the insertion of &nbsp;.
+	 *
+	 * @param bool $on Optional. Default true.
+	 */
+	function set_numbered_abbreviation_spacing( $on = true ) {
+		$this->data['numberedAbbreviationSpacing'] = $on;
 	}
 
 	/**
