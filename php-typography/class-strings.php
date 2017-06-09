@@ -48,7 +48,7 @@ abstract class Strings {
 	private static $str_functions = [
 		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
-			'str_split'  => '\PHP_Typography\Strings::mb_str_split',
+			'str_split'  => [ '\PHP_Typography\Strings', 'mb_str_split' ],
 			'strtolower' => 'mb_strtolower',
 			'strtoupper' => 'mb_strtoupper',
 			'substr'     => 'mb_substr',

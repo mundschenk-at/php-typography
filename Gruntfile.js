@@ -93,6 +93,7 @@ module.exports = function(grunt) {
                     nonull: true,
                     src: [
                         'readme.txt',
+                        'CHANGELOG.md',
                         '*.php',
                         'includes/**',
                         'php-typography/*.php',
