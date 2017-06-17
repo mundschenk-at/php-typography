@@ -113,13 +113,16 @@ abstract class Strings {
 	 * @return string Unicode character(s).
 	 */
 	public static function uchr( $codes ) {
+
+		// Single character code.
 		if ( is_scalar( $codes ) ) {
-			$codes = func_get_args();
+			return html_entity_decode( '&#' . $codes . ';', ENT_NOQUOTES, 'UTF-8' );
 		}
 
+		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
+			$str .= self::uchr( $code );
 		}
 
 		return $str;
