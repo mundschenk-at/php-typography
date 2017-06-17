@@ -91,7 +91,7 @@ abstract class Strings {
 	 * @param int    $length   Optional. Default 1.
 	 * @param string $encoding Optional. Default 'UTF-8'.
 	 */
-	static function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
+	public static function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
 		if ( $length < 1 ) {
 			return false;
 		}
@@ -112,7 +112,7 @@ abstract class Strings {
 	 *
 	 * @return string Unicode character(s).
 	 */
-	static function uchr( $codes ) {
+	public static function uchr( $codes ) {
 		if ( is_scalar( $codes ) ) {
 			$codes = func_get_args();
 		}
