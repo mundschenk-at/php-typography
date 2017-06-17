@@ -698,7 +698,7 @@ class PHP_Typography {
 	 * (i.e. excluding processes that may not display well with limited character set intelligence).
 	 *
 	 * @param string   $html     A HTML fragment.
-	 * @param string   $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
 	 * @param Settings $settings Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.
@@ -712,7 +712,7 @@ class PHP_Typography {
 	 *
 	 * @param string   $html     A HTML fragment.
 	 * @param callable $fixer    A callback that applies typography fixes to a single textnode.
-	 * @param string   $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
 	 * @param Settings $settings Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.

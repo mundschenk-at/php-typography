@@ -72,7 +72,7 @@ class Hyphenator {
 	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
-	 * @var array
+	 * @var array|null
 	 */
 	protected $merged_exception_patterns;
 
