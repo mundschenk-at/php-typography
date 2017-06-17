@@ -2181,7 +2181,7 @@ class PHP_Typography {
 	 *
 	 * @param string $path The path in which to look for language plugin files.
 	 *
-	 * @return array An array in the form ( $language_code => $translated_language_name ).
+	 * @return array An array in the form ( $language_code => $language_name ).
 	 */
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
