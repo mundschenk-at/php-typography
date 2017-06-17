@@ -670,7 +670,7 @@ class PHP_Typography {
 	 * Modifies $html according to the defined settings.
 	 *
 	 * @param string   $html      A HTML fragment.
-	 * @param string   $is_title  Optional. If the HTML fragment is a title. Default false.
+	 * @param bool     $is_title  Optional. If the HTML fragment is a title. Default false.
 	 * @param Settings $settings  Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.
