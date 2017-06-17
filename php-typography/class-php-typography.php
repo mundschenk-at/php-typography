@@ -2069,7 +2069,7 @@ class PHP_Typography {
 	 *
 	 * @param Settings $settings The settings to apply.
 	 *
-	 * @return \PHP_Typography\
+	 * @return Hyphenator
 	 */
 	public function get_hyphenator( Settings $settings ) {
 		if ( ! isset( $this->hyphenator ) ) {
