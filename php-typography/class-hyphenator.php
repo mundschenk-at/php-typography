@@ -121,7 +121,6 @@ class Hyphenator {
 
 		// Do our thing.
 		$exception_keys = [];
-		$func = [];
 		foreach ( $exceptions as $exception ) {
 			$func = Strings::functions( $exception );
 			if ( empty( $func ) ) {
@@ -251,8 +250,8 @@ class Hyphenator {
 			$this->merge_hyphenation_exceptions();
 		}
 
-		$func = []; // quickly reference string functions according to encoding.
 		foreach ( $parsed_text_tokens as &$text_token ) {
+			// Quickly reference string functions according to encoding.
 			$func = Strings::functions( $text_token['value'] );
 			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.

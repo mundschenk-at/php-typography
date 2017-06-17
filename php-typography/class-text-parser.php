@@ -481,11 +481,8 @@ class Text_Parser {
 		// Result set.
 		$tokens = [];
 
-		// Initialize helper variables outside the loop.
-		$capped     = '';
-		$lettered   = '';
-		$compound   = '';
-		$strtoupper = $this->current_strtoupper; // cannot call class properties.
+		// We cannot call class properties.
+		$strtoupper = $this->current_strtoupper;
 
 		foreach ( $this->get_type( 'word' ) as $index => $token ) {
 			$capped   = $strtoupper( $token['value'] );
