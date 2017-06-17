@@ -1239,14 +1239,7 @@ class PHP_Typography {
 		$textnode->data = str_replace( '"', $chr['doubleQuoteClose'], $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
-		$func = Strings::functions( $textnode->data );
-
-		if ( '' !== $previous_character ) {
-			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
-		}
-		if ( '' !== $next_character ) {
-			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
-		}
+		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );
 	}
 
 	/**
@@ -1498,14 +1491,35 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $settings->regex( 'singleCharacterWordSpacing' ), '$1$2' . $settings->chr( 'noBreakSpace' ), $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
-		$func = Strings::functions( $textnode->data );
+		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );
+	}
 
-		if ( '' !== $previous_character ) {
-			$textnode->data = $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+	/**
+	 * Remove adjacent characters from given string.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  string $string    The string.
+	 * @param  string $prev_char Optional. Default ''.
+	 * @param  string $next_char Optional. Default ''.
+	 *
+	 * @return string            The string without `$prev_char` and `$next_char`.
+	 */
+	private static function remove_adjacent_characters( $string, $prev_char = '', $next_char = '' ) {
+		// Use the most efficient string functions.
+		$func = Strings::functions( $string );
+
+		// Remove previous character.
+		if ( '' !== $prev_char ) {
+			$string = $func['substr']( $string, 1, $func['strlen']( $string ) );
 		}
-		if ( '' !== $next_character ) {
-			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
+
+		// Remove next character.
+		if ( '' !== $next_char ) {
+			$string = $func['substr']( $string, 0, $func['strlen']( $string ) - 1 );
 		}
+
+		return $string;
 	}
 
 	/**
@@ -1907,10 +1921,7 @@ class PHP_Typography {
 		}
 
 		// Remove any added characters.
-		if ( '' !== $next_character ) {
-			$func = Strings::functions( $textnode->data );
-			$textnode->data = $func['substr']( $textnode->data, 0, $func['strlen']( $textnode->data ) - 1 );
-		}
+		$textnode->data = self::remove_adjacent_characters( $textnode->data, '', $next_character );
 	}
 
 	/**
