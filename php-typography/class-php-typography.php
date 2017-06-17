@@ -91,20 +91,6 @@ class PHP_Typography {
 	];
 
 	/**
-	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
-	 *
-	 * @var array
-	 */
-	private $quote_styles = [];
-
-	/**
-	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
-	 *
-	 * @var array
-	 */
-	private $dash_styles = [];
-
-	/**
 	 * An array in the form of [ '$tag' => true ]
 	 *
 	 * @var array
