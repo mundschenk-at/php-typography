@@ -121,16 +121,28 @@ abstract class Strings {
 
 		// Single character code.
 		if ( is_scalar( $codes ) ) {
-			return html_entity_decode( '&#' . $codes . ';', ENT_NOQUOTES, 'UTF-8' );
+			$codes = func_get_args();
 		}
 
 		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= self::uchr( $code );
+			$str .= self::_uchr( $code );
 		}
 
 		return $str;
+	}
+	/**
+	 * Converts decimal value to unicode character.
+	 *
+	 * For internal use only.
+	 *
+	 * @param int $code Decimal value coresponding to unicode character.
+	 *
+	 * @return string Unicode character.
+	 */
+	public static function _uchr( $code ) {
+		return html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
 	}
 }
 
