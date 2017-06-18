@@ -87,19 +87,24 @@ abstract class Strings {
 	/**
 	 * Multibyte-safe str_split function.
 	 *
-	 * @param string $str      Required.
-	 * @param int    $length   Optional. Default 1.
-	 * @param string $encoding Optional. Default 'UTF-8'.
+	 * Unlike str_split, a $split_length less than 1 is ignored (and thus
+	 * equivalent to the default).
+	 *
+	 * @param string $str           Required.
+	 * @param int    $split_length  Optional. Default 1.
+	 *
+	 * @return array                An array of $split_length character chunks.
 	 */
-	static function mb_str_split( $str, $length = 1, $encoding = 'UTF-8' ) {
-		if ( $length < 1 ) {
-			return false;
-		}
+	public static function mb_str_split( $str, $split_length = 1 ) {
+		$result = preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
 
-		$result = [];
-		$multibyte_length = mb_strlen( $str, $encoding );
-		for ( $i = 0; $i < $multibyte_length; $i += $length ) {
-			$result[] = mb_substr( $str, $i, $length, $encoding );
+		if ( $split_length > 1 ) {
+			$splits = [];
+			foreach ( array_chunk( $result, $split_length ) as $chunk ) {
+				$splits[] = join( '', $chunk );
+			}
+
+			$result = $splits;
 		}
 
 		return $result;
@@ -112,17 +117,32 @@ abstract class Strings {
 	 *
 	 * @return string Unicode character(s).
 	 */
-	static function uchr( $codes ) {
+	public static function uchr( $codes ) {
+
+		// Single character code.
 		if ( is_scalar( $codes ) ) {
 			$codes = func_get_args();
 		}
 
+		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
+			$str .= self::_uchr( $code );
 		}
 
 		return $str;
+	}
+	/**
+	 * Converts decimal value to unicode character.
+	 *
+	 * For internal use only.
+	 *
+	 * @param int $code Decimal value coresponding to unicode character.
+	 *
+	 * @return string Unicode character.
+	 */
+	public static function _uchr( $code ) {
+		return html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
 	}
 }
 

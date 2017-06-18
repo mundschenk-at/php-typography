@@ -108,9 +108,22 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Provide data for testing uchr.
+	 *
+	 * @return array
+	 */
+	public function provide_uchr_multi_data() {
+		return [
+			[ [ 33, 9, 103, 2000 ],   "!\tgߐ" ],
+		];
+	}
+
+	/**
 	 * Test uchr.
 	 *
 	 * @covers ::uchr
+	 * @uses ::_uchr
+	 *
 	 * @dataProvider provide_uchr_data
 	 *
 	 * @param  int    $code   Character code.
@@ -121,17 +134,48 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Test uchr.
+	 *
+	 * @covers ::uchr
+	 * @uses ::_uchr
+	 *
+	 * @dataProvider provide_uchr_multi_data
+	 *
+	 * @param  array  $input  Character codes.
+	 * @param  string $result Expected result.
+	 */
+	public function test_uchr_multi( $input, $result ) {
+		$this->assertSame( $result, call_user_func_array( [ 'PHP_Typography\Strings', 'uchr' ], $input ) );
+		$this->assertSame( $result, Strings::uchr( $input ) );
+	}
+
+	/**
+	 * Test _uchr.
+	 *
+	 * @covers ::_uchr
+	 *
+	 * @dataProvider provide_uchr_data
+	 *
+	 * @param  int    $code   Character code.
+	 * @param  string $result Expected result.
+	 */
+	public function test__uchr( $code, $result ) {
+		$this->assertSame( $result, Strings::_uchr( $code ) );
+	}
+
+
+	/**
 	 * Provide data for testing mb_str_split.
 	 *
 	 * @return array
 	 */
 	public function provide_mb_str_split_data() {
 		return [
-			[ '', 1, 'UTF-8', [] ],
-			[ 'A ship', 1, 'UTF-8', [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
-			[ 'Äöüß', 1, 'UTF-8', [ 'Ä', 'ö', 'ü', 'ß' ] ],
-			[ 'Äöüß', 2, 'UTF-8', [ 'Äö', 'üß' ] ],
-			[ 'Äöüß', 0, 'UTF-8', false ],
+			[ '', 1, [] ],
+			[ 'A ship', 1, [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
+			[ 'Äöüß', 1, [ 'Ä', 'ö', 'ü', 'ß' ] ],
+			[ 'Äöüß', 2, [ 'Äö', 'üß' ] ],
+			[ 'Äöüß', 0, [ 'Ä', 'ö', 'ü', 'ß' ] ],
 		];
 	}
 
@@ -143,10 +187,9 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param  string $string   A multibyte string.
 	 * @param  int    $length   Split length.
-	 * @param  string $encoding Encoding to use.
 	 * @param  array  $result   Expected result.
 	 */
-	public function test_mb_str_split( $string, $length, $encoding, $result ) {
-		$this->assertSame( $result, Strings::mb_str_split( $string, $length, $encoding ) );
+	public function test_mb_str_split( $string, $length, $result ) {
+		$this->assertSame( $result, Strings::mb_str_split( $string, $length ) );
 	}
 }

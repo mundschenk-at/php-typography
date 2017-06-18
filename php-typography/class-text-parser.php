@@ -40,7 +40,7 @@ class Text_Parser {
 	 *
 	 * @var string
 	 */
-	private $current_strtoupper = false;
+	private $current_strtoupper = null;
 
 	/**
 	 * The tokenized text.
@@ -420,7 +420,7 @@ class Text_Parser {
 	 */
 	function clear() {
 		$this->text = [];
-		$this->current_strtoupper = false;
+		$this->current_strtoupper = null;
 	}
 
 	/**
@@ -473,13 +473,16 @@ class Text_Parser {
 	 * @param string $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Default 'no-compounds'.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
-		$tokens = [];
-		$strtoupper = $this->current_strtoupper; // cannot call class properties.
+		// Return early if no text has been loaded.
+		if ( ! isset( $this->text ) || ! is_callable( $this->current_strtoupper ) ) {
+			return []; // abort.
+		}
 
-		// Initialize helper variables outside the loop.
-		$capped   = '';
-		$lettered = '';
-		$compound = '';
+		// Result set.
+		$tokens = [];
+
+		// We cannot call class properties.
+		$strtoupper = $this->current_strtoupper;
 
 		foreach ( $this->get_type( 'word' ) as $index => $token ) {
 			$capped   = $strtoupper( $token['value'] );
