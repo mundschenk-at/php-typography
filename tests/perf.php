@@ -10,7 +10,6 @@
 error_reporting( E_ALL & E_STRICT );
 
 require_once realpath( __DIR__ . '/../php-typography/php-typography-autoload.php' );
-require_once realpath( __DIR__ . '/../vendor/hyphenator-php/src/NikoNyrh/Hyphenator/Hyphenator.php' );
 
 // Don't break without translation function.
 if ( ! function_exists( '__' ) ) {
@@ -42,7 +41,7 @@ At the minimum, you could just put the attributes lang=en class=hyphenate into t
 
 EOD;
 
-$php_typo = new \PHP_Typography\PHP_Typography( false );
+/* $php_typo = new \PHP_Typography\PHP_Typography( false );
 $php_typo->set_hyphenation();
 $php_typo->set_hyphenate_headings();
 $php_typo->set_hyphenate_all_caps();
@@ -51,27 +50,63 @@ $php_typo->set_hyphenate_compounds();
 $php_typo->set_hyphenation_language();
 $php_typo->set_min_length_hyphenation();
 $php_typo->set_min_before_hyphenation();
-$php_typo->set_min_after_hyphenation();
+$php_typo->set_min_after_hyphenation(); */
 
-$iterations = 100;
+$iterations = 1000;
+
+/**
+ * [mb_str_split description]
+ * @param  [type] $str [description].
+ * @param  [type] $len [description].
+ * @return [type]      [description]
+ */
+function mb_str_split_preg( $str, $len ) {
+	/*if ( $len <= 0 ) {
+		return false;
+	}*/
+
+//$chars = preg_split( '/(?<!^)(?!$)/u', $str /*, -1, PREG_SPLIT_NO_EMPTY */ );
+	$chars = preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY  );
+
+	if ( len > 1 ) {
+		//$out = [];
+		foreach ( array_chunk( $chars, $len ) as $a ) {
+			$chars[] = join( '', $a );
+		}
+
+		//$chars = $out;
+	}
+
+	return $chars;
+}
+
+//$test_html = "Something or other Änderungsschneiderei mit scharfem ß & <allem>!";
+
 
 // Variant A.
 $start_time = microtime( true );
 for ( $i = 0; $i < $iterations; ++$i ) {
-	$php_typo->set_hyphenation_exceptions( [ 'foo-bar', 'pre-pro-ces-sor', 'fo-ll-o-w-i-ng' ] );
-	$php_typo->process( $test_html, false );
+	\PHP_Typography\Strings::mb_str_split( $test_html, 1 );
 }
 $end_time = microtime( true );
-echo "$i iterations took " . ( $end_time - $start_time ) . " seconds.\n"; // @codingStandardsIgnoreLine
+echo "$i iterations took " . ( $end_time - $start_time ) . " seconds (Variant A).\n"; // @codingStandardsIgnoreLine
 
 // Variant B.
 $start_time = microtime( true );
-$hyphenator = new \NikoNyrh\Hyphenator\Hyphenator();
-$html = new \Masterminds\HTML5();
 for ( $i = 0; $i < $iterations; ++$i ) {
-	$html->loadHTML( $test_html );
-	$html->saveHTML();
-	$hyphenator->hyphenate( $test_html );
+	mb_str_split_preg( $test_html, 1 );
 }
 $end_time = microtime( true );
-echo "$i iteratations w/ hyphenator-php took " . ( $end_time - $start_time ) . " seconds.\n"; // @codingStandardsIgnoreLine
+echo "$i iteratations w/ hyphenator-php took " . ( $end_time - $start_time ) . " seconds (Variant B).\n"; // @codingStandardsIgnoreLine
+
+$foo = mb_str_split_preg( $test_html, 1 );
+$bar = \PHP_Typography\Strings::mb_str_split( $test_html, 1 );
+
+if ( $foo ===  $bar ) {
+	echo "Results are equal.\n";
+} else {
+	//print_r( $foo );
+	//print_r( $bar );
+	var_dump( $foo[3727]);
+	var_dump( $bar[3727]);
+}
