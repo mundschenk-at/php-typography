@@ -1500,8 +1500,8 @@ class PHP_Typography {
 	 * @since 4.2.2
 	 *
 	 * @param  string $string    The string.
-	 * @param  string $prev_char Optional. Default ''.
-	 * @param  string $next_char Optional. Default ''.
+	 * @param  string $prev_char Optional. Default ''. The removed character is not required to be the same.
+	 * @param  string $next_char Optional. Default ''. The removed character is not required to be the same.
 	 *
 	 * @return string            The string without `$prev_char` and `$next_char`.
 	 */
