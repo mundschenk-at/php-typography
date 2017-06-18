@@ -4479,4 +4479,32 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
 	}
+
+	/**
+	 * Provide data for testing remove_adjacent_characters.
+	 *
+	 * @return array
+	 */
+	public function provide_remove_adjacent_characters_data() {
+		return [
+			[ "'A certain kind'", "'", "'", 'A certain kind' ],
+			[ "'A certain kind", "'", "'", 'A certain kin' ],
+			[ "'A certain kind'", "'", '', "A certain kind'" ],
+		];
+	}
+
+	/**
+	 * Test private method remove_adjacent_characters.
+	 *
+	 * @covers ::remove_adjacent_characters
+	 * @dataProvider provide_remove_adjacent_characters_data
+	 *
+	 * @param string $string A string.
+	 * @param string $prev   The previous character.
+	 * @param string $next   The next character.
+	 * @param string $result The trimmed string.
+	 */
+	public function test_remove_adjacent_characters( $string, $prev, $next, $result ) {
+		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\PHP_Typography::class, 'remove_adjacent_characters', [ $string, $prev, $next ] ) );
+	}
 }

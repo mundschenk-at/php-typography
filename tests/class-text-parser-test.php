@@ -512,6 +512,25 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test get_words.
+	 *
+	 * @covers ::get_words
+	 * @depends test_get_all
+	 *
+	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
+	 */
+	public function test_get_words_unloaded( \PHP_Typography\Text_Parser $parser ) {
+		$parser->load( 'A few m1xed W0RDS.' );
+		$parser->unload();
+
+		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
+		$this->assertCount( 0, $tokens );
+		$this->assertSame( [], $tokens );
+
+		return $parser;
+	}
+
+	/**
 	 * Test get_other.
 	 *
 	 * @covers ::get_other
@@ -535,6 +554,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_type( \PHP_Typography\Text_Parser $parser ) {
+		$parser->load( 'A few m1xed W0RDS.' );
+
 		$words = [];
 		$tokens = $parser->get_all();
 		foreach ( $tokens as $token ) {
