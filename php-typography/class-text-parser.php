@@ -28,6 +28,8 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Text_Parser\Token;
+
 /**
  * A class to parse plain text (such as the data of DOMText).
  *
@@ -46,12 +48,7 @@ class Text_Parser {
 	 * The tokenized text.
 	 *
 	 * @var array $text {
-	 *      @type array $index {
-	 *          Tokenized text.
-	 *
-	 *          @type string $type  'space' | 'punctuation' | 'word' | 'other'. Required.
-	 *          @type string $value Token content. Required.
-	 *      }
+	 *      @type Text_Parser\Token $index
 	 * }
 	 */
 	private $text = [];
@@ -314,67 +311,44 @@ class Text_Parser {
 			if ( '' !== $part ) {
 
 				if ( preg_match( $this->regex['space'], $part ) ) {
-					$tokens[ $index ] = [
-						'type'  => 'space',
-						'value' => $part,
-					];
+					$tokens[ $index ] = new Token( $part, Token::SPACE );
 				} elseif ( preg_match( $this->regex['punctuation'], $part ) ) {
-					$tokens[ $index ] = [
-						'type'  => 'punctuation',
-						'value' => $part,
-					];
+					$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
 				} elseif ( preg_match( $this->regex['word'], $part ) ) {
 					// Make sure that things like email addresses and URLs are not broken up
 					// into words and punctuation not preceeded by an 'other'.
-					if ( $index - 1 >= 0 && 'other' === $tokens[ $index - 1 ]['type'] ) {
-						$old_part = $tokens[ $index - 1 ]['value'];
-						$tokens[ $index - 1 ] = [
-							'type'  => 'other',
-							'value' => $old_part . $part,
-						];
+					if ( $index - 1 >= 0 && Token::OTHER === $tokens[ $index - 1 ]->type ) {
+						$old_part = $tokens[ $index - 1 ]->value;
+						$tokens[ $index - 1 ] = new Token( $old_part . $part, Token::OTHER );
 						$index--;
 
 					// Not preceeded by a non-space + punctuation.
-					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
-						$old_part   = $tokens[ $index - 1 ]['value'];
-						$older_part = $tokens[ $index - 2 ]['value'];
-						$tokens[ $index - 2 ] = [
-							'type'  => 'other',
-							'value' => $older_part . $old_part . $part,
-						];
+					} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
+						$old_part   = $tokens[ $index - 1 ]->value;
+						$older_part = $tokens[ $index - 2 ]->value;
+						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
-						$tokens[ $index ] = [
-							'type'  => 'word',
-							'value' => $part,
-						];
+						$tokens[ $index ] = new Token( $part, Token::WORD );
 					}
 				} else {
 					// Make sure that things like email addresses and URLs are not broken up into words
 					// and punctuation not preceeded by an 'other' or 'word'.
-					if ( $index - 1 >= 0 && ( 'word' === $tokens[ $index - 1 ]['type'] || 'other' === $tokens[ $index - 1 ]['type'] ) ) {
+					if ( $index - 1 >= 0 && ( Token::WORD === $tokens[ $index - 1 ]->type || Token::OTHER === $tokens[ $index - 1 ]->type ) ) {
 						$index--;
-						$old_part = $tokens[ $index ]['value'];
-						$tokens[ $index ] = [
-							'type'  => 'other',
-							'value' => $old_part . $part,
-						];
+						$old_part = $tokens[ $index ]->value;
+						$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
+
 					// Not preceeded by a non-space + punctuation.
-					} elseif ( $index - 2 >= 0 && 'punctuation' === $tokens[ $index - 1 ]['type'] && 'space' !== $tokens[ $index - 2 ]['type'] ) {
-						$old_part   = $tokens[ $index - 1 ]['value'];
-						$older_part = $tokens[ $index - 2 ]['value'];
-						$tokens[ $index - 2 ] = [
-							'type'  => 'other',
-							'value' => $older_part . $old_part . $part,
-						];
+				} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
+						$old_part   = $tokens[ $index - 1 ]->value;
+						$older_part = $tokens[ $index - 2 ]->value;
+						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
 						unset( $tokens[ $index - 1 ] );
 						$index = $index - 2;
 					} else {
-						$tokens[ $index ] = [
-							'type'  => 'other',
-							'value' => $part,
-						];
+						$tokens[ $index ] = new Token( $part, Token::OTHER );
 					}
 				}
 
@@ -407,7 +381,7 @@ class Text_Parser {
 		$reassembled_text = '';
 
 		foreach ( $this->text as $token ) {
-			$reassembled_text .= $token['value'];
+			$reassembled_text .= $token->value;
 		}
 
 		$this->clear();
@@ -429,19 +403,19 @@ class Text_Parser {
 	 * @param array $tokens {
 	 *      An array of tokens.
 	 *
-	 *      @type string $value
+	 *      @type Text_Parser\Token $index
 	 * }
 	 */
 	function update( $tokens ) {
 		foreach ( $tokens as $index => $token ) {
-			$this->text[ $index ]['value'] = $token['value'];
+			$this->text[ $index ] = $this->text[ $index ]->with_value( $token->value );
 		}
 	}
 
 	/**
 	 * Retrieves all tokens of the currently set text.
 	 *
-	 * @return array An array of tokens.
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_all() {
 		return $this->text;
@@ -450,19 +424,19 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "space".
 	 *
-	 * @return array An array of tokens.
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_spaces() {
-		return $this->get_type( 'space' );
+		return $this->get_type( Token::SPACE );
 	}
 
 	/**
 	 * Retrieves all tokens of the type "punctuation".
 	 *
-	 * @return array An array of tokens.
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_punctuation() {
-		return $this->get_type( 'punctuation' );
+		return $this->get_type( Token::PUNCTUATION );
 	}
 
 	/**
@@ -471,6 +445,8 @@ class Text_Parser {
 	 * @param string $abc   Optional. Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Default 'allow-all-letters'.
 	 * @param string $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Default 'allow-all-caps'.
 	 * @param string $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Default 'no-compounds'.
+	 *
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
 		// Return early if no text has been loaded.
@@ -484,35 +460,35 @@ class Text_Parser {
 		// We cannot call class properties.
 		$strtoupper = $this->current_strtoupper;
 
-		foreach ( $this->get_type( 'word' ) as $index => $token ) {
-			$capped   = $strtoupper( $token['value'] );
-			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token['value'] );
-			$compound = preg_replace( '/[^\w-]/Su', '', $token['value'] );
+		foreach ( $this->get_type( Token::WORD ) as $index => $token ) {
+			$capped   = $strtoupper( $token->value );
+			$lettered = preg_replace( $this->regex['htmlLetterConnectors'], '', $token->value );
+			$compound = preg_replace( '/[^\w-]/Su', '', $token->value );
 
 			// @todo Refactor these tangled if statements.
 			// @codingStandardsIgnoreStart.
-			if ( 'no-all-letters' === $abc && $lettered !== $token['value'] ) {
-				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+			if ( 'no-all-letters' === $abc && $lettered !== $token->value ) {
+				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
 					   ( 'allow-all-caps'   === $caps ) ||
-					   ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) &&
-					 ( ( 'no-compounds'      === $comps && $compound !== $token['value'] ) ||
+					   ( 'require-all-caps' === $caps && $capped === $token->value ) ) &&
+					 ( ( 'no-compounds'      === $comps && $compound !== $token->value ) ||
 					   ( 'allow-compounds'   === $comps ) ||
-					   ( 'require-compounds' === $comps && $compound === $token['value'] ) ) ) {
+					   ( 'require-compounds' === $comps && $compound === $token->value ) ) ) {
 					$tokens[ $index ] = $token;
 				}
 			} elseif ( 'allow-all-letters' === $abc ) {
-				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
 					   ( 'allow-all-caps'   === $caps ) ||
-					   ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) &&
-					 ( ( 'no-compounds'      === $comps && $compound !== $token['value'] ) ||
+					   ( 'require-all-caps' === $caps && $capped === $token->value ) ) &&
+					 ( ( 'no-compounds'      === $comps && $compound !== $token->value ) ||
 					   ( 'allow-compounds'   === $comps ) ||
-					   ( 'require-compounds' === $comps && $compound === $token['value'] ) ) ) {
+					   ( 'require-compounds' === $comps && $compound === $token->value ) ) ) {
 					$tokens[ $index ] = $token;
 				}
-			} elseif ( 'require-all-letters' === $abc && $lettered === $token['value'] ) {
-				if ( ( 'no-all-caps'      === $caps && $capped !== $token['value'] ) ||
+			} elseif ( 'require-all-letters' === $abc && $lettered === $token->value ) {
+				if ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
 					 ( 'allow-all-caps'   === $caps ) ||
-					 ( 'require-all-caps' === $caps && $capped === $token['value'] ) ) {
+					 ( 'require-all-caps' === $caps && $capped === $token->value ) ) {
 				 	$tokens[ $index ] = $token;
 				}
 			}
@@ -525,22 +501,24 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "other".
 	 *
-	 * @return array An array of tokens.
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_other() {
-		return $this->get_type( 'other' );
+		return $this->get_type( Token::OTHER );
 	}
 
 	/**
 	 * Retrieves all tokens of the given type.
 	 *
-	 * @param string $type The type to get.
+	 * @param int $type The type to get.
+	 *
+	 * @return array    An array of Text_Parser\Token.
 	 */
 	function get_type( $type ) {
 		$tokens = [];
 
 		foreach ( $this->text as $index => $token ) {
-			if ( $token['type'] === $type ) {
+			if ( $token->type === $type ) {
 				$tokens[ $index ] = $token;
 			}
 		}

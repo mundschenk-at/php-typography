@@ -250,15 +250,15 @@ class Hyphenator {
 			$this->merge_hyphenation_exceptions();
 		}
 
-		foreach ( $parsed_text_tokens as &$text_token ) {
+		foreach ( $parsed_text_tokens as $key => $text_token ) {
 			// Quickly reference string functions according to encoding.
-			$func = Strings::functions( $text_token['value'] );
+			$func = Strings::functions( $text_token->value );
 			if ( empty( $func ) ) {
 				continue; // unknown encoding, abort.
 			}
 
-			$word_length = $func['strlen']( $text_token['value'] );
-			$the_key     = $func['strtolower']( $text_token['value'] );
+			$word_length = $func['strlen']( $text_token->value );
+			$the_key     = $func['strtolower']( $text_token->value );
 
 			if ( $word_length < $min_length ) {
 				continue;
@@ -266,7 +266,7 @@ class Hyphenator {
 
 			// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
 			// Note: This is different than uppercase words, where we are looking for title case.
-			if ( ! $hyphenate_title_case && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $text_token['value'], 0, 1 ) ) {
+			if ( ! $hyphenate_title_case && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $text_token->value, 0, 1 ) ) {
 				continue;
 			}
 
@@ -310,7 +310,7 @@ class Hyphenator {
 			}
 
 			// Add soft-hyphen based on $word_pattern.
-			$word_parts = $func['str_split']( $text_token['value'], 1 );
+			$word_parts = $func['str_split']( $text_token->value, 1 );
 			$hyphenated_word = '';
 
 			for ( $i = 0; $i < $word_length; $i++ ) {
@@ -321,7 +321,12 @@ class Hyphenator {
 				}
 			}
 
-			$text_token['value'] = $hyphenated_word;
+			// Ensure "copy on write" semantics.
+			if ( $hyphenated_word !== $text_token->value ) {
+				$parsed_text_tokens[ $key ] = new Text_Parser\Token( $hyphenated_word, $text_token->type );
+			}
+
+			// Clear word pattern for next iteration.
 			unset( $word_pattern );
 		}
 

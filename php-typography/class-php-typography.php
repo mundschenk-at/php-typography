@@ -1645,19 +1645,23 @@ class PHP_Typography {
 			$regex      = $settings->get_regular_expressions();
 			$components = $settings->get_components();
 
-			foreach ( $parsed_text_tokens as &$text_token ) {
-				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
-					$text_token['value'] = str_replace( $components['hyphensArray'], '-' . $chr['zeroWidthSpace'], $text_token['value'] );
-					$text_token['value'] = str_replace( '_', '_' . $chr['zeroWidthSpace'], $text_token['value'] );
-					$text_token['value'] = str_replace( '/', '/' . $chr['zeroWidthSpace'], $text_token['value'] );
+			foreach ( $parsed_text_tokens as $index => $text_token ) {
+				$value = $text_token->value;
 
-					$text_token['value'] = preg_replace( $regex['wrapHardHyphensRemoveEndingSpace'], '$1', $text_token['value'] );
+				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
+					$value = str_replace( $components['hyphensArray'], '-' . $chr['zeroWidthSpace'], $value );
+					$value = str_replace( '_', '_' . $chr['zeroWidthSpace'], $value );
+					$value = str_replace( '/', '/' . $chr['zeroWidthSpace'], $value );
+
+					$value = preg_replace( $regex['wrapHardHyphensRemoveEndingSpace'], '$1', $value );
 				}
 
 				if ( ! empty( $settings['smartDashes'] ) ) {
 					// Handled here because we need to know we are inside a word and not a URL.
-					$text_token['value'] = str_replace( '-', $chr['hyphen'], $text_token['value'] );
+					$value = str_replace( '-', $chr['hyphen'], $value );
 				}
+
+				$parsed_text_tokens[ $index ] = $text_token->with_value( $value );
 			}
 		}
 
@@ -1732,8 +1736,8 @@ class PHP_Typography {
 		$regex = $settings->get_regular_expressions();
 
 		// Test for and parse urls.
-		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( $regex['wrapUrlsPattern'], $text_token['value'], $url_match ) ) {
+		foreach ( $parsed_text_tokens as $token_index => $text_token ) {
+			if ( preg_match( $regex['wrapUrlsPattern'], $text_token->value, $url_match ) ) {
 
 				// $url_match['schema'] holds "http://".
 				// $url_match['domain'] holds "subdomains.domain.tld".
@@ -1746,7 +1750,7 @@ class PHP_Typography {
 				// First, we hyphenate each part, we need it formated like a group of words.
 				$parsed_words_like = [];
 				foreach ( $domain_parts as $key => $part ) {
-					$parsed_words_like[ $key ]['value'] = $part;
+					$parsed_words_like[ $key ] = new Text_Parser\Token( $part, Text_Parser\Token::OTHER );
 				}
 
 				// Do the hyphenation.
@@ -1754,10 +1758,12 @@ class PHP_Typography {
 
 				// Restore format.
 				foreach ( $parsed_words_like as $key => $parsed_word ) {
-					if ( $key > 0 && 1 === strlen( $parsed_word['value'] ) ) {
-						$domain_parts[ $key ] = $chr['zeroWidthSpace'] . $parsed_word['value'];
+					$value = $parsed_word->value;
+
+					if ( $key > 0 && 1 === strlen( $value ) ) {
+						$domain_parts[ $key ] = $chr['zeroWidthSpace'] . $value;
 					} else {
-						$domain_parts[ $key ] = $parsed_word['value'];
+						$domain_parts[ $key ] = $value;
 					}
 				}
 
@@ -1776,7 +1782,7 @@ class PHP_Typography {
 					}
 				}
 
-				$text_token['value'] = $http . $domain . $path;
+				$parsed_text_tokens[ $token_index ] = $text_token->with_value( $http . $domain . $path );
 			}
 		}
 
@@ -1799,9 +1805,10 @@ class PHP_Typography {
 		$regex = $settings->get_regular_expressions();
 
 		// Test for and parse urls.
-		foreach ( $parsed_text_tokens as &$text_token ) {
-			if ( preg_match( $regex['wrapEmailsMatchEmails'], $text_token['value'], $email_match ) ) {
-				$text_token['value'] = preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . $chr['zeroWidthSpace'], $text_token['value'] );
+		foreach ( $parsed_text_tokens as $index => $text_token ) {
+			$value = $text_token->value;
+			if ( preg_match( $regex['wrapEmailsMatchEmails'], $value, $email_match ) ) {
+				$parsed_text_tokens[ $index ] = $text_token->with_value( preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . $chr['zeroWidthSpace'], $value ) );
 			}
 		}
 
@@ -2050,15 +2057,13 @@ class PHP_Typography {
 		// Hyphenate compound words.
 		foreach ( $parsed_text_tokens as $key => $word_token ) {
 			$component_words = [];
-			foreach ( preg_split( '/(-)/', $word_token['value'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
-				$component_words[] = [
-					'value' => $word_part,
-				];
+			foreach ( preg_split( '/(-)/', $word_token->value, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE ) as $word_part ) {
+				$component_words[] = new Text_Parser\Token( $word_part, Text_Parser\Token::WORD );
 			}
 
-			$parsed_text_tokens[ $key ]['value'] = array_reduce( $this->hyphenate( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
-				return $carry . $item['value'];
-			} );
+			$parsed_text_tokens[ $key ] = $word_token->with_value( array_reduce( $this->hyphenate( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
+				return $carry . $item->value;
+			} ) );
 		}
 
 		return $parsed_text_tokens;
