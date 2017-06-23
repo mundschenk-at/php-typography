@@ -3297,7 +3297,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
- *
+	 *
 	 * @dataProvider provide_wrap_hard_hyphens_data
 	 *
 	 * @param string $input  HTML input.

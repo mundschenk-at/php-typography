@@ -1440,7 +1440,7 @@ class PHP_Typography {
 			$textnode->data = preg_replace( $regex['smartFractionsEscapeMM/YYYY'],   '$1' . $components['escapeMarker'] . '$2$3$4', $textnode->data );
 
 			// Replace fractions.
-			$numerator_class   = empty( $this->css_classes['numerator'] )   ? '' : ' class="' . $this->css_classes['numerator'] . '"';
+			$numerator_class   = empty( $this->css_classes['numerator'] ) ? '' : ' class="' . $this->css_classes['numerator'] . '"';
 			$denominator_class = empty( $this->css_classes['denominator'] ) ? '' : ' class="' . $this->css_classes['denominator'] . '"';
 			$textnode->data    = preg_replace( $regex['smartFractionsReplacement'], "<sup{$numerator_class}>\$1</sup>" . $chr['fractionSlash'] . "<sub{$denominator_class}>\$2</sub>\$3", $textnode->data );
 
@@ -2081,7 +2081,7 @@ class PHP_Typography {
 
 			// Create and initialize our hyphenator instance.
 			$this->hyphenator = new Hyphenator(
-				isset( $settings['hyphenLanguage'] )              ? $settings['hyphenLanguage'] : null,
+				isset( $settings['hyphenLanguage'] ) ? $settings['hyphenLanguage'] : null,
 				isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : []
 			);
 		} else {
