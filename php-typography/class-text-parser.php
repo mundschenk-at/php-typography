@@ -37,6 +37,17 @@ use PHP_Typography\Text_Parser\Token;
  * If multibyte characters are passed, they must be encoded as UTF-8.
  */
 class Text_Parser {
+
+	const NO_ALL_LETTERS      = 0b000000000001;
+	const ALLOW_ALL_LETTERS   = 0b000000000010;
+	const REQUIRE_ALL_LETTERS = 0b000000000100;
+	const NO_ALL_CAPS         = 0b000000001000;
+	const ALLOW_ALL_CAPS      = 0b000000010000;
+	const REQUIRE_ALL_CAPS    = 0b000000100000;
+	const NO_COMPOUNDS        = 0b000001000000;
+	const ALLOW_COMPOUNDS     = 0b000010000000;
+	const REQUIRE_COMPOUNDS   = 0b000100000000;
+
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
 	 *
@@ -442,13 +453,13 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "word".
 	 *
-	 * @param string $abc   Optional. Handling of all-letter words. Allowed values 'no-all-letters', 'allow-all-letters', 'require-all-letters'. Default 'allow-all-letters'.
-	 * @param string $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values 'no-all-caps', 'allow-all-caps', 'require-all-caps'. Default 'allow-all-caps'.
-	 * @param string $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values 'no-compounds', 'allow-compounds', 'require-compounds'. Default 'no-compounds'.
+	 * @param int $abc   Optional. Handling of all-letter words. Allowed values NO_ALL_LETTERS, ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS. Default ALLOW_ALL_LETTERS.
+	 * @param int $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
+	 * @param int $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_words( $abc = 'allow-all-letters', $caps = 'allow-all-caps', $comps = 'allow-compounds' ) {
+	function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
 		if ( ! isset( $this->text ) || ! is_callable( $this->current_strtoupper ) ) {
 			return []; // abort.
@@ -467,28 +478,28 @@ class Text_Parser {
 
 			// @todo Refactor these tangled if statements.
 			// @codingStandardsIgnoreStart.
-			if ( 'no-all-letters' === $abc && $lettered !== $token->value ) {
-				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
-					   ( 'allow-all-caps'   === $caps ) ||
-					   ( 'require-all-caps' === $caps && $capped === $token->value ) ) &&
-					 ( ( 'no-compounds'      === $comps && $compound !== $token->value ) ||
-					   ( 'allow-compounds'   === $comps ) ||
-					   ( 'require-compounds' === $comps && $compound === $token->value ) ) ) {
+			if ( self::NO_ALL_LETTERS === $abc && $lettered !== $token->value ) {
+				if ( ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
+					   ( self::ALLOW_ALL_CAPS   === $caps ) ||
+					   ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) &&
+					 ( ( self::NO_COMPOUNDS      === $comps && $compound !== $token->value ) ||
+					   ( self::ALLOW_COMPOUNDS   === $comps ) ||
+					   ( self::REQUIRE_COMPOUNDS === $comps && $compound === $token->value ) ) ) {
 					$tokens[ $index ] = $token;
 				}
-			} elseif ( 'allow-all-letters' === $abc ) {
-				if ( ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
-					   ( 'allow-all-caps'   === $caps ) ||
-					   ( 'require-all-caps' === $caps && $capped === $token->value ) ) &&
-					 ( ( 'no-compounds'      === $comps && $compound !== $token->value ) ||
-					   ( 'allow-compounds'   === $comps ) ||
-					   ( 'require-compounds' === $comps && $compound === $token->value ) ) ) {
+			} elseif ( self::ALLOW_ALL_LETTERS === $abc ) {
+				if ( ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
+					   ( self::ALLOW_ALL_CAPS   === $caps ) ||
+					   ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) &&
+					 ( ( self::NO_COMPOUNDS      === $comps && $compound !== $token->value ) ||
+					   ( self::ALLOW_COMPOUNDS   === $comps ) ||
+					   ( self::REQUIRE_COMPOUNDS === $comps && $compound === $token->value ) ) ) {
 					$tokens[ $index ] = $token;
 				}
-			} elseif ( 'require-all-letters' === $abc && $lettered === $token->value ) {
-				if ( ( 'no-all-caps'      === $caps && $capped !== $token->value ) ||
-					 ( 'allow-all-caps'   === $caps ) ||
-					 ( 'require-all-caps' === $caps && $capped === $token->value ) ) {
+			} elseif ( self::REQUIRE_ALL_LETTERS === $abc && $lettered === $token->value ) {
+				if ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
+					 ( self::ALLOW_ALL_CAPS   === $caps ) ||
+					 ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) {
 				 	$tokens[ $index ] = $token;
 				}
 			}

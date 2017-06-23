@@ -865,16 +865,16 @@ class PHP_Typography {
 		$text_parser  = $this->get_text_parser();
 
 		// Set up parameters for word categories.
-		$mixed_caps       = empty( $settings['hyphenateAllCaps'] ) ? 'allow-all-caps' : 'no-all-caps';
-		$letter_caps      = empty( $settings['hyphenateAllCaps'] ) ? 'no-all-caps' : 'allow-all-caps';
-		$mixed_compounds  = empty( $settings['hyphenateCompounds'] ) ? 'allow-compounds' : 'no-compounds';
-		$letter_compounds = empty( $settings['hyphenateCompounds'] ) ? 'no-compounds' : 'allow-compounds';
+		$mixed_caps       = empty( $settings['hyphenateAllCaps'] ) ? Text_Parser::ALLOW_ALL_CAPS : Text_Parser::NO_ALL_CAPS;
+		$letter_caps      = empty( $settings['hyphenateAllCaps'] ) ? Text_Parser::NO_ALL_CAPS : Text_Parser::ALLOW_ALL_CAPS;
+		$mixed_compounds  = empty( $settings['hyphenateCompounds'] ) ? Text_Parser::ALLOW_COMPOUNDS : Text_Parser::NO_COMPOUNDS;
+		$letter_compounds = empty( $settings['hyphenateCompounds'] ) ? Text_Parser::NO_COMPOUNDS : Text_Parser::ALLOW_COMPOUNDS;
 
 		// Break text down for a bit more granularity.
 		$text_parser->load( $textnode->data );
-		$parsed_mixed_words    = $text_parser->get_words( 'no-all-letters', $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
-		$parsed_compound_words = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( 'no-all-letters', $letter_caps, 'require-compounds' ) : [];
-		$parsed_words          = $text_parser->get_words( 'require-all-letters', $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
+		$parsed_mixed_words    = $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
+		$parsed_compound_words = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $letter_caps, Text_Parser::REQUIRE_COMPOUNDS ) : [];
+		$parsed_words          = $text_parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
 		$parsed_other          = $text_parser->get_other();
 
 		// Process individual text parts here.

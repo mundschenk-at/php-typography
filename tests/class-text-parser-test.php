@@ -376,46 +376,46 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertCount( 4, $tokens );
 
 		$parser->load( 'A few m1xed W0RDS.' );
-		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
 		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
 		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
 		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'require-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
 		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 4, $tokens );
 		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
 		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'require-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
 		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
 		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
 		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
 		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 	}
@@ -432,7 +432,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser->load( 'A few m1xed W0RDS.' );
 		$parser->unload();
 
-		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 0, $tokens );
 		$this->assertSame( [], $tokens );
 
