@@ -2154,7 +2154,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves the HTML5 parser instance.
 	 *
-	 * @return \Mastermind\HTML5
+	 * @return \Masterminds\HTML5
 	 */
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
