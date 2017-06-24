@@ -233,7 +233,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			echo 'Error: unknown pattern line ' . clean_html( $line ) . "\n"; // xss ok.
+			echo 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n"; // xss ok.
 			die( -1000 );
 		}
 
