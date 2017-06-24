@@ -391,9 +391,9 @@ class Hyphenator {
 	/**
 	 * Is a number odd?
 	 *
-	 * @param ubt $number Required.
+	 * @param int $number Required.
 	 *
-	 * @return boolean true if $number is odd, false if it is even.
+	 * @return bool true if $number is odd, false if it is even.
 	 */
 	private static function is_odd( $number ) {
 		return (boolean) ( $number % 2 );

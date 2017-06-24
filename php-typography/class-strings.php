@@ -113,7 +113,7 @@ abstract class Strings {
 	/**
 	 * Converts decimal value to unicode character.
 	 *
-	 * @param string|array $codes Decimal value(s) coresponding to unicode character(s).
+	 * @param int|string|array $codes Decimal value(s) coresponding to unicode character(s).
 	 *
 	 * @return string Unicode character(s).
 	 */
@@ -127,7 +127,7 @@ abstract class Strings {
 		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= self::_uchr( $code );
+			$str .= self::_uchr( (int) $code );
 		}
 
 		return $str;

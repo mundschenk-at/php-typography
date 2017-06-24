@@ -152,7 +152,7 @@ class PHP_Typography {
 	/**
 	 * Retrieves a copy (suitable for modification) of the internal settings.
 	 *
-	 * @return Settings A clone of the internal settings. Returns null if the settings object has not been initialized yet.
+	 * @return Settings|null A clone of the internal settings. Returns null if the settings object has not been initialized yet.
 	 */
 	public function get_settings() {
 		if ( ! empty( $this->settings ) ) {
@@ -1033,7 +1033,7 @@ class PHP_Typography {
 	 *
 	 * @param \DOMNode $element Optional. The content node. Default null.
 	 *
-	 * @return \DOMText Null if $element is a block-level element or no text sibling exists.
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
 	function get_previous_textnode( \DOMNode $element = null ) {
 		if ( ! isset( $element ) ) {
@@ -1063,7 +1063,7 @@ class PHP_Typography {
 	 *
 	 * @param \DOMNode $element Optional. The content node. Default null.
 	 *
-	 * @return \DOMText Null if $element is a block-level element or no text sibling exists.
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
 	function get_next_textnode( \DOMNode $element = null ) {
 		if ( ! isset( $element ) ) {
@@ -1094,7 +1094,7 @@ class PHP_Typography {
 	 * @param \DOMNode $element   Optional. Default null.
 	 * @param bool     $recursive Should be set to true on recursive calls. Optional. Default false.
 	 *
-	 * @return \DOMNode The first child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 * @return \DOMNode|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
@@ -1131,7 +1131,7 @@ class PHP_Typography {
 	 * @param \DOMNode $element   Optional. Default null.
 	 * @param bool     $recursive Should be set to true on recursive calls. Optional. Default false.
 	 *
-	 * @return \DOMNode The last child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 * @return \DOMNode|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
