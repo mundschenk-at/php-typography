@@ -396,6 +396,6 @@ class Hyphenator {
 	 * @return bool true if $number is odd, false if it is even.
 	 */
 	private static function is_odd( $number ) {
-		return (boolean) ( $number % 2 );
+		return (bool) ( $number % 2 );
 	}
 }
