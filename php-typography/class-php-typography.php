@@ -174,7 +174,7 @@ class PHP_Typography {
 	/**
 	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
 	 *
-	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
+	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
 	function set_parser_errors_handler( $handler = null ) {
 		$this->settings->set_parser_errors_handler( $handler );
@@ -669,9 +669,9 @@ class PHP_Typography {
 	/**
 	 * Modifies $html according to the defined settings.
 	 *
-	 * @param string   $html      A HTML fragment.
-	 * @param bool     $is_title  Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings $settings  Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string        $html      A HTML fragment.
+	 * @param bool          $is_title  Optional. If the HTML fragment is a title. Default false.
+	 * @param Settings|null $settings  Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.
 	 */
@@ -683,9 +683,9 @@ class PHP_Typography {
 	 * Modifies $html according to the defined settings, in a way that is appropriate for RSS feeds
 	 * (i.e. excluding processes that may not display well with limited character set intelligence).
 	 *
-	 * @param string   $html     A HTML fragment.
-	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings $settings Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string        $html     A HTML fragment.
+	 * @param bool          $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @param Settings|null $settings Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.
 	 */
@@ -696,10 +696,10 @@ class PHP_Typography {
 	/**
 	 * Applies specific fixes to all textnodes of the HTML fragment.
 	 *
-	 * @param string   $html     A HTML fragment.
-	 * @param callable $fixer    A callback that applies typography fixes to a single textnode.
-	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings $settings Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string        $html     A HTML fragment.
+	 * @param callable      $fixer    A callback that applies typography fixes to a single textnode.
+	 * @param bool          $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @param Settings|null $settings Optional. A settings object. Default null (which means the internal settings will be used).
 	 *
 	 * @return string The processed $html.
 	 */
@@ -766,6 +766,7 @@ class PHP_Typography {
 	 *
 	 * @param array $array1 The keys are ignored.
 	 * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 *
 	 * @return boolean
 	 */
 	protected static function arrays_intersect( array $array1, array $array2 ) {
@@ -942,13 +943,8 @@ class PHP_Typography {
 			return true; // not interesting.
 		}
 
-		if ( $errno & E_USER_WARNING && 0 === substr_compare( $errfile, 'DOMTreeBuilder.php', -18 ) ) {
-			// Ignore warnings from parser.
-			return true;
-		}
-
-		// Let PHP handle the rest.
-		return false;
+		// Ignore warnings from parser & let PHP handle the rest.
+		return $errno & E_USER_WARNING && 0 === substr_compare( $errfile, 'DOMTreeBuilder.php', -18 );
 	}
 
 	/**
@@ -2124,9 +2120,9 @@ class PHP_Typography {
 	/**
 	 * Really hyphenates given text fragment.
 	 *
-	 * @param array    $parsed_text_tokens Filtered to words.
-	 * @param Settings $settings          The settings to apply.
-	 * @param string   $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
+	 * @param array       $parsed_text_tokens Filtered to words.
+	 * @param Settings    $settings           The settings to apply.
+	 * @param string|null $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
 	 *
 	 * @return array The hyphenated text token.
 	 */

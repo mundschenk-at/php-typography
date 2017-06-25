@@ -87,8 +87,8 @@ class Hyphenator {
 	/**
 	 * Constructs new Hyphenator instance.
 	 *
-	 * @param string $language   Optional. Short-form language name. Default null.
-	 * @param array  $exceptions Optional. Custom hyphenation exceptions. Default empty array.
+	 * @param string|null $language   Optional. Short-form language name. Default null.
+	 * @param array       $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
 	public function __construct( $language = null, array $exceptions = [] ) {
 
@@ -362,12 +362,13 @@ class Hyphenator {
 	 * Generates a hyphenation pattern from an exception.
 	 *
 	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
-	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
+	 *
+	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
 	function convert_hyphenation_exception_to_pattern( $exception ) {
 		$func = Strings::functions( $exception );
 		if ( empty( $func ) ) {
-			return; // unknown encoding, abort.
+			return null; // unknown encoding, abort.
 		}
 
 		// Set the word_pattern - this method keeps any contextually important capitalization.
