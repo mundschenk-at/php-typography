@@ -1544,22 +1544,30 @@ class Settings implements \ArrayAccess {
 		$replacements = [];
 
 		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
-			foreach ( $this->data['diacriticCustomReplacements'] as $needle => $replacement ) {
-				$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
-				$replacements[ $needle ] = $replacement;
-			}
+			$this->parse_diacritics_rules( $this->data['diacriticCustomReplacements'], $patterns, $replacements );
 		}
 		if ( ! empty( $this->data['diacriticWords'] ) ) {
-			foreach ( $this->data['diacriticWords'] as $needle => $replacement ) {
-				$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
-				$replacements[ $needle ] = $replacement;
-			}
+			$this->parse_diacritics_rules( $this->data['diacriticWords'], $patterns, $replacements );
 		}
 
 		$this->data['diacriticReplacement'] = [
 			'patterns'     => $patterns,
 			'replacements' => $replacements,
 		];
+	}
+
+	/**
+	 * Parse an array of diacritics rules.
+	 *
+	 * @param array $diacritics_rules The rules ( $word => $replacement ).
+	 * @param array $patterns         Resulting patterns. Passed by reference.
+	 * @param array $replacements     Resulting replacements. Passed by reference.
+	 */
+	private function parse_diacritics_rules( array $diacritics_rules, array &$patterns, array &$replacements ) {
+		foreach ( $diacritics_rules as $needle => $replacement ) {
+			$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
+			$replacements[ $needle ] = $replacement;
+		}
 	}
 
 	/**
