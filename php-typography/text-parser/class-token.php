@@ -101,6 +101,8 @@ final class Token {
 	 * Provide read-only access to properties.
 	 *
 	 * @param  string $property The property name.
+	 *
+	 * @return mixed
 	 */
 	public function __get( $property ) {
 		if ( property_exists( $this, $property ) ) {
@@ -113,24 +115,24 @@ final class Token {
 	 *
 	 * @param string $id  The property name.
 	 * @param mixed  $val The value.
+	 * @return void
 	 *
 	 * @throws \BadMethodCallException The Token class is immutable.
 	 */
 	public function __set( $id, $val ) {
 		throw new \BadMethodCallException( 'Object of class Text_Parser\Token is immutable.' );
-		return;
 	}
 
 	/**
 	 * Prevent un-setting of properties.
 	 *
 	 * @param string $id  The property name.
+	 * @return void
 	 *
 	 * @throws \BadMethodCallException The Token class is immutable.
 	 */
 	public function __unset( $id ) {
 		throw new \BadMethodCallException( 'Object of class Text_Parser\Token is immutable.' );
-		return;
 	}
 
 	/**
