@@ -1040,6 +1040,11 @@ class PHP_Typography {
 			return null;
 		}
 
+		/**
+		 * Text node.
+		 *
+		 * @var \DOMText
+		 */
 		$previous_textnode = null;
 		$node = $element;
 
@@ -1070,6 +1075,11 @@ class PHP_Typography {
 			return null;
 		}
 
+		/**
+		 * Text node.
+		 *
+		 * @var \DOMText
+		 */
 		$next_textnode = null;
 		$node = $element;
 
@@ -1110,6 +1120,11 @@ class PHP_Typography {
 			return null;
 		}
 
+		/**
+		 * Text node.
+		 *
+		 * @var \DOMText
+		 */
 		$first_textnode = null;
 
 		if ( $element->hasChildNodes() ) {
@@ -1147,6 +1162,11 @@ class PHP_Typography {
 			return null;
 		}
 
+		/**
+		 * Text node.
+		 *
+		 * @var \DOMText
+		 */
 		$last_textnode = null;
 
 		if ( $element->hasChildNodes() ) {
