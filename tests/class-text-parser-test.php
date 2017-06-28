@@ -69,8 +69,6 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser = new Text_Parser( [ 'UTF-8' ] );
 
 		$this->assertAttributeCount( 0, 'text', $parser );
-		$this->assertAttributeCount( 6, 'regex', $parser );
-		$this->assertAttributeCount( 8, 'components', $parser );
 		$this->assertAttributeEmpty( 'current_strtoupper', $parser );
 	}
 
