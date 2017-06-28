@@ -123,7 +123,7 @@ class PHP_Typography {
 	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
 	 * @param string  $init         Optional. Flag to control initialization. Valid inputs are 'now' and 'lazy'. Default 'now'.
 	 */
-	function __construct( $set_defaults = true, $init = 'now' ) {
+	public function __construct( $set_defaults = true, $init = 'now' ) {
 		if ( 'now' === $init ) {
 			$this->init( $set_defaults );
 		}
@@ -134,7 +134,7 @@ class PHP_Typography {
 	 *
 	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
 	 */
-	function init( $set_defaults = true ) {
+	public function init( $set_defaults = true ) {
 		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
 			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
 		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
@@ -145,7 +145,7 @@ class PHP_Typography {
 	/**
 	 * (Re)sets various options to their default values.
 	 */
-	function set_defaults() {
+	public function set_defaults() {
 		$this->settings->set_defaults();
 	}
 
@@ -167,7 +167,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
-	function set_ignore_parser_errors( $on = false ) {
+	public function set_ignore_parser_errors( $on = false ) {
 		$this->settings->set_ignore_parser_errors( $on );
 	}
 
@@ -176,7 +176,7 @@ class PHP_Typography {
 	 *
 	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
-	function set_parser_errors_handler( $handler = null ) {
+	public function set_parser_errors_handler( $handler = null ) {
 		$this->settings->set_parser_errors_handler( $handler );
 	}
 
@@ -185,7 +185,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
-	function set_true_no_break_narrow_space( $on = false ) {
+	public function set_true_no_break_narrow_space( $on = false ) {
 		$this->settings->set_true_no_break_narrow_space( $on );
 	}
 
@@ -195,7 +195,7 @@ class PHP_Typography {
 	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
 	 *                           Default [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ].
 	 */
-	function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
+	public function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
 		$this->settings->set_tags_to_ignore( $tags );
 	}
 
@@ -213,7 +213,7 @@ class PHP_Typography {
 	 *
 	 * @param string|array $ids Optional. A comma separated list or an array of tag names. Default empty array.
 	 */
-	function set_ids_to_ignore( $ids = [] ) {
+	public function set_ids_to_ignore( $ids = [] ) {
 		$this->settings->set_ids_to_ignore( $ids );
 	}
 
@@ -222,7 +222,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_quotes( $on = true ) {
+	public function set_smart_quotes( $on = true ) {
 		$this->settings->set_smart_quotes( $on );
 	}
 
@@ -248,7 +248,7 @@ class PHP_Typography {
 	 *
 	 * @param string $style Optional. Default 'doubleCurled.
 	 */
-	function set_smart_quotes_primary( $style = 'doubleCurled' ) {
+	public function set_smart_quotes_primary( $style = 'doubleCurled' ) {
 		$this->settings->set_smart_quotes_primary( $style );
 	}
 
@@ -274,7 +274,7 @@ class PHP_Typography {
 	 *
 	 * @param string $style Optional. Default 'singleCurled'.
 	 */
-	function set_smart_quotes_secondary( $style = 'singleCurled' ) {
+	public function set_smart_quotes_secondary( $style = 'singleCurled' ) {
 		$this->settings->set_smart_quotes_secondary( $style );
 	}
 
@@ -283,7 +283,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_dashes( $on = true ) {
+	public function set_smart_dashes( $on = true ) {
 		$this->settings->set_smart_dashes( $on );
 	}
 
@@ -296,7 +296,7 @@ class PHP_Typography {
 	 *
 	 * @param string $style Optional. Default "englishTraditional".
 	 */
-	function set_smart_dashes_style( $style = 'traditionalUS' ) {
+	public function set_smart_dashes_style( $style = 'traditionalUS' ) {
 		$this->settings->set_smart_dashes_style( $style );
 	}
 
@@ -305,7 +305,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_ellipses( $on = true ) {
+	public function set_smart_ellipses( $on = true ) {
 		$this->settings->set_smart_ellipses( $on );
 	}
 
@@ -314,7 +314,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_diacritics( $on = true ) {
+	public function set_smart_diacritics( $on = true ) {
 		$this->settings->set_smart_diacritics( $on );
 	}
 
@@ -323,7 +323,7 @@ class PHP_Typography {
 	 *
 	 * @param string $lang Optional. Has to correspond to a filename in 'diacritics/'. Default 'en-US'.
 	 */
-	function set_diacritic_language( $lang = 'en-US' ) {
+	public function set_diacritic_language( $lang = 'en-US' ) {
 		$this->settings->set_diacritic_language( $lang );
 	}
 
@@ -334,7 +334,7 @@ class PHP_Typography {
 	 *                                   or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 *                                   Default empty array.
 	 */
-	function set_diacritic_custom_replacements( $replacements = [] ) {
+	public function set_diacritic_custom_replacements( $replacements = [] ) {
 		$this->settings->set_diacritic_custom_replacements( $replacements );
 	}
 
@@ -343,7 +343,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_marks( $on = true ) {
+	public function set_smart_marks( $on = true ) {
 		$this->settings->set_smart_marks( $on );
 	}
 
@@ -352,7 +352,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_math( $on = true ) {
+	public function set_smart_math( $on = true ) {
 		$this->settings->set_smart_math( $on );
 	}
 
@@ -361,7 +361,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_exponents( $on = true ) {
+	public function set_smart_exponents( $on = true ) {
 		$this->settings->set_smart_exponents( $on );
 	}
 
@@ -370,7 +370,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_fractions( $on = true ) {
+	public function set_smart_fractions( $on = true ) {
 		$this->settings->set_smart_fractions( $on );
 	}
 
@@ -379,7 +379,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_ordinal_suffix( $on = true ) {
+	public function set_smart_ordinal_suffix( $on = true ) {
 		$this->settings->set_smart_ordinal_suffix( $on );
 	}
 
@@ -388,7 +388,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_single_character_word_spacing( $on = true ) {
+	public function set_single_character_word_spacing( $on = true ) {
 		$this->settings->set_single_character_word_spacing( $on );
 	}
 
@@ -397,7 +397,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_fraction_spacing( $on = true ) {
+	public function set_fraction_spacing( $on = true ) {
 		$this->settings->set_fraction_spacing( $on );
 	}
 
@@ -406,7 +406,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_unit_spacing( $on = true ) {
+	public function set_unit_spacing( $on = true ) {
 		$this->settings->set_unit_spacing( $on );
 	}
 
@@ -415,7 +415,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_numbered_abbreviation_spacing( $on = true ) {
+	public function set_numbered_abbreviation_spacing( $on = true ) {
 		$this->settings->set_numbered_abbreviation_spacing( $on );
 	}
 
@@ -424,7 +424,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
-	function set_french_punctuation_spacing( $on = false ) {
+	public function set_french_punctuation_spacing( $on = false ) {
 		$this->settings->set_french_punctuation_spacing( $on );
 	}
 
@@ -433,7 +433,7 @@ class PHP_Typography {
 	 *
 	 * @param string|array $units Optional. A comma separated list or an array of units. Default empty array.
 	 */
-	function set_units( $units = [] ) {
+	public function set_units( $units = [] ) {
 		$this->settings->set_units( $units );
 	}
 
@@ -442,7 +442,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_dash_spacing( $on = true ) {
+	public function set_dash_spacing( $on = true ) {
 		$this->settings->set_dash_spacing( $on );
 	}
 
@@ -451,7 +451,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_space_collapse( $on = true ) {
+	public function set_space_collapse( $on = true ) {
 		$this->settings->set_space_collapse( $on );
 	}
 
@@ -460,7 +460,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_dewidow( $on = true ) {
+	public function set_dewidow( $on = true ) {
 		$this->settings->set_dewidow( $on );
 	}
 
@@ -469,7 +469,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
-	function set_max_dewidow_length( $length = 5 ) {
+	public function set_max_dewidow_length( $length = 5 ) {
 		$this->settings->set_max_dewidow_length( $length );
 	}
 
@@ -478,7 +478,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the pull to the default.
 	 */
-	function set_max_dewidow_pull( $length = 5 ) {
+	public function set_max_dewidow_pull( $length = 5 ) {
 		$this->settings->set_max_dewidow_pull( $length );
 	}
 
@@ -487,7 +487,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_wrap_hard_hyphens( $on = true ) {
+	public function set_wrap_hard_hyphens( $on = true ) {
 		$this->settings->set_wrap_hard_hyphens( $on );
 	}
 
@@ -496,7 +496,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_url_wrap( $on = true ) {
+	public function set_url_wrap( $on = true ) {
 		$this->settings->set_url_wrap( $on );
 	}
 
@@ -505,7 +505,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_email_wrap( $on = true ) {
+	public function set_email_wrap( $on = true ) {
 		$this->settings->set_email_wrap( $on );
 	}
 
@@ -514,7 +514,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 5. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_after_url_wrap( $length = 5 ) {
+	public function set_min_after_url_wrap( $length = 5 ) {
 		$this->settings->set_min_after_url_wrap( $length );
 	}
 
@@ -523,7 +523,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_ampersands( $on = true ) {
+	public function set_style_ampersands( $on = true ) {
 		$this->settings->set_style_ampersands( $on );
 	}
 
@@ -532,7 +532,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_caps( $on = true ) {
+	public function set_style_caps( $on = true ) {
 		$this->settings->set_style_caps( $on );
 	}
 
@@ -541,7 +541,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_initial_quotes( $on = true ) {
+	public function set_style_initial_quotes( $on = true ) {
 		$this->settings->set_style_initial_quotes( $on );
 	}
 
@@ -550,7 +550,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_numbers( $on = true ) {
+	public function set_style_numbers( $on = true ) {
 		$this->settings->set_style_numbers( $on );
 	}
 
@@ -559,7 +559,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_hanging_punctuation( $on = true ) {
+	public function set_style_hanging_punctuation( $on = true ) {
 		$this->settings->set_style_hanging_punctuation( $on );
 	}
 
@@ -569,7 +569,7 @@ class PHP_Typography {
 	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
 	 *                           Default [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ].
 	 */
-	function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
+	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
 		$this->settings->set_initial_quote_tags( $tags );
 	}
 
@@ -578,7 +578,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenation( $on = true ) {
+	public function set_hyphenation( $on = true ) {
 		$this->settings->set_hyphenation( $on );
 	}
 
@@ -587,7 +587,7 @@ class PHP_Typography {
 	 *
 	 * @param string $lang Optional. Has to correspond to a filename in 'lang'. Default 'en-US'.
 	 */
-	function set_hyphenation_language( $lang = 'en-US' ) {
+	public function set_hyphenation_language( $lang = 'en-US' ) {
 		$this->settings->set_hyphenation_language( $lang );
 	}
 
@@ -596,7 +596,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
-	function set_min_length_hyphenation( $length = 5 ) {
+	public function set_min_length_hyphenation( $length = 5 ) {
 		$this->settings->set_min_length_hyphenation( $length );
 	}
 
@@ -605,7 +605,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 3. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_before_hyphenation( $length = 3 ) {
+	public function set_min_before_hyphenation( $length = 3 ) {
 		$this->settings->set_min_before_hyphenation( $length );
 	}
 
@@ -614,7 +614,7 @@ class PHP_Typography {
 	 *
 	 * @param int $length Optional. Default 2. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_after_hyphenation( $length = 2 ) {
+	public function set_min_after_hyphenation( $length = 2 ) {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->settings->set_min_after_hyphenation( $length );
@@ -625,7 +625,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_headings( $on = true ) {
+	public function set_hyphenate_headings( $on = true ) {
 		$this->settings->set_hyphenate_headings( $on );
 	}
 
@@ -634,7 +634,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_all_caps( $on = true ) {
+	public function set_hyphenate_all_caps( $on = true ) {
 		$this->settings->set_hyphenate_all_caps( $on );
 	}
 
@@ -643,7 +643,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_title_case( $on = true ) {
+	public function set_hyphenate_title_case( $on = true ) {
 		$this->settings->set_hyphenate_title_case( $on );
 	}
 
@@ -652,7 +652,7 @@ class PHP_Typography {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_compounds( $on = true ) {
+	public function set_hyphenate_compounds( $on = true ) {
 		$this->settings->set_hyphenate_compounds( $on );
 	}
 
@@ -662,7 +662,7 @@ class PHP_Typography {
 	 * @param string|array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
 	 *                                 In the latter case, only alphanumeric characters and hyphens are recognized. Default empty array.
 	 */
-	function set_hyphenation_exceptions( $exceptions = [] ) {
+	public function set_hyphenation_exceptions( $exceptions = [] ) {
 		$this->settings->set_hyphenation_exceptions( $exceptions );
 	}
 
@@ -675,7 +675,7 @@ class PHP_Typography {
 	 *
 	 * @return string The processed $html.
 	 */
-	function process( $html, $is_title = false, Settings $settings = null ) {
+	public function process( $html, $is_title = false, Settings $settings = null ) {
 		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $is_title, $settings );
 	}
 
@@ -689,7 +689,7 @@ class PHP_Typography {
 	 *
 	 * @return string The processed $html.
 	 */
-	function process_feed( $html, $is_title = false, Settings $settings = null ) {
+	public function process_feed( $html, $is_title = false, Settings $settings = null ) {
 		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $is_title, $settings );
 	}
 
@@ -861,7 +861,7 @@ class PHP_Typography {
 	 * @param Settings $settings The settings to apply.
 	 * @param bool     $is_title If the HTML fragment is a title. Defaults to false.
 	 */
-	function process_words( \DOMText $textnode, Settings $settings, $is_title = false ) {
+	public function process_words( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Lazy-load text parser.
 		$text_parser  = $this->get_text_parser();
 
@@ -899,7 +899,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMDocument The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
-	function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
+	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
 		// Silence some parsing errors for invalid HTML.
 		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
 		$xml_error_handling = libxml_use_internal_errors( true );
@@ -956,7 +956,7 @@ class PHP_Typography {
 	 *
 	 * @return array An array of \DOMNode (can be empty).
 	 */
-	function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
+	public function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
 		$elements = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
@@ -987,7 +987,7 @@ class PHP_Typography {
 	 * @param \DOMNode $element The content node.
 	 * @return string A single character (or the empty string).
 	 */
-	function get_prev_chr( \DOMNode $element ) {
+	public function get_prev_chr( \DOMNode $element ) {
 		$previous_textnode = $this->get_previous_textnode( $element );
 
 		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
@@ -1009,7 +1009,7 @@ class PHP_Typography {
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	function get_next_chr( \DOMNode $element ) {
+	public function get_next_chr( \DOMNode $element ) {
 		$next_textnode = $this->get_next_textnode( $element );
 
 		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
@@ -1031,7 +1031,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
-	function get_previous_textnode( \DOMNode $element = null ) {
+	public function get_previous_textnode( \DOMNode $element = null ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -1066,7 +1066,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
-	function get_next_textnode( \DOMNode $element = null ) {
+	public function get_next_textnode( \DOMNode $element = null ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -1102,7 +1102,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMNode|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
+	public function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -1144,7 +1144,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMNode|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
+	public function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -1184,7 +1184,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_quotes( \DOMText $textnode, Settings $settings ) {
+	public function smart_quotes( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartQuotes'] ) ) {
 			return;
 		}
@@ -1264,7 +1264,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_dashes( \DOMText $textnode, Settings $settings ) {
+	public function smart_dashes( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartDashes'] ) ) {
 			return;
 		}
@@ -1315,7 +1315,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_diacritics( \DOMText $textnode, Settings $settings ) {
+	public function smart_diacritics( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartDiacritics'] ) ) {
 			return; // abort.
 		}
@@ -1342,7 +1342,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_marks( \DOMText $textnode, Settings $settings ) {
+	public function smart_marks( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartMarks'] ) ) {
 			return;
 		}
@@ -1372,7 +1372,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_math( \DOMText $textnode, Settings $settings ) {
+	public function smart_math( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartMath'] ) ) {
 			return;
 		}
@@ -1416,7 +1416,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_exponents( \DOMText $textnode, Settings $settings ) {
+	public function smart_exponents( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartExponents'] ) ) {
 			return;
 		}
@@ -1434,7 +1434,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_fractions( \DOMText $textnode, Settings $settings ) {
+	public function smart_fractions( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartFractions'] ) && empty( $settings['fractionSpacing'] ) ) {
 			return;
 		}
@@ -1473,7 +1473,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function smart_ordinal_suffix( \DOMText $textnode, Settings $settings ) {
+	public function smart_ordinal_suffix( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['smartOrdinalSuffix'] ) ) {
 			return;
 		}
@@ -1488,7 +1488,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function single_character_word_spacing( \DOMText $textnode, Settings $settings ) {
+	public function single_character_word_spacing( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['singleCharacterWordSpacing'] ) ) {
 			return;
 		}
@@ -1544,7 +1544,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function dash_spacing( \DOMText $textnode, Settings $settings ) {
+	public function dash_spacing( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['dashSpacing'] ) ) {
 			return;
 		}
@@ -1564,7 +1564,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function space_collapse( \DOMText $textnode, Settings $settings ) {
+	public function space_collapse( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['spaceCollapse'] ) ) {
 			return;
 		}
@@ -1594,7 +1594,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function unit_spacing( \DOMText $textnode, Settings $settings ) {
+	public function unit_spacing( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['unitSpacing'] ) ) {
 			return;
 		}
@@ -1610,7 +1610,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function numbered_abbreviation_spacing( \DOMText $textnode, Settings $settings ) {
+	public function numbered_abbreviation_spacing( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['numberedAbbreviationSpacing'] ) ) {
 			return;
 		}
@@ -1631,7 +1631,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function french_punctuation_spacing( \DOMText $textnode, Settings $settings ) {
+	public function french_punctuation_spacing( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['frenchPunctuationSpacing'] ) ) {
 			return;
 		}
@@ -1653,7 +1653,7 @@ class PHP_Typography {
 	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
 	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_hard_hyphens( array $parsed_text_tokens, Settings $settings ) {
+	public function wrap_hard_hyphens( array $parsed_text_tokens, Settings $settings ) {
 		if ( ! empty( $settings['hyphenHardWrap'] ) || ! empty( $settings['smartDashes'] ) ) {
 
 			// Various special characters and regular expressions.
@@ -1690,7 +1690,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function dewidow( \DOMText $textnode, Settings $settings ) {
+	public function dewidow( \DOMText $textnode, Settings $settings ) {
 		// Intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser.
 		// Intervening tags will only interfere if they separate the widow from previous or preceding whitespace.
 		if ( empty( $settings['dewidow'] ) || empty( $settings['dewidowMaxPull'] ) || empty( $settings['dewidowMaxLength'] ) ) {
@@ -1742,7 +1742,7 @@ class PHP_Typography {
 	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
 	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_urls( array $parsed_text_tokens, Settings $settings ) {
+	public function wrap_urls( array $parsed_text_tokens, Settings $settings ) {
 		if ( empty( $settings['urlWrap'] ) || empty( $settings['urlMinAfterWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
@@ -1811,7 +1811,7 @@ class PHP_Typography {
 	 * @param array    $parsed_text_tokens The tokenized content of a textnode.
 	 * @param Settings $settings           The settings to apply.
 	 */
-	function wrap_emails( array $parsed_text_tokens, Settings $settings ) {
+	public function wrap_emails( array $parsed_text_tokens, Settings $settings ) {
 		if ( empty( $settings['emailWrap'] ) ) {
 			return $parsed_text_tokens;
 		}
@@ -1840,7 +1840,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function style_caps( \DOMText $textnode, Settings $settings ) {
+	public function style_caps( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['styleCaps'] ) ) {
 			return;
 		}
@@ -1856,7 +1856,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMNode|array An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
 	 */
-	function replace_node_with_html( \DOMNode $node, $content ) {
+	public function replace_node_with_html( \DOMNode $node, $content ) {
 		$result = $node;
 
 		$parent = $node->parentNode;
@@ -1898,7 +1898,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function style_numbers( \DOMText $textnode, Settings $settings ) {
+	public function style_numbers( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['styleNumbers'] ) ) {
 			return;
 		}
@@ -1912,7 +1912,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function style_hanging_punctuation( \DOMText $textnode, Settings $settings ) {
+	public function style_hanging_punctuation( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['styleHangingPunctuation'] ) ) {
 			return;
 		}
@@ -1958,7 +1958,7 @@ class PHP_Typography {
 	 * @param \DOMText $textnode The content node.
 	 * @param Settings $settings The settings to apply.
 	 */
-	function style_ampersands( \DOMText $textnode, Settings $settings ) {
+	public function style_ampersands( \DOMText $textnode, Settings $settings ) {
 		if ( empty( $settings['styleAmpersands'] ) ) {
 			return;
 		}
@@ -1973,7 +1973,7 @@ class PHP_Typography {
 	 * @param Settings $settings The settings to apply.
 	 * @param bool     $is_title Default false.
 	 */
-	function style_initial_quotes( \DOMText $textnode, Settings $settings, $is_title = false ) {
+	public function style_initial_quotes( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) ) {
 			return;
 		}
@@ -2032,7 +2032,7 @@ class PHP_Typography {
 	 * @param bool     $is_title           Flag to indicate title fragments. Optional. Default false.
 	 * @param \DOMText $textnode           The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
 	 */
-	function hyphenate( $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+	public function hyphenate( $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenation'] ) ) {
 			return $parsed_text_tokens; // abort.
 		}
@@ -2065,7 +2065,7 @@ class PHP_Typography {
 	 * @param bool     $is_title           Flag to indicate title fragments. Optional. Default false.
 	 * @param \DOMText $textnode           The textnode corresponding to the $parsed_text_tokens. Optional. Default null.
 	 */
-	function hyphenate_compounds( array $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+	public function hyphenate_compounds( array $parsed_text_tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenateCompounds'] ) ) {
 			return $parsed_text_tokens; // abort.
 		}
@@ -2126,7 +2126,7 @@ class PHP_Typography {
 	 *
 	 * @return array The hyphenated text token.
 	 */
-	function do_hyphenate( array $parsed_text_tokens, Settings $settings, $hyphen = null ) {
+	public function do_hyphenate( array $parsed_text_tokens, Settings $settings, $hyphen = null ) {
 		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {
 			return $parsed_text_tokens;
 		}
@@ -2146,7 +2146,7 @@ class PHP_Typography {
 	 *
 	 * @return \DOMElement
 	 */
-	function get_block_parent( \DOMNode $element ) {
+	public function get_block_parent( \DOMNode $element ) {
 		$parent = $element->parentNode;
 
 		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
@@ -2236,7 +2236,7 @@ class PHP_Typography {
 	 *
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
-	static public function get_hyphenation_languages() {
+	public static function get_hyphenation_languages() {
 		return self::get_language_plugin_list( __DIR__ . '/lang/' );
 	}
 
@@ -2247,7 +2247,7 @@ class PHP_Typography {
 	 *
 	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
-	static public function get_diacritic_languages() {
+	public static function get_diacritic_languages() {
 		return self::get_language_plugin_list( __DIR__ . '/diacritics/' );
 	}
 }

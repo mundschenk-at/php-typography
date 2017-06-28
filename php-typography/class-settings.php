@@ -102,7 +102,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
-	function __construct( $set_defaults = true ) {
+	public function __construct( $set_defaults = true ) {
 		$this->init( $set_defaults );
 	}
 
@@ -410,7 +410,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * (Re)set various options to their default values.
 	 */
-	function set_defaults() {
+	public function set_defaults() {
 		// General attributes.
 		$this->set_tags_to_ignore();
 		$this->set_classes_to_ignore();
@@ -789,7 +789,7 @@ class Settings implements \ArrayAccess {
 	 * @param string $path The full path and filename.
 	 * @return string A list of top-level domains concatenated with '|'.
 	 */
-	function get_top_level_domains_from_file( $path ) {
+	public function get_top_level_domains_from_file( $path ) {
 		$domains = [];
 
 		if ( file_exists( $path ) ) {
@@ -1231,7 +1231,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
-	function set_ignore_parser_errors( $on = false ) {
+	public function set_ignore_parser_errors( $on = false ) {
 		$this->data['parserErrorsIgnore'] = $on;
 	}
 
@@ -1240,7 +1240,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
-	function set_parser_errors_handler( $handler = null ) {
+	public function set_parser_errors_handler( $handler = null ) {
 		if ( ! empty( $handler ) && ! is_callable( $handler ) ) {
 			return; // Invalid handler, abort.
 		}
@@ -1253,7 +1253,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default false.
 	 */
-	function set_true_no_break_narrow_space( $on = false ) {
+	public function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
 			$this->chr['noBreakNarrowSpace'] = Strings::_uchr( 8239 );
@@ -1273,7 +1273,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
-	function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
+	public function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
 		if ( ! is_array( $tags ) ) {
 			$tags = preg_split( $this->regex['parameterSplitting'], $tags, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1302,7 +1302,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $ids A comma separated list or an array of tag names.
 	 */
-	function set_ids_to_ignore( $ids = [] ) {
+	public function set_ids_to_ignore( $ids = [] ) {
 		if ( ! is_array( $ids ) ) {
 			$ids = preg_split( $this->regex['parameterSplitting'], $ids, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1314,7 +1314,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_quotes( $on = true ) {
+	public function set_smart_quotes( $on = true ) {
 		$this->data['smartQuotes'] = $on;
 	}
 
@@ -1340,7 +1340,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $style Defaults to 'doubleCurled.
 	 */
-	function set_smart_quotes_primary( $style = 'doubleCurled' ) {
+	public function set_smart_quotes_primary( $style = 'doubleCurled' ) {
 		if ( isset( $this->quote_styles[ $style ] ) ) {
 			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
 				$this->chr['doubleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
@@ -1378,7 +1378,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $style Defaults to 'singleCurled'.
 	 */
-	function set_smart_quotes_secondary( $style = 'singleCurled' ) {
+	public function set_smart_quotes_secondary( $style = 'singleCurled' ) {
 		if ( isset( $this->quote_styles[ $style ] ) ) {
 			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
 				$this->chr['singleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
@@ -1399,7 +1399,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_dashes( $on = true ) {
+	public function set_smart_dashes( $on = true ) {
 		$this->data['smartDashes'] = $on;
 	}
 
@@ -1412,7 +1412,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $style Optional. Default "englishTraditional".
 	 */
-	function set_smart_dashes_style( $style = 'traditionalUS' ) {
+	public function set_smart_dashes_style( $style = 'traditionalUS' ) {
 		if ( isset( $this->dash_styles[ $style ] ) ) {
 			if ( ! empty( $this->dash_styles[ $style ]['parenthetical'] ) ) {
 				$this->chr['parentheticalDash'] = $this->dash_styles[ $style ]['parenthetical'];
@@ -1453,7 +1453,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_ellipses( $on = true ) {
+	public function set_smart_ellipses( $on = true ) {
 		$this->data['smartEllipses'] = $on;
 	}
 
@@ -1462,7 +1462,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_diacritics( $on = true ) {
+	public function set_smart_diacritics( $on = true ) {
 		$this->data['smartDiacritics'] = $on;
 	}
 
@@ -1471,7 +1471,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $lang Has to correspond to a filename in 'diacritics'. Optional. Default 'en-US'.
 	 */
-	function set_diacritic_language( $lang = 'en-US' ) {
+	public function set_diacritic_language( $lang = 'en-US' ) {
 		if ( isset( $this->data['diacriticLanguage'] ) && $this->data['diacriticLanguage'] === $lang ) {
 			return;
 		}
@@ -1495,7 +1495,7 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $custom_replacements An array formatted [needle=>replacement, needle=>replacement...],
 	 *                                          or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
-	function set_diacritic_custom_replacements( $custom_replacements = [] ) {
+	public function set_diacritic_custom_replacements( $custom_replacements = [] ) {
 		if ( ! is_array( $custom_replacements ) ) {
 			$custom_replacements = preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1575,7 +1575,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_marks( $on = true ) {
+	public function set_smart_marks( $on = true ) {
 		$this->data['smartMarks'] = $on;
 	}
 
@@ -1584,7 +1584,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_math( $on = true ) {
+	public function set_smart_math( $on = true ) {
 		$this->data['smartMath'] = $on;
 	}
 
@@ -1593,7 +1593,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_exponents( $on = true ) {
+	public function set_smart_exponents( $on = true ) {
 		$this->data['smartExponents'] = $on;
 	}
 
@@ -1602,7 +1602,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_fractions( $on = true ) {
+	public function set_smart_fractions( $on = true ) {
 		$this->data['smartFractions'] = $on;
 	}
 
@@ -1611,7 +1611,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_smart_ordinal_suffix( $on = true ) {
+	public function set_smart_ordinal_suffix( $on = true ) {
 		$this->data['smartOrdinalSuffix'] = $on;
 	}
 
@@ -1620,7 +1620,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_single_character_word_spacing( $on = true ) {
+	public function set_single_character_word_spacing( $on = true ) {
 		$this->data['singleCharacterWordSpacing'] = $on;
 	}
 
@@ -1629,7 +1629,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_fraction_spacing( $on = true ) {
+	public function set_fraction_spacing( $on = true ) {
 		$this->data['fractionSpacing'] = $on;
 	}
 
@@ -1638,7 +1638,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_unit_spacing( $on = true ) {
+	public function set_unit_spacing( $on = true ) {
 		$this->data['unitSpacing'] = $on;
 	}
 
@@ -1647,7 +1647,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_numbered_abbreviation_spacing( $on = true ) {
+	public function set_numbered_abbreviation_spacing( $on = true ) {
 		$this->data['numberedAbbreviationSpacing'] = $on;
 	}
 
@@ -1656,7 +1656,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_french_punctuation_spacing( $on = true ) {
+	public function set_french_punctuation_spacing( $on = true ) {
 		$this->data['frenchPunctuationSpacing'] = $on;
 	}
 
@@ -1665,7 +1665,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $units A comma separated list or an array of units.
 	 */
-	function set_units( $units = [] ) {
+	public function set_units( $units = [] ) {
 		if ( ! is_array( $units ) ) {
 			$units = preg_split( $this->regex['parameterSplitting'], $units, -1, PREG_SPLIT_NO_EMPTY );
 		}
@@ -1696,7 +1696,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_dash_spacing( $on = true ) {
+	public function set_dash_spacing( $on = true ) {
 		$this->data['dashSpacing'] = $on;
 	}
 
@@ -1705,7 +1705,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_space_collapse( $on = true ) {
+	public function set_space_collapse( $on = true ) {
 		$this->data['spaceCollapse'] = $on;
 	}
 
@@ -1714,7 +1714,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_dewidow( $on = true ) {
+	public function set_dewidow( $on = true ) {
 		$this->data['dewidow'] = $on;
 	}
 
@@ -1723,7 +1723,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
-	function set_max_dewidow_length( $length = 5 ) {
+	public function set_max_dewidow_length( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->data['dewidowMaxLength'] = $length;
@@ -1734,7 +1734,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
-	function set_max_dewidow_pull( $length = 5 ) {
+	public function set_max_dewidow_pull( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->data['dewidowMaxPull'] = $length;
@@ -1745,7 +1745,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_wrap_hard_hyphens( $on = true ) {
+	public function set_wrap_hard_hyphens( $on = true ) {
 		$this->data['hyphenHardWrap'] = $on;
 	}
 
@@ -1754,7 +1754,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_url_wrap( $on = true ) {
+	public function set_url_wrap( $on = true ) {
 		$this->data['urlWrap'] = $on;
 	}
 
@@ -1763,7 +1763,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_email_wrap( $on = true ) {
+	public function set_email_wrap( $on = true ) {
 		$this->data['emailWrap'] = $on;
 	}
 
@@ -1772,7 +1772,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_after_url_wrap( $length = 5 ) {
+	public function set_min_after_url_wrap( $length = 5 ) {
 		$length = ( $length > 0 ) ? $length : 5;
 
 		$this->data['urlMinAfterWrap'] = $length;
@@ -1783,7 +1783,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_ampersands( $on = true ) {
+	public function set_style_ampersands( $on = true ) {
 		$this->data['styleAmpersands'] = $on;
 	}
 
@@ -1792,7 +1792,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_caps( $on = true ) {
+	public function set_style_caps( $on = true ) {
 		$this->data['styleCaps'] = $on;
 	}
 
@@ -1801,7 +1801,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_initial_quotes( $on = true ) {
+	public function set_style_initial_quotes( $on = true ) {
 		$this->data['styleInitialQuotes'] = $on;
 	}
 
@@ -1810,7 +1810,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_numbers( $on = true ) {
+	public function set_style_numbers( $on = true ) {
 		$this->data['styleNumbers'] = $on;
 	}
 
@@ -1819,7 +1819,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_style_hanging_punctuation( $on = true ) {
+	public function set_style_hanging_punctuation( $on = true ) {
 		$this->data['styleHangingPunctuation'] = $on;
 	}
 
@@ -1828,7 +1828,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
-	function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
+	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
 		// Make array if handed a list of tags as a string.
 		if ( ! is_array( $tags ) ) {
 			$tags = preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
@@ -1843,7 +1843,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenation( $on = true ) {
+	public function set_hyphenation( $on = true ) {
 		$this->data['hyphenation'] = $on;
 	}
 
@@ -1852,7 +1852,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
 	 */
-	function set_hyphenation_language( $lang = 'en-US' ) {
+	public function set_hyphenation_language( $lang = 'en-US' ) {
 		if ( isset( $this->data['hyphenLanguage'] ) && $this->data['hyphenLanguage'] === $lang ) {
 			return; // Bail out, no need to do anything.
 		}
@@ -1865,7 +1865,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
 	 */
-	function set_min_length_hyphenation( $length = 5 ) {
+	public function set_min_length_hyphenation( $length = 5 ) {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->data['hyphenMinLength'] = $length;
@@ -1876,7 +1876,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_before_hyphenation( $length = 3 ) {
+	public function set_min_before_hyphenation( $length = 3 ) {
 		$length = ( $length > 0 ) ? $length : 3;
 
 		$this->data['hyphenMinBefore'] = $length;
@@ -1887,7 +1887,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param int $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
 	 */
-	function set_min_after_hyphenation( $length = 2 ) {
+	public function set_min_after_hyphenation( $length = 2 ) {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->data['hyphenMinAfter'] = $length;
@@ -1898,7 +1898,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_headings( $on = true ) {
+	public function set_hyphenate_headings( $on = true ) {
 		$this->data['hyphenateTitle'] = $on;
 	}
 
@@ -1907,7 +1907,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_all_caps( $on = true ) {
+	public function set_hyphenate_all_caps( $on = true ) {
 		$this->data['hyphenateAllCaps'] = $on;
 	}
 
@@ -1916,7 +1916,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_title_case( $on = true ) {
+	public function set_hyphenate_title_case( $on = true ) {
 		$this->data['hyphenateTitleCase'] = $on;
 	}
 
@@ -1925,7 +1925,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
-	function set_hyphenate_compounds( $on = true ) {
+	public function set_hyphenate_compounds( $on = true ) {
 		$this->data['hyphenateCompounds'] = $on;
 	}
 
@@ -1935,7 +1935,7 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $exceptions An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
 	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
 	 */
-	function set_hyphenation_exceptions( $exceptions = [] ) {
+	public function set_hyphenation_exceptions( $exceptions = [] ) {
 		if ( ! is_array( $exceptions ) ) {
 			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
 		}

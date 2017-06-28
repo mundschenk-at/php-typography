@@ -81,7 +81,7 @@ class Text_Parser {
 	/**
 	 * Creates a new parser object.
 	 */
-	function __construct() {
+	public function __construct() {
 		/**
 		 * Find spacing FIRST (as it is the primary delimiter)
 		 *
@@ -297,7 +297,7 @@ class Text_Parser {
 	 *
 	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
-	function load( $raw_text ) {
+	public function load( $raw_text ) {
 		if ( ! is_string( $raw_text ) ) {
 			return false; // we have an error, abort.
 		}
@@ -379,7 +379,7 @@ class Text_Parser {
 	 *
 	 * @return bool Returns true on successful completion.
 	 */
-	function reload() {
+	public function reload() {
 		return $this->load( $this->unload() );
 	}
 
@@ -388,7 +388,7 @@ class Text_Parser {
 	 *
 	 * @return string
 	 */
-	function unload() {
+	public function unload() {
 		$reassembled_text = '';
 
 		foreach ( $this->text as $token ) {
@@ -403,7 +403,7 @@ class Text_Parser {
 	/**
 	 * Clears the currently set text from the parser.
 	 */
-	function clear() {
+	public function clear() {
 		$this->text = [];
 		$this->current_strtoupper = null;
 	}
@@ -417,7 +417,7 @@ class Text_Parser {
 	 *      @type Text_Parser\Token $index
 	 * }
 	 */
-	function update( $tokens ) {
+	public function update( $tokens ) {
 		foreach ( $tokens as $index => $token ) {
 			$this->text[ $index ] = $this->text[ $index ]->with_value( $token->value );
 		}
@@ -428,7 +428,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_all() {
+	public function get_all() {
 		return $this->text;
 	}
 
@@ -437,7 +437,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_spaces() {
+	public function get_spaces() {
 		return $this->get_type( Token::SPACE );
 	}
 
@@ -446,7 +446,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_punctuation() {
+	public function get_punctuation() {
 		return $this->get_type( Token::PUNCTUATION );
 	}
 
@@ -459,7 +459,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
+	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
 		if ( ! isset( $this->text ) || ! is_callable( $this->current_strtoupper ) ) {
 			return []; // abort.
@@ -514,7 +514,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_other() {
+	public function get_other() {
 		return $this->get_type( Token::OTHER );
 	}
 
@@ -525,7 +525,7 @@ class Text_Parser {
 	 *
 	 * @return array    An array of Text_Parser\Token.
 	 */
-	function get_type( $type ) {
+	public function get_type( $type ) {
 		$tokens = [];
 
 		foreach ( $this->text as $index => $token ) {

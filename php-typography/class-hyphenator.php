@@ -337,7 +337,7 @@ class Hyphenator {
 	 * Merges hyphenation exceptions from the language file and custom hyphenation exceptions and
 	 * generates patterns for all of them.
 	 */
-	function merge_hyphenation_exceptions() {
+	protected function merge_hyphenation_exceptions() {
 		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
@@ -365,7 +365,7 @@ class Hyphenator {
 	 *
 	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
-	function convert_hyphenation_exception_to_pattern( $exception ) {
+	protected function convert_hyphenation_exception_to_pattern( $exception ) {
 		$func = Strings::functions( $exception );
 		if ( empty( $func ) ) {
 			return null; // unknown encoding, abort.
