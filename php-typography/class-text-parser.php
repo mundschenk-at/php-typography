@@ -317,7 +317,7 @@ class Text_Parser {
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE ) );
+		$this->text = self::tokenize( preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
 
 		// The token array should never be empty.
 		return ! empty( $this->text );
@@ -326,7 +326,8 @@ class Text_Parser {
 	/**
 	 * Turns the array of strings into an array of tokens.
 	 *
-	 * @param  array  $parts
+	 * @param array $parts An array of non-empty strings.
+	 *
 	 * @return array {
 	 *         An array of numerically indexed tokens.
 	 *
@@ -338,52 +339,49 @@ class Text_Parser {
 		$index  = 0;
 
 		foreach ( $parts as $part ) {
-			if ( '' !== $part ) {
+			if ( preg_match( self::_RE_SPACE, $part ) ) {
+				$tokens[ $index ] = new Token( $part, Token::SPACE );
+			} elseif ( preg_match( self::_RE_PUNCTUATION, $part ) ) {
+				$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
+			} elseif ( preg_match( self::_RE_WORD, $part ) ) {
+				// Make sure that things like email addresses and URLs are not broken up
+				// into words and punctuation not preceeded by an 'other'.
+				if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
+					$old_part = $tokens[ $index - 1 ]->value;
+					$tokens[ $index - 1 ] = new Token( $old_part . $part, Token::OTHER );
+					$index--;
 
-				if ( preg_match( self::_RE_SPACE, $part ) ) {
-					$tokens[ $index ] = new Token( $part, Token::SPACE );
-				} elseif ( preg_match( self::_RE_PUNCTUATION, $part ) ) {
-					$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
-				} elseif ( preg_match( self::_RE_WORD, $part ) ) {
-					// Make sure that things like email addresses and URLs are not broken up
-					// into words and punctuation not preceeded by an 'other'.
-					if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
-						$old_part = $tokens[ $index - 1 ]->value;
-						$tokens[ $index - 1 ] = new Token( $old_part . $part, Token::OTHER );
-						$index--;
-
-					// Not preceeded by a non-space + punctuation.
-					} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-						$old_part   = $tokens[ $index - 1 ]->value;
-						$older_part = $tokens[ $index - 2 ]->value;
-						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
-						unset( $tokens[ $index - 1 ] );
-						$index = $index - 2;
-					} else {
-						$tokens[ $index ] = new Token( $part, Token::WORD );
-					}
+				// Not preceeded by a non-space + punctuation.
+				} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+					$old_part   = $tokens[ $index - 1 ]->value;
+					$older_part = $tokens[ $index - 2 ]->value;
+					$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
+					unset( $tokens[ $index - 1 ] );
+					$index = $index - 2;
 				} else {
-					// Make sure that things like email addresses and URLs are not broken up into words
-					// and punctuation not preceeded by an 'other' or 'word'.
-					if ( self::is_preceeded_by( Token::WORD, $tokens, $index ) || self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
-						$index--;
-						$old_part = $tokens[ $index ]->value;
-						$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
-
-					// Not preceeded by a non-space + punctuation.
-					} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-						$old_part   = $tokens[ $index - 1 ]->value;
-						$older_part = $tokens[ $index - 2 ]->value;
-						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
-						unset( $tokens[ $index - 1 ] );
-						$index = $index - 2;
-					} else {
-						$tokens[ $index ] = new Token( $part, Token::OTHER );
-					}
+					$tokens[ $index ] = new Token( $part, Token::WORD );
 				}
+			} else {
+				// Make sure that things like email addresses and URLs are not broken up into words
+				// and punctuation not preceeded by an 'other' or 'word'.
+				if ( self::is_preceeded_by( Token::WORD, $tokens, $index ) || self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
+					$index--;
+					$old_part = $tokens[ $index ]->value;
+					$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
-				$index++;
+				// Not preceeded by a non-space + punctuation.
+				} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+					$old_part   = $tokens[ $index - 1 ]->value;
+					$older_part = $tokens[ $index - 2 ]->value;
+					$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
+					unset( $tokens[ $index - 1 ] );
+					$index = $index - 2;
+				} else {
+					$tokens[ $index ] = new Token( $part, Token::OTHER );
+				}
 			}
+
+			$index++;
 		}
 
 		return $tokens;
