@@ -346,45 +346,47 @@ class Text_Parser {
 			} elseif ( preg_match( self::_RE_WORD, $part ) ) {
 				// Make sure that things like email addresses and URLs are not broken up
 				// into words and punctuation not preceeded by an 'other'.
-				if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
-					$old_part = $tokens[ $index - 1 ]->value;
-					$tokens[ $index - 1 ] = new Token( $old_part . $part, Token::OTHER );
-					$index--;
-
-				// Not preceeded by a non-space + punctuation.
-				} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-					$old_part   = $tokens[ $index - 1 ]->value;
-					$older_part = $tokens[ $index - 2 ]->value;
-					$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
-					unset( $tokens[ $index - 1 ] );
-					$index = $index - 2;
-				} else {
-					$tokens[ $index ] = new Token( $part, Token::WORD );
-				}
+				self::parse_ambiguous_token( Token::WORD, $part, $tokens, $index );
 			} else {
 				// Make sure that things like email addresses and URLs are not broken up into words
 				// and punctuation not preceeded by an 'other' or 'word'.
-				if ( self::is_preceeded_by( Token::WORD, $tokens, $index ) || self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
-					$index--;
-					$old_part = $tokens[ $index ]->value;
-					$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
-
-				// Not preceeded by a non-space + punctuation.
-				} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-					$old_part   = $tokens[ $index - 1 ]->value;
-					$older_part = $tokens[ $index - 2 ]->value;
-					$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
-					unset( $tokens[ $index - 1 ] );
-					$index = $index - 2;
-				} else {
-					$tokens[ $index ] = new Token( $part, Token::OTHER );
-				}
+				self::parse_ambiguous_token( Token::OTHER, $part, $tokens, $index );
 			}
 
 			$index++;
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Parse ambigious tokens (that may need to be combined with the predecessors).
+	 *
+	 * @param int    $expected_type Either Token::WORD or Token::OTHER.
+	 * @param string $part          The string fragment to parse.
+	 * @param array  $tokens        The token array. Passed by reference.
+	 * @param int    $index         The current index. Passed by reference.
+	 */
+	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) {
+
+		// Make sure that things like email addresses and URLs are not broken up incorrectly.
+		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
+			$index--;
+			$old_part = $tokens[ $index ]->value;
+			$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
+
+		// Not preceeded by a non-space + punctuation.
+		} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+			$old_part   = $tokens[ $index - 1 ]->value;
+			$older_part = $tokens[ $index - 2 ]->value;
+			$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
+			unset( $tokens[ $index - 1 ] );
+			$index = $index - 2;
+
+		// All good.
+		} else {
+			$tokens[ $index ] = new Token( $part, $expected_type );
+		}
 	}
 
 	/**
