@@ -77,6 +77,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -116,6 +118,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -146,6 +150,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -188,6 +194,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */

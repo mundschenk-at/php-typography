@@ -347,13 +347,13 @@ class Text_Parser {
 				} elseif ( preg_match( self::_RE_WORD, $part ) ) {
 					// Make sure that things like email addresses and URLs are not broken up
 					// into words and punctuation not preceeded by an 'other'.
-					if ( $index - 1 >= 0 && Token::OTHER === $tokens[ $index - 1 ]->type ) {
+					if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
 						$old_part = $tokens[ $index - 1 ]->value;
 						$tokens[ $index - 1 ] = new Token( $old_part . $part, Token::OTHER );
 						$index--;
 
 					// Not preceeded by a non-space + punctuation.
-					} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
+					} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
 						$old_part   = $tokens[ $index - 1 ]->value;
 						$older_part = $tokens[ $index - 2 ]->value;
 						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
@@ -365,13 +365,13 @@ class Text_Parser {
 				} else {
 					// Make sure that things like email addresses and URLs are not broken up into words
 					// and punctuation not preceeded by an 'other' or 'word'.
-					if ( $index - 1 >= 0 && ( Token::WORD === $tokens[ $index - 1 ]->type || Token::OTHER === $tokens[ $index - 1 ]->type ) ) {
+					if ( self::is_preceeded_by( Token::WORD, $tokens, $index ) || self::is_preceeded_by( Token::OTHER, $tokens, $index ) ) {
 						$index--;
 						$old_part = $tokens[ $index ]->value;
 						$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
 					// Not preceeded by a non-space + punctuation.
-					} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
+					} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
 						$old_part   = $tokens[ $index - 1 ]->value;
 						$older_part = $tokens[ $index - 2 ]->value;
 						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
@@ -388,6 +388,35 @@ class Text_Parser {
 
 		return $tokens;
 	}
+
+	/**
+	 * Checks if the predecessor of the current token is of a certain type.
+	 *
+	 * @param  int   $type   A valid token type (e.g. Token::WORD).
+	 * @param  array $tokens An array of tokens.
+	 * @param  int   $index  The current token index.
+	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 *
+	 * @return bool
+	 */
+	protected static function is_preceeded_by( $type, array $tokens, $index, $steps = 1 ) {
+		return $index - $steps >= 0 && $type === $tokens[ $index - $steps ]->type;
+	}
+
+	/**
+	 * Checks if the predecessor of the current token is not of a certain type.
+	 *
+	 * @param  int   $type   A valid token type (e.g. Token::WORD).
+	 * @param  array $tokens An array of tokens.
+	 * @param  int   $index  The current token index.
+	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 *
+	 * @return bool
+	 */
+	protected static function is_not_preceeded_by( $type, array $tokens, $index, $steps = 1 ) {
+		return $index - $steps >= 0 && $type !== $tokens[ $index - $steps ]->type;
+	}
+
 
 	/**
 	 * Reloads $this->text (i.e. capture new inserted text, or remove those tokens whose values have been deleted).
