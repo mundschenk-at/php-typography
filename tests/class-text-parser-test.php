@@ -33,7 +33,7 @@ use \PHP_Typography\Text_Parser;
  * @coversDefaultClass \PHP_Typography\Text_Parser
  * @usesDefaultClass \PHP_Typography\Text_Parser
  *
- * @uses PHP_Typography\Text_Parser
+ * @uses PHP_Typography\Text_Parser::__construct
  * @uses PHP_Typography\Text_Parser\Token
  * @uses PHP_Typography\Strings::functions
  */
@@ -77,6 +77,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
 	 * @covers ::is_preceeded_by
 	 * @covers ::is_not_preceeded_by
 	 *
@@ -118,6 +119,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
 	 * @covers ::is_preceeded_by
 	 * @covers ::is_not_preceeded_by
 	 *
@@ -150,6 +152,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
 	 * @covers ::is_preceeded_by
 	 * @covers ::is_not_preceeded_by
 	 *
@@ -194,6 +197,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::load
 	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
 	 * @covers ::is_preceeded_by
 	 * @covers ::is_not_preceeded_by
 	 *
@@ -250,8 +254,16 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::reload
 	 *
 	 * @depends test_load
+	 * @uses ::clear
 	 * @uses ::get_all
-	 *
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
+	 * @uses ::update
+
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_reload( Text_Parser $parser ) {
@@ -272,6 +284,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test unload.
 	 *
 	 * @covers ::unload
+	 *
+	 * @uses ::clear
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_unload() {
 		$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
@@ -290,7 +309,12 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::clear
 	 *
+	 * @uses ::get_all
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
 	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_clear() {
 		$parser = $this->parser;
@@ -307,6 +331,15 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test update.
 	 *
 	 * @covers ::update
+	 *
+	 * @uses ::clear
+	 * @uses ::get_all
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
 	 */
 	public function test_update() {
 		$parser = $this->parser;
@@ -330,7 +363,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_all
 	 *
-	 * @uses \PHP_Typography\Text_Parser::load
+	 * @uses ::load
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_get_all() {
 		$interesting = 'Quoth the raven, "nevermore"!';
@@ -349,6 +386,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_spaces
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_spaces( Text_Parser $parser ) {
@@ -364,6 +403,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_punctuation
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_punctuation( Text_Parser $parser ) {
@@ -378,6 +419,12 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_words
 	 * @depends test_get_all
+	 *
+	 * @uses ::get_type
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
@@ -436,6 +483,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_words
 	 * @depends test_get_all
 	 *
+	 * @uses ::clear
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_words_unloaded( Text_Parser $parser ) {
@@ -455,6 +509,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_other
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_get_other( Text_Parser $parser ) {
@@ -469,6 +525,12 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_type
 	 * @depends test_get_all
+	 *
+	 * @uses ::get_all
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
