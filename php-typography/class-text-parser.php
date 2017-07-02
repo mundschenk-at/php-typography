@@ -514,45 +514,84 @@ class Text_Parser {
 		// Result set.
 		$tokens = [];
 
-		// We cannot call class properties.
-		$strtoupper = $this->current_strtoupper;
-
 		foreach ( $this->get_type( Token::WORD ) as $index => $token ) {
-			$capped   = $strtoupper( $token->value );
-			$lettered = preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $token->value );
-			$compound = preg_replace( '/[^\w-]/Su', '', $token->value );
 
-			// @todo Refactor these tangled if statements.
-			// @codingStandardsIgnoreStart.
-			if ( self::NO_ALL_LETTERS === $abc && $lettered !== $token->value ) {
-				if ( ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
-					   ( self::ALLOW_ALL_CAPS   === $caps ) ||
-					   ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) &&
-					 ( ( self::NO_COMPOUNDS      === $comps && $compound !== $token->value ) ||
-					   ( self::ALLOW_COMPOUNDS   === $comps ) ||
-					   ( self::REQUIRE_COMPOUNDS === $comps && $compound === $token->value ) ) ) {
-					$tokens[ $index ] = $token;
-				}
-			} elseif ( self::ALLOW_ALL_LETTERS === $abc ) {
-				if ( ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
-					   ( self::ALLOW_ALL_CAPS   === $caps ) ||
-					   ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) &&
-					 ( ( self::NO_COMPOUNDS      === $comps && $compound !== $token->value ) ||
-					   ( self::ALLOW_COMPOUNDS   === $comps ) ||
-					   ( self::REQUIRE_COMPOUNDS === $comps && $compound === $token->value ) ) ) {
-					$tokens[ $index ] = $token;
-				}
-			} elseif ( self::REQUIRE_ALL_LETTERS === $abc && $lettered === $token->value ) {
-				if ( ( self::NO_ALL_CAPS      === $caps && $capped !== $token->value ) ||
-					 ( self::ALLOW_ALL_CAPS   === $caps ) ||
-					 ( self::REQUIRE_ALL_CAPS === $caps && $capped === $token->value ) ) {
-				 	$tokens[ $index ] = $token;
-				}
+			if ( $this->conforms_to_letters_policy( $token, $abc ) &&
+				 $this->conforms_to_caps_policy( $token, $caps ) &&
+				 $this->conforms_to_compounds_policy( $token, $comps ) ) {
+
+				$tokens[ $index ] = $token;
 			}
-			// @codingStandardsIgnoreEnd.
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Check if the value of the token conforms to the given policy for letters.
+	 *
+	 * @param  Token $token  Required.
+	 * @param  int   $policy Either ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS or NO_ALL_LETTERS.
+	 *
+	 * @return bool
+	 */
+	protected function conforms_to_letters_policy( Token $token, $policy ) {
+
+		// Short circuit.
+		if ( self::ALLOW_ALL_LETTERS === $policy ) {
+			return true;
+		}
+
+		$lettered = preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $token->value );
+
+		return
+			( self::REQUIRE_ALL_LETTERS === $policy && $lettered === $token->value ) ||
+			( self::NO_ALL_LETTERS === $policy && $lettered !== $token->value );
+	}
+
+	/**
+	 * Check if the value of the token conforms to the given policy for all-caps words.
+	 *
+	 * @param  Token $token  Required.
+	 * @param  int   $policy Either ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS or NO_ALL_CAPS.
+	 *
+	 * @return bool
+	 */
+	protected function conforms_to_caps_policy( Token $token, $policy ) {
+
+		// Short circuit.
+		if ( self::ALLOW_ALL_CAPS === $policy ) {
+			return true;
+		}
+
+		// Token value in all-caps.
+		$capped = call_user_func( $this->current_strtoupper, $token->value );
+
+		return
+			( self::REQUIRE_ALL_CAPS === $policy && $capped === $token->value ) ||
+			( self::NO_ALL_CAPS === $policy && $capped !== $token->value );
+	}
+
+	/**
+	 * Check if the value of the token conforms to the given policy for compound words.
+	 *
+	 * @param  Token $token  Required.
+	 * @param  int   $policy Either ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS or NO_COMPOUNDS.
+	 *
+	 * @return bool
+	 */
+	protected function conforms_to_compounds_policy( Token $token, $policy ) {
+
+		// Short circuit.
+		if ( self::ALLOW_COMPOUNDS === $policy ) {
+			return true;
+		}
+
+		$uncompound = preg_replace( '/-/S', '', $token->value );
+
+		return
+			( self::REQUIRE_COMPOUNDS === $policy && $uncompound !== $token->value ) ||
+			( self::NO_COMPOUNDS === $policy && $uncompound === $token->value );
 	}
 
 	/**

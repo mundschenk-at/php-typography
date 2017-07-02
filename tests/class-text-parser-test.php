@@ -420,6 +420,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_words
 	 * @depends test_get_all
 	 *
+	 * @uses ::conforms_to_caps_policy
+	 * @uses ::conforms_to_compounds_policy
+	 * @uses ::conforms_to_letters_policy
 	 * @uses ::get_type
 	 * @uses ::is_preceeded_by
 	 * @uses ::load
@@ -475,6 +478,148 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
 		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_letters_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_letters_policy_data() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_ALL_LETTERS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, true ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_letters_policy.
+	 *
+	 * @covers ::conforms_to_letters_policy
+	 * @dataProvider provide_conforms_to_letters_policy_data
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy Letters policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_letters_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_letters_policy', [ $token, $policy ] ) );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_caps_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_caps_policy_data() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, false ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_ALL_CAPS, false ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_caps_policy.
+	 *
+	 * @covers ::conforms_to_caps_policy
+	 * @dataProvider provide_conforms_to_caps_policy_data
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy All caps policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_caps_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$parser->load( $value ); // Ensure that encoding can be determined.
+
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_caps_policy', [ $token, $policy ] ) );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_compounds_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_compounds_policy() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_COMPOUNDS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_COMPOUNDS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_COMPOUNDS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_COMPOUNDS, false ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, true ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_compounds_policy.
+	 *
+	 * @covers ::conforms_to_compounds_policy
+	 * @dataProvider provide_conforms_to_compounds_policy
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy Compounds policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_compounds_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$parser->load( $value ); // Ensure that encoding can be determined.
+
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_compounds_policy', [ $token, $policy ] ) );
 	}
 
 	/**
