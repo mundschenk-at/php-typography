@@ -246,7 +246,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function testReload( Text_Parser $parser ) {
+	public function test_reload( Text_Parser $parser ) {
 		$tokens = $parser->get_all();
 		$tokens[12] = $tokens[12]->with_value( '' ); // ?.
 		$tokens[11] = $tokens[11]->with_value( '' ); // Äöüß
