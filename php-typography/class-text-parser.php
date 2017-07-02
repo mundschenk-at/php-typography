@@ -316,10 +316,27 @@ class Text_Parser {
 		}
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
-		$tokens = [];
-		$parts = preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE );
+		// Tokenize the raw text parts.
+		$this->text = self::tokenize( preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE ) );
 
-		$index = 0;
+		// The token array should never be empty.
+		return ! empty( $this->text );
+	}
+
+	/**
+	 * Turns the array of strings into an array of tokens.
+	 *
+	 * @param  array  $parts
+	 * @return array {
+	 *         An array of numerically indexed tokens.
+	 *
+	 *         @type Token $index A token may combine several input parts.
+	 * }
+	 */
+	protected static function tokenize( array $parts ) {
+		$tokens = [];
+		$index  = 0;
+
 		foreach ( $parts as $part ) {
 			if ( '' !== $part ) {
 
@@ -354,7 +371,7 @@ class Text_Parser {
 						$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
 					// Not preceeded by a non-space + punctuation.
-				} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
+					} elseif ( $index - 2 >= 0 && Token::PUNCTUATION === $tokens[ $index - 1 ]->type && Token::SPACE !== $tokens[ $index - 2 ]->type ) {
 						$old_part   = $tokens[ $index - 1 ]->value;
 						$older_part = $tokens[ $index - 2 ]->value;
 						$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
@@ -369,9 +386,7 @@ class Text_Parser {
 			}
 		}
 
-		$this->text = $tokens;
-
-		return true;
+		return $tokens;
 	}
 
 	/**

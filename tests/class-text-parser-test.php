@@ -76,6 +76,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
 	 *
 	 * @uses ::get_all
 	 */
@@ -114,6 +115,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with email address.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
 	 *
 	 * @uses ::get_all
 	 */
@@ -143,6 +145,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with URL.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
 	 *
 	 * @uses ::get_all
 	 */
@@ -184,6 +187,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with a compound word.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
 	 *
 	 * @uses ::get_all
 	 */
