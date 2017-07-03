@@ -27,7 +27,7 @@ module.exports = function(grunt) {
                 targetDir: 'php-typography/lang',
                 command: (function() {
                     var cli = [];
-                    grunt.file.readJSON('php-typography/bin/patterns.json').list.forEach(function(element, index) {
+                    grunt.file.readJSON('php-typography/bin/patterns.json').list.forEach(function(element) {
                         cli.push('php php-typography/bin/pattern2json.php -l "' + element.name + '" -f ' + element.url + ' > <%= shell.update_patterns.targetDir %>/' + element.short + '.json');
                     });
 
