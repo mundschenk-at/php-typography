@@ -30,6 +30,14 @@ namespace PHP_Typography\Text_Parser;
  * Tokenized text.
  *
  * Multibyte characters are assumed to be encoded as UTF-8.
+ *
+ * @property-read string $value The token value.
+ * @property-read int    $type  The token type. Can be any of the following constants:
+ * - Token::SPACE
+ * - Token::PUNCTUATION
+ * - Token::WORD
+ * - Token::OTHER
+ * @property-read bool   $mutable Wether the properties of the object can be modified.
  */
 final class Token {
 	const SPACE       = 1;
