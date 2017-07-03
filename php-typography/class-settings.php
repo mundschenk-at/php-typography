@@ -1217,9 +1217,6 @@ class Settings implements \ArrayAccess {
 				\Z
 			/xu";
 
-		// Utility patterns for splitting string parameter lists into arrays.
-		$this->regex['parameterSplitting'] = '/[\s,]+/';
-
 		// Add the "study" flag to all our regular expressions.
 		foreach ( $this->regex as &$regex ) {
 			$regex .= 'S';
@@ -1274,12 +1271,8 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $tags A comma separated list or an array of tag names.
 	 */
 	public function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
-		if ( ! is_array( $tags ) ) {
-			$tags = preg_split( $this->regex['parameterSplitting'], $tags, -1, PREG_SPLIT_NO_EMPTY );
-		}
-
 		// Ensure that we pass only lower-case tag names to XPath.
-		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
+		$tags = array_filter( array_map( 'strtolower', Strings::maybe_split_parameters( $tags ) ), 'ctype_alnum' );
 
 		// Self closing tags shouldn't be in $tags.
 		$this->data['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );
@@ -1291,10 +1284,7 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $classes A comma separated list or an array of class names.
 	 */
 	 function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
-		if ( ! is_array( $classes ) ) {
-			$classes = preg_split( $this->regex['parameterSplitting'], $classes, -1, PREG_SPLIT_NO_EMPTY );
-		}
-		$this->data['ignoreClasses'] = $classes;
+		$this->data['ignoreClasses'] = Strings::maybe_split_parameters( $classes );
 	}
 
 	/**
@@ -1303,10 +1293,7 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $ids A comma separated list or an array of tag names.
 	 */
 	public function set_ids_to_ignore( $ids = [] ) {
-		if ( ! is_array( $ids ) ) {
-			$ids = preg_split( $this->regex['parameterSplitting'], $ids, -1, PREG_SPLIT_NO_EMPTY );
-		}
-		$this->data['ignoreIDs'] = $ids;
+		$this->data['ignoreIDs'] = Strings::maybe_split_parameters( $ids );
 	}
 
 	/**
@@ -1666,12 +1653,8 @@ class Settings implements \ArrayAccess {
 	 * @param string|array $units A comma separated list or an array of units.
 	 */
 	public function set_units( $units = [] ) {
-		if ( ! is_array( $units ) ) {
-			$units = preg_split( $this->regex['parameterSplitting'], $units, -1, PREG_SPLIT_NO_EMPTY );
-		}
-
-		$this->data['units'] = $units;
-		$this->update_unit_pattern( $units );
+		$this->data['units'] = Strings::maybe_split_parameters( $units );
+		$this->update_unit_pattern( $this->data['units'] );
 	}
 
 	/**
@@ -1936,11 +1919,7 @@ class Settings implements \ArrayAccess {
 	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
 	 */
 	public function set_hyphenation_exceptions( $exceptions = [] ) {
-		if ( ! is_array( $exceptions ) ) {
-			$exceptions = preg_split( $this->regex['parameterSplitting'], $exceptions, -1, PREG_SPLIT_NO_EMPTY );
-		}
-
-		$this->data['hyphenationCustomExceptions'] = $exceptions;
+		$this->data['hyphenationCustomExceptions'] = Strings::maybe_split_parameters( $exceptions );
 	}
 
 	/**

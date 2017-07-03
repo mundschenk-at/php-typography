@@ -62,6 +62,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_defaults.
 	 *
 	 * @covers ::set_defaults
+	 *
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
@@ -79,6 +81,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_initialization() {
 		$s = $this->settings;
@@ -353,6 +356,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_tags_to_ignore.
 	 *
 	 * @covers ::set_tags_to_ignore
+	 *
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
 		$s = $this->settings;
@@ -386,6 +391,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_classes_to_ignore.
 	 *
 	 * @covers ::set_classes_to_ignore
+	 *
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_classes_to_ignore() {
 		$s = $this->settings;
@@ -399,6 +406,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_ids_to_ignore.
 	 *
 	 * @covers ::set_ids_to_ignore
+	 *
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_ids_to_ignore() {
 		$s = $this->settings;
@@ -933,6 +942,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_units
 	 * @covers ::update_unit_pattern
+	 *
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_units() {
 		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
@@ -1369,6 +1380,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_hyphenation_exceptions_array() {
 		$s = $this->settings;
@@ -1391,6 +1403,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
+	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_hyphenation_exceptions_string() {
 		$s = $this->settings;
