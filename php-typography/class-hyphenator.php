@@ -352,7 +352,7 @@ class Hyphenator {
 		// Update patterns as well.
 		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
-			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
+			$exception_patterns[ $exception_key ] = self::convert_hyphenation_exception_to_pattern( $exception );
 		}
 
 		$this->merged_exception_patterns = $exception_patterns;
@@ -365,7 +365,7 @@ class Hyphenator {
 	 *
 	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
-	protected function convert_hyphenation_exception_to_pattern( $exception ) {
+	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
 		$func = Strings::functions( $exception );
 		if ( empty( $func ) ) {
 			return null; // unknown encoding, abort.
@@ -396,7 +396,7 @@ class Hyphenator {
 	 *
 	 * @return bool true if $number is odd, false if it is even.
 	 */
-	private static function is_odd( $number ) {
+	protected static function is_odd( $number ) {
 		return (bool) ( $number % 2 );
 	}
 }
