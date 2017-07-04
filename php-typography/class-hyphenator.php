@@ -27,6 +27,8 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Hyphenator\Trie_Node;
+
 /**
  * Hyphenates tokenized text.
  *
@@ -42,7 +44,7 @@ class Hyphenator {
 	/**
 	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
-	 * @var array
+	 * @var Trie_Node
 	 */
 	protected $pattern_trie;
 
@@ -174,7 +176,7 @@ class Hyphenator {
 
 				if ( false !== $language_file ) {
 					$this->pattern_exceptions = $language_file['exceptions'];
-					$this->pattern_trie       = $this->build_trie( $language_file['patterns'] );
+					$this->pattern_trie       = Trie_Node::build_trie( $language_file['patterns'] );
 
 					$success = true;
 				}
@@ -195,37 +197,6 @@ class Hyphenator {
 		$this->merged_exception_patterns = null;
 
 		return $success;
-	}
-
-	/**
-	 * Builds pattern search trie from pattern list(s).
-	 *
-	 * @param array $patterns An array of hyphenation patterns.
-	 *
-	 * @return array The starting node of the trie.
-	 */
-	protected function build_trie( array $patterns ) {
-		$node = null;
-		$trie = [];
-
-		foreach ( $patterns as $key => $pattern ) {
-			$node = &$trie;
-
-			foreach ( Strings::mb_str_split( $key ) as $char ) {
-				if ( ! isset( $node[ $char ] ) ) {
-					$node[ $char ] = [];
-				}
-				$node = &$node[ $char ];
-			}
-
-			preg_match_all( '/([1-9])/', $pattern, $offsets, PREG_OFFSET_CAPTURE );
-
-			$node['_pattern'] = [
-				'offsets' => $offsets[1],
-			];
-		}
-
-		return $trie;
 	}
 
 	/**
@@ -290,20 +261,18 @@ class Hyphenator {
 					// Walk through the trie while storing detected patterns.
 					for ( $step = $start; $step < $search_length; ++$step ) {
 						// No further path in the trie.
-						if ( ! isset( $node[ $chars[ $step ] ] ) ) {
+						if ( ! $node->exists( $chars[ $step ] ) ) {
 							break;
 						}
 
 						// Look for next character.
-						$node = $node[ $chars[ $step ] ];
+						$node = $node->get_node( $chars[ $step ] );
 
-						if ( isset( $node['_pattern'] ) ) {
-							// Merge different offset values and keep maximum.
-							foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
-								$value  = $pattern_offset[0];
-								$offset = $pattern_offset[1] + $start - 1;
-								$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
-							}
+						// Merge different offset values and keep maximum.
+						foreach ( $node->offsets() as $pattern_offset ) {
+							$value  = $pattern_offset[0];
+							$offset = $pattern_offset[1] + $start - 1;
+							$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
 						}
 					}
 				}

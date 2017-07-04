@@ -1242,7 +1242,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_language
-	 * @uses PHP_Typography\Hyphenator::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 *
 	 * @dataProvider provide_hyphenation_language_data
 	 *

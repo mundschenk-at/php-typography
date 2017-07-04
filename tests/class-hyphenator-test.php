@@ -62,6 +62,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 */
 	public function test_constructor() {
 		$h = $this->h;
@@ -80,8 +83,10 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests set_language.
 	 *
 	 * @covers ::set_language
-	 * @covers ::build_trie
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language() {
@@ -110,6 +115,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ::set_custom_exceptions
 	 * @uses ::merge_hyphenation_exceptions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
@@ -134,6 +142,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_language
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_same_hyphenation_language() {
@@ -204,6 +215,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_custom_exceptions
 	 *
 	 * @uses ::merge_hyphenation_exceptions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
@@ -267,6 +281,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
@@ -307,6 +322,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
@@ -332,6 +348,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
@@ -354,6 +371,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
@@ -371,6 +389,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
@@ -388,6 +407,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::hyphenate
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
@@ -409,6 +429,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ReflectionClass
 	 * @uses ReflectionProperty
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
@@ -472,6 +493,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::merge_hyphenation_exceptions
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 */

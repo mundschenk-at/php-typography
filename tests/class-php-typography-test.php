@@ -1561,6 +1561,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::apply_fixes_to_html_node
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses ::process_textnodes
@@ -1586,6 +1587,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::apply_fixes_to_feed_node
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses ::process_textnodes
@@ -1630,6 +1632,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -1666,6 +1669,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -1690,6 +1694,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
@@ -1714,6 +1719,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 *
 	 * @dataProvider provide_process_data
@@ -1736,6 +1742,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 *
 	 * @dataProvider provide_process_data
@@ -1759,6 +1766,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_textnodes
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 *
 	 * @dataProvider provide_process_data
@@ -1783,6 +1791,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_words
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -1822,6 +1831,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -1847,6 +1857,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_feed
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -3403,6 +3414,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 *
 	 * @dataProvider provide_dewidow_with_hyphenation_data
 	 *
@@ -3964,6 +3976,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 *
 	 * @dataProvider provide_hyphenate_data
 	 *
@@ -4017,6 +4030,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
 	 *
@@ -4053,6 +4067,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_hyphenate_headings_disabled() {
 		$typo = $this->typo;
@@ -4077,6 +4092,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::do_hyphenate
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
 	public function test_do_hyphenate() {
@@ -4108,6 +4124,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::do_hyphenate
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
 	public function test_do_hyphenate_no_title_case() {
@@ -4135,6 +4152,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::do_hyphenate
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
 	public function test_do_hyphenate_invalid() {
@@ -4165,6 +4183,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::do_hyphenate
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
@@ -4192,6 +4211,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::do_hyphenate
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
@@ -4242,6 +4262,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_init() {
 		$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
@@ -4259,6 +4280,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_defaults
 	 *
 	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_init_no_default() {
 		$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
@@ -4459,10 +4481,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_hyphenator()
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
-	 * @uses PHP_Typography\Hyphenator::build_trie
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
 	 * @uses PHP_Typography\Hyphenator::set_language
 	 * @uses PHP_Typography\Hyphenator::get_object_hash
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_get_hyphenator() {
 		$typo = $this->typo;
