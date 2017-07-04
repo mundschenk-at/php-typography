@@ -197,7 +197,7 @@ class Pattern_Converter {
 			$exceptions[] = $matches[1];
 		} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
-			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
@@ -229,7 +229,7 @@ class Pattern_Converter {
 			$patterns[] = $matches[1];
 		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple patterns on a single line.
-			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
@@ -241,6 +241,17 @@ class Pattern_Converter {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Split line (fragment) at whitespace.
+	 *
+	 * @param  string $line A line (fragment).
+	 *
+	 * @return array
+	 */
+	private static function split_at_whitespace( $line ) {
+		return preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
 	}
 
 	/**
