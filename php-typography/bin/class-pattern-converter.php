@@ -71,7 +71,8 @@ class Pattern_Converter {
 	 * Calculate patgen sequence from TeX hyphenation pattern.
 	 *
 	 * @param string $pattern TeX hyphenation pattern.
-	 * @return string
+	 *
+	 * @return string|null Script exits on error.
 	 */
 	function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
@@ -180,7 +181,8 @@ class Pattern_Converter {
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @return boolean
+	 *
+	 * @return boolean|null Script exits on error.
 	 */
 	function match_exceptions( $line, array &$exceptions ) {
 		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
@@ -214,6 +216,7 @@ class Pattern_Converter {
 	 *
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
+	 *
 	 * @return boolean
 	 */
 	function match_patterns( $line, array &$patterns ) {
