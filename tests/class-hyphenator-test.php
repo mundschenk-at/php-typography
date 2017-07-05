@@ -280,6 +280,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -321,6 +323,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -347,6 +351,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -370,6 +376,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -388,6 +396,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -406,6 +416,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -426,6 +438,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses ReflectionClass
 	 * @uses ReflectionProperty
