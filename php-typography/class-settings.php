@@ -1235,7 +1235,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
 	 *
-	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
+	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
 	public function set_parser_errors_handler( $handler = null ) {
 		if ( ! empty( $handler ) && ! is_callable( $handler ) ) {
