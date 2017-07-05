@@ -24,13 +24,17 @@
 
 namespace PHP_Typography\Tests;
 
+use \PHP_Typography\Text_Parser\Token;
+use \PHP_Typography\Text_Parser;
+
 /**
  * Unit test for \PHP_Typography\Text_Parser class.
  *
  * @coversDefaultClass \PHP_Typography\Text_Parser
  * @usesDefaultClass \PHP_Typography\Text_Parser
  *
- * @uses PHP_Typography\Text_Parser
+ * @uses PHP_Typography\Text_Parser::__construct
+ * @uses PHP_Typography\Text_Parser\Token
  * @uses PHP_Typography\Strings::functions
  */
 class Text_Parser_Test extends PHP_Typography_Testcase {
@@ -62,11 +66,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$parser = new \PHP_Typography\Text_Parser( [ 'UTF-8' ] );
+		$parser = new Text_Parser( [ 'UTF-8' ] );
 
 		$this->assertAttributeCount( 0, 'text', $parser );
-		$this->assertAttributeCount( 6, 'regex', $parser );
-		$this->assertAttributeCount( 8, 'components', $parser );
 		$this->assertAttributeEmpty( 'current_strtoupper', $parser );
 	}
 
@@ -74,6 +76,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -93,24 +99,16 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertTrue( $parser->load( $interesting ) );
 
 		$tokens = $parser->get_all();
+
 		$this->assertCount( 13, $tokens );
 		$this->assertArraySubset( [
-			0 => [
-				'type' => 'word',
-				'value' => 'Quoth',
-			],
+			0 => new Token( 'Quoth', Token::WORD ),
 		], $tokens );
 		$this->assertArraySubset( [
-			5 => [
-				'type'  => 'punctuation',
-				'value' => ',',
-			],
+			5 => new Token( ',', Token::PUNCTUATION ),
 		], $tokens );
 		$this->assertArraySubset( [
-			11 => [
-				'type'  => 'word',
-				'value' => 'Äöüß',
-			],
+			11 => new Token( 'Äöüß', Token::WORD ),
 		], $tokens );
 
 		return $parser;
@@ -120,6 +118,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with email address.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -133,22 +135,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertCount( 19, $tokens );
 
 		$this->assertArraySubset( [
-			0 => [
-				'type'  => 'word',
-				'value' => 'Quoth',
-			],
+			0 => new Token( 'Quoth', Token::WORD ),
 		], $tokens );
 		$this->assertArraySubset( [
-			5 => [
-				'type'  => 'punctuation',
-				'value' => ',',
-			],
+			5 => new Token( ',', Token::PUNCTUATION ),
 		], $tokens );
 		$this->assertArraySubset( [
-			17 => [
-				'type'  => 'other',
-				'value' => 'someone@example.org',
-			],
+			17 => new Token( 'someone@example.org', Token::OTHER ),
 		], $tokens );
 
 		return $parser;
@@ -158,6 +151,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with URL.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -171,46 +168,25 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertCount( 33, $tokens );
 
 		$this->assertArraySubset( [
-			0 => [
-				'type'  => 'word',
-				'value' => 'Quoth',
-			],
+			0 => new Token( 'Quoth', Token::WORD ),
 		], $tokens );
 		$this->assertArraySubset( [
-			5 => [
-				'type'  => 'punctuation',
-				'value' => ',',
-			],
+			5 => new Token( ',', Token::PUNCTUATION ),
 		], $tokens );
 		$this->assertArraySubset( [
-			15 => [
-				'type'  => 'other',
-				'value' => 'http://example.org',
-			],
+			15 => new Token( 'http://example.org', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			19 => [
-				'type'  => 'other',
-				'value' => 'wordpress:wordpress',
-			],
+			19 => new Token( 'wordpress:wordpress', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			23 => [
-				'type'  => 'other',
-				'value' => 'wordpress:w@rdpress',
-			],
+			23 => new Token( 'wordpress:w@rdpress', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			27 => [
-				'type'  => 'other',
-				'value' => '@example',
-			],
+			27 => new Token( '@example', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			31 => [
-				'type'  => 'other',
-				'value' => '@:@:@:risk',
-			],
+			31 => new Token( '@:@:@:risk', Token::OTHER ),
 		], $tokens );
 
 		return $parser;
@@ -220,6 +196,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test load with a compound word.
 	 *
 	 * @covers ::load
+	 * @covers ::tokenize
+	 * @covers ::parse_ambiguous_token
+	 * @covers ::is_preceeded_by
+	 * @covers ::is_not_preceeded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -233,22 +213,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertCount( 10, $tokens );
 
 		$this->assertArraySubset( [
-			0 => [
-				'type'  => 'word',
-				'value' => 'Some',
-			],
+			0 => new Token( 'Some', Token::WORD ),
 		], $tokens );
 		$this->assertArraySubset( [
-			2 => [
-				'type'  => 'other',
-				'value' => "don't",
-			],
+			2 => new Token( "don't", Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			8 => [
-				'type'  => 'word',
-				'value' => 'captain-owner',
-			],
+			8 => new Token( 'captain-owner', Token::WORD ),
 		], $tokens );
 
 		return $parser;
@@ -283,16 +254,24 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::reload
 	 *
 	 * @depends test_load
+	 * @uses ::clear
 	 * @uses ::get_all
-	 *
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
+	 * @uses ::update
+
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function testReload( \PHP_Typography\Text_Parser $parser ) {
+	public function test_reload( Text_Parser $parser ) {
 		$tokens = $parser->get_all();
-		$tokens[12]['value'] = ''; // ?.
-		$tokens[11]['value'] = ''; // Äöüß
-		$tokens[10]['value'] = ''; //
-		$tokens[9]['value'] .= '!';
+		$tokens[12] = $tokens[12]->with_value( '' ); // ?.
+		$tokens[11] = $tokens[11]->with_value( '' ); // Äöüß
+		$tokens[10] = $tokens[10]->with_value( '' ); //
+		$tokens[9]  = $tokens[9]->with_value( $tokens[9]->value . '!' );
 		$parser->update( $tokens );
 
 		$this->assertTrue( $parser->reload() );
@@ -305,6 +284,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test unload.
 	 *
 	 * @covers ::unload
+	 *
+	 * @uses ::clear
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_unload() {
 		$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
@@ -323,7 +309,12 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::clear
 	 *
+	 * @uses ::get_all
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
 	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_clear() {
 		$parser = $this->parser;
@@ -340,6 +331,15 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test update.
 	 *
 	 * @covers ::update
+	 *
+	 * @uses ::clear
+	 * @uses ::get_all
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
 	 */
 	public function test_update() {
 		$parser = $this->parser;
@@ -347,10 +347,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertTrue( $parser->load( $interesting ) );
 
 		$tokens = $parser->get_all();
-		$tokens[12]['value'] = ''; // ?.
-		$tokens[11]['value'] = ''; // Äöüß
-		$tokens[10]['value'] = ''; //
-		$tokens[9]['value'] .= '!';
+		$tokens[12] = $tokens[12]->with_value( '' ); // ?.
+		$tokens[11] = $tokens[11]->with_value( '' ); // Äöüß
+		$tokens[10] = $tokens[10]->with_value( '' ); //
+		$tokens[9]  = $tokens[9]->with_value( $tokens[9]->value . '!' );
 		$parser->update( $tokens );
 
 		$this->assertSame( 'Quoth the raven, "nevermore"!!', $parser->unload() );
@@ -363,7 +363,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_all
 	 *
-	 * @uses \PHP_Typography\Text_Parser::load
+	 * @uses ::load
+	 * @uses ::is_not_preceeded_by
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
 	 */
 	public function test_get_all() {
 		$interesting = 'Quoth the raven, "nevermore"!';
@@ -382,9 +386,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_spaces
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_spaces( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_spaces( Text_Parser $parser ) {
 		$tokens = $parser->get_spaces();
 		$this->assertCount( 3, $tokens );
 
@@ -397,9 +403,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_punctuation
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_punctuation( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_punctuation( Text_Parser $parser ) {
 		$tokens = $parser->get_punctuation();
 		$this->assertCount( 3, $tokens );
 
@@ -412,103 +420,206 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_words
 	 * @depends test_get_all
 	 *
+	 * @uses ::conforms_to_caps_policy
+	 * @uses ::conforms_to_compounds_policy
+	 * @uses ::conforms_to_letters_policy
+	 * @uses ::get_type
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_words( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_words( Text_Parser $parser ) {
 		$tokens = $parser->get_words();
 		$this->assertCount( 4, $tokens );
 
 		$parser->load( 'A few m1xed W0RDS.' );
-		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'few',
-		], $tokens );
+		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'few',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'm1xed',
-		], $tokens );
+		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'm1xed',
-		], $tokens );
+		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'require-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'A',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'few',
-		], $tokens );
+		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 4, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'A',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'few',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'm1xed',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'W0RDS',
-		], $tokens );
+		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'allow-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'm1xed',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'W0RDS',
-		], $tokens );
+		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'require-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'A',
-		], $tokens );
+		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'allow-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'A',
-		], $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'W0RDS',
-		], $tokens );
+		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
+		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
 
-		$tokens = $parser->get_words( 'no-all-letters', 'require-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( [
-			'type'  => 'word',
-			'value' => 'W0RDS',
-		], $tokens );
+		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_letters_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_letters_policy_data() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_ALL_LETTERS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, true ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_ALL_LETTERS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_ALL_LETTERS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_ALL_LETTERS, false ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_letters_policy.
+	 *
+	 * @covers ::conforms_to_letters_policy
+	 * @dataProvider provide_conforms_to_letters_policy_data
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy Letters policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_letters_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_letters_policy', [ $token, $policy ] ) );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_caps_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_caps_policy_data() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, false ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_ALL_CAPS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_ALL_CAPS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_ALL_CAPS, false ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_ALL_CAPS, true ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_caps_policy.
+	 *
+	 * @covers ::conforms_to_caps_policy
+	 * @dataProvider provide_conforms_to_caps_policy_data
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy All caps policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_caps_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$parser->load( $value ); // Ensure that encoding can be determined.
+
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_caps_policy', [ $token, $policy ] ) );
+	}
+
+	/**
+	 * Providate data for testing conforms_to_compounds_policy.
+	 *
+	 * @return array
+	 */
+	public function provide_conforms_to_compounds_policy() {
+		return [
+			[ 'simple',   Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::NO_COMPOUNDS, true ],
+			[ 'simple99', Token::WORD, Text_Parser::NO_COMPOUNDS, true ],
+			[ 'simple',   Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'SIMPLE',   Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'SIMPLE99', Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, false ],
+			[ 'simple99', Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::ALLOW_COMPOUNDS, true ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::NO_COMPOUNDS, false ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::NO_COMPOUNDS, false ],
+			[ 'sim-ple',  Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, true ],
+			[ 'SIM-PLE',  Token::WORD, Text_Parser::REQUIRE_COMPOUNDS, true ],
+		];
+	}
+
+	/**
+	 * Test conforms_to_compounds_policy.
+	 *
+	 * @covers ::conforms_to_compounds_policy
+	 * @dataProvider provide_conforms_to_compounds_policy
+	 *
+	 * @uses ::load
+	 * @uses ::is_preceeded_by
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
+	 * @param string $value  Token value.
+	 * @param int    $type   Token type.
+	 * @param int    $policy Compounds policy.
+	 * @param bool   $result Expected result.
+	 */
+	public function test_conforms_to_compounds_policy( $value, $type, $policy, $result ) {
+		$parser = $this->parser;
+		$parser->load( $value ); // Ensure that encoding can be determined.
+
+		$token  = new Token( $value, $type );
+
+		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_compounds_policy', [ $token, $policy ] ) );
 	}
 
 	/**
@@ -517,13 +628,20 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_words
 	 * @depends test_get_all
 	 *
+	 * @uses ::clear
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 * @uses ::unload
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_words_unloaded( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_words_unloaded( Text_Parser $parser ) {
 		$parser->load( 'A few m1xed W0RDS.' );
 		$parser->unload();
 
-		$tokens = $parser->get_words( 'require-all-letters', 'no-all-caps' );
+		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 0, $tokens );
 		$this->assertSame( [], $tokens );
 
@@ -536,9 +654,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_other
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_type
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_other( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_other( Text_Parser $parser ) {
 		$tokens = $parser->get_other();
 		$this->assertCount( 0, $tokens );
 
@@ -551,19 +671,25 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_type
 	 * @depends test_get_all
 	 *
+	 * @uses ::get_all
+	 * @uses ::is_preceeded_by
+	 * @uses ::load
+	 * @uses ::parse_ambiguous_token
+	 * @uses ::tokenize
+	 *
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
-	public function test_get_type( \PHP_Typography\Text_Parser $parser ) {
+	public function test_get_type( Text_Parser $parser ) {
 		$parser->load( 'A few m1xed W0RDS.' );
 
 		$words = [];
 		$tokens = $parser->get_all();
-		foreach ( $tokens as $token ) {
-			if ( 'word' === $token['value'] ) {
-				$words[] = $token;
+		foreach ( $tokens as $index => $token ) {
+			if ( Token::WORD === $token->type ) {
+				$words[ $index ] = $token;
 			}
 		}
 
-		$this->assertArraySubset( $words, $parser->get_type( 'word' ) );
+		$this->assertArraySubset( $words, $parser->get_type( Token::WORD ) );
 	}
 }

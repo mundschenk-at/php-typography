@@ -41,9 +41,9 @@ function php_typography_autoloader( $class_name ) {
 		$class_name = substr( $class_name, strlen( $prefix ) );
 	}
 
-	$classes_dir = realpath( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
-	$class_name_parts = explode( '\\', $class_name );
-	$class_file = 'class-' . str_replace( '_', '-', strtolower( array_pop( $class_name_parts ) ) ) . '.php';
+	$classes_dir      = realpath( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
+	$class_name_parts = str_replace( '_', '-', explode( '\\', $class_name ) );
+	$class_file       = 'class-' . strtolower( array_pop( $class_name_parts ) ) . '.php';
 
 	if ( count( $class_name_parts ) > 0 ) {
 		$classes_dir .= implode( DIRECTORY_SEPARATOR, array_map( 'strtolower', $class_name_parts ) ) . DIRECTORY_SEPARATOR;

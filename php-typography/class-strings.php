@@ -32,6 +32,13 @@ namespace PHP_Typography;
  */
 abstract class Strings {
 	/**
+	 * Utility patterns for splitting string parameter lists into arrays.
+	 *
+	 * @var string
+	 */
+	const _RE_PARAMETER_SPLITTING = '/[\s,]+/S';
+
+	/**
 	 * An array of encodings in detection order.
 	 *
 	 * ASCII has to be first to have a chance of detection.
@@ -113,7 +120,7 @@ abstract class Strings {
 	/**
 	 * Converts decimal value to unicode character.
 	 *
-	 * @param string|array $codes Decimal value(s) coresponding to unicode character(s).
+	 * @param int|string|array $codes Decimal value(s) coresponding to unicode character(s).
 	 *
 	 * @return string Unicode character(s).
 	 */
@@ -127,7 +134,7 @@ abstract class Strings {
 		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= self::_uchr( $code );
+			$str .= self::_uchr( (int) $code );
 		}
 
 		return $str;
@@ -143,6 +150,21 @@ abstract class Strings {
 	 */
 	public static function _uchr( $code ) {
 		return html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
+	}
+
+	/**
+	 * If necessary, split the passed parameters string into an array.
+	 *
+	 * @param  array|string $params Parameters.
+	 *
+	 * @return array
+	 */
+	public static function maybe_split_parameters( $params ) {
+		if ( ! is_array( $params ) ) {
+			$params = preg_split( self::_RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+		}
+
+		return $params;
 	}
 }
 

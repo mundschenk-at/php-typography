@@ -62,6 +62,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 */
 	public function test_constructor() {
 		$h = $this->h;
@@ -80,8 +83,10 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests set_language.
 	 *
 	 * @covers ::set_language
-	 * @covers ::build_trie
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language() {
@@ -110,6 +115,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ::set_custom_exceptions
 	 * @uses ::merge_hyphenation_exceptions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
@@ -120,7 +128,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 			'KINGdesk' => 'KING-desk',
 		] );
 		$h->set_language( 'en-US' );
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
 		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
@@ -134,6 +142,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_language
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_same_hyphenation_language() {
@@ -204,6 +215,9 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_custom_exceptions
 	 *
 	 * @uses ::merge_hyphenation_exceptions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
+	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
@@ -212,7 +226,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$h->set_custom_exceptions( $exceptions );
 		$h->set_language( 'de' ); // German has no pattern exceptions.
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeNotEmpty( 'merged_exception_patterns', $h );
 
 		$exceptions = [ 'Hu-go' ];
@@ -266,7 +280,11 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 *
@@ -305,7 +323,11 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 *
@@ -329,36 +351,44 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
-	 * @uses \PHP_Typography\Strings::mb_str_split
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses \mb_convert_encoding
 	 */
 	public function test_hyphenate_wrong_encoding() {
 		$this->h->set_language( 'de' );
 
 		$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
-		$hyphenated  = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
-		$this->assertSame( $hyphenated, $tokens, 'Wrong encoding, value should be unchanged' );
+		$hyphenated = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
+		$this->assertTokensSame( $hyphenated, $tokens, 'Wrong encoding, value should be unchanged.' );
 
 		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated  = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
-		$this->assertNotSame( $hyphenated, $tokens, 'Correct encoding, string should have been hyphenated' );
+		$hyphenated = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
+		$this->assertTokensNotSame( $hyphenated, $tokens, 'Correct encoding, string should have been hyphenated.' );
 	}
 
 	/**
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_title_case() {
 		$this->h->set_language( 'de' );
 
 		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated  = $this->h->hyphenate( $tokens, '|', false, 2, 2, 2 );
+		$hyphenated = $this->h->hyphenate( $tokens, '|', false, 2, 2, 2 );
 		$this->assertEquals( $tokens, $hyphenated );
 	}
 
@@ -366,8 +396,12 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_invalid() {
@@ -382,8 +416,12 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_custom_exceptions() {
@@ -400,10 +438,14 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate
+	 * @covers ::hyphenate_word
+	 * @covers ::lookup_word_pattern
 	 *
 	 * @uses ReflectionClass
 	 * @uses ReflectionProperty
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_exceptions_at_all() {
@@ -430,16 +472,19 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::convert_hyphenation_exception_to_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_convert_hyphenation_exception_to_pattern() {
 		$h = $this->h;
 		$this->assertSame( [
 			4 => 9,
-		], $h->convert_hyphenation_exception_to_pattern( 'KING-desk' ) );
+		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
+
+		;
+
 		$this->assertSame( [
 			2 => 9,
-		], $h->convert_hyphenation_exception_to_pattern( 'ta-ble' ) );
+		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );
 	}
 
 	/**
@@ -447,14 +492,14 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::convert_hyphenation_exception_to_pattern
 	 *
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::functions
 	 * @uses \mb_convert_encoding
 	 */
 	public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
 		$h = $this->h;
 		$exception = mb_convert_encoding( 'Fö-ba-ß' , 'ISO-8859-2' );
 
-		$this->assertNull( $h->convert_hyphenation_exception_to_pattern( $exception ) );
+		$this->assertNull( $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ $exception ] ) );
 	}
 
 	/**
@@ -462,15 +507,16 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::merge_hyphenation_exceptions
 	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Strings::mb_str_split
-	 * @uses \PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_merge_hyphenation_exceptions() {
 		$h = $this->h;
 		$h->set_custom_exceptions( [ 'Hu-go', 'Fä-vi-ken' ] );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeNotCount( 1, 'merged_exception_patterns', $h );
 		$this->assertAttributeNotCount( 2, 'merged_exception_patterns', $h );
@@ -478,20 +524,20 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 		$this->assertAttributeArrayHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'de' ); // w/o pattern exceptions.
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeCount( 2, 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayHasKey( 'hugo', 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
 		$h->set_custom_exceptions( [] );
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'de' ); // w/o pattern exceptions.
-		$h->merge_hyphenation_exceptions();
+		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'hugo', 'merged_exception_patterns', $h );
 		$this->assertAttributeArrayNotHasKey( 'fäviken', 'merged_exception_patterns', $h );

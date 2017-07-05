@@ -71,7 +71,8 @@ class Pattern_Converter {
 	 * Calculate patgen sequence from TeX hyphenation pattern.
 	 *
 	 * @param string $pattern TeX hyphenation pattern.
-	 * @return string
+	 *
+	 * @return string|null Script exits on error.
 	 */
 	function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
@@ -180,7 +181,8 @@ class Pattern_Converter {
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @return boolean
+	 *
+	 * @return boolean|null Script exits on error.
 	 */
 	function match_exceptions( $line, array &$exceptions ) {
 		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
@@ -195,7 +197,7 @@ class Pattern_Converter {
 			$exceptions[] = $matches[1];
 		} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
-			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
@@ -214,6 +216,7 @@ class Pattern_Converter {
 	 *
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
+	 *
 	 * @return boolean
 	 */
 	function match_patterns( $line, array &$patterns ) {
@@ -226,18 +229,29 @@ class Pattern_Converter {
 			$patterns[] = $matches[1];
 		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple patterns on a single line.
-			foreach ( preg_split( '/\s+/u', $matches[1], -1, PREG_SPLIT_NO_EMPTY ) as $match ) {
+			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
 		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			echo 'Error: unknown pattern line ' . clean_html( $line ) . "\n"; // xss ok.
+			echo 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n"; // xss ok.
 			die( -1000 );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Split line (fragment) at whitespace.
+	 *
+	 * @param  string $line A line (fragment).
+	 *
+	 * @return array
+	 */
+	private static function split_at_whitespace( $line ) {
+		return preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
 	}
 
 	/**

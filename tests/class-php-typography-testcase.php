@@ -89,12 +89,9 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return array
 	 */
-	protected function tokenize( $value, $type = 'word' ) {
+	protected function tokenize( $value, $type = \PHP_Typography\Text_Parser\Token::WORD ) {
 		return [
-			[
-				'type'  => $type,
-				'value' => $value,
-			],
+			new \PHP_Typography\Text_Parser\Token( $value, $type ),
 		];
 	}
 
@@ -110,10 +107,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 		$tokens = [];
 
 		foreach ( $words as $word ) {
-			$tokens[] = [
-				'type'  => 'word',
-				'value' => $word,
-			];
+			$tokens[] = new \PHP_Typography\Text_Parser\Token( $word, \PHP_Typography\Text_Parser\Token::WORD );
 		}
 
 		return $tokens;
@@ -122,28 +116,75 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	/**
 	 * Reports an error identified by $message if the combined token values differ from the expected value.
 	 *
-	 * @param string $expected_value Either a word or sentence.
-	 * @param array  $actual_tokens  A token array.
-	 * @param string $message        Optional. Default ''.
+	 * @param string|array $expected_value Either a word/sentence or a token array.
+	 * @param array        $actual_tokens  A token array.
+	 * @param string       $message        Optional. Default ''.
 	 */
 	protected function assertTokensSame( $expected_value, $actual_tokens, $message = '' ) {
+		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
-			$actual_tokens[ $index ]['value'] = $this->clean_html( $actual_tokens[ $index ]['value'] );
+			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
 		}
 
-		if ( false !== strpos( $expected_value, ' ' ) ) {
-			$expected = $this->tokenize_sentence( $expected_value );
+		if ( is_scalar( $expected_value ) ) {
+			if ( false !== strpos( $expected_value, ' ' ) ) {
+				$expected = $this->tokenize_sentence( $expected_value );
+			} else {
+				$expected = $this->tokenize( $expected_value );
+			}
 		} else {
-			$expected = $this->tokenize( $expected_value );
+			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+
+			foreach ( $expected_value as $index => $token ) {
+				$expected[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
+			}
 		}
 
 		$this->assertSame( count( $expected ), count( $actual_tokens ) );
 
 		foreach ( $actual_tokens as $key => $token ) {
-			$this->assertSame( $expected[ $key ]['value'], $token['value'], $message );
+			$this->assertSame( $expected[ $key ]->value, $token->value, $message );
+			$this->assertSame( $expected[ $key ]->type,  $token->type,  $message );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Reports an error identified by $message if the combined token values do
+	 * not differ from the expected value.
+	 *
+	 * @param string|array $expected_value Either a word/sentence or a token array.
+	 * @param array        $actual_tokens  A token array.
+	 * @param string       $message        Optional. Default ''.
+	 */
+	protected function assertTokensNotSame( $expected_value, $actual_tokens, $message = '' ) {
+		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
+		foreach ( $actual_tokens as $index => $token ) {
+			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
+		}
+
+		if ( is_scalar( $expected_value ) ) {
+			if ( false !== strpos( $expected_value, ' ' ) ) {
+				$expected = $this->tokenize_sentence( $expected_value );
+			} else {
+				$expected = $this->tokenize( $expected_value );
+			}
+		} else {
+			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+			$expected = $expected_value;
+		}
+
+		$this->assertSame( count( $expected ), count( $actual_tokens ) );
+
+		$result = false;
+		foreach ( $actual_tokens as $key => $token ) {
+			if ( $expected[ $key ]->value !== $token->value || $expected[ $key ]->type !== $token->type ) {
+				$result = true;
+			}
+		}
+
+		return $this->assertTrue( $result, $message );
 	}
 
 	/**

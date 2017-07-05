@@ -27,6 +27,8 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Hyphenator\Trie_Node;
+
 /**
  * Hyphenates tokenized text.
  *
@@ -42,7 +44,7 @@ class Hyphenator {
 	/**
 	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
-	 * @var array
+	 * @var Trie_Node
 	 */
 	protected $pattern_trie;
 
@@ -87,8 +89,8 @@ class Hyphenator {
 	/**
 	 * Constructs new Hyphenator instance.
 	 *
-	 * @param string $language   Optional. Short-form language name. Default null.
-	 * @param array  $exceptions Optional. Custom hyphenation exceptions. Default empty array.
+	 * @param string|null $language   Optional. Short-form language name. Default null.
+	 * @param array       $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
 	public function __construct( $language = null, array $exceptions = [] ) {
 
@@ -174,7 +176,7 @@ class Hyphenator {
 
 				if ( false !== $language_file ) {
 					$this->pattern_exceptions = $language_file['exceptions'];
-					$this->pattern_trie       = $this->build_trie( $language_file['patterns'] );
+					$this->pattern_trie       = Trie_Node::build_trie( $language_file['patterns'] );
 
 					$success = true;
 				}
@@ -195,37 +197,6 @@ class Hyphenator {
 		$this->merged_exception_patterns = null;
 
 		return $success;
-	}
-
-	/**
-	 * Builds pattern search trie from pattern list(s).
-	 *
-	 * @param array $patterns An array of hyphenation patterns.
-	 *
-	 * @return array The starting node of the trie.
-	 */
-	protected function build_trie( array $patterns ) {
-		$node = null;
-		$trie = [];
-
-		foreach ( $patterns as $key => $pattern ) {
-			$node = &$trie;
-
-			foreach ( Strings::mb_str_split( $key ) as $char ) {
-				if ( ! isset( $node[ $char ] ) ) {
-					$node[ $char ] = [];
-				}
-				$node = &$node[ $char ];
-			}
-
-			preg_match_all( '/([1-9])/', $pattern, $offsets, PREG_OFFSET_CAPTURE );
-
-			$node['_pattern'] = [
-				'offsets' => $offsets[1],
-			];
-		}
-
-		return $trie;
 	}
 
 	/**
@@ -250,89 +221,120 @@ class Hyphenator {
 			$this->merge_hyphenation_exceptions();
 		}
 
-		foreach ( $parsed_text_tokens as &$text_token ) {
-			// Quickly reference string functions according to encoding.
-			$func = Strings::functions( $text_token['value'] );
-			if ( empty( $func ) ) {
-				continue; // unknown encoding, abort.
-			}
-
-			$word_length = $func['strlen']( $text_token['value'] );
-			$the_key     = $func['strtolower']( $text_token['value'] );
-
-			if ( $word_length < $min_length ) {
-				continue;
-			}
-
-			// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
-			// Note: This is different than uppercase words, where we are looking for title case.
-			if ( ! $hyphenate_title_case && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $text_token['value'], 0, 1 ) ) {
-				continue;
-			}
-
-			// Give exceptions preference.
-			if ( isset( $this->merged_exception_patterns[ $the_key ] ) ) {
-				$word_pattern = $this->merged_exception_patterns[ $the_key ];
-			}
-
-			if ( ! isset( $word_pattern ) ) {
-				// Add underscores to make out-of-index checks unnecessary,
-				// also hyphenation is done in lower case.
-				$search        = '_' . $the_key . '_';
-				$search_length = $func['strlen']( $search );
-				$chars         = $func['str_split']( $search );
-				$word_pattern  = [];
-
-				for ( $start = 0; $start < $search_length; ++$start ) {
-					// Start from the trie root node.
-					$node = $this->pattern_trie;
-
-					// Walk through the trie while storing detected patterns.
-					for ( $step = $start; $step < $search_length; ++$step ) {
-						// No further path in the trie.
-						if ( ! isset( $node[ $chars[ $step ] ] ) ) {
-							break;
-						}
-
-						// Look for next character.
-						$node = $node[ $chars[ $step ] ];
-
-						if ( isset( $node['_pattern'] ) ) {
-							// Merge different offset values and keep maximum.
-							foreach ( $node['_pattern']['offsets'] as $offset_index => $pattern_offset ) {
-								$value  = $pattern_offset[0];
-								$offset = $pattern_offset[1] + $start - 1;
-								$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
-							}
-						}
-					}
-				}
-			}
-
-			// Add soft-hyphen based on $word_pattern.
-			$word_parts = $func['str_split']( $text_token['value'], 1 );
-			$hyphenated_word = '';
-
-			for ( $i = 0; $i < $word_length; $i++ ) {
-				if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
-					$hyphenated_word .= $hyphen . $word_parts[ $i ];
-				} else {
-					$hyphenated_word .= $word_parts[ $i ];
-				}
-			}
-
-			$text_token['value'] = $hyphenated_word;
-			unset( $word_pattern );
+		foreach ( $parsed_text_tokens as $key => $text_token ) {
+			$parsed_text_tokens[ $key ] = $text_token->with_value( $this->hyphenate_word( $text_token->value, $hyphen, $hyphenate_title_case, $min_length, $min_before, $min_after ) );
 		}
 
 		return $parsed_text_tokens;
 	}
 
 	/**
+	 * Hyphenates a single word.
+	 *
+	 * @param string $word                 The word to hyphenate.
+	 * @param string $hyphen               The hyphen character.
+	 * @param bool   $hyphenate_title_case Whether words in Title Case should be hyphenated.
+	 * @param int    $min_length           Minimum word length for hyphenation.
+	 * @param int    $min_before           Minimum number of characters before a hyphenation point.
+	 * @param int    $min_after            Minimum number of characters after a hyphenation point.
+	 *
+	 * @return string
+	 */
+	protected function hyphenate_word( $word, $hyphen, $hyphenate_title_case, $min_length, $min_before, $min_after ) {
+		// Quickly reference string functions according to encoding.
+		$func = Strings::functions( $word );
+		if ( empty( $func ) ) {
+			return $word; // unknown encoding, abort.
+		}
+
+		// Check word length.
+		$word_length = $func['strlen']( $word );
+		if ( $word_length < $min_length ) {
+			return $word;
+		}
+
+		// Trie lookup requires a lowercase search term.
+		$the_key = $func['strtolower']( $word );
+
+		// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
+		// Note: This is different than uppercase words, where we are looking for title case.
+		if ( ! $hyphenate_title_case && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $word, 0, 1 ) ) {
+			return $word;
+		}
+
+		// Give exceptions preference.
+		if ( isset( $this->merged_exception_patterns[ $the_key ] ) ) {
+			$word_pattern = $this->merged_exception_patterns[ $the_key ];
+		}
+
+		// Lookup word pattern if there is no exception.
+		if ( ! isset( $word_pattern ) ) {
+			$word_pattern = $this->lookup_word_pattern( $the_key, $func['strlen'], $func['str_split'] );
+		}
+
+		// Add hyphen character based on $word_pattern.
+		$word_parts      = $func['str_split']( $word, 1 );
+		$hyphenated_word = '';
+
+		for ( $i = 0; $i < $word_length; $i++ ) {
+			if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
+				$hyphenated_word .= $hyphen . $word_parts[ $i ];
+			} else {
+				$hyphenated_word .= $word_parts[ $i ];
+			}
+		}
+
+		return $hyphenated_word;
+	}
+
+	/**
+	 * Lookup the pattern for a word via the trie.
+	 *
+	 * @param  string   $key       The search key (lowercase word).
+	 * @param  callable $strlen    A function equivalent to `strlen` for the appropriate encoding.
+	 * @param  callable $str_split A function equivalent to `str_split` for the appropriate encoding.
+	 *
+	 * @return array The hyphenation pattern.
+	 */
+	protected function lookup_word_pattern( $key, callable $strlen, callable $str_split ) {
+		// Add underscores to make out-of-index checks unnecessary,
+		// also hyphenation is done in lower case.
+		$search        = '_' . $key . '_';
+		$search_length = $strlen( $search );
+		$chars         = $str_split( $search );
+		$word_pattern  = [];
+
+		for ( $start = 0; $start < $search_length; ++$start ) {
+			// Start from the trie root node.
+			$node = $this->pattern_trie;
+
+			// Walk through the trie while storing detected patterns.
+			for ( $step = $start; $step < $search_length; ++$step ) {
+				// No further path in the trie.
+				if ( ! $node->exists( $chars[ $step ] ) ) {
+					break;
+				}
+
+				// Look for next character.
+				$node = $node->get_node( $chars[ $step ] );
+
+				// Merge different offset values and keep maximum.
+				foreach ( $node->offsets() as $pattern_offset ) {
+					$value  = $pattern_offset[0];
+					$offset = $pattern_offset[1] + $start - 1;
+					$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
+				}
+			}
+		}
+
+		return $word_pattern;
+	}
+
+	/**
 	 * Merges hyphenation exceptions from the language file and custom hyphenation exceptions and
 	 * generates patterns for all of them.
 	 */
-	function merge_hyphenation_exceptions() {
+	protected function merge_hyphenation_exceptions() {
 		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
@@ -347,7 +349,7 @@ class Hyphenator {
 		// Update patterns as well.
 		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
-			$exception_patterns[ $exception_key ] = $this->convert_hyphenation_exception_to_pattern( $exception );
+			$exception_patterns[ $exception_key ] = self::convert_hyphenation_exception_to_pattern( $exception );
 		}
 
 		$this->merged_exception_patterns = $exception_patterns;
@@ -357,12 +359,13 @@ class Hyphenator {
 	 * Generates a hyphenation pattern from an exception.
 	 *
 	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
-	 * @return void|string[] Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
+	 *
+	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
-	function convert_hyphenation_exception_to_pattern( $exception ) {
+	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
 		$func = Strings::functions( $exception );
 		if ( empty( $func ) ) {
-			return; // unknown encoding, abort.
+			return null; // unknown encoding, abort.
 		}
 
 		// Set the word_pattern - this method keeps any contextually important capitalization.
@@ -386,11 +389,11 @@ class Hyphenator {
 	/**
 	 * Is a number odd?
 	 *
-	 * @param ubt $number Required.
+	 * @param int $number Required.
 	 *
-	 * @return boolean true if $number is odd, false if it is even.
+	 * @return bool true if $number is odd, false if it is even.
 	 */
-	private static function is_odd( $number ) {
-		return (boolean) ( $number % 2 );
+	protected static function is_odd( $number ) {
+		return (bool) ( $number % 2 );
 	}
 }
