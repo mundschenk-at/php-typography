@@ -186,31 +186,10 @@ abstract class DOM {
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
 	public static function get_previous_textnode( \DOMNode $element = null ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$previous_textnode = null;
-		$node = $element;
-
-		if ( $node instanceof \DOMElement && isset( self::$block_tags[ $node->tagName ] ) ) {
-			return null;
-		}
-
-		while ( ( $node = $node->previousSibling ) && empty( $previous_textnode ) ) { // @codingStandardsIgnoreLine.
-			$previous_textnode = self::get_last_textnode( $node );
-		}
-
-		if ( ! $previous_textnode ) {
-			$previous_textnode = self::get_previous_textnode( $element->parentNode );
-		}
-
-		return $previous_textnode;
+		return self::get_adjacent_textnode( function( &$node = null ) {
+			$node = $node->previousSibling;
+			return self::get_last_textnode( $node );
+		}, __METHOD__, $element );
 	}
 
 	/**
@@ -221,31 +200,40 @@ abstract class DOM {
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
 	public static function get_next_textnode( \DOMNode $element = null ) {
+		return self::get_adjacent_textnode( function( &$node = null ) {
+			$node = $node->nextSibling;
+			return self::get_first_textnode( $node );
+		}, __METHOD__, $element );
+	}
+
+	/**
+	 * Retrieves an adjacent \DOMText sibling if there is one.
+	 *
+	 * @param callable      $iterate             Takes a reference \DOMElement and returns a \DOMText (or null).
+	 * @param callable      $get_adjacent_parent Takes a single \DOMElement parameter and returns a \DOMText (or null).
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
+	 *
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
+	 */
+	private static function get_adjacent_textnode( callable $iterate, callable $get_adjacent_parent, \DOMNode $element = null ) {
 		if ( ! isset( $element ) ) {
 			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$next_textnode = null;
-		$node = $element;
-
-		if ( $node instanceof \DOMElement && isset( self::$block_tags[ $node->tagName ] ) ) {
+		} elseif ( $element instanceof \DOMElement && isset( self::$block_tags[ $element->tagName ] ) ) {
 			return null;
 		}
 
-		while ( ( $node = $node->nextSibling ) && empty( $next_textnode ) ) { // @codingStandardsIgnoreLine.
-			$next_textnode = self::get_first_textnode( $node );
+		$adjacent = null;
+		$node     = $element;
+
+		while ( ! empty( $node ) && empty( $adjacent ) ) {
+			$adjacent = $iterate( $node );
 		}
 
-		if ( ! $next_textnode ) {
-			$next_textnode = self::get_next_textnode( $element->parentNode );
+		if ( empty( $adjacent ) ) {
+			$adjacent = $get_adjacent_parent( $element->parentNode );
 		}
 
-		return $next_textnode;
+		return $adjacent;
 	}
 
 	/**
@@ -257,37 +245,14 @@ abstract class DOM {
 	 * @return \DOMText|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	public static function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		if ( $element instanceof \DOMText ) {
-			return $element;
-		} elseif ( ! $element instanceof \DOMElement ) {
-			// Return null if $element is neither \DOMText nor \DOMElement.
-			return null;
-		} elseif ( $recursive && isset( self::$block_tags[ $element->tagName ] ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$first_textnode = null;
-
-		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes;
+		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$first_textnode = null ) {
 			$i = 0;
 
 			while ( $i < $children->length && empty( $first_textnode ) ) {
 				$first_textnode = self::get_first_textnode( $children->item( $i ), true );
 				$i++;
 			}
-		}
-
-		return $first_textnode;
+		}, $element, $recursive );
 	}
 
 	/**
@@ -299,6 +264,28 @@ abstract class DOM {
 	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	public static function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
+		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$last_textnode = null ) {
+			$i = $children->length - 1;
+
+			while ( $i >= 0 && empty( $last_textnode ) ) {
+				$last_textnode = self::get_last_textnode( $children->item( $i ), true );
+				$i--;
+			}
+		}, $element, $recursive );
+	}
+
+	/**
+	 * Retrieves an edge \DOMText child of the element specified by the callable.
+	 * Block-level child elements are ignored.
+	 *
+	 * @param callable      $iteration Takes two parameters, a \DOMNodeList and
+	 *                                 a reference to the \DOMText used as the result.
+	 * @param \DOMNode|null $element   Optional. Default null.
+	 * @param bool          $recursive Should be set to true on recursive calls. Optional. Default false.
+	 *
+	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 */
+	private static function get_edge_textnode( callable $iteration, \DOMNode $element = null, $recursive = false ) {
 		if ( ! isset( $element ) ) {
 			return null;
 		}
@@ -312,24 +299,13 @@ abstract class DOM {
 			return null;
 		}
 
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$last_textnode = null;
+		$edge_textnode = null;
 
 		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes;
-			$i = $children->length - 1;
-
-			while ( $i >= 0 && empty( $last_textnode ) ) {
-				$last_textnode = self::get_last_textnode( $children->item( $i ), true );
-				$i--;
-			}
+			$iteration( $element->childNodes, $edge_textnode );
 		}
 
-		return $last_textnode;
+		return $edge_textnode;
 	}
 
 	/**
