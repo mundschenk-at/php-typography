@@ -318,7 +318,7 @@ abstract class DOM {
 	public static function get_block_parent( \DOMNode $element ) {
 		$parent = $element->parentNode;
 
-		while ( isset( $parent->tagName ) && ! isset( self::$block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
+		while ( $parent instanceof \DOMElement && ! isset( self::$block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
 			$parent = $parent->parentNode;
 		}
 
