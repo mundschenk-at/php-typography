@@ -91,13 +91,6 @@ class PHP_Typography {
 	];
 
 	/**
-	 * An array in the form of [ '$tag' => true ]
-	 *
-	 * @var array
-	 */
-	private $block_tags = [];
-
-	/**
 	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
 	 *
 	 * @var array
@@ -135,10 +128,6 @@ class PHP_Typography {
 	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
 	 */
 	public function init( $set_defaults = true ) {
-		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
-			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
-		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
-
 		$this->settings = new Settings( $set_defaults );
 	}
 
@@ -982,203 +971,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Retrieves the last character of the previous \DOMText sibling (if there is one).
-	 *
-	 * @param \DOMNode $element The content node.
-	 * @return string A single character (or the empty string).
-	 */
-	public function get_prev_chr( \DOMNode $element ) {
-		$previous_textnode = $this->get_previous_textnode( $element );
-
-		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
-			// First determine encoding.
-			$func = Strings::functions( $previous_textnode->data );
-
-			if ( ! empty( $func ) ) {
-				return preg_replace( '/\p{C}/Su', '', $func['substr']( $previous_textnode->data, - 1 ) );
-			}
-		} // @codeCoverageIgnore
-
-		return '';
-	}
-
-	/**
-	 * Retrieves the first character of the next \DOMText sibling (if there is one).
-	 *
-	 * @param \DOMNode $element The content node.
-	 *
-	 * @return string A single character (or the empty string).
-	 */
-	public function get_next_chr( \DOMNode $element ) {
-		$next_textnode = $this->get_next_textnode( $element );
-
-		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
-			// First determine encoding.
-			$func = Strings::functions( $next_textnode->data );
-
-			if ( ! empty( $func ) ) {
-				return preg_replace( '/\p{C}/Su', '', $func['substr']( $next_textnode->data, 0, 1 ) );
-			}
-		} // @codeCoverageIgnore
-
-		return '';
-	}
-
-	/**
-	 * Retrieves the previous \DOMText sibling (if there is one).
-	 *
-	 * @param \DOMNode $element Optional. The content node. Default null.
-	 *
-	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
-	 */
-	public function get_previous_textnode( \DOMNode $element = null ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$previous_textnode = null;
-		$node = $element;
-
-		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
-			return null;
-		}
-
-		while ( ( $node = $node->previousSibling ) && empty( $previous_textnode ) ) { // @codingStandardsIgnoreLine.
-			$previous_textnode = $this->get_last_textnode( $node );
-		}
-
-		if ( ! $previous_textnode ) {
-			$previous_textnode = $this->get_previous_textnode( $element->parentNode );
-		}
-
-		return $previous_textnode;
-	}
-
-	/**
-	 * Retrieves the next \DOMText sibling (if there is one).
-	 *
-	 * @param \DOMNode $element Optional. The content node. Default null.
-	 *
-	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
-	 */
-	public function get_next_textnode( \DOMNode $element = null ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$next_textnode = null;
-		$node = $element;
-
-		if ( $node instanceof \DOMElement && isset( $this->block_tags[ $node->tagName ] ) ) {
-			return null;
-		}
-
-		while ( ( $node = $node->nextSibling ) && empty( $next_textnode ) ) { // @codingStandardsIgnoreLine.
-			$next_textnode = $this->get_first_textnode( $node );
-		}
-
-		if ( ! $next_textnode ) {
-			$next_textnode = $this->get_next_textnode( $element->parentNode );
-		}
-
-		return $next_textnode;
-	}
-
-	/**
-	 * Retrieves the first \DOMText child of the element. Block-level child elements are ignored.
-	 *
-	 * @param \DOMNode $element   Optional. Default null.
-	 * @param bool     $recursive Should be set to true on recursive calls. Optional. Default false.
-	 *
-	 * @return \DOMNode|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
-	 */
-	public function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		if ( $element instanceof \DOMText ) {
-			return $element;
-		} elseif ( ! $element instanceof \DOMElement ) {
-			// Return null if $element is neither \DOMText nor \DOMElement.
-			return null;
-		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$first_textnode = null;
-
-		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes;
-			$i = 0;
-
-			while ( $i < $children->length && empty( $first_textnode ) ) {
-				$first_textnode = $this->get_first_textnode( $children->item( $i ), true );
-				$i++;
-			}
-		}
-
-		return $first_textnode;
-	}
-
-	/**
-	 * Retrieves the last \DOMText child of the element. Block-level child elements are ignored.
-	 *
-	 * @param \DOMNode $element   Optional. Default null.
-	 * @param bool     $recursive Should be set to true on recursive calls. Optional. Default false.
-	 *
-	 * @return \DOMNode|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
-	 */
-	public function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
-		if ( ! isset( $element ) ) {
-			return null;
-		}
-
-		if ( $element instanceof \DOMText ) {
-			return $element;
-		} elseif ( ! $element instanceof \DOMElement ) {
-			// Return null if $element is neither \DOMText nor \DOMElement.
-			return null;
-		} elseif ( $recursive && isset( $this->block_tags[ $element->tagName ] ) ) {
-			return null;
-		}
-
-		/**
-		 * Text node.
-		 *
-		 * @var \DOMText
-		 */
-		$last_textnode = null;
-
-		if ( $element->hasChildNodes() ) {
-			$children = $element->childNodes;
-			$i = $children->length - 1;
-
-			while ( $i >= 0 && empty( $last_textnode ) ) {
-				$last_textnode = $this->get_last_textnode( $children->item( $i ), true );
-				$i--;
-			}
-		}
-
-		return $last_textnode;
-	}
-
-	/**
 	 * Applies smart quotes (if enabled).
 	 *
 	 * @param \DOMText $textnode The content node.
@@ -1191,11 +983,11 @@ class PHP_Typography {
 
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
-		$previous_character = $this->get_prev_chr( $textnode );
+		$previous_character = DOM::get_prev_chr( $textnode );
 		if ( '' !== $previous_character ) {
 			$textnode->data = $previous_character . $textnode->data;
 		}
-		$next_character = $this->get_next_chr( $textnode );
+		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
 			$textnode->data = $textnode->data . $next_character;
 		}
@@ -1494,12 +1286,12 @@ class PHP_Typography {
 		}
 
 		// Add $next_character and $previous_character for context.
-		$previous_character = $this->get_prev_chr( $textnode );
+		$previous_character = DOM::get_prev_chr( $textnode );
 		if ( '' !== $previous_character ) {
 			$textnode->data = $previous_character . $textnode->data;
 		}
 
-		$next_character = $this->get_next_chr( $textnode );
+		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
 			$textnode->data = $textnode->data . $next_character;
 		}
@@ -1583,7 +1375,7 @@ class PHP_Typography {
 		$textnode->data = preg_replace( $regex['spaceCollapseOther'], '$1', $textnode->data );
 
 		// Remove all spacing at beginning of block level elements.
-		if ( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
+		if ( '' === DOM::get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
 			$textnode->data = preg_replace( $regex['spaceCollapseBlockStart'], '', $textnode->data );
 		}
 	}
@@ -1697,7 +1489,7 @@ class PHP_Typography {
 			return;
 		}
 
-		if ( '' === $this->get_next_chr( $textnode ) ) {
+		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
 			$chr       = $settings->get_named_characters();
 			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $chr ) {
@@ -1918,12 +1710,12 @@ class PHP_Typography {
 		}
 
 		// We need the parent.
-		$block = $this->get_block_parent( $textnode );
-		$firstnode = ! empty( $block ) ? $this->get_first_textnode( $block ) : null;
+		$block = DOM::get_block_parent( $textnode );
+		$firstnode = ! empty( $block ) ? DOM::get_first_textnode( $block ) : null;
 
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
-		$next_character = $this->get_next_chr( $textnode );
+		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
 			$textnode->data = $textnode->data . $next_character;
 		}
@@ -1978,7 +1770,7 @@ class PHP_Typography {
 			return;
 		}
 
-		if ( '' === $this->get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
+		if ( '' === DOM::get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
 
 			$func            = Strings::functions( $textnode->data );
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
@@ -1995,7 +1787,7 @@ class PHP_Typography {
 				case $chr['guillemetClose']:
 				case $chr['doubleLow9Quote']:
 
-					$block_level_parent = $this->get_block_parent( $textnode );
+					$block_level_parent = DOM::get_block_parent( $textnode );
 					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 
 					if ( $is_title ) {
@@ -2039,7 +1831,7 @@ class PHP_Typography {
 
 		$is_heading = false;
 		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
-			$block_level_parent = $this->get_block_parent( $textnode );
+			$block_level_parent = DOM::get_block_parent( $textnode );
 			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
 
 			if ( $block_level_parent && isset( $this->heading_tags[ $block_level_parent ] ) ) {
@@ -2137,23 +1929,6 @@ class PHP_Typography {
 		}
 
 		return $this->get_hyphenator( $settings )->hyphenate( $parsed_text_tokens, $hyphen, ! empty( $settings['hyphenateTitleCase'] ), $settings['hyphenMinLength'], $settings['hyphenMinBefore'], $settings['hyphenMinAfter'] );
-	}
-
-	/**
-	 * Returns the nearest block-level parent.
-	 *
-	 * @param \DOMNode $element The node to get the containing block-level tag.
-	 *
-	 * @return \DOMElement
-	 */
-	public function get_block_parent( \DOMNode $element ) {
-		$parent = $element->parentNode;
-
-		while ( isset( $parent->tagName ) && ! isset( $this->block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
-			$parent = $parent->parentNode;
-		}
-
-		return $parent;
 	}
 
 	/**
