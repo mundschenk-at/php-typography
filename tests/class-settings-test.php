@@ -64,6 +64,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_defaults
 	 *
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
+	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
@@ -82,6 +83,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ::set_defaults
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
+	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 */
 	public function test_initialization() {
 		$s = $this->settings;
@@ -781,30 +783,73 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Provide data for testing set_diacritic_custom_replacements.
+	 */
+	public function provide_set_diacritic_custom_replacements_data() {
+		return [
+			[
+				'"foo" => "fóò", "bar" => "bâr"' . ", 'ha' => 'hä'",
+				[ 'foo', 'bar', 'ha' ],
+				[ 'fóò', 'bâr', 'hä' ],
+			],
+
+			[
+				[
+					'fööbar' => 'fúbar',
+				],
+				[ 'fööbar' ],
+				[ 'fúbar' ],
+			],
+
+			[
+				[
+					' ' => 'fúbar',
+				],
+				[],
+				[],
+			],
+
+			[
+				[
+					'fööbar' => '',
+				],
+				[],
+				[],
+			],
+		];
+	}
+
+	/**
 	 * Tests set_diacritic_custom_replacements.
 	 *
 	 * @covers ::set_diacritic_custom_replacements
+	 * @covers ::parse_diacritics_replacement_string
 	 * @covers ::update_diacritics_replacement_arrays
 	 * @covers ::parse_diacritics_rules
+	 *
+	 * @uses PHP_Typography\Arrays::array_map_assoc
+	 *
+	 * @dataProvider provide_set_diacritic_custom_replacements_data
+	 *
+	 * @param string|array $input  Custom replacements string or array.
+	 * @param array        $keys   Expected keys.
+	 * @param array        $values Expected values.
 	 */
-	public function test_set_diacritic_custom_replacements() {
+	public function test_set_diacritic_custom_replacements( $input, array $keys, array $values ) {
 		$s = $this->settings;
 
-		$s->set_diacritic_custom_replacements( '"foo" => "fóò", "bar" => "bâr"' . ", 'ha' => 'hä'" );
-		$this->assertArrayHasKey( 'foo', $s['diacriticCustomReplacements'] );
-		$this->assertArrayHasKey( 'bar', $s['diacriticCustomReplacements'] );
-		$this->assertArrayHasKey( 'ha', $s['diacriticCustomReplacements'] );
-		$this->assertContains( 'fóò', $s['diacriticCustomReplacements'] );
-		$this->assertContains( 'bâr', $s['diacriticCustomReplacements'] );
-		$this->assertContains( 'hä', $s['diacriticCustomReplacements'] );
+		$s->set_diacritic_custom_replacements( $input );
 
-		$s->set_diacritic_custom_replacements( [
-			'fööbar' => 'fúbar',
-		] );
-		$this->assertArrayNotHasKey( 'foo', $s['diacriticCustomReplacements'] );
-		$this->assertArrayNotHasKey( 'bar', $s['diacriticCustomReplacements'] );
-		$this->assertArrayHasKey( 'fööbar', $s['diacriticCustomReplacements'] );
-		$this->assertContains( 'fúbar', $s['diacriticCustomReplacements'] );
+		foreach ( $keys as $key ) {
+			$this->assertArrayHasKey( $key, $s['diacriticCustomReplacements'] );
+		}
+
+		foreach ( $values as $value ) {
+			$this->assertContains( $value, $s['diacriticCustomReplacements'] );
+		}
+
+		$this->assertCount( count( $keys ), $s['diacriticCustomReplacements'] );
+		$this->assertCount( count( $values ), $s['diacriticCustomReplacements'] );
 	}
 
 	/**

@@ -27,6 +27,8 @@
 
 namespace PHP_Typography;
 
+use \PHP_Typography\Arrays;
+
 /**
  * Store settings for the PHP_Typography class.
  *
@@ -1484,40 +1486,49 @@ class Settings implements \ArrayAccess {
 	 */
 	public function set_diacritic_custom_replacements( $custom_replacements = [] ) {
 		if ( ! is_array( $custom_replacements ) ) {
-			$custom_replacements = preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY );
+			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$replacements = [];
-		foreach ( $custom_replacements as $custom_key => $custom_replacement ) {
-			// Account for single and double quotes.
-			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $custom_replacement, $double_quote_key_match );
-			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $custom_replacement, $single_quote_key_match );
-			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $custom_replacement, $double_quote_value_match );
-			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $custom_replacement, $single_quote_value_match );
+		$this->data['diacriticCustomReplacements'] = Arrays::array_map_assoc( function( $key, $replacement ) {
+			$key         = strip_tags( trim( $key ) );
+			$replacement = strip_tags( trim( $replacement ) );
 
-			if ( ! empty( $double_quote_key_match[1] ) ) {
-				$key = $double_quote_key_match[1];
-			} elseif ( ! empty( $single_quote_key_match[1] ) ) {
-				$key = $single_quote_key_match[1];
+			if ( ! empty( $key ) && ! empty( $replacement ) ) {
+				return [ $key, $replacement ];
 			} else {
-				$key = $custom_key;
+				return [];
 			}
+		}, $custom_replacements );
 
-			if ( ! empty( $double_quote_value_match[1] ) ) {
-				$value = $double_quote_value_match[1];
-			} elseif ( ! empty( $single_quote_value_match[1] ) ) {
-				$value = $single_quote_value_match[1];
-			} else {
-				$value = $custom_replacement;
-			}
-
-			if ( isset( $key ) && isset( $value ) ) {
-				$replacements[ strip_tags( trim( $key ) ) ] = strip_tags( trim( $value ) );
-			}
-		}
-
-		$this->data['diacriticCustomReplacements'] = $replacements;
 		$this->update_diacritics_replacement_arrays();
+	}
+
+	/**
+	 * Parses a custom diacritics replacement string into an array.
+	 *
+	 * @param string $custom_replacements A string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 *
+	 * @return array
+	 */
+	private function parse_diacritics_replacement_string( $custom_replacements ) {
+		return Arrays::array_map_assoc( function( $key, $replacement ) {
+
+			// Account for single and double quotes in keys ...
+			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteKey'], $replacement, $match ) ) {
+				$key = $match[1];
+			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteKey'], $replacement, $match ) ) {
+				$key = $match[1];
+			}
+
+			// ... and values.
+			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $replacement, $match ) ) {
+				$replacement = $match[1];
+			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $replacement, $match ) ) {
+				$replacement = $match[1];
+			}
+
+			return [ $key, $replacement ];
+		}, preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
 	}
 
 	/**

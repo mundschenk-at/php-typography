@@ -35,6 +35,7 @@ use \PHP_Typography\Strings;
  * @uses PHP_Typography\PHP_Typography
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Strings
+ * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  */
 class PHP_Typography_Test extends PHP_Typography_Testcase {
