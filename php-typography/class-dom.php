@@ -181,7 +181,7 @@ abstract class DOM {
 	/**
 	 * Retrieves the previous \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element Optional. The content node. Default null.
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
 	 *
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
@@ -216,7 +216,7 @@ abstract class DOM {
 	/**
 	 * Retrieves the next \DOMText sibling (if there is one).
 	 *
-	 * @param \DOMNode $element Optional. The content node. Default null.
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
 	 *
 	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
 	 */
@@ -251,8 +251,8 @@ abstract class DOM {
 	/**
 	 * Retrieves the first \DOMText child of the element. Block-level child elements are ignored.
 	 *
-	 * @param \DOMNode $element    Optional. Default null.
-	 * @param bool     $recursive  Should be set to true on recursive calls. Optional. Default false.
+	 * @param \DOMNode|null $element    Optional. Default null.
+	 * @param bool          $recursive  Should be set to true on recursive calls. Optional. Default false.
 	 *
 	 * @return \DOMText|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
@@ -293,8 +293,8 @@ abstract class DOM {
 	/**
 	 * Retrieves the last \DOMText child of the element. Block-level child elements are ignored.
 	 *
-	 * @param \DOMNode $element   Optional. Default null.
-	 * @param bool     $recursive Should be set to true on recursive calls. Optional. Default false.
+	 * @param \DOMNode|null $element   Optional. Default null.
+	 * @param bool          $recursive Should be set to true on recursive calls. Optional. Default false.
 	 *
 	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
