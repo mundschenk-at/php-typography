@@ -36,18 +36,19 @@ function tests_autoloader( $class_name ) {
 	if ( false === strpos( $class_name, $prefix ) ) {
 		return; // abort early.
 	} else {
-		$class_name = substr( $class_name, strlen( $prefix ) );
+		$class_name = str_replace( '_', '-', strtolower( substr( $class_name, strlen( $prefix ) ) ) );
 	}
 
 	$classes_dir = realpath( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
 	$class_name_parts = explode( '\\', $class_name );
-	$class_file = 'class-' . str_replace( '_', '-', strtolower( array_pop( $class_name_parts ) ) ) . '.php';
+	$class_file = 'class-' . array_pop( $class_name_parts ) . '.php';
 
 	if ( count( $class_name_parts ) > 0 ) {
 		$classes_dir .= implode( DIRECTORY_SEPARATOR, array_map( 'strtolower', $class_name_parts ) ) . DIRECTORY_SEPARATOR;
 	}
 
 	$class_file_path = $classes_dir . $class_file;
+
 	if ( is_file( $class_file_path ) ) {
 		require_once( $class_file_path );
 	}
