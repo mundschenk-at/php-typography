@@ -1787,15 +1787,14 @@ class PHP_Typography {
 				case $chr['guillemetClose']:
 				case $chr['doubleLow9Quote']:
 
-					$block_level_parent = DOM::get_block_parent( $textnode );
-					$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
+					$block_level_parent = DOM::get_block_parent_name( $textnode );
 
 					if ( $is_title ) {
 						// Assume page title is h2.
 						$block_level_parent = 'h2';
 					}
 
-					if ( $block_level_parent && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+					if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
 						switch ( $first_character ) {
 							case "'":
 							case $chr['singleQuoteOpen']:
@@ -1831,10 +1830,9 @@ class PHP_Typography {
 
 		$is_heading = false;
 		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
-			$block_level_parent = DOM::get_block_parent( $textnode );
-			$block_level_parent = isset( $block_level_parent->tagName ) ? $block_level_parent->tagName : false;
+			$block_level_parent = DOM::get_block_parent_name( $textnode );
 
-			if ( $block_level_parent && isset( $this->heading_tags[ $block_level_parent ] ) ) {
+			if ( ! empty( $block_level_parent ) && isset( $this->heading_tags[ $block_level_parent ] ) ) {
 				$is_heading = true;
 			}
 		}

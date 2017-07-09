@@ -203,31 +203,76 @@ class DOM_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Provides data for testing get_block_parent.
+	 *
+	 * @return array
+	 */
+	public function provide_get_block_parent_data() {
+		return [
+			[ "//*[@id='foo']",          "//*[@id='para']",  'p',    '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='para']//text()", "//*[@id='para']",  'p',    '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='para']",         "//*[@id='outer']", 'div',  '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='bar']",          "//*[@id='outer']", 'div',  '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='bar']//text()",  "//*[@id='outer']", 'div',  '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='foo']//text()",  "//*[@id='para']",  'p',    '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ "//*[@id='outer']",        '//html',           'html', '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+			[ '//html',                  null,               '',     '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>' ],
+		];
+	}
+
+	/**
 	 * Test get_block_parent.
 	 *
 	 * @covers ::get_block_parent
+	 *
+	 * @dataProvider provide_get_block_parent_data
+	 *
+	 * @param string $input_xpath  Input element/node.
+	 * @param string $parent_xpath Expected result element.
+	 * @param string $parent_tag   Parent tag name.
+	 * @param string $html         HTML code.
 	 */
-	public function test_get_block_parent() {
-		$html = '<div id="outer"><p id="para"><span>A</span><span id="foo">new hope.</span></p><span><span id="bar">blabla</span></span></div>';
+	public function test_get_block_parent( $input_xpath, $parent_xpath, $parent_tag, $html ) {
 		$doc = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
-		$outer_div  = $xpath->query( "//*[@id='outer']" )->item( 0 ); // really only one.
-		$paragraph  = $xpath->query( "//*[@id='para']" )->item( 0 );  // really only one.
-		$span_foo   = $xpath->query( "//*[@id='foo']" )->item( 0 );   // really only one.
-		$span_bar   = $xpath->query( "//*[@id='bar']" )->item( 0 );   // really only one.
-		$textnode_a = $xpath->query( "//*[@id='para']//text()" )->item( 0 ); // we don't care which one.
-		$textnode_b = $xpath->query( "//*[@id='bar']//text()" )->item( 0 );  // we don't care which one.
-		$textnode_c = $xpath->query( "//*[@id='foo']//text()" )->item( 0 );  // we don't care which one.
+		$input_node  = $xpath->query( $input_xpath )->item( 0 ); // really only one.
 
-		$this->assertSame( $paragraph, DOM::get_block_parent( $span_foo ) );
-		$this->assertSame( $paragraph, DOM::get_block_parent( $textnode_a ) );
-		$this->assertSame( $outer_div, DOM::get_block_parent( $paragraph ) );
-		$this->assertSame( $outer_div, DOM::get_block_parent( $span_bar ) );
-		$this->assertSame( $outer_div, DOM::get_block_parent( $textnode_b ) );
-		$this->assertSame( $paragraph, DOM::get_block_parent( $textnode_c ) );
+		if ( ! empty( $parent_xpath ) ) {
+			$parent_node = $xpath->query( $parent_xpath )->item( 0 ); // really only one.
+		} else {
+			$parent_node = null;
+		}
+
+		$this->assertSame( $parent_node, DOM::get_block_parent( $input_node ) );
+
+		if ( ! empty( $parent_tag ) ) {
+			$this->assertSame( $parent_tag, $parent_node->tagName );
+		}
 	}
 
+	/**
+	 * Test get_block_parent_name.
+	 *
+	 * @covers ::get_block_parent_name
+	 *
+	 * @uses ::get_block_parent
+	 *
+	 * @dataProvider provide_get_block_parent_data
+	 *
+	 * @param string $input_xpath  Input element/node.
+	 * @param string $parent_xpath Ignored.
+	 * @param string $parent_tag   Parent tag name.
+	 * @param string $html         HTML code.
+	 */
+	public function test_get_block_parent_name( $input_xpath, $parent_xpath, $parent_tag, $html ) {
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$input_node  = $xpath->query( $input_xpath )->item( 0 ); // really only one.
+
+		$this->assertSame( $parent_tag, DOM::get_block_parent_name( $input_node ) );
+	}
 
 		/**
 		 * Test get_prev_chr.

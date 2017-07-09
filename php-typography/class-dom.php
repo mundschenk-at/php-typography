@@ -313,16 +313,36 @@ abstract class DOM {
 	 *
 	 * @param \DOMNode $element The node to get the containing block-level tag.
 	 *
-	 * @return \DOMElement
+	 * @return \DOMElement|null
 	 */
 	public static function get_block_parent( \DOMNode $element ) {
 		$parent = $element->parentNode;
+		if ( ! $parent instanceof \DOMElement ) {
+			return null;
+		}
 
-		while ( $parent instanceof \DOMElement && ! isset( self::$block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
+		while ( ! isset( self::$block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
 			$parent = $parent->parentNode;
 		}
 
 		return $parent;
+	}
+
+	/**
+	 * Retrieves the tag name of the nearest block-level parent.
+	 *
+	 * @param \DOMNode $element A node.
+
+	 * @return string The tag name (or the empty string).
+	 */
+	public static function get_block_parent_name( \DOMNode $element ) {
+		$parent = self::get_block_parent( $element );
+
+		if ( ! empty( $parent ) ) {
+			return $parent->tagName;
+		} else {
+			return '';
+		}
 	}
 }
 
