@@ -37,6 +37,37 @@ use \PHP_Typography\Strings;
  * @uses PHP_Typography\Strings
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
+ * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\HTML_Class_Node_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Fractions_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Ordinal_Suffix_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Style_Hanging_Punctuation_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Style_Initial_Quotes_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Hyphenate_Compounds_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_Emails_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_Hard_Hyphens_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_URLs_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Dash_Spacing_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Dewidow_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\French_Punctuation_Spacing_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Numbered_Abbreviation_Spacing_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Single_Character_Word_Spacing_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Dashes_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Diacritics_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Ellipses_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Exponents_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Marks_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Maths_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Space_Collapse_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Style_Numbers_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
  */
 class PHP_Typography_Test extends PHP_Typography_Testcase {
 
@@ -1207,7 +1238,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 2, $s['hyphenMinLength'] );
 
-		$typo->get_hyphenator( $s );
+		//$typo->get_hyphenator( $s );
 		$typo->set_min_length_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinLength'] );
@@ -1232,7 +1263,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 1, $s['hyphenMinBefore'] );
 
-		$typo->get_hyphenator( $s );
+		//$typo->get_hyphenator( $s );
 		$typo->set_min_before_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinBefore'] );
@@ -1257,7 +1288,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 1, $s['hyphenMinAfter'] );
 
-		$typo->get_hyphenator( $s );
+		//$typo->get_hyphenator( $s );
 		$typo->set_min_after_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinAfter'] );
@@ -1354,7 +1385,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
 
-		$typo->get_hyphenator( $s );
+		//$typo->get_hyphenator( $s );
 		$exceptions = [ 'bar-foo' ];
 		$typo->set_hyphenation_exceptions( $exceptions );
 		$s = $typo->get_settings();
@@ -1613,21 +1644,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Provide data for testing process_words.
-	 *
-	 * @return array
-	 */
-	public function provide_process_words_data() {
-		return [
-			[ 'superfluous', 'super&shy;flu&shy;ous', false ], // hyphenate.
-			[ 'super-policemen', 'super-police&shy;men', false ], // hyphenate compounds.
-			[ 'http://example.org', 'http://&#8203;exam&#8203;ple&#8203;.org', false ], // wrap URLs.
-			[ 'foo@example.org', 'foo@&#8203;example.&#8203;org', false ], // wrap emails.
-		];
-	}
-
-
-	/**
 	 * Test process_textnodes.
 	 *
 	 * @covers ::process_textnodes
@@ -1787,33 +1803,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 
 	/**
-	 * Test process_words.
-	 *
-	 * @covers ::process_words
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Text_Parser\Token
-	 *
-	 * @dataProvider provide_process_words_data
-	 *
-	 * @param string $text     The text to process.
-	 * @param string $result   The expected result.
-	 * @param bool   $is_title If $text should be processed as a title/heading.
-	 */
-	public function test_process_words( $text, $result, $is_title ) {
-		$typo = $this->typo;
-		$typo->set_defaults();
-		$s = $typo->get_settings();
-
-		$node = new \DOMText( $text );
-		$typo->process_words( $node, $s, $is_title );
-
-		$this->assertSame( $result, $this->clean_html( $node->data ) );
-	}
-
-	/**
 	 * Provide data for testing process with $is_title set to true.
 	 *
 	 * @return array
@@ -1953,7 +1942,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_quotes.
 	 *
-	 * @covers ::smart_quotes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -1974,7 +1963,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_quotes.
 	 *
-	 * @covers ::smart_quotes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2005,7 +1994,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_quotes.
 	 *
-	 * @covers ::smart_quotes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2030,8 +2019,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_dashes.
 	 *
-	 * @covers ::smart_dashes
-	 * @covers ::dash_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2058,7 +2046,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_dashes.
 	 *
-	 * @covers ::smart_dashes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2095,7 +2083,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_ellipses.
 	 *
-	 * @covers ::smart_ellipses
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2115,7 +2103,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_ellipses.
 	 *
-	 * @covers ::smart_ellipses
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2149,7 +2137,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_diacritics.
 	 *
-	 * @covers ::smart_diacritics
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2171,7 +2159,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_diacritics.
 	 *
-	 * @covers ::smart_diacritics
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2204,7 +2192,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_diacritics.
 	 *
-	 * @covers ::smart_diacritics
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2255,7 +2243,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_marks.
 	 *
-	 * @covers ::smart_marks
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2275,7 +2263,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_marks.
 	 *
-	 * @covers ::smart_marks
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2319,7 +2307,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_math.
 	 *
-	 * @covers ::smart_math
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2344,7 +2332,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_math.
 	 *
-	 * @covers ::smart_math
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2365,7 +2353,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_exponents.
 	 *
-	 * @covers ::smart_exponents
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2380,7 +2368,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_exponents.
 	 *
-	 * @covers ::smart_exponents
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2433,7 +2421,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_fractions.
 	 *
-	 * @covers ::smart_fractions
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2465,7 +2453,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_fractions.
 	 *
-	 * @covers ::smart_fractions
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2508,7 +2496,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_fractions.
 	 *
-	 * @covers ::smart_fractions
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2555,7 +2543,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_fractions.
 	 *
-	 * @covers ::smart_fractions
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2594,7 +2582,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_ordinal_suffix.
 	 *
-	 * @covers ::smart_ordinal_suffix
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2618,7 +2606,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test smart_ordinal_suffix.
 	 *
-	 * @covers ::smart_ordinal_suffix
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2655,7 +2643,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test single_character_word_spacing.
 	 *
-	 * @covers ::single_character_word_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2676,7 +2664,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test single_character_word_spacing.
 	 *
-	 * @covers ::single_character_word_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2771,7 +2759,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test dash_spacing.
 	 *
-	 * @covers ::dash_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2798,7 +2786,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test dash_spacing.
 	 *
-	 * @covers ::dash_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2836,7 +2824,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test space_collapse.
 	 *
-	 * @covers ::space_collapse
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2857,7 +2845,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test space_collapse.
 	 *
-	 * @covers ::space_collapse
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2891,7 +2879,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test unit_spacing.
 	 *
-	 * @covers ::unit_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2912,7 +2900,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test unit_spacing.
 	 *
-	 * @covers ::unit_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2955,7 +2943,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test numbered_abbreviation_spacing.
 	 *
-	 * @covers ::numbered_abbreviation_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -2975,7 +2963,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test numbered_abbreviation_spacing.
 	 *
-	 * @covers ::numbered_abbreviation_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3021,7 +3009,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test french_punctuation_spacing.
 	 *
-	 * @covers ::french_punctuation_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3051,7 +3039,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test french_punctuation_spacing.
 	 *
-	 * @covers ::french_punctuation_spacing
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3085,7 +3073,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test wrap_hard_hyphens.
 	 *
-	 * @covers ::wrap_hard_hyphens
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3101,14 +3089,14 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo->set_wrap_hard_hyphens( true );
 		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
 	}
 
 
 	/**
 	 * Test wrap_hard_hyphens.
 	 *
-	 * @covers ::wrap_hard_hyphens
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3123,16 +3111,15 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo->process( '' );
 		$typo->set_wrap_hard_hyphens( true );
 		$typo->set_smart_dashes( true );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $result, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
 	}
 
 
 	/**
 	 * Test wrap_hard_hyphens.
 	 *
-	 * @covers ::wrap_hard_hyphens
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3146,9 +3133,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo = $this->typo;
 		$typo->process( '' );
 		$typo->set_wrap_hard_hyphens( false );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $input, $typo->wrap_hard_hyphens( $this->tokenize( $input ), $s ) );
+		$this->assertSame( $input, $typo->process( $input ) );
 	}
 
 	/**
@@ -3188,7 +3174,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test dewidow.
 	 *
-	 * @covers ::dewidow
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3213,7 +3199,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test dewidow.
 	 *
-	 * @covers ::dewidow
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3244,7 +3230,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test dewidow.
 	 *
-	 * @covers ::dewidow
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3283,31 +3269,30 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test wrap_urls.
 	 *
-	 * @covers ::wrap_urls
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
 	 * @dataProvider provide_wrap_urls_data
 	 *
-	 * @param string $html       HTML input.
-	 * @param string $result     Expected result.
-	 * @param int    $min_after  Minimum number of characters after URL wrapping.
+	 * @param string $input     HTML input.
+	 * @param string $result    Expected result.
+	 * @param int    $min_after Minimum number of characters after URL wrapping.
 	 */
-	public function test_wrap_urls( $html, $result, $min_after ) {
+	public function test_wrap_urls( $input, $result, $min_after ) {
 		$typo = $this->typo;
 		$typo->set_url_wrap( true );
 		$typo->set_min_after_url_wrap( $min_after );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $result, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
+		$this->assertSame( $result, $this->clean_html( $typo->process( $input ) ) );
 	}
 
 
 	/**
 	 * Test wrap_urls.
 	 *
-	 * @covers ::wrap_urls
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3322,9 +3307,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo = $this->typo;
 		$typo->set_url_wrap( false );
 		$typo->set_min_after_url_wrap( $min_after );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $html, $typo->wrap_urls( $this->tokenize( $html ), $s ) );
+		$this->assertSame( $html, $typo->process( $html ) );
 	}
 
 	/**
@@ -3343,7 +3327,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test wrap_emails.
 	 *
-	 * @covers ::wrap_emails
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3356,16 +3340,15 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	public function test_wrap_emails( $html, $result ) {
 		$typo = $this->typo;
 		$typo->set_email_wrap( true );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $result, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
+		$this->assertSame( $result, $this->clean_html( $typo->process( $html ) ) );
 	}
 
 
 	/**
 	 * Test wrap_emails.
 	 *
-	 * @covers ::wrap_emails
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3378,9 +3361,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	public function test_wrap_emails_off( $html, $result ) {
 		$typo = $this->typo;
 		$typo->set_email_wrap( false );
-		$s = $typo->get_settings();
 
-		$this->assertTokensSame( $html, $typo->wrap_emails( $this->tokenize( $html ), $s ) );
+		$this->assertSame( $html, $typo->process( $html ) );
 	}
 
 	/**
@@ -3400,7 +3382,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_caps.
 	 *
-	 * @covers ::style_caps
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3421,7 +3403,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_caps.
 	 *
-	 * @covers ::style_caps
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3495,7 +3477,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_numbers.
 	 *
-	 * @covers ::style_numbers
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3516,7 +3498,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_numbers.
 	 *
-	 * @covers ::style_numbers
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3585,7 +3567,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_hanging_punctuation.
 	 *
-	 * @covers ::style_hanging_punctuation
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3606,7 +3588,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_hanging_punctuation.
 	 *
-	 * @covers ::style_hanging_punctuation
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3627,7 +3609,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_ampersands.
 	 *
-	 * @covers ::style_ampersands
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3643,7 +3625,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_ampersands.
 	 *
-	 * @covers ::style_ampersands
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3673,7 +3655,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_initial_quotes.
 	 *
-	 * @covers ::style_initial_quotes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3696,7 +3678,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test style_initial_quotes.
 	 *
-	 * @covers ::style_initial_quotes
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3737,7 +3719,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3773,9 +3755,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
-	 * @covers ::do_hyphenate
-	 * @covers ::hyphenate_compounds
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3827,9 +3807,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
-	 * @covers ::do_hyphenate
-	 * @covers ::hyphenate_compounds
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3866,7 +3844,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -3891,100 +3869,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Test do_hyphenate.
-	 *
-	 * @covers ::do_hyphenate
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Text_Parser\Token
-	 */
-	public function test_do_hyphenate() {
-		$typo = $this->typo;
-
-		$typo->set_hyphenation( true );
-		$typo->set_hyphenation_language( 'de' );
-		$typo->set_min_length_hyphenation( 2 );
-		$typo->set_min_before_hyphenation( 2 );
-		$typo->set_min_after_hyphenation( 2 );
-		$typo->set_hyphenate_headings( false );
-		$typo->set_hyphenate_all_caps( true );
-		$typo->set_hyphenate_title_case( true );
-		$s = $typo->get_settings();
-
-		$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
-		$hyphenated = $typo->do_hyphenate( $tokens, $s );
-		$this->assertTokensSame( $hyphenated, $tokens );
-
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated = $typo->do_hyphenate( $tokens, $s );
-		$this->assertTokensNotSame( $hyphenated, $tokens, 'Different encodings should not be equal.' );
-	}
-
-
-	/**
-	 * Test do_hyphenate.
-	 *
-	 * @covers ::do_hyphenate
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Text_Parser\Token
-	 */
-	public function test_do_hyphenate_no_title_case() {
-		$typo = $this->typo;
-
-		$typo->set_hyphenation( true );
-		$typo->set_hyphenation_language( 'de' );
-		$typo->set_min_length_hyphenation( 2 );
-		$typo->set_min_before_hyphenation( 2 );
-		$typo->set_min_after_hyphenation( 2 );
-		$typo->set_hyphenate_headings( false );
-		$typo->set_hyphenate_all_caps( true );
-		$typo->set_hyphenate_title_case( false );
-		$s = $typo->get_settings();
-
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated  = $typo->do_hyphenate( $tokens, $s );
-		$this->assertEquals( $tokens, $hyphenated );
-	}
-
-
-	/**
-	 * Test do_hyphenate.
-	 *
-	 * @covers ::do_hyphenate
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Text_Parser\Token
-	 */
-	public function test_do_hyphenate_invalid() {
-		$typo = $this->typo;
-
-		$typo->set_hyphenation( true );
-		$typo->set_hyphenation_language( 'de' );
-		$typo->set_min_length_hyphenation( 2 );
-		$typo->set_min_before_hyphenation( 2 );
-		$typo->set_min_after_hyphenation( 2 );
-		$typo->set_hyphenate_headings( false );
-		$typo->set_hyphenate_all_caps( true );
-		$typo->set_hyphenate_title_case( false );
-		$s = $typo->get_settings();
-
-		$s['hyphenMinBefore'] = 0; // invalid value.
-
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated  = $typo->do_hyphenate( $tokens, $s );
-		$this->assertEquals( $tokens, $hyphenated );
-	}
-
-
-	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
-	 * @covers ::do_hyphenate
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
@@ -4011,8 +3898,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	/**
 	 * Test hyphenate.
 	 *
-	 * @covers ::hyphenate
-	 * @covers ::do_hyphenate
+	 * @coversNothing
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
@@ -4117,30 +4003,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $parser1, $parser2 );
 		$this->assertAttributeInstanceOf( '\Masterminds\HTML5', 'html5_parser', $typo );
 	}
-
-
-	/**
-	 * Test get_text_parser.
-	 *
-	 * @covers ::get_text_parser
-	 *
-	 * @uses PHP_Typography\Text_Parser::__construct
-	 */
-	public function test_get_text_parser() {
-		$typo = $this->typo;
-
-		$this->assertAttributeEmpty( 'text_parser', $typo );
-
-		$parser1 = $typo->get_text_parser();
-		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser1 );
-
-		$parser2 = $typo->get_text_parser();
-		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser2 );
-
-		$this->assertSame( $parser1, $parser2 );
-		$this->assertAttributeInstanceOf( '\PHP_Typography\Text_Parser', 'text_parser', $typo );
-	}
-
 
 	/**
 	 * Test parse_html.
@@ -4251,61 +4113,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Test get_hyphenator.
-	 *
-	 * @covers ::get_hyphenator()
-	 *
-	 * @uses PHP_Typography\Hyphenator::__construct
-	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
-	 * @uses PHP_Typography\Hyphenator::set_language
-	 * @uses PHP_Typography\Hyphenator::get_object_hash
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 */
-	public function test_get_hyphenator() {
-		$typo = $this->typo;
-		$s    = $typo->get_settings();
-
-		$s['hyphenMinLength']             = 2;
-		$s['hyphenMinBefore']             = 2;
-		$s['hyphenMinAfter']              = 2;
-		$s['hyphenationCustomExceptions'] = [ 'foo-bar' ];
-		$s['hyphenLanguage']              = 'en-US';
-		$h = $typo->get_hyphenator( $s );
-
-		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
-
-		$s['hyphenationCustomExceptions'] = [ 'bar-foo' ];
-		$h = $typo->get_hyphenator( $s );
-
-		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
-	}
-
-	/**
-	 * Test set_hyphenator.
-	 *
-	 * @covers ::set_hyphenator()
-	 *
-	 * @uses PHP_Typography\Hyphenator::__construct
-	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
-	 * @uses PHP_Typography\Hyphenator::set_language
-	 */
-	public function test_set_hyphenator() {
-
-		// Initial set-up.
-		$typo = $this->typo;
-		$s    = $typo->get_settings();
-		$h1   = $typo->get_hyphenator( $s );
-
-		// Create external Hyphenator.
-		$h2 = new \PHP_Typography\Hyphenator();
-		$typo->set_hyphenator( $h2 );
-
-		// Retrieve Hyphenator and assert results.
-		$this->assertEquals( $h2, $typo->get_hyphenator( $s ) );
-		$this->assertNotEquals( $h1, $typo->get_hyphenator( $s ) );
-	}
-
-	/**
 	 * Provide data for testing arrays_intersect.
 	 *
 	 * @return array
@@ -4352,31 +4159,4 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
 	}
 
-	/**
-	 * Provide data for testing remove_adjacent_characters.
-	 *
-	 * @return array
-	 */
-	public function provide_remove_adjacent_characters_data() {
-		return [
-			[ "'A certain kind'", "'", "'", 'A certain kind' ],
-			[ "'A certain kind", "'", "'", 'A certain kin' ],
-			[ "'A certain kind'", "'", '', "A certain kind'" ],
-		];
-	}
-
-	/**
-	 * Test private method remove_adjacent_characters.
-	 *
-	 * @covers ::remove_adjacent_characters
-	 * @dataProvider provide_remove_adjacent_characters_data
-	 *
-	 * @param string $string A string.
-	 * @param string $prev   The previous character.
-	 * @param string $next   The next character.
-	 * @param string $result The trimmed string.
-	 */
-	public function test_remove_adjacent_characters( $string, $prev, $next, $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\PHP_Typography::class, 'remove_adjacent_characters', [ $string, $prev, $next ] ) );
-	}
 }
