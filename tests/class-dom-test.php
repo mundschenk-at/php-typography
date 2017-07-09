@@ -274,196 +274,196 @@ class DOM_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $parent_tag, DOM::get_block_parent_name( $input_node ) );
 	}
 
-		/**
-		 * Test get_prev_chr.
-		 *
-		 * @covers ::get_prev_chr
-		 * @covers ::get_previous_textnode
-		 * @covers ::get_adjacent_textnode
-		 *
-		 * @uses ::get_last_textnode
-		 * @uses ::get_edge_textnode
-		 * @uses PHP_Typography\Strings::functions
-		 */
-		public function test_get_prev_chr() {
-			$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
+	/**
+	 * Test get_prev_chr.
+	 *
+	 * @covers ::get_prev_chr
+	 * @covers ::get_previous_textnode
+	 * @covers ::get_adjacent_textnode
+	 *
+	 * @uses ::get_last_textnode
+	 * @uses ::get_edge_textnode
+	 * @uses PHP_Typography\Strings::functions
+	 */
+	public function test_get_prev_chr() {
+		$html = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
 
-			$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-			$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $prev_char );
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $prev_char );
 
-			$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-			$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
-			$this->assertSame( '', $prev_char );
-		}
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
+		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$this->assertSame( '', $prev_char );
+	}
 
-		/**
-		 * Test get_previous_textnode.
-		 *
-		 * @covers ::get_previous_textnode
-		 * @covers ::get_adjacent_textnode
-		 */
-		public function test_get_previous_textnode_null() {
-			$node = DOM::get_previous_textnode( null );
-			$this->assertNull( $node );
-		}
+	/**
+	 * Test get_previous_textnode.
+	 *
+	 * @covers ::get_previous_textnode
+	 * @covers ::get_adjacent_textnode
+	 */
+	public function test_get_previous_textnode_null() {
+		$node = DOM::get_previous_textnode( null );
+		$this->assertNull( $node );
+	}
 
-		/**
-		 * Test get_next_chr.
-		 *
-		 * @covers ::get_next_chr
-		 * @covers ::get_next_textnode
-		 * @covers ::get_adjacent_textnode
-		 *
-		 * @uses ::get_first_textnode
-		 * @uses ::get_edge_textnode
-		 * @uses PHP_Typography\Strings::functions
-		 */
-		public function test_get_next_chr() {
-			$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
+	/**
+	 * Test get_next_chr.
+	 *
+	 * @covers ::get_next_chr
+	 * @covers ::get_next_textnode
+	 * @covers ::get_adjacent_textnode
+	 *
+	 * @uses ::get_first_textnode
+	 * @uses ::get_edge_textnode
+	 * @uses PHP_Typography\Strings::functions
+	 */
+	public function test_get_next_chr() {
+		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
 
-			$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-			$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
-			$this->assertSame( 'n', $prev_char );
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( 'n', $prev_char );
 
-			$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-			$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
-			$this->assertSame( '', $prev_char );
-		}
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( '', $prev_char );
+	}
 
-		/**
-		 * Test get_next_textnode.
-		 *
-		 * @covers ::get_next_textnode
-		 * @covers ::get_adjacent_textnode
-		 */
-		public function test_get_next_textnode_null() {
-			$node = DOM::get_next_textnode( null );
-			$this->assertNull( $node );
-		}
-
-
-		/**
-		 * Test get_first_textnode.
-		 *
-		 * @covers ::get_first_textnode
-		 * @covers ::get_edge_textnode
-		 */
-		public function test_get_first_textnode() {
-			$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
-
-			$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $node->nodeValue );
-
-			$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $node->nodeValue );
-
-			$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'new hope.', $node->nodeValue );
-
-			$textnodes = $xpath->query( '//p' ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $node->nodeValue );
-		}
-
-		/**
-		 * Test get_first_textnode.
-		 *
-		 * @covers ::get_first_textnode
-		 * @covers ::get_edge_textnode
-		 */
-		public function test_get_first_textnode_null() {
-			// Passing null returns null.
-			$this->assertNull( DOM::get_first_textnode( null ) );
-
-			// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-			$this->assertNull( DOM::get_first_textnode( new \DOMDocument() ) );
-		}
-
-		/**
-		 * Test get_first_textnode.
-		 *
-		 * @covers ::get_first_textnode
-		 * @covers ::get_edge_textnode
-		 */
-		public function test_get_first_textnode_only_block_level() {
-			$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
-
-			$textnodes = $xpath->query( '//div' ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertNull( $node );
-		}
-
-		/**
-		 * Test get_last_textnode.
-		 *
-		 * @covers ::get_last_textnode
-		 * @covers ::get_edge_textnode
-		 *
-		 * @uses ::get_first_textnode
-		 */
-		public function test_get_last_textnode() {
-
-			$html = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
-
-			$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-			$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $node->nodeValue );
-
-			$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one.
-			$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'A', $node->nodeValue );
-
-			$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
-			$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( 'new hope.', $node->nodeValue );
-
-			$textnodes = $xpath->query( '//p' ); // really only one.
-			$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
-			$this->assertSame( ' Really.', $node->nodeValue );
-		}
-
-		/**
-		 * Test get_last_textnode.
-		 *
-		 * @covers ::get_last_textnode
-		 * @covers ::get_edge_textnode
-		 */
-		public function test_get_last_textnode_null() {
-			// Passing null returns null.
-			$this->assertNull( DOM::get_last_textnode( null ) );
-
-			// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-			$this->assertNull( DOM::get_last_textnode( new \DOMDocument() ) );
-		}
+	/**
+	 * Test get_next_textnode.
+	 *
+	 * @covers ::get_next_textnode
+	 * @covers ::get_adjacent_textnode
+	 */
+	public function test_get_next_textnode_null() {
+		$node = DOM::get_next_textnode( null );
+		$this->assertNull( $node );
+	}
 
 
-		/**
-		 * Test get_last_textnode.
-		 *
-		 * @covers ::get_last_textnode
-		 * @covers ::get_edge_textnode
-		 */
-		public function test_get_last_textnode_only_block_level() {
-			$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-			$doc = $this->load_html( $html );
-			$xpath = new \DOMXPath( $doc );
+	/**
+	 * Test get_first_textnode.
+	 *
+	 * @covers ::get_first_textnode
+	 * @covers ::get_edge_textnode
+	 */
+	public function test_get_first_textnode() {
+		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
 
-			$textnodes = $xpath->query( '//div' ); // really only one.
-			$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
-			$this->assertNull( $node );
-		}
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'new hope.', $node->nodeValue );
+
+		$textnodes = $xpath->query( '//p' ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $node->nodeValue );
+	}
+
+	/**
+	 * Test get_first_textnode.
+	 *
+	 * @covers ::get_first_textnode
+	 * @covers ::get_edge_textnode
+	 */
+	public function test_get_first_textnode_null() {
+		// Passing null returns null.
+		$this->assertNull( DOM::get_first_textnode( null ) );
+
+		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
+		$this->assertNull( DOM::get_first_textnode( new \DOMDocument() ) );
+	}
+
+	/**
+	 * Test get_first_textnode.
+	 *
+	 * @covers ::get_first_textnode
+	 * @covers ::get_edge_textnode
+	 */
+	public function test_get_first_textnode_only_block_level() {
+		$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( '//div' ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertNull( $node );
+	}
+
+	/**
+	 * Test get_last_textnode.
+	 *
+	 * @covers ::get_last_textnode
+	 * @covers ::get_edge_textnode
+	 *
+	 * @uses ::get_first_textnode
+	 */
+	public function test_get_last_textnode() {
+
+		$html = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one.
+		$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
+		$node = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( 'new hope.', $node->nodeValue );
+
+		$textnodes = $xpath->query( '//p' ); // really only one.
+		$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$this->assertSame( ' Really.', $node->nodeValue );
+	}
+
+	/**
+	 * Test get_last_textnode.
+	 *
+	 * @covers ::get_last_textnode
+	 * @covers ::get_edge_textnode
+	 */
+	public function test_get_last_textnode_null() {
+		// Passing null returns null.
+		$this->assertNull( DOM::get_last_textnode( null ) );
+
+		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
+		$this->assertNull( DOM::get_last_textnode( new \DOMDocument() ) );
+	}
+
+
+	/**
+	 * Test get_last_textnode.
+	 *
+	 * @covers ::get_last_textnode
+	 * @covers ::get_edge_textnode
+	 */
+	public function test_get_last_textnode_only_block_level() {
+		$html = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+		$doc = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( '//div' ); // really only one.
+		$node = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$this->assertNull( $node );
+	}
 }
