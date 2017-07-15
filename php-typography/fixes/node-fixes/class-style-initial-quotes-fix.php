@@ -26,9 +26,10 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
 use \PHP_Typography\Strings;
+use \PHP_Typography\U;
 
 /**
  * Styles initial quotes and guillemets (if enabled).
@@ -83,18 +84,19 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 
 			$func            = Strings::functions( $textnode->data );
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
-			$chr             = $settings->get_named_characters();
 
 			switch ( $first_character ) {
 				case "'":
-				case $chr['singleQuoteOpen']:
-				case $chr['singleLow9Quote']:
+				case U::SINGLE_QUOTE_OPEN:
+				case U::SINGLE_LOW_9_QUOTE:
+				case U::SINGLE_ANGLE_QUOTE_OPEN:
+				case U::SINGLE_ANGLE_QUOTE_CLOSE:
 				case ',':
 				case '"':
-				case $chr['doubleQuoteOpen']:
-				case $chr['guillemetOpen']:
-				case $chr['guillemetClose']:
-				case $chr['doubleLow9Quote']:
+				case U::DOUBLE_QUOTE_OPEN:
+				case U::GUILLEMET_OPEN:
+				case U::GUILLEMET_CLOSE:
+				case U::DOUBLE_LOW_9_QUOTE:
 
 					$block_level_parent = DOM::get_block_parent_name( $textnode );
 
@@ -106,8 +108,10 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 					if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
 						switch ( $first_character ) {
 							case "'":
-							case $chr['singleQuoteOpen']:
-							case $chr['singleLow9Quote']:
+							case U::SINGLE_QUOTE_OPEN:
+							case U::SINGLE_LOW_9_QUOTE:
+							case U::SINGLE_ANGLE_QUOTE_OPEN:
+							case U::SINGLE_ANGLE_QUOTE_CLOSE:
 							case ',':
 								$span_class = $this->single_quote_class;
 								break;

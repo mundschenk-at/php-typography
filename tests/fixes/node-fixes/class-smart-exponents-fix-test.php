@@ -37,6 +37,10 @@ use \PHP_Typography\Settings;
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Dash_Style
+ * @uses PHP_Typography\Settings\Quote_Style
+ * @uses PHP_Typography\Settings\Simple_Dashes
+ * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  */
 class Smart_Exponents_Fix_Test extends Node_Fix_Testcase {

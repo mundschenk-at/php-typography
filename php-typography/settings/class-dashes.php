@@ -24,34 +24,42 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Fixes\Node_Fixes;
-
-use \PHP_Typography\DOM;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+namespace PHP_Typography\Settings;
 
 /**
- * Applies smart ellipses (if enabled).
+ * An interface encapsulating different dash styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
-class Smart_Ellipses_Fix extends Abstract_Node_Fix {
+interface Dashes {
 
 	/**
-	 * Apply the fix to a given textnode.
+	 * Retrieves the dash used for interval dashes.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @return string
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartEllipses'] ) ) {
-			return;
-		}
+	public function interval_dash();
 
-		$textnode->data = str_replace( [ '....', '. . . .' ], '.' . U::ELLIPSIS, $textnode->data );
-		$textnode->data = str_replace( [ '...', '. . .' ],          U::ELLIPSIS, $textnode->data );
-	}
+	/**
+	 * Retrieves the space character used around interval dashes.
+	 *
+	 * @return string
+	 */
+	public function interval_space();
+
+	/**
+	 * Retrieves the dash used for parenthetical dashes.
+	 *
+	 * @return string
+	 */
+	public function parenthetical_dash();
+
+	/**
+	 * Retrieves the space character used around parenthetical dashes.
+	 *
+	 * @return string
+	 */
+	public function parenthetical_space();
 }

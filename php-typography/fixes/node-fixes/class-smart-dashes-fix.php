@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Applies smart dashes (if enabled).
@@ -51,18 +52,18 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr        = $settings->get_named_characters();
-		$regex      = $settings->get_regular_expressions();
+		$s     = $settings->dash_style();
+		$regex = $settings->get_regular_expressions();
 
-		$textnode->data = str_replace( '---', $chr['emDash'], $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesParentheticalDoubleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
-		$textnode->data = str_replace( '--', $chr['enDash'], $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$chr['parentheticalDash']}\$2", $textnode->data );
+		$textnode->data = str_replace( '---', U::EM_DASH, $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesParentheticalDoubleDash'], "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
+		$textnode->data = str_replace( '--', U::EN_DASH, $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
 
-		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . $chr['enDash'] . '$2',        $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      '$1' . $chr['intervalDash'] . '$3',  $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . $chr['noBreakHyphen'] . '$2', $textnode->data ); // phone numbers.
-		$textnode->data = str_replace( "xn{$chr['enDash']}",                     'xn--',                              $textnode->data ); // revert messed-up punycode.
+		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . U::EN_DASH . '$2',         $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      "\$1{$s->interval_dash()}\$3",    $textnode->data );
+		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . U::NO_BREAK_HYPHEN . '$2', $textnode->data ); // phone numbers.
+		$textnode->data = str_replace( 'xn' . U::EN_DASH,                        'xn--',                           $textnode->data ); // revert messed-up punycode.
 
 		// Revert dates back to original formats
 		// YYYY-MM-DD.

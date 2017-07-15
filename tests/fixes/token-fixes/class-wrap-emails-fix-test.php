@@ -35,6 +35,10 @@ use \PHP_Typography\Settings;
  *
  * @uses ::__construct
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Dash_Style
+ * @uses PHP_Typography\Settings\Quote_Style
+ * @uses PHP_Typography\Settings\Simple_Dashes
+ * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix
  */

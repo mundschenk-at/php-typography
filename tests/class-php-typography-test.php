@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use \PHP_Typography\Strings;
+use \PHP_Typography\U;
 
 /**
  * PHP_Typography unit test.
@@ -34,12 +35,14 @@ use \PHP_Typography\Strings;
  *
  * @uses PHP_Typography\PHP_Typography
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Simple_Dashes
+ * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
- * @uses PHP_Typography\Fixes\Node_Fixes\HTML_Class_Node_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Fractions_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Ordinal_Suffix_Fix
@@ -348,6 +351,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_quotes_primary.
 	 *
 	 * @covers ::set_smart_quotes_primary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_primary() {
 		$typo = $this->typo;
@@ -373,7 +378,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			$typo->set_smart_quotes_primary( $style );
 			$s = $typo->get_settings();
 
-			$this->assertSmartQuotesStyle( $style, $s->chr( 'doubleQuoteOpen' ), $s->chr( 'doubleQuoteClose' ) );
+			$this->assertSmartQuotesStyle( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
 		}
 	}
 
@@ -381,6 +386,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_quotes_primary.
 	 *
 	 * @covers ::set_smart_quotes_primary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
@@ -395,6 +402,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_quotes_secondary.
 	 *
 	 * @covers ::set_smart_quotes_secondary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$typo = $this->typo;
@@ -420,7 +429,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			$typo->set_smart_quotes_secondary( $style );
 			$s = $typo->get_settings();
 
-			$this->assertSmartQuotesStyle( $style, $s->chr( 'singleQuoteOpen' ), $s->chr( 'singleQuoteClose' ) );
+			$this->assertSmartQuotesStyle( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
 		}
 	}
 
@@ -428,6 +437,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_quotes_secondary.
 	 *
 	 * @covers ::set_smart_quotes_secondary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
@@ -549,30 +560,34 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 *
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
 	public function test_set_smart_dashes_style() {
 		$typo = $this->typo;
 		$typo->set_smart_dashes_style( 'traditionalUS' );
-		$s = $typo->get_settings();
+		$dashes = $typo->get_settings()->dash_style();
 
-		$this->assertEquals( $s->chr( 'emDash' ), $s->chr( 'parentheticalDash' ) );
-		$this->assertEquals( $s->chr( 'enDash' ), $s->chr( 'intervalDash' ) );
-		$this->assertEquals( $s->chr( 'thinSpace' ), $s->chr( 'parentheticalDashSpace' ) );
-		$this->assertEquals( $s->chr( 'thinSpace' ), $s->chr( 'intervalDashSpace' ) );
+		$this->assertEquals( U::EM_DASH, $dashes->parenthetical_dash() );
+		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertEquals( U::THIN_SPACE, $dashes->parenthetical_space() );
+		$this->assertEquals( U::THIN_SPACE, $dashes->interval_space() );
 
 		$typo->set_smart_dashes_style( 'international' );
-		$s = $typo->get_settings();
+		$dashes = $typo->get_settings()->dash_style();
 
-		$this->assertEquals( $s->chr( 'enDash' ), $s->chr( 'parentheticalDash' ) );
-		$this->assertEquals( $s->chr( 'enDash' ), $s->chr( 'intervalDash' ) );
-		$this->assertEquals( ' ', $s->chr( 'parentheticalDashSpace' ) );
-		$this->assertEquals( $s->chr( 'hairSpace' ), $s->chr( 'intervalDashSpace' ) );
+		$this->assertEquals( U::EN_DASH, $dashes->parenthetical_dash() );
+		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertEquals( ' ', $dashes->parenthetical_space() );
+		$this->assertEquals( U::HAIR_SPACE, $dashes->interval_space() );
 	}
 
 	/**
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 *
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
@@ -1238,7 +1253,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 2, $s['hyphenMinLength'] );
 
-		//$typo->get_hyphenator( $s );
+		// $typo->get_hyphenator( $s );
 		$typo->set_min_length_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinLength'] );
@@ -1263,7 +1278,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 1, $s['hyphenMinBefore'] );
 
-		//$typo->get_hyphenator( $s );
+		// $typo->get_hyphenator( $s );
 		$typo->set_min_before_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinBefore'] );
@@ -1288,7 +1303,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertSame( 1, $s['hyphenMinAfter'] );
 
-		//$typo->get_hyphenator( $s );
+		// $typo->get_hyphenator( $s );
 		$typo->set_min_after_hyphenation( 66 );
 		$s = $typo->get_settings();
 		$this->assertSame( 66, $s['hyphenMinAfter'] );
@@ -1385,7 +1400,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
 
-		//$typo->get_hyphenator( $s );
+		// $typo->get_hyphenator( $s );
 		$exceptions = [ 'bar-foo' ];
 		$typo->set_hyphenation_exceptions( $exceptions );
 		$s = $typo->get_settings();
@@ -1592,11 +1607,13 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process
 	 * @covers ::apply_fixes_to_html_node
 	 *
+	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
-	 * @uses ::process_textnodes
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1618,11 +1635,13 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::process_feed
 	 * @covers ::apply_fixes_to_feed_node
 	 *
+	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
-	 * @uses ::process_textnodes
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1652,6 +1671,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1689,6 +1710,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_textnodes_invalid_html_data
 	 *
@@ -1713,6 +1736,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 *
@@ -1738,6 +1763,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1761,6 +1788,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1785,6 +1814,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -1824,6 +1855,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_with_title_data
 	 *
@@ -1850,6 +1883,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @dataProvider provide_process_with_title_data
 	 *
@@ -2801,10 +2836,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$typo->set_dash_spacing( true );
 
 		$typo->set_smart_dashes_style( 'traditionalUS' );
-		$this->assertSame( $input, $typo->process( $input ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $typo->process( $input ) ) );
 
 		$typo->set_smart_dashes_style( 'international' );
-		$this->assertSame( $input, $typo->process( $input ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $typo->process( $input ) ) );
 	}
 
 	/**
@@ -3953,6 +3988,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_init() {
 		$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
@@ -3971,6 +4008,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_init_no_default() {
 		$second_typo = new \PHP_Typography\PHP_Typography( false, 'lazy' );
@@ -4097,7 +4136,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$typo->set_true_no_break_narrow_space(); // defaults to false.
 		$s = $typo->get_settings();
-		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), Strings::_uchr( 160 ) );
+		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 160 ) );
 		$this->assertAttributeContains( [
 			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 160 ),
 			'close' => Strings::_uchr( 160 ) . Strings::_uchr( 187 ),
@@ -4105,7 +4144,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$typo->set_true_no_break_narrow_space( true ); // defaults to false.
 		$s = $typo->get_settings();
-		$this->assertSame( $s->chr( 'noBreakNarrowSpace' ), Strings::_uchr( 8239 ) );
+		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 8239 ) );
 		$this->assertAttributeContains( [
 			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 8239 ),
 			'close' => Strings::_uchr( 8239 ) . Strings::_uchr( 187 ),

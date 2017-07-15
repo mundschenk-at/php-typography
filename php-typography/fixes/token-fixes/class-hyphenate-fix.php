@@ -27,9 +27,10 @@
 namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
 use \PHP_Typography\Hyphenator;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Hyphenates a given text fragment (if enabled).
@@ -103,20 +104,15 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * Really hyphenates given text fragment.
 	 *
-	 * @param array       $tokens Filtered to words.
-	 * @param Settings    $settings           The settings to apply.
-	 * @param string|null $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
+	 * @param array    $tokens Filtered to words.
+	 * @param Settings $settings           The settings to apply.
+	 * @param string   $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
 	 *
 	 * @return array The hyphenated text token.
 	 */
-	protected function do_hyphenate( array $tokens, Settings $settings, $hyphen = null ) {
+	protected function do_hyphenate( array $tokens, Settings $settings, $hyphen = U::SOFT_HYPHEN ) {
 		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {
 			return $tokens;
-		}
-
-		// Default to &shy; is $hyphen is not set.
-		if ( ! isset( $hyphen ) ) {
-			$hyphen = $settings->chr( 'softHyphen' );
 		}
 
 		return $this->get_hyphenator( $settings )->hyphenate( $tokens, $hyphen, ! empty( $settings['hyphenateTitleCase'] ), $settings['hyphenMinLength'], $settings['hyphenMinBefore'], $settings['hyphenMinAfter'] );

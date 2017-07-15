@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Prevents the number part of numbered abbreviations from being split from the basename (if enabled).
@@ -52,7 +53,6 @@ class Numbered_Abbreviation_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = preg_replace( $settings->regex( 'numberedAbbreviationSpacing' ), '$1' . $settings->chr( 'noBreakSpace' ) . '$2', $textnode->data );
-		// $textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->chr( 'noBreakNarrowSpace' ) . '$2', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'numberedAbbreviationSpacing' ), '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
 	}
 }

@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Applies smart fractions (if enabled).
@@ -83,14 +84,13 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr        = $settings->get_named_characters();
 		$regex      = $settings->get_regular_expressions();
 		$components = $settings->get_components();
 
 		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $chr['noBreakNarrowSpace'] . '$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
 		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $chr['noBreakSpace'] . '$2', $textnode->data );
+			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
 		}
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
@@ -102,7 +102,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			$numerator_css   = empty( $this->numerator_class ) ? '' : ' class="' . $this->numerator_class . '"';
 			$denominator_css = empty( $this->denominator_class ) ? '' : ' class="' . $this->denominator_class . '"';
 
-			$textnode->data  = preg_replace( $regex['smartFractionsReplacement'], "<sup{$numerator_css}>\$1</sup>" . $chr['fractionSlash'] . "<sub{$denominator_css}>\$2</sub>\$3", $textnode->data );
+			$textnode->data  = preg_replace( $regex['smartFractionsReplacement'], "<sup{$numerator_css}>\$1</sup>" . U::FRACTION_SLASH . "<sub{$denominator_css}>\$2</sub>\$3", $textnode->data );
 
 			// Unescape escaped sequences.
 			$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );

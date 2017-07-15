@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use \PHP_Typography\Strings;
+use \PHP_Typography\U;
 
 /**
  * Unit test for Settings class.
@@ -33,6 +34,8 @@ use \PHP_Typography\Strings;
  * @usesDefaultClass \PHP_Typography\Settings
  *
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Simple_Dashes
+ * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings::_uchr
  */
 class Settings_Test extends PHP_Typography_Testcase {
@@ -63,6 +66,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_defaults
 	 *
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 */
@@ -82,6 +87,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 */
@@ -89,20 +96,17 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assertAttributeNotEmpty( 'chr', $s );
 		$this->assertAttributeNotEmpty( 'regex', $s );
 		$this->assertAttributeNotEmpty( 'components', $s );
 		$this->assertAttributeEmpty( 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assertAttributeNotEmpty( 'chr', $s );
 		$this->assertAttributeNotEmpty( 'regex', $s );
 		$this->assertAttributeNotEmpty( 'components', $s );
 		$this->assertAttributeNotEmpty( 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assertAttributeNotEmpty( 'chr', $second_settings );
 		$this->assertAttributeNotEmpty( 'regex', $second_settings );
 		$this->assertAttributeNotEmpty( 'components', $second_settings );
 		$this->assertAttributeNotEmpty( 'data', $second_settings );
@@ -238,19 +242,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tests chr.
-	 *
-	 * @covers ::chr
-	 */
-	public function test_chr() {
-		$s = $this->settings;
-
-		$this->assertFalse( $s->chr( 'DoesNotExist' ) );
-		$this->assertEquals( $s->chr( 'noBreakSpace' ), Strings::_uchr( 160 ) );
-		$this->assertEquals( $s->chr( 'emDash' ), Strings::_uchr( 8212 ) );
-	}
-
-	/**
 	 * Tests get_components.
 	 *
 	 * @covers ::get_components
@@ -300,19 +291,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$this->assertFalse( $s->regex( 'DoesNotExist' ) );
 		$this->assertEquals( $s->regex( 'smartQuotesSingleQuotedNumbers' ), "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/uS" );
 		$this->assertEquals( $s->regex( 'smartDashesEnDashNumbers' ), "/(\b\d+(\.?))\-(\d+\\2)/S" );
-	}
-
-	/**
-	 * Tests get_named_characters.
-	 *
-	 * @covers ::get_named_characters
-	 */
-	public function test_get_named_characters() {
-		$s = $this->settings;
-		$c = $s->get_named_characters();
-
-		$this->assertTrue( is_array( $c ) );
-		$this->assertGreaterThan( 0, count( $c ) );
 	}
 
 	/**
@@ -436,6 +414,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_smart_quotes_primary.
 	 *
 	 * @covers ::set_smart_quotes_primary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_primary() {
 		$s = $this->settings;
@@ -460,9 +440,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
-			$chr = $s->get_named_characters();
 
-			$this->assertSmartQuotesStyle( $style, $chr['doubleQuoteOpen'], $chr['doubleQuoteClose'] );
+			$this->assertSmartQuotesStyle( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
 		}
 	}
 
@@ -470,6 +449,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_smart_quotes_primary with an invalid input.
 	 *
 	 * @covers ::set_smart_quotes_primary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
@@ -484,6 +465,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_smart_quotes_secondary.
 	 *
 	 * @covers ::set_smart_quotes_secondary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$s = $this->settings;
@@ -507,9 +490,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
-			$chr = $s->get_named_characters();
 
-			$this->assertSmartQuotesStyle( $style, $chr['singleQuoteOpen'], $chr['singleQuoteClose'] );
+			$this->assertSmartQuotesStyle( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
 		}
 	}
 
@@ -517,6 +499,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_smart_quotes_secondary with an invalid input.
 	 *
 	 * @covers ::set_smart_quotes_secondary
+	 *
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
@@ -534,6 +518,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses ::set_smart_quotes_primary
 	 * @uses ::set_smart_quotes_secondary
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_update_smart_quotes_brackets() {
@@ -699,29 +684,36 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 *
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
 	public function test_set_smart_dashes_style() {
 		$s   = $this->settings;
 
 		$s->set_smart_dashes_style( 'traditionalUS' );
-		$chr = $s->get_named_characters();
-		$this->assertEquals( $chr['emDash'], $chr['parentheticalDash'] );
-		$this->assertEquals( $chr['enDash'], $chr['intervalDash'] );
-		$this->assertEquals( $chr['thinSpace'], $chr['parentheticalDashSpace'] );
-		$this->assertEquals( $chr['thinSpace'], $chr['intervalDashSpace'] );
+		$dashes = $s->dash_style();
+
+		$this->assertEquals( U::EM_DASH, $dashes->parenthetical_dash() );
+		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertEquals( U::THIN_SPACE, $dashes->parenthetical_space() );
+		$this->assertEquals( U::THIN_SPACE, $dashes->interval_space() );
 
 		$s->set_smart_dashes_style( 'international' );
-		$chr = $s->get_named_characters();
-		$this->assertEquals( $chr['enDash'], $chr['parentheticalDash'] );
-		$this->assertEquals( $chr['enDash'], $chr['intervalDash'] );
-		$this->assertEquals( ' ', $chr['parentheticalDashSpace'] );
-		$this->assertEquals( $chr['hairSpace'], $chr['intervalDashSpace'] );
+		$dashes = $s->dash_style();
+
+		$this->assertEquals( U::EN_DASH, $dashes->parenthetical_dash() );
+		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertEquals( ' ', $dashes->parenthetical_space() );
+		$this->assertEquals( U::HAIR_SPACE, $dashes->interval_space() );
+
 	}
 
 	/**
 	 * Tests set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 * 
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
@@ -1485,18 +1477,17 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_true_no_break_narrow_space() {
 		$s   = $this->settings;
-
 		$s->set_true_no_break_narrow_space(); // defaults to false.
-		$chr = $s->get_named_characters();
-		$this->assertSame( $chr['noBreakNarrowSpace'], Strings::_uchr( 160 ) );
+
+		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 160 ) );
 		$this->assertAttributeContains( [
 			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 160 ),
 			'close' => Strings::_uchr( 160 ) . Strings::_uchr( 187 ),
 		], 'quote_styles', $s );
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
-		$chr = $s->get_named_characters();
-		$this->assertSame( $chr['noBreakNarrowSpace'], Strings::_uchr( 8239 ) );
+
+		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 8239 ) );
 		$this->assertAttributeContains( [
 			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 8239 ),
 			'close' => Strings::_uchr( 8239 ) . Strings::_uchr( 187 ),

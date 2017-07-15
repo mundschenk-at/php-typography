@@ -26,9 +26,10 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
 use \PHP_Typography\Strings;
+use \PHP_Typography\U;
 
 /**
  * Prevents widows (if enabled).
@@ -55,21 +56,20 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$chr       = $settings->get_named_characters();
-			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings, $chr ) {
+			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings ) {
 				$func = Strings::functions( $widow[0] );
 
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped
 				// as such, we will strip soft hyphens and zero-width-spaces.
-				$widow['widow']    = str_replace( $chr['zeroWidthSpace'], '', $widow['widow'] ); // TODO: check if this can match here.
-				$widow['widow']    = str_replace( $chr['softHyphen'],     '', $widow['widow'] ); // TODO: check if this can match here.
-				$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", $chr['noBreakSpace'], $widow['trailing'] );
-				$widow['trailing'] = str_replace( $chr['zeroWidthSpace'], '', $widow['trailing'] );
-				$widow['trailing'] = str_replace( $chr['softHyphen'],     '', $widow['trailing'] );
+				$widow['widow']    = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['widow'] ); // TODO: check if this can match here.
+				$widow['widow']    = str_replace( U::SOFT_HYPHEN,     '', $widow['widow'] ); // TODO: check if this can match here.
+				$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", U::NO_BREAK_SPACE, $widow['trailing'] );
+				$widow['trailing'] = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['trailing'] );
+				$widow['trailing'] = str_replace( U::SOFT_HYPHEN,     '', $widow['trailing'] );
 
 				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
-				if ( '' === $widow['space_before'] || strstr( $chr['noBreakSpace'], $widow['space_before'] ) ) {
+				if ( '' === $widow['space_before'] || strstr( U::NO_BREAK_SPACE, $widow['space_before'] ) ) {
 					return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
 				}
 
@@ -81,13 +81,13 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 				// Never replace thin and hair spaces with &nbsp;.
 				switch ( $widow['space_between'] ) {
-					case $chr['thinSpace']:
-					case $chr['hairSpace']:
+					case U::THIN_SPACE:
+					case U::HAIR_SPACE:
 						return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
 				}
 
 				// Let's protect some widows!
-				return $widow['space_before'] . $widow['neighbor'] . $chr['noBreakSpace'] . $widow['widow'] . $widow['trailing'];
+				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . $widow['widow'] . $widow['trailing'];
 			}, $textnode->data );
 		}
 	}

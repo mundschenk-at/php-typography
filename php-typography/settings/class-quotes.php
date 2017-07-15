@@ -24,34 +24,28 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Fixes\Node_Fixes;
-
-use \PHP_Typography\DOM;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+namespace PHP_Typography\Settings;
 
 /**
- * Applies smart ellipses (if enabled).
+ * An interface encapsulating different quote styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
-class Smart_Ellipses_Fix extends Abstract_Node_Fix {
+interface Quotes {
 
 	/**
-	 * Apply the fix to a given textnode.
+	 * Retrieves the quote styles opening quote characters.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @return string
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartEllipses'] ) ) {
-			return;
-		}
+	public function open();
 
-		$textnode->data = str_replace( [ '....', '. . . .' ], '.' . U::ELLIPSIS, $textnode->data );
-		$textnode->data = str_replace( [ '...', '. . .' ],          U::ELLIPSIS, $textnode->data );
-	}
+	/**
+	 * Retrieves the quote styles closing quote characters.
+	 *
+	 * @return string
+	 */
+	public function close();
 }

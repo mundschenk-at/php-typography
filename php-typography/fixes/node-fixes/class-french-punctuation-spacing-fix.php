@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Adds a narrow no-break space before
@@ -57,13 +58,13 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr   = $settings->get_named_characters();
+		$no_break_narrow_space = $settings->no_break_narrow_space();
 		$regex = $settings->get_regular_expressions();
 
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingClosingQuote'], '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . $chr['noBreakSpace'] . '$3$4',       $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $chr['noBreakNarrowSpace'] . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $chr['noBreakNarrowSpace'] . '$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingClosingQuote'], '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . U::NO_BREAK_SPACE . '$3$4',      $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $no_break_narrow_space . '$4', $textnode->data );
 	}
 }

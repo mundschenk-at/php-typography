@@ -50,6 +50,6 @@ class Unit_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->chr( 'noBreakNarrowSpace' ) . '$2', $textnode->data );
+		$textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
 	}
 }

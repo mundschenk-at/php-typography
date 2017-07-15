@@ -29,6 +29,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Text_Parser;
+use \PHP_Typography\U;
 
 /**
  * Wraps URL parts zero-width spaces (if enabled).
@@ -62,7 +63,6 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr   = $settings->get_named_characters();
 		$regex = $settings->get_regular_expressions();
 
 		// Test for and parse urls.
@@ -72,7 +72,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				// $url_match['schema'] holds "http://".
 				// $url_match['domain'] holds "subdomains.domain.tld".
 				// $url_match['path']   holds the path after the domain.
-				$http = ( $url_match['schema'] ) ? $url_match[1] . $chr['zeroWidthSpace'] : '';
+				$http = ( $url_match['schema'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
 
 				$domain_parts = preg_split( $regex['wrapUrlsDomainParts'], $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 
@@ -84,14 +84,14 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				}
 
 				// Do the hyphenation.
-				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $settings, $chr['zeroWidthSpace'] );
+				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $settings, U::ZERO_WIDTH_SPACE );
 
 				// Restore format.
 				foreach ( $parsed_words_like as $key => $parsed_word ) {
 					$value = $parsed_word->value;
 
 					if ( $key > 0 && 1 === strlen( $value ) ) {
-						$domain_parts[ $key ] = $chr['zeroWidthSpace'] . $value;
+						$domain_parts[ $key ] = U::ZERO_WIDTH_SPACE . $value;
 					} else {
 						$domain_parts[ $key ] = $value;
 					}
@@ -108,7 +108,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 					if ( 0 === $index || $path_count - $index < $settings['urlMinAfterWrap'] ) {
 						$path .= $path_part;
 					} else {
-						$path .= $chr['zeroWidthSpace'] . $path_part;
+						$path .= U::ZERO_WIDTH_SPACE . $path_part;
 					}
 				}
 

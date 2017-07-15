@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Applies smart math (if enabled).
@@ -51,15 +52,14 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr   = $settings->get_named_characters();
 		$regex = $settings->get_regular_expressions();
 
 		// First, let's find math equations.
-		$textnode->data = preg_replace_callback( $regex['smartMathEquation'], function( array $matches ) use ( $chr ) {
-			$matches[0] = str_replace( '-', $chr['minus'],          $matches[0] );
-			$matches[0] = str_replace( '/', $chr['division'],       $matches[0] );
-			$matches[0] = str_replace( 'x', $chr['multiplication'], $matches[0] );
-			$matches[0] = str_replace( '*', $chr['multiplication'], $matches[0] );
+		$textnode->data = preg_replace_callback( $regex['smartMathEquation'], function( array $matches ) {
+			$matches[0] = str_replace( '-', U::MINUS,          $matches[0] );
+			$matches[0] = str_replace( '/', U::DIVISION,       $matches[0] );
+			$matches[0] = str_replace( 'x', U::MULTIPLICATION, $matches[0] );
+			$matches[0] = str_replace( '*', U::MULTIPLICATION, $matches[0] );
 
 			return $matches[0];
 		}, $textnode->data );

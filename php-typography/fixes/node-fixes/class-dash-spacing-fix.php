@@ -51,11 +51,11 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr   = $settings->get_named_characters();
+		$s     = $settings->dash_style();
 		$regex = $settings->get_regular_expressions();
 
-		$textnode->data = preg_replace( $regex['dashSpacingEmDash'],            $chr['intervalDashSpace'] . '$1$2' . $chr['intervalDashSpace'],           $textnode->data );
-		$textnode->data = preg_replace( $regex['dashSpacingParentheticalDash'], $chr['parentheticalDashSpace'] . '$1$2' . $chr['parentheticalDashSpace'], $textnode->data );
-		$textnode->data = preg_replace( $regex['dashSpacingIntervalDash'],      $chr['intervalDashSpace'] . '$1$2' . $chr['intervalDashSpace'],           $textnode->data );
+		$textnode->data = preg_replace( $regex['dashSpacingEmDash'],            "{$s->interval_space()}\$1\$2{$s->interval_space()}",           $textnode->data );
+		$textnode->data = preg_replace( $regex['dashSpacingParentheticalDash'], "{$s->parenthetical_space()}\$1\$2{$s->parenthetical_space()}", $textnode->data );
+		$textnode->data = preg_replace( $regex['dashSpacingIntervalDash'],      "{$s->interval_space()}\$1\$2{$s->interval_space()}",           $textnode->data );
 	}
 }

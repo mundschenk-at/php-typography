@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Collapse spaces (if enabled).
@@ -51,14 +52,13 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr        = $settings->get_named_characters();
-		$regex      = $settings->get_regular_expressions();
+		$regex = $settings->get_regular_expressions();
 
 		// Normal spacing.
 		$textnode->data = preg_replace( $regex['spaceCollapseNormal'], ' ', $textnode->data );
 
 		// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
-		$textnode->data = preg_replace( $regex['spaceCollapseNonBreakable'], $chr['noBreakSpace'], $textnode->data );
+		$textnode->data = preg_replace( $regex['spaceCollapseNonBreakable'], U::NO_BREAK_SPACE, $textnode->data );
 
 		// For any other spaceing, replace with the first occurance of an unusual space character.
 		$textnode->data = preg_replace( $regex['spaceCollapseOther'], '$1', $textnode->data );

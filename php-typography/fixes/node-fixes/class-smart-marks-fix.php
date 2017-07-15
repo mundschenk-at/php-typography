@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Applies smart marks (if enabled).
@@ -51,7 +52,6 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr        = $settings->get_named_characters();
 		$regex      = $settings->get_regular_expressions();
 		$components = $settings->get_components();
 
@@ -59,11 +59,11 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		$textnode->data = preg_replace( $regex['smartMarksEscape501(c)'], '$1' . $components['escapeMarker'] . '$2' . $components['escapeMarker'] . '$3', $textnode->data );
 
 		// Replace marks.
-		$textnode->data = str_replace( [ '(c)', '(C)' ],   $chr['copyright'],      $textnode->data );
-		$textnode->data = str_replace( [ '(r)', '(R)' ],   $chr['registeredMark'], $textnode->data );
-		$textnode->data = str_replace( [ '(p)', '(P)' ],   $chr['soundCopyMark'],  $textnode->data );
-		$textnode->data = str_replace( [ '(sm)', '(SM)' ], $chr['serviceMark'],    $textnode->data );
-		$textnode->data = str_replace( [ '(tm)', '(TM)' ], $chr['tradeMark'],      $textnode->data );
+		$textnode->data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,      $textnode->data );
+		$textnode->data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $textnode->data );
+		$textnode->data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK,  $textnode->data );
+		$textnode->data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $textnode->data );
+		$textnode->data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $textnode->data );
 
 		// Un-escape escaped sequences.
 		$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );

@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Wraps hard hypens with zero-width spaces (if enabled).
@@ -58,7 +59,6 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 		if ( ! empty( $settings['hyphenHardWrap'] ) || ! empty( $settings['smartDashes'] ) ) {
 
 			// Various special characters and regular expressions.
-			$chr        = $settings->get_named_characters();
 			$regex      = $settings->get_regular_expressions();
 			$components = $settings->get_components();
 
@@ -66,16 +66,16 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 				$value = $text_token->value;
 
 				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
-					$value = str_replace( $components['hyphensArray'], '-' . $chr['zeroWidthSpace'], $value );
-					$value = str_replace( '_', '_' . $chr['zeroWidthSpace'], $value );
-					$value = str_replace( '/', '/' . $chr['zeroWidthSpace'], $value );
+					$value = str_replace( $components['hyphensArray'], '-' . U::ZERO_WIDTH_SPACE, $value );
+					$value = str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
+					$value = str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
 
 					$value = preg_replace( $regex['wrapHardHyphensRemoveEndingSpace'], '$1', $value );
 				}
 
 				if ( ! empty( $settings['smartDashes'] ) ) {
 					// Handled here because we need to know we are inside a word and not a URL.
-					$value = str_replace( '-', $chr['hyphen'], $value );
+					$value = str_replace( '-', U::HYPHEN, $value );
 				}
 
 				$tokens[ $index ] = $text_token->with_value( $value );

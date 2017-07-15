@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Wraps email parts zero-width spaces (if enabled).
@@ -61,14 +62,13 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$chr   = $settings->get_named_characters();
 		$regex = $settings->get_regular_expressions();
 
 		// Test for and parse urls.
 		foreach ( $tokens as $index => $token ) {
 			$value = $token->value;
 			if ( preg_match( $regex['wrapEmailsMatchEmails'], $value, $email_match ) ) {
-				$tokens[ $index ] = $token->with_value( preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . $chr['zeroWidthSpace'], $value ) );
+				$tokens[ $index ] = $token->with_value( preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . U::ZERO_WIDTH_SPACE, $value ) );
 			}
 		}
 
