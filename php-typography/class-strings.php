@@ -45,17 +45,17 @@ abstract class Strings {
 	 *
 	 * @var array
 	 */
-	private static $encodings = [ 'ASCII', 'UTF-8' ];
+	const _ENCODINGS = [ 'ASCII', 'UTF-8' ];
 
 	/**
 	 * A hash map for string functions according to encoding.
 	 *
 	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
 	 */
-	private static $str_functions = [
+	const _STRING_FUNCTIONS = [
 		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
-			'str_split'  => [ '\PHP_Typography\Strings', 'mb_str_split' ],
+			'str_split'  => [ __CLASS__, 'mb_str_split' ],
 			'strtolower' => 'mb_strtolower',
 			'strtoupper' => 'mb_strtoupper',
 			'substr'     => 'mb_substr',
@@ -88,7 +88,7 @@ abstract class Strings {
 	 * }
 	 */
 	public static function functions( $str ) {
-		return self::$str_functions[ mb_detect_encoding( $str, self::$encodings, true ) ];
+		return self::_STRING_FUNCTIONS[ mb_detect_encoding( $str, self::_ENCODINGS, true ) ];
 	}
 
 	/**
