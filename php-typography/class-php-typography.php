@@ -91,7 +91,7 @@ class PHP_Typography {
 	/**
 	 * The token fix registry.
 	 *
-	 * @var Fixes\Process_Words_Fix
+	 * @var Node_Fixes\Process_Words_Fix
 	 */
 	private $process_words_fix;
 

@@ -57,6 +57,8 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
+	 *
+	 * @return array An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenateCompounds'] ) ) {

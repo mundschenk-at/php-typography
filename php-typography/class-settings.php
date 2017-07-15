@@ -47,14 +47,14 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Primary quote style.
 	 *
-	 * @var Quotes
+	 * @var Settings\Quotes
 	 */
 	protected $primary_quote_style;
 
 	/**
 	 * Secondary quote style.
 	 *
-	 * @var Quotes
+	 * @var Settings\Quotes
 	 */
 	protected $secondary_quote_style;
 
@@ -103,7 +103,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * The current dash style.
 	 *
-	 * @var Dashes
+	 * @var Settings\Dashes
 	 */
 	protected $dash_style;
 
@@ -236,7 +236,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Retrieves the dash style.
 	 *
-	 * @return Settings\Dashes;
+	 * @return Settings\Dashes
 	 */
 	public function dash_style() {
 		return $this->dash_style;

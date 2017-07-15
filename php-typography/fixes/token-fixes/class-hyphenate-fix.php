@@ -78,6 +78,8 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
+	 *
+	 * @return array An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenation'] ) ) {
@@ -108,7 +110,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @param Settings $settings           The settings to apply.
 	 * @param string   $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
 	 *
-	 * @return array The hyphenated text token.
+	 * @return array The hyphenated text tokens.
 	 */
 	protected function do_hyphenate( array $tokens, Settings $settings, $hyphen = U::SOFT_HYPHEN ) {
 		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {
