@@ -74,7 +74,9 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	 * @dataProvider provide_remove_adjacent_characters_data
 	 *
 	 * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
-	 * @uses PHP_Typography\Fixes\Node_Fixes\HTML_Class_Node_Fix::__construct
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix::__construct
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix::__construct
+	 *
 	 * @param string $string A string.
 	 * @param string $prev   The previous character.
 	 * @param string $next   The next character.

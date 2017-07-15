@@ -41,20 +41,19 @@ use \PHP_Typography\DOM;
  *
  * @since 5.0.0
  */
-class Style_Numbers_Fix extends HTML_Class_Node_Fix {
+class Style_Numbers_Fix extends Simple_Style_Fix {
+
+	const REGEX           = '/([0-9]+)/u';
+	const SETTINGS_SWITCH = 'styleNumbers';
+
 
 	/**
-	 * Apply the fix to a given textnode.
+	 * Creates a new node fix with a class.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @param string $css_class       HTML class used in markup.
+	 * @param bool   $feed_compatible Optional. Default false.
 	 */
-	public function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['styleNumbers'] ) ) {
-			return;
-		}
-
-		$textnode->data = preg_replace( $settings->regex( 'styleNumbers' ), '<span class="' . $this->css_class . '">$1</span>', $textnode->data );
+	public function __construct( $css_class, $feed_compatible = false ) {
+		parent::__construct( self::REGEX, self::SETTINGS_SWITCH, $css_class, $feed_compatible );
 	}
 }

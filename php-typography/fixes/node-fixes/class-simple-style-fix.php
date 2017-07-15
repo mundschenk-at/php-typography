@@ -30,13 +30,29 @@ use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
 
 /**
- * All fixes that depend on certain HTML classes not being present should extend this baseclass.
+ * An abstract base class for adding simple wrapping spans to style certain elements.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
-abstract class HTML_Class_Node_Fix extends Classes_Dependent_Fix {
+abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
+
+	/**
+	 * The setting string used to enable/disable the fix (e.g. 'styleAmpersands').
+
+	 * @var string
+	 */
+	protected $settings_switch;
+
+	/**
+	 * The regular expressions used to match the text that should be wrapped in spans.
+	 *
+	 * It must contain a single matching expression.
+	 *
+	 * @var string
+	 */
+	protected $regex;
 
 	/**
 	 * The css class name to include in the generated markup.
@@ -48,12 +64,31 @@ abstract class HTML_Class_Node_Fix extends Classes_Dependent_Fix {
 	/**
 	 * Creates a new node fix with a class.
 	 *
+	 * @param string $regex           Regular expression to match the text.
+	 * @param string $settings_switch On/off switch for fix.
 	 * @param string $css_class       HTML class used in markup.
 	 * @param bool   $feed_compatible Optional. Default false.
 	 */
-	public function __construct( $css_class, $feed_compatible = false ) {
+	public function __construct( $regex, $settings_switch, $css_class, $feed_compatible = false ) {
 		parent::__construct( $css_class, $feed_compatible );
 
+		$this->regex = $regex;
+		$this->settings_switch = $settings_switch;
 		$this->css_class = $css_class;
+	}
+
+	/**
+	 * Apply the fix to a given textnode.
+	 *
+	 * @param \DOMText $textnode Required.
+	 * @param Settings $settings Required.
+	 * @param bool     $is_title Optional. Default false.
+	 */
+	public function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
+		if ( empty( $settings[ $this->settings_switch ] ) ) {
+			return;
+		}
+
+		$textnode->data = preg_replace( $this->regex, '<span class="' . $this->css_class . '">$1</span>', $textnode->data );
 	}
 }
