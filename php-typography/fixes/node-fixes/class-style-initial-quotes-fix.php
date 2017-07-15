@@ -97,7 +97,6 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 				case U::GUILLEMET_OPEN:
 				case U::GUILLEMET_CLOSE:
 				case U::DOUBLE_LOW_9_QUOTE:
-
 					$block_level_parent = DOM::get_block_parent_name( $textnode );
 
 					if ( $is_title ) {
