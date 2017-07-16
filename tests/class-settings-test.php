@@ -26,6 +26,8 @@ namespace PHP_Typography\Tests;
 
 use \PHP_Typography\Strings;
 use \PHP_Typography\U;
+use \PHP_Typography\Settings\Dashes;
+use \PHP_Typography\Settings\Quotes;
 
 /**
  * Unit test for Settings class.
@@ -239,6 +241,39 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		$s['new_key'] = 42;
 		$this->assertEquals( 42, $s['new_key'] );
+	}
+
+	/**
+	 * Tests primary_quote_style.
+	 *
+	 * @covers ::primary_quote_style
+	 */
+	public function test_primary_quote_style() {
+		$s = $this->settings;
+
+		$this->assertInstanceOf( Quotes::class, $s->primary_quote_style(), 'Primary quote style is not an instance of Quotes.' );
+	}
+
+	/**
+	 * Tests secondary_quote_style.
+	 *
+	 * @covers ::secondary_quote_style
+	 */
+	public function test_secondary_quote_style() {
+		$s = $this->settings;
+
+		$this->assertInstanceOf( Quotes::class, $s->secondary_quote_style(), 'Secondary quote style is not an instance of Quotes.' );
+	}
+
+	/**
+	 * Tests dash_style.
+	 *
+	 * @covers ::dash_style
+	 */
+	public function test_dash_style() {
+		$s = $this->settings;
+
+		$this->assertInstanceOf( Dashes::class, $s->dash_style(), 'Dash style is not an instance of Dashes.' );
 	}
 
 	/**
@@ -462,6 +497,25 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests set_smart_quotes_primary with a Quotes object.
+	 *
+	 * @covers ::set_smart_quotes_primary
+	 */
+	public function test_set_smart_quotes_primary_to_object() {
+		$s = $this->settings;
+
+		// Create a stub for the Token_Fixer interface.
+		$fake_quotes = $this->createMock( Quotes::class );
+		$fake_quotes->method( 'open' )->willReturn( 'x' );
+		$fake_quotes->method( 'close' )->willReturn( 'y' );
+
+		$s->set_smart_quotes_primary( $fake_quotes );
+
+		$this->assertSame( 'x', $s->primary_quote_style()->open() );
+		$this->assertSame( 'y', $s->primary_quote_style()->close() );
+	}
+
+	/**
 	 * Tests set_smart_quotes_secondary.
 	 *
 	 * @covers ::set_smart_quotes_secondary
@@ -509,6 +563,25 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s = $this->settings;
 
 		$s->set_smart_quotes_secondary( 'invalidStyleName' );
+	}
+
+	/**
+	 * Tests set_smart_quotes_secondary with a Quotes object.
+	 *
+	 * @covers ::set_smart_quotes_secondary
+	 */
+	public function test_set_smart_quotes_secondary_to_object() {
+		$s = $this->settings;
+
+		// Create a stub for the Token_Fixer interface.
+		$fake_quotes = $this->createMock( Quotes::class );
+		$fake_quotes->method( 'open' )->willReturn( 'xx' );
+		$fake_quotes->method( 'close' )->willReturn( 'yy' );
+
+		$s->set_smart_quotes_secondary( $fake_quotes );
+
+		$this->assertSame( 'xx', $s->secondary_quote_style()->open() );
+		$this->assertSame( 'yy', $s->secondary_quote_style()->close() );
 	}
 
 	/**
@@ -684,6 +757,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 * @covers ::update_dash_spacing_regex
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
@@ -693,26 +767,51 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s->set_smart_dashes_style( 'traditionalUS' );
 		$dashes = $s->dash_style();
 
-		$this->assertEquals( U::EM_DASH, $dashes->parenthetical_dash() );
-		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
-		$this->assertEquals( U::THIN_SPACE, $dashes->parenthetical_space() );
-		$this->assertEquals( U::THIN_SPACE, $dashes->interval_space() );
+		$this->assertSame( U::EM_DASH, $dashes->parenthetical_dash() );
+		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertSame( U::THIN_SPACE, $dashes->parenthetical_space() );
+		$this->assertSame( U::THIN_SPACE, $dashes->interval_space() );
 
 		$s->set_smart_dashes_style( 'international' );
 		$dashes = $s->dash_style();
 
-		$this->assertEquals( U::EN_DASH, $dashes->parenthetical_dash() );
-		$this->assertEquals( U::EN_DASH, $dashes->interval_dash() );
-		$this->assertEquals( ' ', $dashes->parenthetical_space() );
-		$this->assertEquals( U::HAIR_SPACE, $dashes->interval_space() );
+		$this->assertSame( U::EN_DASH, $dashes->parenthetical_dash() );
+		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertSame( ' ', $dashes->parenthetical_space() );
+		$this->assertSame( U::HAIR_SPACE, $dashes->interval_space() );
 
+	}
+
+	/**
+	 * Test set_smart_dashes_style with a Dashes object.
+	 *
+	 * @covers ::set_smart_dashes_style
+	 * @covers ::update_dash_spacing_regex
+	 */
+	public function test_set_smart_dashes_style_with_object() {
+		$s   = $this->settings;
+
+		// Create a stub for the Token_Fixer interface.
+		$fake_dashes = $this->createMock( Dashes::class );
+		$fake_dashes->method( 'parenthetical_dash' )->willReturn( 'a' );
+		$fake_dashes->method( 'parenthetical_space' )->willReturn( 'b' );
+		$fake_dashes->method( 'interval_dash' )->willReturn( 'c' );
+		$fake_dashes->method( 'interval_space' )->willReturn( 'd' );
+
+		$s->set_smart_dashes_style( $fake_dashes );
+		$dashes = $s->dash_style();
+
+		$this->assertSame( 'a', $dashes->parenthetical_dash() );
+		$this->assertSame( 'b', $dashes->parenthetical_space() );
+		$this->assertSame( 'c', $dashes->interval_dash() );
+		$this->assertSame( 'd', $dashes->interval_space() );
 	}
 
 	/**
 	 * Tests set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * 
+	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 *
 	 * @expectedException \PHPUnit\Framework\Error\Warning
@@ -1471,9 +1570,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tests set_true_no_break_narrow_space.
+	 * Tests set_true_no_break_narrow_space and no_break_narrow_space.
 	 *
 	 * @covers ::set_true_no_break_narrow_space
+	 * @covers ::no_break_narrow_space
 	 */
 	public function test_set_true_no_break_narrow_space() {
 		$s   = $this->settings;

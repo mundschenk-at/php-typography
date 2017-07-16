@@ -24,6 +24,9 @@
 
 namespace PHP_Typography\Tests;
 
+use \PHP_Typography\PHP_Typography;
+use \PHP_Typography\Fixes\Node_Fix;
+use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Strings;
 use \PHP_Typography\U;
 
@@ -1408,7 +1411,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertCount( 1, $s['hyphenationCustomExceptions'] );
 	}
 
-
 	/**
 	 * Test set_hyphenation_exceptions.
 	 *
@@ -1426,6 +1428,59 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $typo->get_settings();
 		$this->assertContainsOnly( 'string', $s['hyphenationCustomExceptions'] );
 		$this->assertCount( 2, $s['hyphenationCustomExceptions'] );
+	}
+
+	/**
+	 * Tests register_node_fix.
+	 *
+	 * @covers ::register_node_fix
+	 */
+	public function test_register_node_fix() {
+		$typo = $this->typo;
+
+		foreach ( PHP_Typography::GROUPS as $group ) {
+			// Create a stub for the Node_Fix interface.
+			$fake_node_fixer = $this->createMock( Node_Fix::class );
+			$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
+
+			$typo->register_node_fix( $fake_node_fixer, $group );
+			$this->assertContains( $fake_node_fixer, $this->readAttribute( $typo, 'node_fixes' )[ $group ] );
+		}
+	}
+
+	/**
+	 * Tests register_node_fix.
+	 *
+	 * @covers ::register_node_fix
+	 *
+	 * @expectedException \InvalidArgumentException
+	 * @expectedExceptionMessageRegExp /^Invalid fixer group .+\.$/
+	 */
+	public function test_register_node_fix_invalid_group() {
+		$typo = $this->typo;
+
+		// Create a stub for the Node_Fix interface.
+		$fake_node_fixer = $this->createMock( Node_Fix::class );
+		$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
+
+		$typo->register_node_fix( $fake_node_fixer, 'invalid group parameter' );
+	}
+
+	/**
+	 * Tests register_token_fix.
+	 *
+	 * @covers ::register_token_fix
+	 */
+	public function test_register_token_fix() {
+		$typo = $this->typo;
+
+		// Create a stub for the Token_Fix interface.
+		$fake_token_fixer = $this->createMock( Token_Fix::class );
+		$fake_token_fixer->method( 'apply' )->willReturn( 'foo' );
+		$fake_token_fixer->method( 'target' )->willReturn( Token_Fix::MIXED_WORDS );
+
+		$typo->register_token_fix( $fake_token_fixer );
+		$this->assertTrue( true, 'An error occured during Token_Fix registration.' );
 	}
 
 
