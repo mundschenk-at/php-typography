@@ -1013,6 +1013,8 @@ class PHP_Typography {
 	/**
 	 * Registers a node fix.
 	 *
+	 * @since 5.0.0
+	 *
 	 * @param Node_Fix $fix   Required.
 	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
 	 *
@@ -1036,6 +1038,8 @@ class PHP_Typography {
 
 	/**
 	 * Registers a token fix.
+	 *
+	 * @since 5.0.0
 	 *
 	 * @param Token_Fix $fix Required.
 	 */
