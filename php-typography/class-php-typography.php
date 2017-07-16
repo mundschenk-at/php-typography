@@ -1016,7 +1016,7 @@ class PHP_Typography {
 	 * @param Node_Fix $fix   Required.
 	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
 	 *
-	 * @throws InvalidArgumentException Group is invalid.
+	 * @throws \InvalidArgumentException Group is invalid.
 	 */
 	public function register_node_fix( Node_Fix $fix, $group ) {
 		switch ( $group ) {
@@ -1028,7 +1028,7 @@ class PHP_Typography {
 				break;
 
 			default:
-				throw new InvalidArgumentException( "Invalid fixer group $group." );
+				throw new \InvalidArgumentException( "Invalid fixer group $group." );
 		}
 
 		$this->node_fixes[ $group ][] = $fix;
