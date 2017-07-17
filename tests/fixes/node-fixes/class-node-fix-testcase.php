@@ -70,12 +70,33 @@ abstract class Node_Fix_Testcase extends PHP_Typography_Testcase {
 	/**
 	 * Assert that the output of the fix is the same as the expected result.
 	 *
-	 * @param string $input  Text node value.
-	 * @param string $result Expected result.
+	 * @param string      $input         Text node value.
+	 * @param string      $result        Expected result.
+	 * @param string|null $left_sibling  Optional. Left sibling node value. Default null.
+	 * @param string|null $right_sibling Optional. Right sibling node value. Default null.
+	 * @param string      $parent_tag    Optional. Parent tag. Default 'p'.
+	 * @param bool        $is_title      Optional. Default false.
 	 */
-	protected function assertFixResultSame( $input, $result ) {
+	protected function assertFixResultSame( $input, $result, $left_sibling = null, $right_sibling = null, $parent_tag = 'p', $is_title = false ) {
 		$node = $this->create_textnode( $input );
-		$this->fix->apply( $node, $this->s );
+
+		if ( ! empty( $left_sibling ) || ! empty( $right_sibling ) ) {
+			$dom    = new \DOMDocument();
+			$parent = new \DOMElement( $parent_tag );
+			$dom->appendChild( $parent );
+
+			if ( ! empty( $left_sibling ) ) {
+				$parent->appendChild( $this->create_textnode( $left_sibling ) );
+			}
+
+			$parent->appendChild( $node );
+
+			if ( ! empty( $right_sibling ) ) {
+				$parent->appendChild( $this->create_textnode( $right_sibling ) );
+			}
+		}
+
+		$this->fix->apply( $node, $this->s, $is_title );
 		$this->assertSame( $this->clean_html( $result ), $this->clean_html( $node->data ) );
 	}
 }
