@@ -58,12 +58,14 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	/**
 	 * Assert that the output of the fix is the same as the expected result.
 	 *
-	 * @param string $input  Text node value.
-	 * @param string $result Expected result.
+	 * @param string        $input    Text node value.
+	 * @param string        $result   Expected result.
+	 * @param bool          $is_title Optional. Default false.
+	 * @param \DOMText|null $textnode Optional. Default null.
 	 */
-	protected function assertFixResultSame( $input, $result ) {
+	protected function assertFixResultSame( $input, $result, $is_title = false, $textnode = null ) {
 		$tokens = $this->tokenize_sentence( $input );
-		$result_tokens = $this->fix->apply( $tokens, $this->s );
+		$result_tokens = $this->fix->apply( $tokens, $this->s, $is_title, $textnode );
 		$this->assertTokensSame( $result, $result_tokens );
 	}
 }
