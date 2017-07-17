@@ -51,8 +51,37 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	protected function setUp() { // @codingStandardsIgnoreLine
 		parent::setUp();
 
-		$this->fix = new Node_Fixes\Style_Caps_Fix( 'caps' ); // Does not matter.
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class );
 	}
+
+	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$feed_fix     = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ true ] );
+		$non_feed_fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ false ] );
+
+		$this->assertAttributeEquals( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
+		$this->assertAttributeEquals( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
+	}
+
+	/**
+	 * Tests the method feed_compatible().
+	 *
+	 * @covers ::feed_compatible
+	 *
+	 * @uses ::__construct
+	 */
+	public function test_feed_compatible() {
+		$feed_fix     = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ true ] );
+		$non_feed_fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ false ] );
+
+		$this->assertTrue( $feed_fix->feed_compatible(), 'The fixer should be feed_compatible.' );
+		$this->assertFalse( $non_feed_fix->feed_compatible(), 'The fixer should not be feed_compatible.' );
+	}
+
 
 	/**
 	 * Provide data for testing remove_adjacent_characters.
@@ -73,16 +102,12 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::remove_adjacent_characters
 	 * @dataProvider provide_remove_adjacent_characters_data
 	 *
-	 * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
-	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix::__construct
-	 * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix::__construct
-	 *
 	 * @param string $string A string.
 	 * @param string $prev   The previous character.
 	 * @param string $next   The next character.
 	 * @param string $result The trimmed string.
 	 */
 	public function test_remove_adjacent_characters( $string, $prev, $next, $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( \PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, $prev, $next ] ) );
+		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, $prev, $next ] ) );
 	}
 }

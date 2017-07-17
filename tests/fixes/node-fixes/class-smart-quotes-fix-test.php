@@ -125,6 +125,22 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Test apply with left and right textnode siblings.
+	 *
+	 * @covers ::apply
+	 *
+	 * @dataProvider provide_smart_quotes_data
+	 *
+	 * @param string $html       HTML input.
+	 * @param string $result     Expected result.
+	 */
+	public function test_apply_with_siblings( $html, $result ) {
+		$this->s->set_smart_quotes( true );
+
+		$this->assertFixResultSame( $html, $result, 'foo ', ' bar' );
+	}
+
+	/**
 	 * Test dewidow.
 	 *
 	 * @covers ::apply

@@ -117,4 +117,19 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 
 		$this->assertFixResultSame( $input, $result );
 	}
+
+	/**
+	 * Tests register_token_fix.
+	 *
+	 * @covers ::register_token_fix
+	 */
+	public function test_register_token_fix() {
+		// Create a stub for the Token_Fix interface.
+		$fake_token_fixer = $this->createMock( Token_Fix::class );
+		$fake_token_fixer->method( 'apply' )->willReturn( 'foo' );
+		$fake_token_fixer->method( 'target' )->willReturn( Token_Fix::MIXED_WORDS );
+
+		$this->fix->register_token_fix( $fake_token_fixer );
+		$this->assertAttributeContains( $fake_token_fixer, 'token_fixes', $this->fix, 'The registered fixer is not present in the $token_fixes array.' );
+	}
 }

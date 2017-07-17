@@ -28,16 +28,13 @@ use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
 
 /**
- * Style_Ampersands_Fix unit test.
+ * Smart_Maths_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Maths_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Maths_Fix
  *
  * @uses ::__construct
- * @uses ::apply_internal
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
- * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
- * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix::__construct
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
@@ -47,7 +44,7 @@ use \PHP_Typography\Settings;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  */
-class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
+class Smart_Maths_Fix_Test extends Node_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -55,18 +52,32 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
 		parent::setUp();
+
+		$this->fix = new Node_Fixes\Smart_Maths_Fix();
 	}
 
 	/**
-	 * Provide data for special white space collapsing.
+	 * Data provider for smarth_math test.
 	 *
 	 * @return array
 	 */
-	public function provide_style_ampersands_data() {
+	public function provide_smart_maths_data() {
 		return [
-			[ 'foo & bar', 'foo <span class="amp">&amp;</span> bar' ],
-			[ '&', '<span class="amp">&amp;</span>' ],
-			[ 'R&D', 'R<span class="amp">&amp;</span>D' ],
+			[ 'xx 7-3=4 xx',      'xx 7&minus;3=4 xx' ],
+			[ 'xx 3*3=5/2 xx',    'xx 3&times;3=5&divide;2 xx' ],
+			[ 'xx 0815-4711 xx',  'xx 0815-4711 xx' ],
+			[ 'xx 1/2 xx',        'xx 1/2 xx' ],
+			[ 'xx 2001-13-12 xx', 'xx 2001&minus;13&minus;12 xx' ],   // not a valid date.
+			[ 'xx 2001-12-13 xx', 'xx 2001-12-13 xx' ],
+			[ 'xx 2001-13-13 xx', 'xx 2001&minus;13&minus;13 xx' ],   // not a valid date.
+			[ 'xx 13-12-2002 xx', 'xx 13-12-2002 xx' ],
+			[ 'xx 13-13-2002 xx', 'xx 13&minus;13&minus;2002 xx' ],   // not a valid date.
+			[ 'xx 2001-12 xx',    'xx 2001-12 xx' ],
+			[ 'xx 2001-13 xx',    'xx 2001-13 xx' ],                  // apparently a valid day count.
+			[ 'xx 2001-100 xx',   'xx 2001-100 xx' ],
+			[ 'xx 12/13/2010 xx', 'xx 12/13/2010 xx' ],
+			[ 'xx 13/12/2010 xx', 'xx 13/12/2010 xx' ],
+			[ 'xx 13/13/2010 xx', 'xx 13&divide;13&divide;2010 xx' ], // not a valid date.
 		];
 	}
 
@@ -74,19 +85,14 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
-	 * @covers ::__construct
 	 *
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Text_Parser\Token
-	 *
-	 * @dataProvider provide_style_ampersands_data
+	 * @dataProvider provide_smart_maths_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Ampersands_Fix( 'amp' );
-		$this->s->set_style_ampersands( true );
+		$this->s->set_smart_math( true );
 
 		$this->assertFixResultSame( $input, $result );
 	}
@@ -95,19 +101,14 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
-	 * @covers ::__construct
 	 *
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Text_Parser\Token
-	 *
-	 * @dataProvider provide_style_ampersands_data
+	 * @dataProvider provide_smart_maths_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Ampersands_Fix( 'amp' );
-		$this->s->set_style_ampersands( false );
+		$this->s->set_smart_math( false );
 
 		$this->assertFixResultSame( $input, $input );
 	}

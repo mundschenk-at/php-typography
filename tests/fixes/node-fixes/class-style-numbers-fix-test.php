@@ -55,8 +55,6 @@ class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
 		parent::setUp();
-
-		$this->fix = new Node_Fixes\Style_Numbers_Fix( 'numbers' );
 	}
 
 	/**
@@ -77,6 +75,7 @@ class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::__construct
 	 *
 	 * @dataProvider provide_style_numbers_data
 	 *
@@ -84,6 +83,7 @@ class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
+		$this->fix = new Node_Fixes\Style_Numbers_Fix( 'numbers' );
 		$this->s->set_style_numbers( true );
 
 		$this->assertFixResultSame( $input, $result );
@@ -93,6 +93,7 @@ class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::__construct
 	 *
 	 * @dataProvider provide_style_numbers_data
 	 *
@@ -100,6 +101,7 @@ class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
+		$this->fix = new Node_Fixes\Style_Numbers_Fix( 'numbers' );
 		$this->s->set_style_numbers( false );
 
 		$this->assertFixResultSame( $input, $input );

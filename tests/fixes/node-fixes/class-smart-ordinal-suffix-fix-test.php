@@ -57,6 +57,19 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+	 */
+	public function test_array_constructor() {
+		$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( 'foo' );
+
+		$this->assertAttributeEquals( 'foo', 'css_class',   $this->fix, 'The CSS class should be "foo".' );
+	}
+
+	/**
 	 * Provide data for testing ordinal suffixes.
 	 *
 	 * @return array

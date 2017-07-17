@@ -68,6 +68,19 @@ class Single_Character_Word_Spacing_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Provide data for testing single character word spacing.
+	 *
+	 * @return array
+	 */
+	public function provide_single_character_word_spacing_with_siblings_data() {
+		return [
+			[ 'A cat in a tree', 'left with space ', '', 'A&nbsp;cat in a&nbsp;tree' ],
+			[ 'Right here is a', '', ' hat', 'Right here is a' ], // change would happen in right sibling.
+		];
+	}
+
+
+	/**
 	 * Test apply.
 	 *
 	 * @covers ::apply
@@ -83,6 +96,26 @@ class Single_Character_Word_Spacing_Fix_Test extends Node_Fix_Testcase {
 		$this->s->set_single_character_word_spacing( true );
 
 		$this->assertFixResultSame( $input, $result );
+	}
+
+	/**
+	 * Test apply.
+	 *
+	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::remove_adjacent_characters
+	 *
+	 * @dataProvider provide_single_character_word_spacing_with_siblings_data
+	 *
+	 * @param string $input  HTML input.
+	 * @param string $left   Left sibling value.
+	 * @param string $right  Right sibling value.
+	 * @param string $result Expected result.
+	 */
+	public function test_apply_with_siblings( $input, $left, $right, $result ) {
+		$this->s->set_single_character_word_spacing( true );
+
+		$this->assertFixResultSame( $input, $result, $left, $right );
 	}
 
 	/**

@@ -28,18 +28,13 @@ use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
 
 /**
- * Style_Caps_Fix unit test.
+ * Classes_Dependent_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
  *
  * @uses ::__construct
- * @uses ::apply_internal
- * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
- * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
- * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix::__construct
  * @uses PHP_Typography\Arrays
- * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
@@ -47,7 +42,7 @@ use \PHP_Typography\Settings;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  */
-class Style_Caps_Fix_Test extends Node_Fix_Testcase {
+class Classes_Dependent_Fix_Test extends Node_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -58,52 +53,31 @@ class Style_Caps_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
-	 * Provide data for testing caps styling.
+	 * Tests the constructor.
 	 *
-	 * @return array
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
 	 */
-	public function provide_style_caps_data() {
-		return [
-			[ 'foo BAR bar', 'foo <span class="caps">BAR</span> bar' ],
-			[ 'foo BARbaz', 'foo BARbaz' ],
-			[ 'foo BAR123 baz', 'foo <span class="caps">BAR123</span> baz' ],
-			[ 'foo 123BAR baz', 'foo <span class="caps">123BAR</span> baz' ],
-		];
+	public function test_array_constructor() {
+		$fix = $this->getMockForAbstractClass( Node_Fixes\Classes_Dependent_Fix::class, [ [ 'foo', 'bar' ], false ] );
+
+		$this->assertAttributeContains( 'foo',        'classes_to_avoid', $fix, 'The fixer should avoid class "foo".' );
+		$this->assertAttributeContains( 'bar',        'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
+		$this->assertAttributeNotContains( 'foobar',  'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
 	}
 
 	/**
-	 * Test apply.
+	 * Tests the constructor.
 	 *
-	 * @covers ::apply
 	 * @covers ::__construct
 	 *
-	 * @dataProvider provide_style_caps_data
-	 *
-	 * @param string $input  HTML input.
-	 * @param string $result Expected result.
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
 	 */
-	public function test_apply( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Caps_Fix( 'caps' );
-		$this->s->set_style_caps( true );
+	public function test_string_constructor() {
+		$fix = $this->getMockForAbstractClass( Node_Fixes\Classes_Dependent_Fix::class, [ 'bar', false ] );
 
-		$this->assertFixResultSame( $input, $result );
-	}
-
-	/**
-	 * Test apply.
-	 *
-	 * @covers ::apply
-	 * @covers ::__construct
-	 *
-	 * @dataProvider provide_style_caps_data
-	 *
-	 * @param string $input  HTML input.
-	 * @param string $result Expected result.
-	 */
-	public function test_apply_off( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Caps_Fix( 'caps' );
-		$this->s->set_style_caps( false );
-
-		$this->assertFixResultSame( $input, $input );
+		$this->assertAttributeContains( 'bar',    'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
+		$this->assertAttributeNotContains( 'foo', 'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
 	}
 }

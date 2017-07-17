@@ -55,6 +55,20 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+	 */
+	public function test_array_constructor() {
+		$this->fix = new Node_Fixes\Smart_Fractions_Fix( 'foo', 'bar' );
+
+		$this->assertAttributeEquals( 'foo', 'numerator_class',   $this->fix, 'The numerator class should be "foo".' );
+		$this->assertAttributeEquals( 'bar', 'denominator_class', $this->fix, 'The denominator class should be "bar".' );
+	}
+
+	/**
 	 * Provide data for testing smart_fractions.
 	 *
 	 * @return array
@@ -89,6 +103,74 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Provide data for testing smart_fractions.
+	 *
+	 * @return array
+	 */
+	public function provide_smart_fractions_with_spacing_data() {
+		return [
+			[
+				'1/2 3/300 999/1000',
+				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;<sup>3</sup>&frasl;<sub>300</sub> <sup>999</sup>&frasl;<sub>1000</sub>',
+				'',
+				'',
+			],
+			[
+				'1/2 4/2015 1999/2000 999/1000',
+				'<sup>1</sup>&frasl;<sub>2</sub>&#8239;4/2015 1999/2000&#8239;<sup>999</sup>&frasl;<sub>1000</sub>',
+				'',
+				'',
+			],
+			[
+				'1/2 3/300 999/1000',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;<sup class="num">3</sup>&frasl;<sub class="denom">300</sub> <sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+				'num',
+				'denom',
+			],
+			[
+				'1/2 4/2015 1999/2000 999/1000',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">2</sub>&#8239;4/2015 1999/2000&#8239;<sup class="num">999</sup>&frasl;<sub class="denom">1000</sub>',
+				'num',
+				'denom',
+			],
+		];
+	}
+
+	/**
+	 * Provide data for testing smart_fractions.
+	 *
+	 * @return array
+	 */
+	public function provide_smart_fractions_only_spacing_data() {
+		return [
+			[
+				'1/2 3/300 999/1000',
+				'1/2&nbsp;3/300 999/1000',
+				'',
+				'',
+			],
+			[
+				'1/2 4/2015 1999/2000 999/1000',
+				'1/2&nbsp;4/2015 1999/2000&nbsp;999/1000',
+				'',
+				'',
+			],
+			[
+				'1/2 3/300 999/1000',
+				'1/2&nbsp;3/300 999/1000',
+				'num',
+				'denom',
+			],
+			[
+				'1/2 4/2015 1999/2000 999/1000',
+				'1/2&nbsp;4/2015 1999/2000&nbsp;999/1000',
+				'num',
+				'denom',
+			],
+		];
+	}
+
+	/**
 	 * Test apply.
 	 *
 	 * @covers ::apply
@@ -109,6 +191,51 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 
 		$this->assertFixResultSame( $input, $result );
 	}
+
+	/**
+	 * Test apply.
+	 *
+	 * @covers ::apply
+	 *
+	 * @dataProvider provide_smart_fractions_with_spacing_data
+	 *
+	 * @param string $input       HTML input.
+	 * @param string $result      Expected result.
+	 * @param string $numerator   Numerator CSS class.
+	 * @param string $denominator Denominator CSS class.
+	 */
+	public function test_apply_with_spacing( $input, $result, $numerator, $denominator ) {
+		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
+
+		$this->s->set_smart_fractions( true );
+		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->set_fraction_spacing( true );
+
+		$this->assertFixResultSame( $input, $result );
+	}
+
+	/**
+	 * Test apply.
+	 *
+	 * @covers ::apply
+	 *
+	 * @dataProvider provide_smart_fractions_only_spacing_data
+	 *
+	 * @param string $input       HTML input.
+	 * @param string $result      Expected result.
+	 * @param string $numerator   Numerator CSS class.
+	 * @param string $denominator Denominator CSS class.
+	 */
+	public function test_apply_only_spacing( $input, $result, $numerator, $denominator ) {
+		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
+
+		$this->s->set_smart_fractions( false );
+		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->set_fraction_spacing( true );
+
+		$this->assertFixResultSame( $input, $result );
+	}
+
 
 	/**
 	 * Test apply.

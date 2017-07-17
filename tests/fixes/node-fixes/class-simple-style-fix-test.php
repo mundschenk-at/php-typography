@@ -28,10 +28,10 @@ use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
 
 /**
- * Style_Ampersands_Fix unit test.
+ * Simple_Style_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix
  *
  * @uses ::__construct
  * @uses ::apply_internal
@@ -47,7 +47,7 @@ use \PHP_Typography\Settings;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
  */
-class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
+class Simple_Style_Fix_Test extends Node_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -58,34 +58,45 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
-	 * Provide data for special white space collapsing.
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Style_Fix::class, [ '/(.*)/', 'fooBar', 'some-class' ] );
+
+		$this->assertAttributeEquals( '/(.*)/',     'regex',           $this->fix );
+		$this->assertAttributeEquals( 'fooBar',     'settings_switch', $this->fix );
+		$this->assertAttributeEquals( 'some-class', 'css_class',       $this->fix );
+	}
+
+	/**
+	 * Provide data for testing apply_internal.
 	 *
 	 * @return array
 	 */
-	public function provide_style_ampersands_data() {
+	public function provide_apply_internal_data() {
 		return [
-			[ 'foo & bar', 'foo <span class="amp">&amp;</span> bar' ],
-			[ '&', '<span class="amp">&amp;</span>' ],
-			[ 'R&D', 'R<span class="amp">&amp;</span>D' ],
+			[ 'foo & bar', '<span class="some-class">foo & bar</span>' ],
 		];
 	}
 
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
-	 * @covers ::__construct
+	 * @covers ::apply_internal
 	 *
+	 * @uses ::apply
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
-	 * @dataProvider provide_style_ampersands_data
+	 * @dataProvider provide_apply_internal_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Ampersands_Fix( 'amp' );
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Style_Fix::class, [ '/(.+)/u', 'styleAmpersands', 'some-class' ] );
 		$this->s->set_style_ampersands( true );
 
 		$this->assertFixResultSame( $input, $result );
@@ -94,19 +105,19 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
-	 * @covers ::__construct
+	 * @covers ::apply_internal
 	 *
+	 * @uses ::apply
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
-	 * @dataProvider provide_style_ampersands_data
+	 * @dataProvider provide_apply_internal_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->fix = new Node_Fixes\Style_Ampersands_Fix( 'amp' );
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Style_Fix::class, [ '/(.+)/u', 'styleAmpersands', 'some-class' ] );
 		$this->s->set_style_ampersands( false );
 
 		$this->assertFixResultSame( $input, $input );

@@ -34,7 +34,6 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Style_Hanging_Punctuation_Fix
  *
  * @uses ::__construct
- * @uses ::apply_internal
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::remove_adjacent_characters
  * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
@@ -60,43 +59,82 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$this->fix = new Node_Fixes\Style_Hanging_Punctuation_Fix( 'alpha', 'beta', 'gamma', 'delta' );
+
+		$this->assertAttributeEquals( 'alpha', 'push_single_class', $this->fix );
+		$this->assertAttributeEquals( 'beta',  'push_double_class', $this->fix );
+		$this->assertAttributeEquals( 'gamma', 'pull_single_class', $this->fix );
+		$this->assertAttributeEquals( 'delta', 'pull_double_class', $this->fix );
+	}
+
+	/**
 	 * Provide data for testing stye_hanging_punctuation.
 	 *
 	 * @return array
 	 */
 	public function provide_style_hanging_punctuation_data() {
 		return [
-			[ '"First "second "third.', '<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.' ],
+			[
+				'"First "second "third.',
+				'',
+				'',
+				'<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.',
+			],
+			[
+				'"First "second "third.',
+				'',
+				' foo',
+				'<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.',
+			],
+			[
+				'"First "second "third.',
+				'foo ',
+				'',
+				'<span class="push-double"></span>&#8203;<span class="pull-double">"</span>First <span class="push-double"></span>&#8203;<span class="pull-double">"</span>second <span class="push-double"></span>&#8203;<span class="pull-double">"</span>third.',
+			],
 		];
 	}
 
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
+	 * @covers ::apply_internal
+	 *
+	 * @uses ::apply
 	 *
 	 * @dataProvider provide_style_hanging_punctuation_data
 	 *
 	 * @param string $input  HTML input.
+	 * @param string $left   Left sibling.
+	 * @param string $right  Right sibling.
 	 * @param string $result Expected result.
 	 */
-	public function test_apply( $input, $result ) {
+	public function test_apply_internal( $input, $left, $right, $result ) {
 		$this->s->set_style_hanging_punctuation( true );
 
-		$this->assertFixResultSame( $input, $result );
+		$this->assertFixResultSame( $input, $result, $left, $right );
 	}
 
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
+	 * @covers ::apply_internal
+	 *
+	 * @uses ::apply
 	 *
 	 * @dataProvider provide_style_hanging_punctuation_data
 	 *
 	 * @param string $input  HTML input.
+	 * @param string $left   Left sibling.
+	 * @param string $right  Right sibling.
 	 * @param string $result Expected result.
 	 */
-	public function test_apply_off( $input, $result ) {
+	public function test_apply_internal_off( $input, $left, $right, $result ) {
 		$this->s->set_style_hanging_punctuation( false );
 
 		$this->assertFixResultSame( $input, $input );
