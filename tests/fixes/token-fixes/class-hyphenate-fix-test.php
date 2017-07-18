@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
+use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Settings;
 
@@ -52,6 +53,18 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		parent::setUp();
 
 		$this->fix = new Token_Fixes\Hyphenate_Fix();
+	}
+
+	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$fix = new Token_Fixes\Hyphenate_Fix( Token_Fix::COMPOUND_WORDS, true );
+
+		$this->assertAttributeEquals( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
+		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**
@@ -198,12 +211,15 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 */
 	public function provide_hyphenate_data() {
 		return [
-			[ 'A few words to hyphenate, like KINGdesk Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true ],
+			[ 'A few words to hyphenate, like KINGdesk Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, 'p' ],
 			// Not working with new de pattern file: [ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],.
-			[ 'Sauerstofffeldflasche', 'Sauer&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true ],
+			[ 'Sauerstofffeldflasche', 'Sauer&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, 'p' ],
 			// Not working with new de pattern file: [ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],.
-			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true ],
-			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true ],
+			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, 'p' ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, 'p' ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, 'h2' ],
+			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', false, true, true, 'p' ],
+			[ 'Trinkwasserinstallation', 'Trinkwasserinstallation', 'de', false, true, true, 'h2' ],
 		];
 	}
 
@@ -214,6 +230,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 *
 	 * @uses ::do_hyphenate
 	 * @uses ::get_hyphenator
+	 * @uses PHP_Typography\DOM
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser
@@ -227,8 +244,9 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
+	 * @param string $parent_tag           Parent tag.
 	 */
-	public function test_apply( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case ) {
+	public function test_apply( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $parent_tag ) {
 		$this->s->set_hyphenation( true );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -239,7 +257,9 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
-		$this->assertFixResultSame( $input, $result );
+		$parent = new \DOMElement( $parent_tag, $input );
+
+		$this->assertFixResultSame( $input, $result, false, $parent->firstChild );
 	}
 
 	/**

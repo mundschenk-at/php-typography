@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
+use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Settings;
 
@@ -53,6 +54,18 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 		parent::setUp();
 
 		$this->fix = new Token_Fixes\Hyphenate_Compounds_Fix();
+	}
+
+	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$fix = new Token_Fixes\Hyphenate_Compounds_Fix( true );
+
+		$this->assertAttributeEquals( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
+		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

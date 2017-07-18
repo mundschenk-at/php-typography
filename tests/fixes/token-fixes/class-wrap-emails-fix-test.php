@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
+use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Settings;
 
@@ -53,6 +54,19 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 
 		$this->fix = new Token_Fixes\Wrap_Emails_Fix();
 	}
+
+	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$fix = new Token_Fixes\Wrap_Emails_Fix( true );
+
+		$this->assertAttributeEquals( Token_Fix::OTHER, 'target', $fix, 'The fixer should be targetting OTHER tokens.' );
+		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
+	}
+
 
 	/**
 	 * Provide data for testing wrap_emails.
