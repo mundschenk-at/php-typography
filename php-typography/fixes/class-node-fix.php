@@ -2,12 +2,12 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2017 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
- *  of the License, or ( at your option ) any later version.
+ *  of the License, or (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,27 +18,40 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  @package wpTypography/Tests
+ *  ***
+ *
+ *  @package wpTypography/PHPTypography
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Tests;
+namespace PHP_Typography\Fixes;
+
+use \PHP_Typography\Settings;
 
 /**
- * Subclass of PHP_Typography for setting custom CSS classes.
+ * All fixes that apply to textnodes should implement this interface.
+ *
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 5.0.0
  */
-class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
+interface Node_Fix {
 
 	/**
-	 * Create new instance of PHP_Typography_CSS_Classes.
+	 * Apply the fix to a given textnode.
 	 *
-	 * @param boolean $set_defaults Optional. Set default values. Default true.
-	 * @param string  $init         Optional. Initialize immediately. Default 'now'.
-	 * @param array   $css_classes  Optional. An array of CSS classes. Default [].
+	 * @param \DOMText $textnode Required.
+	 * @param Settings $settings Required.
+	 * @param bool     $is_title Optional. Default false.
+	 *
+	 * @return void
 	 */
-	public function __construct( $set_defaults = true, $init = 'now', $css_classes = [] ) {
-		$this->css_classes = array_merge( $this->css_classes, $css_classes );
+	public function apply( \DOMText $textnode, Settings $settings, $is_title = false );
 
-		parent::__construct( $set_defaults, $init );
-	}
+	/**
+	 * Determines whether the fix should be applied to (RSS) feeds.
+	 *
+	 * @return bool
+	 */
+	public function feed_compatible();
 }

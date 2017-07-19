@@ -2,12 +2,12 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2017 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
- *  of the License, or ( at your option ) any later version.
+ *  of the License, or (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,27 +18,29 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- *  @package wpTypography/Tests
+ *  ***
+ *
+ *  @package wpTypography/PHPTypography
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Tests;
+namespace PHP_Typography;
 
 /**
- * Subclass of PHP_Typography for setting custom CSS classes.
+ * A utility class to help with array manipulation.
  */
-class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
-
+abstract class Arrays {
 	/**
-	 * Create new instance of PHP_Typography_CSS_Classes.
+	 * Provides an array_map implementation with control over resulting array's keys.
 	 *
-	 * @param boolean $set_defaults Optional. Set default values. Default true.
-	 * @param string  $init         Optional. Initialize immediately. Default 'now'.
-	 * @param array   $css_classes  Optional. An array of CSS classes. Default [].
+	 * @param  callable $callable A callback function that needs to $key, $value pairs.
+	 *                            The callback should return tuple where the first part
+	 *                            will be used as the key and the second as the value.
+	 * @param  array    $array    The array.
+	 *
+	 * @return array
 	 */
-	public function __construct( $set_defaults = true, $init = 'now', $css_classes = [] ) {
-		$this->css_classes = array_merge( $this->css_classes, $css_classes );
-
-		parent::__construct( $set_defaults, $init );
+	public static function array_map_assoc( callable $callable, array $array ) {
+		return array_column( array_map( $callable, array_keys( $array ), $array ), 1, 0 );
 	}
 }

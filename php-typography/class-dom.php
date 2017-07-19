@@ -35,6 +35,34 @@ namespace PHP_Typography;
 abstract class DOM {
 
 	/**
+	 * An array of block tag names.
+	 *
+	 * @var array
+	 */
+	private static $block_tags;
+
+	/**
+	 * Retrieves an array of block tag names.
+	 *
+	 * @param bool $reset Optional. Default false.
+	 *
+	 * @return array
+	 */
+	public static function block_tags( $reset = false ) {
+		if ( empty( self::$block_tags ) || $reset ) {
+			self::$block_tags = array_merge(
+				array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
+					return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
+				} ) ),
+				array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
+			);
+		}
+
+		return self::$block_tags;
+	}
+
+
+	/**
 	 * Converts \DOMNodeList to array;
 	 *
 	 * @param \DOMNodeList $list Required.
@@ -105,4 +133,220 @@ abstract class DOM {
 
 		return false;
 	}
+
+	/**
+	 * Retrieves the last character of the previous \DOMText sibling (if there is one).
+	 *
+	 * @param \DOMNode $element The content node.
+	 *
+	 * @return string A single character (or the empty string).
+	 */
+	public static function get_prev_chr( \DOMNode $element ) {
+		$previous_textnode = self::get_previous_textnode( $element );
+
+		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
+			// First determine encoding.
+			$func = Strings::functions( $previous_textnode->data );
+
+			if ( ! empty( $func ) ) {
+				return preg_replace( '/\p{C}/Su', '', $func['substr']( $previous_textnode->data, - 1 ) );
+			}
+		} // @codeCoverageIgnore
+
+		return '';
+	}
+
+	/**
+	 * Retrieves the first character of the next \DOMText sibling (if there is one).
+	 *
+	 * @param \DOMNode $element The content node.
+	 *
+	 * @return string A single character (or the empty string).
+	 */
+	public static function get_next_chr( \DOMNode $element ) {
+		$next_textnode = self::get_next_textnode( $element );
+
+		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
+			// First determine encoding.
+			$func = Strings::functions( $next_textnode->data );
+
+			if ( ! empty( $func ) ) {
+				return preg_replace( '/\p{C}/Su', '', $func['substr']( $next_textnode->data, 0, 1 ) );
+			}
+		} // @codeCoverageIgnore
+
+		return '';
+	}
+
+	/**
+	 * Retrieves the previous \DOMText sibling (if there is one).
+	 *
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
+	 *
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
+	 */
+	public static function get_previous_textnode( \DOMNode $element = null ) {
+		return self::get_adjacent_textnode( function( &$node = null ) {
+			$node = $node->previousSibling;
+			return self::get_last_textnode( $node );
+		}, __METHOD__, $element );
+	}
+
+	/**
+	 * Retrieves the next \DOMText sibling (if there is one).
+	 *
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
+	 *
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
+	 */
+	public static function get_next_textnode( \DOMNode $element = null ) {
+		return self::get_adjacent_textnode( function( &$node = null ) {
+			$node = $node->nextSibling;
+			return self::get_first_textnode( $node );
+		}, __METHOD__, $element );
+	}
+
+	/**
+	 * Retrieves an adjacent \DOMText sibling if there is one.
+	 *
+	 * @param callable      $iterate             Takes a reference \DOMElement and returns a \DOMText (or null).
+	 * @param callable      $get_adjacent_parent Takes a single \DOMElement parameter and returns a \DOMText (or null).
+	 * @param \DOMNode|null $element Optional. The content node. Default null.
+	 *
+	 * @return \DOMText|null Null if $element is a block-level element or no text sibling exists.
+	 */
+	private static function get_adjacent_textnode( callable $iterate, callable $get_adjacent_parent, \DOMNode $element = null ) {
+		if ( ! isset( $element ) ) {
+			return null;
+		} elseif ( $element instanceof \DOMElement && isset( self::$block_tags[ $element->tagName ] ) ) {
+			return null;
+		}
+
+		$adjacent = null;
+		$node     = $element;
+
+		while ( ! empty( $node ) && empty( $adjacent ) ) {
+			$adjacent = $iterate( $node );
+		}
+
+		if ( empty( $adjacent ) ) {
+			$adjacent = $get_adjacent_parent( $element->parentNode );
+		}
+
+		return $adjacent;
+	}
+
+	/**
+	 * Retrieves the first \DOMText child of the element. Block-level child elements are ignored.
+	 *
+	 * @param \DOMNode|null $element    Optional. Default null.
+	 * @param bool          $recursive  Should be set to true on recursive calls. Optional. Default false.
+	 *
+	 * @return \DOMText|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 */
+	public static function get_first_textnode( \DOMNode $element = null, $recursive = false ) {
+		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$first_textnode = null ) {
+			$i = 0;
+
+			while ( $i < $children->length && empty( $first_textnode ) ) {
+				$first_textnode = self::get_first_textnode( $children->item( $i ), true );
+				$i++;
+			}
+		}, $element, $recursive );
+	}
+
+	/**
+	 * Retrieves the last \DOMText child of the element. Block-level child elements are ignored.
+	 *
+	 * @param \DOMNode|null $element   Optional. Default null.
+	 * @param bool          $recursive Should be set to true on recursive calls. Optional. Default false.
+	 *
+	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 */
+	public static function get_last_textnode( \DOMNode $element = null, $recursive = false ) {
+		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$last_textnode = null ) {
+			$i = $children->length - 1;
+
+			while ( $i >= 0 && empty( $last_textnode ) ) {
+				$last_textnode = self::get_last_textnode( $children->item( $i ), true );
+				$i--;
+			}
+		}, $element, $recursive );
+	}
+
+	/**
+	 * Retrieves an edge \DOMText child of the element specified by the callable.
+	 * Block-level child elements are ignored.
+	 *
+	 * @param callable      $iteration Takes two parameters, a \DOMNodeList and
+	 *                                 a reference to the \DOMText used as the result.
+	 * @param \DOMNode|null $element   Optional. Default null.
+	 * @param bool          $recursive Should be set to true on recursive calls. Optional. Default false.
+	 *
+	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
+	 */
+	private static function get_edge_textnode( callable $iteration, \DOMNode $element = null, $recursive = false ) {
+		if ( ! isset( $element ) ) {
+			return null;
+		}
+
+		if ( $element instanceof \DOMText ) {
+			return $element;
+		} elseif ( ! $element instanceof \DOMElement ) {
+			// Return null if $element is neither \DOMText nor \DOMElement.
+			return null;
+		} elseif ( $recursive && isset( self::$block_tags[ $element->tagName ] ) ) {
+			return null;
+		}
+
+		$edge_textnode = null;
+
+		if ( $element->hasChildNodes() ) {
+			$iteration( $element->childNodes, $edge_textnode );
+		}
+
+		return $edge_textnode;
+	}
+
+	/**
+	 * Returns the nearest block-level parent.
+	 *
+	 * @param \DOMNode $element The node to get the containing block-level tag.
+	 *
+	 * @return \DOMElement|null
+	 */
+	public static function get_block_parent( \DOMNode $element ) {
+		$parent = $element->parentNode;
+		if ( ! $parent instanceof \DOMElement ) {
+			return null;
+		}
+
+		while ( ! isset( self::$block_tags[ $parent->tagName ] ) && ! empty( $parent->parentNode ) && $parent->parentNode instanceof \DOMElement ) {
+			$parent = $parent->parentNode;
+		}
+
+		return $parent;
+	}
+
+	/**
+	 * Retrieves the tag name of the nearest block-level parent.
+	 *
+	 * @param \DOMNode $element A node.
+
+	 * @return string The tag name (or the empty string).
+	 */
+	public static function get_block_parent_name( \DOMNode $element ) {
+		$parent = self::get_block_parent( $element );
+
+		if ( ! empty( $parent ) ) {
+			return $parent->tagName;
+		} else {
+			return '';
+		}
+	}
 }
+
+/**
+ *  Initialize block tags on load.
+ */
+DOM::block_tags(); // @codeCoverageIgnore

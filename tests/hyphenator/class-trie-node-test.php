@@ -22,12 +22,13 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Tests;
+namespace PHP_Typography\Tests\Hyphenator;
 
+use \PHP_Typography\Tests\PHP_Typography_Testcase;
 use \PHP_Typography\Hyphenator\Trie_Node;
 
 /**
- * DOM unit test.
+ * Trie_Node unit test.
  *
  * @coversDefaultClass \PHP_Typography\Hyphenator\Trie_Node
  * @usesDefaultClass \PHP_Typography\Hyphenator\Trie_Node

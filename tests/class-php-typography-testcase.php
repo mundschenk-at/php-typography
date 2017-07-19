@@ -120,7 +120,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param array        $actual_tokens  A token array.
 	 * @param string       $message        Optional. Default ''.
 	 */
-	protected function assertTokensSame( $expected_value, $actual_tokens, $message = '' ) {
+	protected function assertTokensSame( $expected_value, array $actual_tokens, $message = '' ) {
 		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
@@ -128,16 +128,16 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 
 		if ( is_scalar( $expected_value ) ) {
 			if ( false !== strpos( $expected_value, ' ' ) ) {
-				$expected = $this->tokenize_sentence( $expected_value );
+				$expected_value = $this->tokenize_sentence( $expected_value );
 			} else {
-				$expected = $this->tokenize( $expected_value );
+				$expected_value = $this->tokenize( $expected_value );
 			}
-		} else {
-			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+		}
 
-			foreach ( $expected_value as $index => $token ) {
-				$expected[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
-			}
+		// Ensure clean HTML even when a scalar was passed.
+		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+		foreach ( $expected_value as $index => $token ) {
+			$expected[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
 		}
 
 		$this->assertSame( count( $expected ), count( $actual_tokens ) );
@@ -158,7 +158,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param array        $actual_tokens  A token array.
 	 * @param string       $message        Optional. Default ''.
 	 */
-	protected function assertTokensNotSame( $expected_value, $actual_tokens, $message = '' ) {
+	protected function assertTokensNotSame( $expected_value, array $actual_tokens, $message = '' ) {
 		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );

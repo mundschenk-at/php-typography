@@ -22,12 +22,13 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Tests;
+namespace PHP_Typography\Tests\Text_Parser;
 
+use \PHP_Typography\Tests\PHP_Typography_Testcase;
 use \PHP_Typography\Text_Parser\Token;
 
 /**
- * DOM unit test.
+ * Token_Test unit test.
  *
  * @coversDefaultClass \PHP_Typography\Text_Parser\Token
  * @usesDefaultClass \PHP_Typography\Text_Parser\Token

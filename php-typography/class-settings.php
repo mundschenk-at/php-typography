@@ -27,6 +27,9 @@
 
 namespace PHP_Typography;
 
+use \PHP_Typography\Settings\Dash_Style;
+use \PHP_Typography\Settings\Quote_Style;
+
 /**
  * Store settings for the PHP_Typography class.
  *
@@ -35,11 +38,25 @@ namespace PHP_Typography;
 class Settings implements \ArrayAccess {
 
 	/**
-	 * A hashmap for various special characters.
+	 * The current no-break narrow space character.
 	 *
-	 * @var array
+	 * @var string
 	 */
-	protected $chr = [];
+	protected $no_break_narrow_space;
+
+	/**
+	 * Primary quote style.
+	 *
+	 * @var Settings\Quotes
+	 */
+	protected $primary_quote_style;
+
+	/**
+	 * Secondary quote style.
+	 *
+	 * @var Settings\Quotes
+	 */
+	protected $secondary_quote_style;
 
 	/**
 	 * A hashmap of settings for the various typographic options.
@@ -84,11 +101,11 @@ class Settings implements \ArrayAccess {
 	protected $quote_styles = [];
 
 	/**
-	 * An array in the form of [ '$style' => [ 'parenthetical' => $chr, 'interval' => $chr ] ]
+	 * The current dash style.
 	 *
-	 * @var array
+	 * @var Settings\Dashes
 	 */
-	protected $dash_styles = [];
+	protected $dash_style;
 
 	/**
 	 * An array in the form of [ '$tag' => true ]
@@ -189,27 +206,40 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieves the array of named characters.
+	 * Retrieves the current non-breaking narrow space character (either the
+	 * regular non-breaking space &nbsp; or the the true non-breaking narrow space &#8239;).
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public function get_named_characters() {
-		return $this->chr;
+	public function no_break_narrow_space() {
+		return $this->no_break_narrow_space;
 	}
 
 	/**
-	 * Retrieves the named character.
+	 * Retrieves the primary (double) quote style.
 	 *
-	 * @param string $name The character name.
-	 *
-	 * @return string|bool Returns the character or false if it does not exist.
+	 * @return Settings\Quotes
 	 */
-	public function chr( $name ) {
-		if ( isset( $this->chr[ $name ] ) ) {
-			return $this->chr[ $name ];
-		} else {
-			return false;
-		}
+	public function primary_quote_style() {
+		return $this->primary_quote_style;
+	}
+
+	/**
+	 * Retrieves the secondary (single) quote style.
+	 *
+	 * @return Settings\Quotes
+	 */
+	public function secondary_quote_style() {
+		return $this->secondary_quote_style;
+	}
+
+	/**
+	 * Retrieves the dash style.
+	 *
+	 * @return Settings\Dashes
+	 */
+	public function dash_style() {
+		return $this->dash_style;
 	}
 
 	/**
@@ -266,130 +296,12 @@ class Settings implements \ArrayAccess {
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
 	 */
 	private function init( $set_defaults = true ) {
-		$this->block_tags = array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
-			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
-		} ) + [ 'li', 'td', 'dt' ] ); // not included as "block tags" in current HTML5-PHP version.
+		$this->no_break_narrow_space = U::NO_BREAK_SPACE;  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
 
-		$this->chr['noBreakSpace']            = Strings::_uchr( 160 );
-		$this->chr['noBreakNarrowSpace']      = Strings::_uchr( 160 );  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
-		$this->chr['copyright']               = Strings::_uchr( 169 );
-		$this->chr['guillemetOpen']           = Strings::_uchr( 171 );
-		$this->chr['softHyphen']              = Strings::_uchr( 173 );
-		$this->chr['registeredMark']          = Strings::_uchr( 174 );
-		$this->chr['guillemetClose']          = Strings::_uchr( 187 );
-		$this->chr['multiplication']          = Strings::_uchr( 215 );
-		$this->chr['division']                = Strings::_uchr( 247 );
-		$this->chr['figureSpace']             = Strings::_uchr( 8199 );
-		$this->chr['thinSpace']               = Strings::_uchr( 8201 );
-		$this->chr['hairSpace']               = Strings::_uchr( 8202 );
-		$this->chr['zeroWidthSpace']          = Strings::_uchr( 8203 );
-		$this->chr['hyphen']                  = '-';          // should be Strings::_uchr(8208), but IE6 chokes.
-		$this->chr['noBreakHyphen']           = Strings::_uchr( 8209 );
-		$this->chr['enDash']                  = Strings::_uchr( 8211 );
-		$this->chr['emDash']                  = Strings::_uchr( 8212 );
-		$this->chr['parentheticalDash']       = Strings::_uchr( 8212 ); // defined separate from emDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['intervalDash']            = Strings::_uchr( 8211 ); // defined separate from enDash so it can be redefined in set_smart_dashes_style.
-		$this->chr['parentheticalDashSpace']  = Strings::_uchr( 8201 );
-		$this->chr['intervalDashSpace']       = Strings::_uchr( 8201 );
-		$this->chr['singleQuoteOpen']         = Strings::_uchr( 8216 );
-		$this->chr['singleQuoteClose']        = Strings::_uchr( 8217 );
-		$this->chr['apostrophe']              = Strings::_uchr( 8217 ); // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
-		$this->chr['singleLow9Quote']         = Strings::_uchr( 8218 );
-		$this->chr['doubleQuoteOpen']         = Strings::_uchr( 8220 );
-		$this->chr['doubleQuoteClose']        = Strings::_uchr( 8221 );
-		$this->chr['doubleLow9Quote']         = Strings::_uchr( 8222 );
-		$this->chr['ellipses']                = Strings::_uchr( 8230 );
-		$this->chr['singlePrime']             = Strings::_uchr( 8242 );
-		$this->chr['doublePrime']             = Strings::_uchr( 8243 );
-		$this->chr['singleAngleQuoteOpen']    = Strings::_uchr( 8249 );
-		$this->chr['singleAngleQuoteClose']   = Strings::_uchr( 8250 );
-		$this->chr['fractionSlash']           = Strings::_uchr( 8260 );
-		$this->chr['soundCopyMark']           = Strings::_uchr( 8471 );
-		$this->chr['serviceMark']             = Strings::_uchr( 8480 );
-		$this->chr['tradeMark']               = Strings::_uchr( 8482 );
-		$this->chr['minus']                   = Strings::_uchr( 8722 );
-		$this->chr['leftCornerBracket']       = Strings::_uchr( 12300 );
-		$this->chr['rightCornerBracket']      = Strings::_uchr( 12301 );
-		$this->chr['leftWhiteCornerBracket']  = Strings::_uchr( 12302 );
-		$this->chr['rightWhiteCornerBracket'] = Strings::_uchr( 12303 );
+		$this->dash_style = new Settings\Simple_Dashes( U::EM_DASH, U::THIN_SPACE, U::EN_DASH, U::THIN_SPACE );
 
-		$this->quote_styles = [
-			'doubleCurled'             => [
-				'open'  => Strings::_uchr( 8220 ),
-				'close' => Strings::_uchr( 8221 ),
-			],
-			'doubleCurledReversed'     => [
-				'open'  => Strings::_uchr( 8221 ),
-				'close' => Strings::_uchr( 8221 ),
-			],
-			'doubleLow9'               => [
-				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => Strings::_uchr( 8221 ),
-			],
-			'doubleLow9Reversed'       => [
-				'open'  => $this->chr['doubleLow9Quote'],
-				'close' => Strings::_uchr( 8220 ),
-			],
-			'singleCurled'             => [
-				'open'  => Strings::_uchr( 8216 ),
-				'close' => Strings::_uchr( 8217 ),
-			],
-			'singleCurledReversed'     => [
-				'open'  => Strings::_uchr( 8217 ),
-				'close' => Strings::_uchr( 8217 ),
-			],
-			'singleLow9'               => [
-				'open'  => $this->chr['singleLow9Quote'],
-				'close' => Strings::_uchr( 8217 ),
-			],
-			'singleLow9Reversed'       => [
-				'open'  => $this->chr['singleLow9Quote'],
-				'close' => Strings::_uchr( 8216 ),
-			],
-			'doubleGuillemetsFrench'   => [
-				'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
-				'close' => $this->chr['noBreakNarrowSpace'] . $this->chr['guillemetClose'],
-			],
-			'doubleGuillemets'         => [
-				'open'  => $this->chr['guillemetOpen'],
-				'close' => $this->chr['guillemetClose'],
-			],
-			'doubleGuillemetsReversed' => [
-				'open'  => $this->chr['guillemetClose'],
-				'close' => $this->chr['guillemetOpen'],
-			],
-			'singleGuillemets'         => [
-				'open'  => $this->chr['singleAngleQuoteOpen'],
-				'close' => $this->chr['singleAngleQuoteClose'],
-			],
-			'singleGuillemetsReversed' => [
-				'open'  => $this->chr['singleAngleQuoteClose'],
-				'close' => $this->chr['singleAngleQuoteOpen'],
-			],
-			'cornerBrackets'           => [
-				'open'  => $this->chr['leftCornerBracket'],
-				'close' => $this->chr['rightCornerBracket'],
-			],
-			'whiteCornerBracket'       => [
-				'open'  => $this->chr['leftWhiteCornerBracket'],
-				'close' => $this->chr['rightWhiteCornerBracket'],
-			],
-		];
-
-		$this->dash_styles = [
-			'traditionalUS'        => [
-				'parenthetical'      => $this->chr['emDash'],
-				'interval'           => $this->chr['enDash'],
-				'parentheticalSpace' => $this->chr['thinSpace'],
-				'intervalSpace'      => $this->chr['thinSpace'],
-			],
-			'international'        => [
-				'parenthetical'      => $this->chr['enDash'],
-				'interval'           => $this->chr['enDash'],
-				'parentheticalSpace' => ' ',
-				'intervalSpace'      => $this->chr['hairSpace'],
-			],
-		];
+		$this->primary_quote_style   = new Settings\Simple_Quotes( U::DOUBLE_QUOTE_OPEN, U::DOUBLE_QUOTE_CLOSE );
+		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
 
 		// All other encodings get the empty array.
 		// Set up regex patterns.
@@ -535,27 +447,19 @@ class Settings implements \ArrayAccess {
 		$this->components['normalSpaces'] = ' \f\n\r\t\v'; // equivalent to \s in non-Unicode mode.
 
 		// Hanging punctuation.
-		$this->components['doubleHangingPunctuation'] = "
-			\"
-			{$this->chr['doubleQuoteOpen']}
-			{$this->chr['doubleQuoteClose']}
-			{$this->chr['doubleLow9Quote']}
-			{$this->chr['doublePrime']}
-			{$this->quote_styles['doubleCurled']['open']}
-			{$this->quote_styles['doubleCurled']['close']}
-
-			"; // requires modifiers: x (multiline pattern) u (utf8).
+		$this->components['doubleHangingPunctuation'] = '
+			"' .
+			U::DOUBLE_QUOTE_OPEN .
+			U::DOUBLE_QUOTE_CLOSE .
+			U::DOUBLE_LOW_9_QUOTE .
+			U::DOUBLE_PRIME; // requires modifiers: x (multiline pattern) u (utf8).
 		$this->components['singleHangingPunctuation'] = "
-			'
-			{$this->chr['singleQuoteOpen']}
-			{$this->chr['singleQuoteClose']}
-			{$this->chr['singleLow9Quote']}
-			{$this->chr['singlePrime']}
-			{$this->quote_styles['singleCurled']['open']}
-			{$this->quote_styles['singleCurled']['close']}
-			{$this->chr['apostrophe']}
-
-			"; // requires modifiers: x (multiline pattern) u (utf8).
+			'" .
+			U::SINGLE_QUOTE_OPEN .
+			U::SINGLE_QUOTE_CLOSE .
+			U::SINGLE_LOW_9_QUOTE .
+			U::SINGLE_PRIME .
+			U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
 
 		$this->components['unitSpacingStandardUnits'] = '
 			### Temporal units
@@ -616,61 +520,10 @@ class Settings implements \ArrayAccess {
 			E
 		"; // required modifiers: x (multiline pattern).
 
-		$this->components['hyphensArray'] = array_unique( [ '-', $this->chr['hyphen'] ] );
+		$this->components['hyphensArray'] = array_unique( [ '-', U::HYPHEN ] );
 		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
 
 		$this->components['numbersPrime'] = '\b(?:\d+\/)?\d{1,3}';
-
-		/*
-		 // \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
-		 // for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
-		 $this->components['styleCaps']  = '
-		 (?<![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].'])
-		 # negative lookbehind assertion
-		 (
-		 (?:							# CASE 1: " 9A "
-		 [0-9]+					# starts with at least one number
-		 \p{Lu}					# must contain at least one capital letter
-		 (?:\p{Lu}|[0-9]|\-|_|'.$this->chr['zeroWidthSpace'].'|'.$this->chr['softHyphen'].')*
-		 # may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-		 )
-		 |
-		 (?:							# CASE 2: " A9 "
-		 \p{Lu}					# starts with capital letter
-		 (?:\p{Lu}|[0-9])		# must be followed a number or capital letter
-		 (?:\p{Lu}|[0-9]|\-|_|'.$this->chr['zeroWidthSpace'].'|'.$this->chr['softHyphen'].')*
-		 # may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-
-		 )
-		 )
-		 (?![\w\-_'.$this->chr['zeroWidthSpace'].$this->chr['softHyphen'].'])
-		 # negative lookahead assertion
-		 '; // required modifiers: x (multiline pattern) u (utf8)
-		 */
-
-		// Servers with PCRE compiled without "--enable-unicode-properties" fail at \p{Lu} by returning an empty string (this leaving the screen void of text
-		// thus are testing this alternative.
-		$this->components['styleCaps'] = '
-				(?<![\w\-_' . $this->chr['zeroWidthSpace'] . $this->chr['softHyphen'] . ']) # negative lookbehind assertion
-				(
-					(?:							# CASE 1: " 9A "
-						[0-9]+					# starts with at least one number
-						(?:\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
-								                # may contain hyphens, underscores, zero width spaces, or soft hyphens,
-						[A-ZÀ-ÖØ-Ý]				# but must contain at least one capital letter
-						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
-												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-					)
-					|
-					(?:							# CASE 2: " A9 "
-						[A-ZÀ-ÖØ-Ý]				# starts with capital letter
-						(?:[A-ZÀ-ÖØ-Ý]|[0-9])	# must be followed a number or capital letter
-						(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . $this->chr['zeroWidthSpace'] . '|' . $this->chr['softHyphen'] . ')*
-												# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-					)
-				)
-				(?![\w\-_' . $this->chr['zeroWidthSpace'] . $this->chr['softHyphen'] . ']) # negative lookahead assertion
-			'; // required modifiers: x (multiline pattern) u (utf8).
 
 		// Initialize valid top level domains from IANA list.
 		$this->components['validTopLevelDomains'] = $this->get_top_level_domains_from_file( dirname( __DIR__ ) . '/vendor/IANA/tlds-alpha-by-domain.txt' );
@@ -729,16 +582,16 @@ class Settings implements \ArrayAccess {
 		)"; // required modifiers: x (multiline pattern) i (case insensitive).
 
 		$this->components['smartQuotesApostropheExceptions'] = [
-			"'tain" . $this->chr['apostrophe'] . 't' => $this->chr['apostrophe'] . 'tain' . $this->chr['apostrophe'] . 't',
-			"'twere"                             => $this->chr['apostrophe'] . 'twere',
-			"'twas"                              => $this->chr['apostrophe'] . 'twas',
-			"'tis"                               => $this->chr['apostrophe'] . 'tis',
-			"'til"                               => $this->chr['apostrophe'] . 'til',
-			"'bout"                              => $this->chr['apostrophe'] . 'bout',
-			"'nuff"                              => $this->chr['apostrophe'] . 'nuff',
-			"'round"                             => $this->chr['apostrophe'] . 'round',
-			"'cause"                             => $this->chr['apostrophe'] . 'cause',
-			"'splainin"                          => $this->chr['apostrophe'] . 'splainin',
+			"'tain" . U::APOSTROPHE . 't' => U::APOSTROPHE . 'tain' . U::APOSTROPHE . 't',
+			"'twere"                             => U::APOSTROPHE . 'twere',
+			"'twas"                              => U::APOSTROPHE . 'twas',
+			"'tis"                               => U::APOSTROPHE . 'tis',
+			"'til"                               => U::APOSTROPHE . 'til',
+			"'bout"                              => U::APOSTROPHE . 'bout',
+			"'nuff"                              => U::APOSTROPHE . 'nuff',
+			"'round"                             => U::APOSTROPHE . 'round',
+			"'cause"                             => U::APOSTROPHE . 'cause',
+			"'splainin"                          => U::APOSTROPHE . 'splainin',
 		];
 		$this->components['smartQuotesApostropheExceptionMatches']      = array_keys( $this->components['smartQuotesApostropheExceptions'] );
 		$this->components['smartQuotesApostropheExceptionReplacements'] = array_values( $this->components['smartQuotesApostropheExceptions'] );
@@ -750,8 +603,8 @@ class Settings implements \ArrayAccess {
 		$this->components['escapeMarker'] = '_E_S_C_A_P_E_D_';
 
 		// Smart diacritics "word non-boundaries".
-		$this->components['smartDiacriticsWordBoundaryInitial'] = '\b(?<!\w[' . $this->chr['noBreakSpace'] . $this->chr['softHyphen'] . '])';
-		$this->components['smartDiacriticsWordBoundaryFinal'] = '\b(?![' . $this->chr['noBreakSpace'] . $this->chr['softHyphen'] . ']\w)';
+		$this->components['smartDiacriticsWordBoundaryInitial'] = '\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])';
+		$this->components['smartDiacriticsWordBoundaryFinal'] = '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)';
 	}
 
 	/**
@@ -760,24 +613,24 @@ class Settings implements \ArrayAccess {
 	private function update_smart_quotes_brackets() {
 		$this->components['smartQuotesBrackets'] = [
 			// Single quotes.
-			"['"  => '[' . $this->chr['singleQuoteOpen'],
-			"{'"  => '{' . $this->chr['singleQuoteOpen'],
-			"('"  => '(' . $this->chr['singleQuoteOpen'],
-			"']"  => $this->chr['singleQuoteClose'] . ']',
-			"'}"  => $this->chr['singleQuoteClose'] . '}',
-			"')"  => $this->chr['singleQuoteClose'] . ')',
+			"['"  => '[' . $this->secondary_quote_style->open(),
+			"{'"  => '{' . $this->secondary_quote_style->open(),
+			"('"  => '(' . $this->secondary_quote_style->open(),
+			"']"  => $this->secondary_quote_style->close() . ']',
+			"'}"  => $this->secondary_quote_style->close() . '}',
+			"')"  => $this->secondary_quote_style->close() . ')',
 
 			// Double quotes.
-			'["' => '[' . $this->chr['doubleQuoteOpen'],
-			'{"' => '{' . $this->chr['doubleQuoteOpen'],
-			'("' => '(' . $this->chr['doubleQuoteOpen'],
-			'"]' => $this->chr['doubleQuoteClose'] . ']',
-			'"}' => $this->chr['doubleQuoteClose'] . '}',
-			'")' => $this->chr['doubleQuoteClose'] . ')',
+			'["' => '[' . $this->primary_quote_style->open(),
+			'{"' => '{' . $this->primary_quote_style->open(),
+			'("' => '(' . $this->primary_quote_style->open(),
+			'"]' => $this->primary_quote_style->close() . ']',
+			'"}' => $this->primary_quote_style->close() . '}',
+			'")' => $this->primary_quote_style->close() . ')',
 
 			// Quotes & quotes.
-			"\"'" => $this->chr['doubleQuoteOpen'] . $this->chr['singleQuoteOpen'],
-			"'\"" => $this->chr['singleQuoteClose'] . $this->chr['doubleQuoteClose'],
+			"\"'" => $this->primary_quote_style->open() . $this->secondary_quote_style->open(),
+			"'\"" => $this->secondary_quote_style->close() . $this->primary_quote_style->close(),
 		];
 		$this->components['smartQuotesBracketMatches']      = array_keys( $this->components['smartQuotesBrackets'] );
 		$this->components['smartQuotesBracketReplacements'] = array_values( $this->components['smartQuotesBrackets'] );
@@ -849,22 +702,22 @@ class Settings implements \ArrayAccess {
 
 		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- '.
 		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - '.
-		$this->regex['smartDashesEnDashWords']               = "/([\w])\-(\Z|{$this->chr['thinSpace']}|{$this->chr['hairSpace']}|{$this->chr['noBreakNarrowSpace']})/u";
+		$this->regex['smartDashesEnDashWords']               = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . "|{$this->no_break_narrow_space})/u";
 		$this->regex['smartDashesEnDashNumbers']             = "/(\b\d+(\.?))\-(\d+\\2)/";
-		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})" . $this->chr['enDash'] . "(\d{4}\b)/";
+		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/";
 		$this->regex['smartDashesYYYY-MM-DD']                = '/
                 (
-                    (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                     [12][0-9]{3}
                 )
-                [\-' . $this->chr['enDash'] . ']
+                [\-' . U::EN_DASH . ']
                 (
                     (?:[0][1-9]|[1][0-2])
                 )
-                [\-' . $this->chr['enDash'] . "]
+                [\-' . U::EN_DASH . "]
 				(
 					(?:[0][1-9]|[12][0-9]|[3][0-1])
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 
@@ -872,10 +725,10 @@ class Settings implements \ArrayAccess {
                 (?:
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0]?[1-9]|[1][0-2])
                         )
-                        [\-' . $this->chr['enDash'] . ']
+                        [\-' . U::EN_DASH . ']
                         (
                             (?:[0]?[1-9]|[12][0-9]|[3][0-1])
                         )
@@ -883,34 +736,34 @@ class Settings implements \ArrayAccess {
                     |
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0]?[1-9]|[12][0-9]|[3][0-1])
                         )
-                        [\-' . $this->chr['enDash'] . ']
+                        [\-' . U::EN_DASH . ']
                         (
                             (?:[0]?[1-9]|[1][0-2])
                         )
                     )
                 )
-                [\-' . $this->chr['enDash'] . "]
+                [\-' . U::EN_DASH . "]
 				(
 					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 		$this->regex['smartDashesYYYY-MM']                   = '/
                 (
-                    (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                     [12][0-9]{3}
                 )
-                [\-' . $this->chr['enDash'] . "]
+                [\-' . U::EN_DASH . "]
 				(
 					(?:
 						(?:[0][1-9]|[1][0-2])
 						|
 						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
 					)
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 
@@ -918,64 +771,64 @@ class Settings implements \ArrayAccess {
 		// First, let's find math equations.
 		$this->regex['smartMathEquation'] = "/
 				(?<=\A|\s)										# lookbehind assertion: proceeded by beginning of string or space
-				[\.,\'\"\¿\¡" . $this->chr['ellipses'] . $this->chr['singleQuoteOpen'] . $this->chr['doubleQuoteOpen'] . $this->chr['guillemetOpen'] . $this->chr['guillemetClose'] . $this->chr['singleLow9Quote'] . $this->chr['doubleLow9Quote'] . ']*
+				[\.,\'\"\¿\¡" . U::ELLIPSIS . $this->secondary_quote_style->open() . $this->primary_quote_style->open() . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . U::SINGLE_LOW_9_QUOTE . U::DOUBLE_LOW_9_QUOTE . ']*
                                                                 # allowed proceeding punctuation
-                [\-\(' . $this->chr['minus'] . ']*                  # optionally proceeded by dash, minus sign or open parenthesis
+                [\-\(' . U::MINUS . ']*                  # optionally proceeded by dash, minus sign or open parenthesis
                 [0-9]+                                          # must begin with a number
                 (\.[0-9]+)?                                     # optionally allow decimal values after first integer
                 (                                               # followed by a math symbol and a number
-                    [\/\*x\-+=\^' . $this->chr['minus'] . $this->chr['multiplication'] . $this->chr['division'] . ']
+                    [\/\*x\-+=\^' . U::MINUS . U::MULTIPLICATION . U::DIVISION . ']
                                                                 # allowed math symbols
-                    [\-\(' . $this->chr['minus'] . ']*              # opptionally preceeded by dash, minus sign or open parenthesis
+                    [\-\(' . U::MINUS . ']*              # opptionally preceeded by dash, minus sign or open parenthesis
                     [0-9]+                                      # must begin with a number
                     (\.[0-9]+)?                                 # optionally allow decimal values after first integer
-                    [\-\(\)' . $this->chr['minus'] . "]*			# opptionally preceeded by dash, minus sign or parenthesis
+                    [\-\(\)' . U::MINUS . "]*			# opptionally preceeded by dash, minus sign or parenthesis
 				)+
-				[\.,;:\'\"\?\!" . $this->chr['ellipses'] . $this->chr['singleQuoteClose'] . $this->chr['doubleQuoteClose'] . $this->chr['guillemetOpen'] . $this->chr['guillemetClose'] . ']*
+				[\.,;:\'\"\?\!" . U::ELLIPSIS . $this->secondary_quote_style->close() . $this->primary_quote_style->close() . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . ']*
                                                                 # allowed trailing punctuation
                 (?=\Z|\s)                                       # lookahead assertion: followed by end of string or space
             /ux';
 		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
 		$this->regex['smartMathRevertRange'] = '/
                 (
-                    (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                     \d+
                 )
-                [\-' . $this->chr['minus'] . "]
+                [\-' . U::MINUS . "]
 				(
 					\d+
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 		// Revert fractions to basic slash.
 		// We'll leave styling fractions to smart_fractions.
 		$this->regex['smartMathRevertFraction'] = "/
 				(
-					(?<=\s|\A|\'|\"|" . $this->chr['noBreakSpace'] . ')
+					(?<=\s|\A|\'|\"|" . U::NO_BREAK_SPACE . ')
                     \d+
                 )
-                ' . $this->chr['division'] . "
+                ' . U::DIVISION . "
 				(
 					\d+
 					(?:st|nd|rd|th)?
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 		// Revert date back to original formats:
 		// YYYY-MM-DD.
 		$this->regex['smartMathRevertDateYYYY-MM-DD'] = '/
                 (
-                    (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                     [12][0-9]{3}
                 )
-                [\-' . $this->chr['minus'] . ']
+                [\-' . U::MINUS . ']
                 (
                     (?:[0]?[1-9]|[1][0-2])
                 )
-                [\-' . $this->chr['minus'] . "]
+                [\-' . U::MINUS . "]
 				(
 					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 		// MM-DD-YYYY or DD-MM-YYYY.
@@ -983,10 +836,10 @@ class Settings implements \ArrayAccess {
                 (?:
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0]?[1-9]|[1][0-2])
                         )
-                        [\-' . $this->chr['minus'] . ']
+                        [\-' . U::MINUS . ']
                         (
                             (?:[0]?[1-9]|[12][0-9]|[3][0-1])
                         )
@@ -994,35 +847,35 @@ class Settings implements \ArrayAccess {
                     |
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0]?[1-9]|[12][0-9]|[3][0-1])
                         )
-                        [\-' . $this->chr['minus'] . ']
+                        [\-' . U::MINUS . ']
                         (
                             (?:[0]?[1-9]|[1][0-2])
                         )
                     )
                 )
-                [\-' . $this->chr['minus'] . "]
+                [\-' . U::MINUS . "]
 				(
 					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 		// YYYY-MM or YYYY-DDD next.
 		$this->regex['smartMathRevertDateYYYY-MM'] = '/
                 (
-                    (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                     [12][0-9]{3}
                 )
-                [\-' . $this->chr['minus'] . "]
+                [\-' . U::MINUS . "]
 				(
 					(?:
 						(?:[0][1-9]|[1][0-2])
 						|
 						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
 					)
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 
@@ -1031,10 +884,10 @@ class Settings implements \ArrayAccess {
                 (?:
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0][1-9]|[1][0-2])
                         )
-                        [\/' . $this->chr['division'] . ']
+                        [\/' . U::DIVISION . ']
                         (
                             (?:[0][1-9]|[12][0-9]|[3][0-1])
                         )
@@ -1042,19 +895,19 @@ class Settings implements \ArrayAccess {
                     |
                     (?:
                         (
-                            (?<=\s|\A|' . $this->chr['noBreakSpace'] . ')
+                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
                             (?:[0][1-9]|[12][0-9]|[3][0-1])
                         )
-                        [\/' . $this->chr['division'] . ']
+                        [\/' . U::DIVISION . ']
                         (
                             (?:[0][1-9]|[1][0-2])
                         )
                     )
                 )
-                [\/' . $this->chr['division'] . "]
+                [\/' . U::DIVISION . "]
 				(
 					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . $this->chr['noBreakSpace'] . ')
+					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
                 )
             /xu';
 
@@ -1068,38 +921,38 @@ class Settings implements \ArrayAccess {
 		/xu";
 
 		$this->regex['smartFractionsSpacing'] = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
-		$this->regex['smartFractionsReplacement'] = "/
-			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
+		$this->regex['smartFractionsReplacement'] = '/
+			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
 			(\d+)
-			(?:\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
+			(?:\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
 			(\d+)
 			(
-				(?:{$this->chr['singlePrime']}|{$this->chr['doublePrime']})? # handle fractions followed by prime symbols
+				(?:' . U::SINGLE_PRIME . '|' . U::DOUBLE_PRIME . ')? # handle fractions followed by prime symbols
 				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?                          # handle ordinals after fractions
-				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
+				(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 			)
 			/xu";
-		$this->regex['smartFractionsEscapeMM/YYYY'] = "/
-			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
+		$this->regex['smartFractionsEscapeMM/YYYY'] = '/
+			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
 				(\d\d?)
-			(\s?\/\s?{$this->chr['zeroWidthSpace']}?)	# capture any zero-width spaces inserted by wrap_hard_hyphens
+			(\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?)	# capture any zero-width spaces inserted by wrap_hard_hyphens
 				(
 					(?:19\d\d)|(?:20\d\d) # handle 4-decimal years in the 20th and 21st centuries
 				)
 				(
-					(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
+					(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 				)
 			/xu";
 
 		$year_regex = [];
 		for ( $year = 1900; $year < 2100; ++$year ) {
-			$year_regex[] = "(?: ( $year ) (\s?\/\s?{$this->chr['zeroWidthSpace']}?) ( " . ( $year + 1 ) . ' ) )';
+			$year_regex[] = "(?: ( $year ) (\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?) ( ' . ( $year + 1 ) . ' ) )';
 		}
-		$this->regex['smartFractionsEscapeYYYY/YYYY'] = "/
-			(?<=\A|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']})		# lookbehind assertion: makes sure we are not messing up a url
-			(?| " . implode( '|', $year_regex ) . " )
+		$this->regex['smartFractionsEscapeYYYY/YYYY'] = '/
+			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
+			(?| " . implode( '|', $year_regex ) . ' )
 			(
-				(?:\Z|\s|{$this->chr['noBreakSpace']}|{$this->chr['noBreakNarrowSpace']}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
+				(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
 			)
 			/xu";
 
@@ -1118,36 +971,36 @@ class Settings implements \ArrayAccess {
 				)
 			/xu";
 
-		$this->regex['dashSpacingEmDash'] = "/
+		$this->regex['dashSpacingEmDash'] = '/
 				(?:
 					\s
-					({$this->chr['emDash']})
+					(' . U::EM_DASH . ')
 					\s
 				)
 				|
 				(?:
 					(?<=\S)							# lookbehind assertion
-					({$this->chr['emDash']})
+					(' . U::EM_DASH . ')
 					(?=\S)							# lookahead assertion
 				)
-			/xu";
-		$this->regex['dashSpacingParentheticalDash'] = "/
+			/xu';
+		$this->regex['dashSpacingParentheticalDash'] = '/
 				(?:
 					\s
-					({$this->chr['enDash']})
+					(' . U::EN_DASH . ')
 					\s
 				)
-			/xu";
-		$this->regex['dashSpacingIntervalDash'] = "/
+			/xu';
+		$this->regex['dashSpacingIntervalDash'] = '/
 				(?:
 					(?<=\S)							# lookbehind assertion
-					({$this->chr['enDash']})
+					(' . U::EN_DASH . ')
 					(?=\S)							# lookahead assertion
 				)
-			/xu";
+			/xu';
 
 		$this->regex['spaceCollapseNormal']       = "/[{$this->components['normalSpaces']}]+/xu";
-		$this->regex['spaceCollapseNonBreakable'] = "/(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*{$this->chr['noBreakSpace']}(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
+		$this->regex['spaceCollapseNonBreakable'] = "/(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*" . U::NO_BREAK_SPACE . "(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
 		$this->regex['spaceCollapseOther']        = "/(?:[{$this->components['normalSpaces']}])*({$this->components['htmlSpaces']})(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
 		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})+/xu";
 
@@ -1166,7 +1019,7 @@ class Settings implements \ArrayAccess {
 		$this->regex['frenchPunctuationSpacingClosingQuote'] = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
 
 		// Wrap hard hyphens.
-		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']}){$this->chr['zeroWidthSpace']}\$/";
+		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']})" . U::ZERO_WIDTH_SPACE . '$/';
 
 		// Wrap emails.
 		$this->regex['wrapEmailsMatchEmails']   = "/{$this->components['wrapEmailsEmailPattern']}/xi";
@@ -1176,32 +1029,23 @@ class Settings implements \ArrayAccess {
 		$this->regex['wrapUrlsPattern']     = "`{$this->components['urlPattern']}`xi";
 		$this->regex['wrapUrlsDomainParts'] = '#(\-|\.)#';
 
-		// Style caps.
-		$this->regex['styleCaps'] = "/{$this->components['styleCaps']}/xu";
-
-		// Style numbers.
-		$this->regex['styleNumbers'] = '/([0-9]+)/u';
-
 		// Style hanging punctuation.
 		$this->regex['styleHangingPunctuationDouble'] = "/(\s)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
 		$this->regex['styleHangingPunctuationSingle'] = "/(\s)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
 		$this->regex['styleHangingPunctuationInitialDouble'] = "/(?:\A)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
 		$this->regex['styleHangingPunctuationInitialSingle'] = "/(?:\A)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
 
-		// Style ampersands.
-		$this->regex['styleAmpersands'] = '/(\&amp\;)/u';
-
 		// Dewidowing.
-		$this->regex['dewidow'] = "/
+		$this->regex['dewidow'] = '/
 				(?:
 					\A
 					|
 					(?:
 						(?<space_before>			# subpattern 1: space before (note: ZWSP is not a space)
-							[\s{$this->chr['zeroWidthSpace']}{$this->chr['softHyphen']}]+
+							[\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+
 						)
 						(?<neighbor>				# subpattern 2: neighbors widow (short as possible)
-							[^\s{$this->chr['zeroWidthSpace']}{$this->chr['softHyphen']}]+?
+							[^\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?
 						)
 					)
 				)
@@ -1215,7 +1059,7 @@ class Settings implements \ArrayAccess {
 					[^\w\pM]*
 				)
 				\Z
-			/xu";
+			/xu';
 
 		// Add the "study" flag to all our regular expressions.
 		foreach ( $this->regex as &$regex ) {
@@ -1235,7 +1079,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
 	 *
-	 * @param callable $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
+	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
 	public function set_parser_errors_handler( $handler = null ) {
 		if ( ! empty( $handler ) && ! is_callable( $handler ) ) {
@@ -1253,15 +1097,15 @@ class Settings implements \ArrayAccess {
 	public function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
-			$this->chr['noBreakNarrowSpace'] = Strings::_uchr( 8239 );
+			$this->no_break_narrow_space = U::NO_BREAK_NARROW_SPACE;
 		} else {
-			$this->chr['noBreakNarrowSpace'] = Strings::_uchr( 160 );
+			$this->no_break_narrow_space = U::NO_BREAK_SPACE;
 		}
 
 		// Update French guillemets.
 		$this->quote_styles['doubleGuillemetsFrench'] = [
-			'open'  => $this->chr['guillemetOpen'] . $this->chr['noBreakNarrowSpace'],
-			'close' => $this->chr['noBreakNarrowSpace'] . $this->chr['guillemetClose'],
+			'open'  => U::GUILLEMET_OPEN . $this->no_break_narrow_space,
+			'close' => $this->no_break_narrow_space . U::GUILLEMET_CLOSE,
 		];
 	}
 
@@ -1327,14 +1171,15 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $style Defaults to 'doubleCurled.
 	 */
-	public function set_smart_quotes_primary( $style = 'doubleCurled' ) {
-		if ( isset( $this->quote_styles[ $style ] ) ) {
-			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
-				$this->chr['doubleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
-			}
-			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
-				$this->chr['doubleQuoteClose'] = $this->quote_styles[ $style ]['close'];
-			}
+	public function set_smart_quotes_primary( $style = Quote_Style::DOUBLE_CURLED ) {
+		if ( $style instanceof Settings\Quotes ) {
+			$quotes = $style;
+		} else {
+			$quotes = Quote_Style::get_styled_quotes( $style, $this );
+		}
+
+		if ( ! empty( $quotes ) ) {
+			$this->primary_quote_style = $quotes;
 
 			// Update brackets component.
 			$this->update_smart_quotes_brackets();
@@ -1365,14 +1210,15 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string $style Defaults to 'singleCurled'.
 	 */
-	public function set_smart_quotes_secondary( $style = 'singleCurled' ) {
-		if ( isset( $this->quote_styles[ $style ] ) ) {
-			if ( ! empty( $this->quote_styles[ $style ]['open'] ) ) {
-				$this->chr['singleQuoteOpen'] = $this->quote_styles[ $style ]['open'];
-			}
-			if ( ! empty( $this->quote_styles[ $style ]['close'] ) ) {
-				$this->chr['singleQuoteClose'] = $this->quote_styles[ $style ]['close'];
-			}
+	public function set_smart_quotes_secondary( $style = Quote_Style::SINGLE_CURLED ) {
+		if ( $style instanceof Settings\Quotes ) {
+			$quotes = $style;
+		} else {
+			$quotes = Quote_Style::get_styled_quotes( $style, $this );
+		}
+
+		if ( ! empty( $quotes ) ) {
+			$this->secondary_quote_style = $quotes;
 
 			// Update brackets component.
 			$this->update_smart_quotes_brackets();
@@ -1397,42 +1243,43 @@ class Settings implements \ArrayAccess {
 	 * - "traditionalUS"
 	 * - "international"
 	 *
-	 * @param string $style Optional. Default "englishTraditional".
+	 * @param string|Settings\Dashes $style Optional. Default Dash_Style::TRADITIONAL_US.
 	 */
-	public function set_smart_dashes_style( $style = 'traditionalUS' ) {
-		if ( isset( $this->dash_styles[ $style ] ) ) {
-			if ( ! empty( $this->dash_styles[ $style ]['parenthetical'] ) ) {
-				$this->chr['parentheticalDash'] = $this->dash_styles[ $style ]['parenthetical'];
-			}
-			if ( ! empty( $this->dash_styles[ $style ]['interval'] ) ) {
-				$this->chr['intervalDash'] = $this->dash_styles[ $style ]['interval'];
-			}
-			if ( ! empty( $this->dash_styles[ $style ]['parentheticalSpace'] ) ) {
-				$this->chr['parentheticalDashSpace'] = $this->dash_styles[ $style ]['parentheticalSpace'];
-			}
-			if ( ! empty( $this->dash_styles[ $style ]['intervalSpace'] ) ) {
-				$this->chr['intervalDashSpace'] = $this->dash_styles[ $style ]['intervalSpace'];
-			}
+	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ) {
+		if ( $style instanceof Settings\Dashes ) {
+			$dashes = $style;
+		} else {
+			$dashes = Dash_Style::get_styled_dashes( $style, $this );
+		}
+
+		if ( ! empty( $dashes ) ) {
+			$this->dash_style = $dashes;
 
 			// Update dash spacing regex.
-			$this->regex['dashSpacingParentheticalDash'] = "/
-				(?:
-					\s
-					({$this->chr['parentheticalDash']})
-					\s
-				)
-				/xu";
-			$this->regex['dashSpacingIntervalDash'] = "/
-				(?:
-					(?<=\S)							# lookbehind assertion
-					({$this->chr['intervalDash']})
-					(?=\S)							# lookahead assertion
-				)
-				/xu";
-
+			$this->update_dash_spacing_regex();
 		} else {
 			trigger_error( "Invalid dash style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
 		}
+	}
+
+	/**
+	 * Update the dash spacing regular expression.
+	 */
+	private function update_dash_spacing_regex() {
+		$this->regex['dashSpacingParentheticalDash'] = "/
+			(?:
+				\s
+				({$this->dash_style->parenthetical_dash()})
+				\s
+			)
+			/xu";
+		$this->regex['dashSpacingIntervalDash'] = "/
+			(?:
+				(?<=\S)							# lookbehind assertion
+				({$this->dash_style->interval_dash()})
+				(?=\S)							# lookahead assertion
+			)
+			/xu";
 	}
 
 	/**
@@ -1484,40 +1331,49 @@ class Settings implements \ArrayAccess {
 	 */
 	public function set_diacritic_custom_replacements( $custom_replacements = [] ) {
 		if ( ! is_array( $custom_replacements ) ) {
-			$custom_replacements = preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY );
+			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$replacements = [];
-		foreach ( $custom_replacements as $custom_key => $custom_replacement ) {
-			// Account for single and double quotes.
-			preg_match( $this->regex['customDiacriticsDoubleQuoteKey'],   $custom_replacement, $double_quote_key_match );
-			preg_match( $this->regex['customDiacriticsSingleQuoteKey'],   $custom_replacement, $single_quote_key_match );
-			preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $custom_replacement, $double_quote_value_match );
-			preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $custom_replacement, $single_quote_value_match );
+		$this->data['diacriticCustomReplacements'] = Arrays::array_map_assoc( function( $key, $replacement ) {
+			$key         = strip_tags( trim( $key ) );
+			$replacement = strip_tags( trim( $replacement ) );
 
-			if ( ! empty( $double_quote_key_match[1] ) ) {
-				$key = $double_quote_key_match[1];
-			} elseif ( ! empty( $single_quote_key_match[1] ) ) {
-				$key = $single_quote_key_match[1];
+			if ( ! empty( $key ) && ! empty( $replacement ) ) {
+				return [ $key, $replacement ];
 			} else {
-				$key = $custom_key;
+				return [];
 			}
+		}, $custom_replacements );
 
-			if ( ! empty( $double_quote_value_match[1] ) ) {
-				$value = $double_quote_value_match[1];
-			} elseif ( ! empty( $single_quote_value_match[1] ) ) {
-				$value = $single_quote_value_match[1];
-			} else {
-				$value = $custom_replacement;
-			}
-
-			if ( isset( $key ) && isset( $value ) ) {
-				$replacements[ strip_tags( trim( $key ) ) ] = strip_tags( trim( $value ) );
-			}
-		}
-
-		$this->data['diacriticCustomReplacements'] = $replacements;
 		$this->update_diacritics_replacement_arrays();
+	}
+
+	/**
+	 * Parses a custom diacritics replacement string into an array.
+	 *
+	 * @param string $custom_replacements A string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 *
+	 * @return array
+	 */
+	private function parse_diacritics_replacement_string( $custom_replacements ) {
+		return Arrays::array_map_assoc( function( $key, $replacement ) {
+
+			// Account for single and double quotes in keys ...
+			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteKey'], $replacement, $match ) ) {
+				$key = $match[1];
+			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteKey'], $replacement, $match ) ) {
+				$key = $match[1];
+			}
+
+			// ... and values.
+			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $replacement, $match ) ) {
+				$replacement = $match[1];
+			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $replacement, $match ) ) {
+				$replacement = $match[1];
+			}
+
+			return [ $key, $replacement ];
+		}, preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
 	}
 
 	/**
