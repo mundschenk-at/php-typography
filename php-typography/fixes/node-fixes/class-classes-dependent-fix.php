@@ -67,6 +67,8 @@ abstract class Classes_Dependent_Fix extends Abstract_Node_Fix {
 	 * @param \DOMText $textnode Required.
 	 * @param Settings $settings Required.
 	 * @param bool     $is_title Optional. Default false.
+	 *
+	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		if ( ! DOM::has_class( $textnode, $this->classes_to_avoid ) ) {

@@ -61,6 +61,8 @@ abstract class Abstract_Node_Fix implements Node_Fix {
 	 * @param \DOMText $textnode Required.
 	 * @param Settings $settings Required.
 	 * @param bool     $is_title Optional. Default false.
+	 *
+	 * @return void
 	 */
 	abstract public function apply( \DOMText $textnode, Settings $settings, $is_title = false );
 
