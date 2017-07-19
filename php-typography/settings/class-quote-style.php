@@ -30,7 +30,7 @@ use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
 /**
- * An interface encapsulating different quote styles.
+ * A factory class for different quote styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *

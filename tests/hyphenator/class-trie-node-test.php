@@ -28,7 +28,7 @@ use \PHP_Typography\Tests\PHP_Typography_Testcase;
 use \PHP_Typography\Hyphenator\Trie_Node;
 
 /**
- * DOM unit test.
+ * Trie_Node unit test.
  *
  * @coversDefaultClass \PHP_Typography\Hyphenator\Trie_Node
  * @usesDefaultClass \PHP_Typography\Hyphenator\Trie_Node

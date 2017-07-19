@@ -28,7 +28,7 @@ use \PHP_Typography\Tests\PHP_Typography_Testcase;
 use \PHP_Typography\Text_Parser\Token;
 
 /**
- * DOM unit test.
+ * Token_Test unit test.
  *
  * @coversDefaultClass \PHP_Typography\Text_Parser\Token
  * @usesDefaultClass \PHP_Typography\Text_Parser\Token

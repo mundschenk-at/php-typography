@@ -30,7 +30,7 @@ use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
 /**
- * An interface encapsulating different quote styles.
+ * A factory class for different dash styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
@@ -38,8 +38,14 @@ use \PHP_Typography\U;
  */
 abstract class Dash_Style {
 
-	// Valid dash styles.
+	/**
+	 * Traditional US dash style (using em dashes).
+	 */
 	const TRADITIONAL_US = 'traditionalUS';
+
+	/**
+	 * "International" dash style (using en dashes).
+	 */
 	const INTERNATIONAL  = 'international';
 
 	/**

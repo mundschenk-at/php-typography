@@ -27,7 +27,7 @@
 namespace PHP_Typography\Settings;
 
 /**
- * An interface encapsulating different quote styles.
+ * An interface encapsulating quote styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
@@ -36,14 +36,14 @@ namespace PHP_Typography\Settings;
 interface Quotes {
 
 	/**
-	 * Retrieves the quote styles opening quote characters.
+	 * Retrieves the styles opening quote characters.
 	 *
 	 * @return string
 	 */
 	public function open();
 
 	/**
-	 * Retrieves the quote styles closing quote characters.
+	 * Retrieves the styles closing quote characters.
 	 *
 	 * @return string
 	 */
