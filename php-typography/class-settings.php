@@ -59,6 +59,13 @@ class Settings implements \ArrayAccess {
 	protected $secondary_quote_style;
 
 	/**
+	 * A regex pattern for custom units (or the empty string).
+	 *
+	 * @var string
+	 */
+	protected $custom_units = '';
+
+	/**
 	 * A hashmap of settings for the various typographic options.
 	 *
 	 * @var array
@@ -243,6 +250,15 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
+	 * Retrieves the custom units pattern.
+	 *
+	 * @return string The pattern is suitable for inclusion into a regular expression.
+	 */
+	public function custom_units() {
+		return $this->custom_units;
+	}
+
+	/**
 	 * Retrieves the named components calculated from the current settings.
 	 *
 	 * @return array
@@ -392,60 +408,6 @@ class Settings implements \ArrayAccess {
 	 */
 	private function initialize_components() {
 
-		/**
-		 * Find the HTML character representation for the following characters:
-		 *      tab | line feed | carriage return | space | non-breaking space | ethiopic wordspace
-		 *      ogham space mark | en quad space | em quad space | en-space | three-per-em space
-		 *      four-per-em space | six-per-em space | figure space | punctuation space | em-space
-		 *      thin space | hair space | narrow no-break space
-		 *      medium mathematical space | ideographic space
-		 * Some characters are used inside words, we will not count these as a space for the purpose
-		 * of finding word boundaries:
-		 *      zero-width-space ("&#8203;", "&#x200b;")
-		 *      zero-width-joiner ("&#8204;", "&#x200c;", "&zwj;")
-		 *      zero-width-non-joiner ("&#8205;", "&#x200d;", "&zwnj;")
-		 */
-		$this->components['htmlSpaces'] = '
-			\x{00a0}		# no-break space
-			|
-			\x{1361}		# ethiopic wordspace
-			|
-			\x{2000}		# en quad-space
-			|
-			\x{2001}		# em quad-space
-			|
-			\x{2002}		# en space
-			|
-			\x{2003}		# em space
-			|
-			\x{2004}		# three-per-em space
-			|
-			\x{2005}		# four-per-em space
-			|
-			\x{2006}		# six-per-em space
-			|
-			\x{2007}		# figure space
-			|
-			\x{2008}		# punctuation space
-			|
-			\x{2009}		# thin space
-			|
-			\x{200a}		# hair space
-			|
-			\x{200b}		# zero-width space
-			|
-			\x{200c}		# zero-width joiner
-			|
-			\x{200d}		# zero-width non-joiner
-			|
-			\x{202f}		# narrow no-break space
-			|
-			\x{205f}		# medium mathematical space
-			|
-			\x{3000}		# ideographic space
-			'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
-		$this->components['normalSpaces'] = ' \f\n\r\t\v'; // equivalent to \s in non-Unicode mode.
-
 		// Hanging punctuation.
 		$this->components['doubleHangingPunctuation'] = '
 			"' .
@@ -460,65 +422,6 @@ class Settings implements \ArrayAccess {
 			U::SINGLE_LOW_9_QUOTE .
 			U::SINGLE_PRIME .
 			U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
-
-		$this->components['unitSpacingStandardUnits'] = '
-			### Temporal units
-			(?:ms|s|secs?|mins?|hrs?)\.?|
-			milliseconds?|seconds?|minutes?|hours?|days?|years?|decades?|century|centuries|millennium|millennia|
-
-			### Imperial units
-			(?:in|ft|yd|mi)\.?|
-			(?:ac|ha|oz|pt|qt|gal|lb|st)\.?
-			s\.f\.|sf|s\.i\.|si|square[ ]feet|square[ ]foot|
-			inch|inches|foot|feet|yards?|miles?|acres?|hectares?|ounces?|pints?|quarts?|gallons?|pounds?|stones?|
-
-			### Metric units (with prefixes)
-			(?:p|µ|[mcdhkMGT])?
-			(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω|Ohm|&Omega;|&\#0*937;|&\#[xX]0*3[Aa]9;)|
-			(?:nano|micro|milli|centi|deci|deka|hecto|kilo|mega|giga|tera)?
-			(?:liters?|meters?|grams?|newtons?|pascals?|watts?|joules?|amperes?)|
-
-			### Computers units (KB, Kb, TB, Kbps)
-			[kKMGT]?(?:[oBb]|[oBb]ps|flops)|
-
-			### Money
-			¢|M?(?:£|¥|€|$)|
-
-			### Other units
-			°[CF]? |
-			%|pi|M?px|em|en|[NSEOW]|[NS][EOW]|mbar
-		'; // required modifiers: x (multiline pattern).
-
-		// Numbered abbreviations.
-		$this->components['numberedAbbreviationsISO'] = 'ISO(?:\/(?:IEC|TR|TS))?';
-		$this->components['numberedAbbreviations'] = "
-			### Internationl standards
-			{$this->components['numberedAbbreviationsISO']}|
-
-			### German standards
-			DIN|
-			DIN[ ]EN(?:[ ]{$this->components['numberedAbbreviationsISO']})?|
-			DIN[ ]EN[ ]ISP
-			DIN[ ]{$this->components['numberedAbbreviationsISO']}|
-			DIN[ ]IEC|
-			DIN[ ]CEN\/TS|
-			DIN[ ]CLC\/TS|
-			DIN[ ]CWA|
-			DIN[ ]VDE|
-
-			LN|VG|VDE|VDI
-
-			### Austrian standards
-			ÖNORM|
-			ÖNORM[ ](?:A|B|C|E|F|G|H|K|L|M|N|O|S|V|Z)|
-			ÖNORM[ ]EN(?:[ ]{$this->components['numberedAbbreviationsISO']})?|
-			ÖNORM[ ]ETS|
-
-			ÖVE|ONR|
-
-			### Food additives
-			E
-		"; // required modifiers: x (multiline pattern).
 
 		$this->components['hyphensArray'] = array_unique( [ '-', U::HYPHEN ] );
 		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
@@ -700,8 +603,8 @@ class Settings implements \ArrayAccess {
 		$this->regex['smartQuotesDoubleQuoteOpenSpecial']    = '/(?<=\s|\A)"(?=\S)/';
 		$this->regex['smartQuotesDoubleQuoteCloseSpecial']   = '/(?<=\S)"(?=\s|\Z)/';
 
-		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|{$this->components['htmlSpaces']})--(\s|{$this->components['htmlSpaces']})/xui"; // ' -- '.
-		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|{$this->components['htmlSpaces']})-(\s|{$this->components['htmlSpaces']})/xui";  // ' - '.
+		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|" . RE::HTML_SPACES . ")--(\s|" . RE::HTML_SPACES . ")/xui"; // ' -- '.
+		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|" . RE::HTML_SPACES . ")-(\s|" . RE::HTML_SPACES . ")/xui";  // ' - '.
 		$this->regex['smartDashesEnDashWords']               = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . "|{$this->no_break_narrow_space})/u";
 		$this->regex['smartDashesEnDashNumbers']             = "/(\b\d+(\.?))\-(\d+\\2)/";
 		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/";
@@ -911,14 +814,6 @@ class Settings implements \ArrayAccess {
                 )
             /xu';
 
-		// Handle exponents (ie. 4^2).
-		$this->regex['smartExponents'] = "/
-			\b
-			(\d+)
-			\^
-			(\w+)
-			\b
-		/xu";
 
 		$this->regex['smartFractionsSpacing'] = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
 		$this->regex['smartFractionsReplacement'] = '/
@@ -966,7 +861,7 @@ class Settings implements \ArrayAccess {
 				(?:
 					(\s)
 					(\w)
-					[{$this->components['normalSpaces']}]
+					[" . RE::NORMAL_SPACES . "]
 					(?=\w)
 				)
 			/xu";
@@ -999,17 +894,10 @@ class Settings implements \ArrayAccess {
 				)
 			/xu';
 
-		$this->regex['spaceCollapseNormal']       = "/[{$this->components['normalSpaces']}]+/xu";
-		$this->regex['spaceCollapseNonBreakable'] = "/(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*" . U::NO_BREAK_SPACE . "(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseOther']        = "/(?:[{$this->components['normalSpaces']}])*({$this->components['htmlSpaces']})(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})*/xu";
-		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[{$this->components['normalSpaces']}]|{$this->components['htmlSpaces']})+/xu";
-
-		// Unit spacing.
-		$this->regex['unitSpacingEscapeSpecialChars'] = '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#';
-		$this->update_unit_pattern( isset( $this->data['units'] ) ? $this->data['units'] : [] );
-
-		// Numbered abbreviations spacing.
-		$this->regex['numberedAbbreviationSpacing'] = "/\b({$this->components['numberedAbbreviations']})[{$this->components['normalSpaces']}]+([0-9]+)/xu";
+		$this->regex['spaceCollapseNormal']       = "/[" . RE::NORMAL_SPACES . "]+/xu";
+		$this->regex['spaceCollapseNonBreakable'] = "/(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*" . U::NO_BREAK_SPACE . "(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*/xu";
+		$this->regex['spaceCollapseOther']        = "/(?:[" . RE::NORMAL_SPACES . "])*(" . RE::HTML_SPACES . ")(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*/xu";
+		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")+/xu";
 
 		// French punctuation spacing.
 		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
@@ -1522,12 +1410,10 @@ class Settings implements \ArrayAccess {
 		// Update components & regex pattern.
 		foreach ( $units as $index => $unit ) {
 			// Escape special chars.
-			$units[ $index ] = preg_replace( $this->regex['unitSpacingEscapeSpecialChars'], '\\\\$1', $unit );
+			$units[ $index ] = preg_replace( '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#', '\\\\$1', $unit );
 		}
-		$custom_units = implode( '|', $units );
-		$custom_units .= ( $custom_units ) ? '|' : '';
-		$this->components['unitSpacingUnits'] = $custom_units . $this->components['unitSpacingStandardUnits'];
-		$this->regex['unitSpacingUnitPattern'] = "/(\d\.?)\s({$this->components['unitSpacingUnits']})\b/x";
+		$this->custom_units = implode( '|', $units );
+		$this->custom_units .= ( $this->custom_units ) ? '|' : '';
 	}
 
 	/**

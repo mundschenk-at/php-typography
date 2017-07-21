@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -37,21 +38,18 @@ use \PHP_Typography\DOM;
  *
  * @since 5.0.0
  */
-class Smart_Exponents_Fix extends Abstract_Node_Fix {
+class Smart_Exponents_Fix extends Simple_Regex_Replacement_Fix {
+
+	const SETTING     = 'smartExponents';
+	const REPLACEMENT = '$1<sup>$2</sup>';
+	const REGEX       = '/\b(\d+)\^(\w+)\b/u';
 
 	/**
-	 * Apply the fix to a given textnode.
+	 * Creates a new fix object.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @param bool $feed_compatible Optional. Default false.
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartExponents'] ) ) {
-			return;
-		}
-
-		// Handle exponents (ie. 4^2).
-		$textnode->data = preg_replace( $settings->regex( 'smartExponents' ), '$1<sup>$2</sup>', $textnode->data );
+	public function __construct( $feed_compatible = false ) {
+		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
 	}
 }
