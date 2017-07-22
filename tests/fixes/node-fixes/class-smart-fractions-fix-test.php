@@ -26,6 +26,7 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Smart_Fractions_Fix unit test.
@@ -63,9 +64,7 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_array_constructor() {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( 'foo', 'bar' );
-
-		$this->assertAttributeEquals( 'foo', 'numerator_class',   $this->fix, 'The numerator class should be "foo".' );
-		$this->assertAttributeEquals( 'bar', 'denominator_class', $this->fix, 'The denominator class should be "bar".' );
+		$this->assertAttributeEquals( '<sup class="foo">$1</sup>' . U::FRACTION_SLASH . '<sub class="bar">$2</sub>$3', 'replacement',   $this->fix, 'The replacement should contain the classes "foo" and "bar".' );
 	}
 
 	/**

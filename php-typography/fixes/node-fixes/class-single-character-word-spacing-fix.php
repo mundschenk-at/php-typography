@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
@@ -38,6 +39,15 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
+
+	const REGEX = '/
+		(?:
+			(\s)
+			(\w)
+			[' . RE::NORMAL_SPACES . ']
+			(?=\w)
+		)
+	/xu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -62,7 +72,7 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
-		$textnode->data = preg_replace( $settings->regex( 'singleCharacterWordSpacing' ), '$1$2' . U::NO_BREAK_SPACE, $textnode->data );
+		$textnode->data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $textnode->data );
 
 		// If we have adjacent characters remove them from the text.
 		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );

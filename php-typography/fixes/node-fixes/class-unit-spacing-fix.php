@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -28,6 +29,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\U;
 
 /**
  * Prevents values being split from their units (if enabled).
@@ -36,7 +38,48 @@ use \PHP_Typography\DOM;
  *
  * @since 5.0.0
  */
-class Unit_Spacing_Fix extends Abstract_Node_Fix {
+class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
+
+	const SETTING     = 'unitSpacing';
+	const REPLACEMENT = '$1' . U::NO_BREAK_NARROW_SPACE . '$2';
+	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')\b/x';
+
+	const _STANDARD_UNITS = '
+		### Temporal units
+		(?:ms|s|secs?|mins?|hrs?)\.?|
+		milliseconds?|seconds?|minutes?|hours?|days?|years?|decades?|century|centuries|millennium|millennia|
+
+		### Imperial units
+		(?:in|ft|yd|mi)\.?|
+		(?:ac|ha|oz|pt|qt|gal|lb|st)\.?
+		s\.f\.|sf|s\.i\.|si|square[ ]feet|square[ ]foot|
+		inch|inches|foot|feet|yards?|miles?|acres?|hectares?|ounces?|pints?|quarts?|gallons?|pounds?|stones?|
+
+		### Metric units (with prefixes)
+		(?:p|µ|[mcdhkMGT])?
+		(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω|Ohm|&Omega;|&\#0*937;|&\#[xX]0*3[Aa]9;)|
+		(?:nano|micro|milli|centi|deci|deka|hecto|kilo|mega|giga|tera)?
+		(?:liters?|meters?|grams?|newtons?|pascals?|watts?|joules?|amperes?)|
+
+		### Computers units (KB, Kb, TB, Kbps)
+		[kKMGT]?(?:[oBb]|[oBb]ps|flops)|
+
+		### Money
+		¢|M?(?:£|¥|€|$)|
+
+		### Other units
+		°[CF]? |
+		%|pi|M?px|em|en|[NSEOW]|[NS][EOW]|mbar
+	'; // required modifiers: x (multiline pattern).
+
+	/**
+	 * Creates a new fix object.
+	 *
+	 * @param bool $feed_compatible Optional. Default false.
+	 */
+	public function __construct( $feed_compatible = false ) {
+		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
+	}
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -46,10 +89,12 @@ class Unit_Spacing_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['unitSpacing'] ) ) {
-			return;
-		}
+		// Update replacement with current non-breaking narrow space.
+		$this->replacement = "\$1{$settings->no_break_narrow_space()}\$2";
 
-		$textnode->data = preg_replace( $settings->regex( 'unitSpacingUnitPattern' ), '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
+		// Update regex with custom units.
+		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')\b/x';
+
+		parent::apply( $textnode, $settings, $is_title );
 	}
 }

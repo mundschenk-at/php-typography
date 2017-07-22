@@ -26,21 +26,56 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use \PHP_Typography\DOM;
 
 /**
- * Applies smart marks (if enabled).
+ * An abstract base class for providing simple fixes via a single regular expression replacement.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
-class Smart_Marks_Fix extends Abstract_Node_Fix {
+abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 
-	const ESCAPE_501C = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/u';
+	/**
+	 * The setting string used to enable/disable the fix (e.g. 'styleAmpersands').
+	 *
+	 * @var string
+	 */
+	protected $settings_switch;
+
+	/**
+	 * The regular expressions used to match the text that should be wrapped in spans.
+	 *
+	 * It must contain a single matching expression.
+	 *
+	 * @var string
+	 */
+	protected $regex;
+
+	/**
+	 * The replacement expression.
+	 *
+	 * @var string
+	 */
+	protected $replacement;
+
+	/**
+	 * Creates a new node fix with a class.
+	 *
+	 * @param string $regex           Regular expression to match the text.
+	 * @param string $replacement     A replacement expression.
+	 * @param string $settings_switch On/off switch for fix.
+	 * @param bool   $feed_compatible Optional. Default false.
+	 */
+	public function __construct( $regex, $replacement, $settings_switch, $feed_compatible = false ) {
+		parent::__construct( $feed_compatible );
+
+		$this->regex           = $regex;
+		$this->settings_switch = $settings_switch;
+		$this->replacement     = $replacement;
+	}
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -50,21 +85,10 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartMarks'] ) ) {
+		if ( empty( $settings[ $this->settings_switch ] ) ) {
 			return;
 		}
 
-		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$textnode->data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $textnode->data );
-
-		// Replace marks.
-		$textnode->data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,      $textnode->data );
-		$textnode->data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $textnode->data );
-		$textnode->data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK,  $textnode->data );
-		$textnode->data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $textnode->data );
-		$textnode->data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $textnode->data );
-
-		// Un-escape escaped sequences.
-		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $textnode->data );
+		$textnode->data = preg_replace( $this->regex, $this->replacement, $textnode->data );
 	}
 }

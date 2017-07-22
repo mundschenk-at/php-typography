@@ -2,7 +2,7 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2016-2017 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -44,6 +44,12 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
+	// Regular expressions.
+	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
+	const INSERT_FULL_SPACE                 = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
+	const INSERT_SPACE_BEFORE_SEMICOLON     = '/(\w+(?:\s?»)?)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
+	const INSERT_SPACE_AFTER_OPENING_QUOTE  = '/(\s|\A)(«)(\s?)(\w+)/u';
+	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -59,12 +65,11 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 
 		// Various special characters and regular expressions.
 		$no_break_narrow_space = $settings->no_break_narrow_space();
-		$regex = $settings->get_regular_expressions();
 
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingClosingQuote'], '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingNarrow'],       '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingFull'],         '$1' . U::NO_BREAK_SPACE . '$3$4',      $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingSemicolon'],    '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
-		$textnode->data = preg_replace( $regex['frenchPunctuationSpacingOpeningQuote'], '$1$2' . $no_break_narrow_space . '$4', $textnode->data );
+		$textnode->data = preg_replace( self::INSERT_SPACE_BEFORE_CLOSING_QUOTE, '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( self::INSERT_NARROW_SPACE,               '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( self::INSERT_FULL_SPACE,                 '$1' . U::NO_BREAK_SPACE . '$3$4',      $textnode->data );
+		$textnode->data = preg_replace( self::INSERT_SPACE_BEFORE_SEMICOLON,     '$1' . $no_break_narrow_space . '$3$4', $textnode->data );
+		$textnode->data = preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . $no_break_narrow_space . '$4', $textnode->data );
 	}
 }

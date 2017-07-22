@@ -66,7 +66,7 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	public function test_array_constructor() {
 		$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( 'foo' );
 
-		$this->assertAttributeEquals( 'foo', 'css_class',   $this->fix, 'The CSS class should be "foo".' );
+		$this->assertAttributeEquals( '$1<sup class="foo">$2</sup>', 'replacement', $this->fix, 'The replacement CSS class should be "foo".' );
 	}
 
 	/**

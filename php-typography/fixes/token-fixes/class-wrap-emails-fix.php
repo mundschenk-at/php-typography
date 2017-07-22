@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\RE;
 use \PHP_Typography\U;
 
 /**
@@ -39,6 +40,15 @@ use \PHP_Typography\U;
  */
 class Wrap_Emails_Fix extends Abstract_Token_Fix {
 
+	const REPLACE_EMAILS = '/([^a-zA-Z])/';
+
+	/**
+	 * A regular expression matching email addresses.
+	 *
+	 * @var string
+	 */
+	protected $email_pattern;
+
 	/**
 	 * Creates a new fix instance.
 	 *
@@ -46,6 +56,26 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 	 */
 	public function __construct( $feed_compatible = false ) {
 		parent::__construct( Token_Fix::OTHER, $feed_compatible );
+
+		$this->email_pattern = "/(?:
+			\A
+			[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
+			(?:
+				\.
+				[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
+			)*
+			@
+			(?:
+				[a-z0-9]
+				[a-z0-9\-]{0,61}
+				[a-z0-9]
+				\.
+			)+
+			(?:
+				" . RE::top_level_domains() . '
+			)
+			\Z
+		)/xi'; // required modifiers: x (multiline pattern) i (case insensitive).
 	}
 
 	/**
@@ -63,14 +93,11 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 			return $tokens;
 		}
 
-		// Various special characters and regular expressions.
-		$regex = $settings->get_regular_expressions();
-
 		// Test for and parse urls.
 		foreach ( $tokens as $index => $token ) {
 			$value = $token->value;
-			if ( preg_match( $regex['wrapEmailsMatchEmails'], $value, $email_match ) ) {
-				$tokens[ $index ] = $token->with_value( preg_replace( $regex['wrapEmailsReplaceEmails'], '$1' . U::ZERO_WIDTH_SPACE, $value ) );
+			if ( preg_match( $this->email_pattern, $value, $email_match ) ) {
+				$tokens[ $index ] = $token->with_value( preg_replace( self::REPLACE_EMAILS, '$1' . U::ZERO_WIDTH_SPACE, $value ) );
 			}
 		}
 

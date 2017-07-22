@@ -111,6 +111,7 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::update_dash_spacing_regex
 	 *
 	 * @dataProvider provide_dash_spacing_data
 	 *
@@ -130,6 +131,8 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 *
+	 * @uses ::update_dash_spacing_regex
+	 *
 	 * @dataProvider provide_dash_spacing_unchanged_data
 	 *
 	 * @param string $input HTML input.
@@ -148,6 +151,8 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test dewidow.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses ::update_dash_spacing_regex
 	 *
 	 * @dataProvider provide_dash_spacing_data
 	 *

@@ -34,6 +34,8 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Exponents_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::__construct
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
@@ -69,7 +71,9 @@ class Smart_Exponents_Fix_Test extends Node_Fix_Testcase {
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
 	 *
 	 * @dataProvider provide_smart_exponents_data
 	 *
@@ -85,7 +89,9 @@ class Smart_Exponents_Fix_Test extends Node_Fix_Testcase {
 	/**
 	 * Test apply.
 	 *
-	 * @covers ::apply
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
 	 *
 	 * @dataProvider provide_smart_exponents_data
 	 *

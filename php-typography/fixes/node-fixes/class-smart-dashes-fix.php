@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
@@ -38,6 +40,77 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Smart_Dashes_Fix extends Abstract_Node_Fix {
+
+	// Standard dashes.
+	const PARENTHETICAL_DOUBLE_DASH = '/(\s|' . RE::HTML_SPACES . ')--(\s|' . RE::HTML_SPACES . ')/xui'; // ' -- '.
+	const PARENTHETICAL_SINGLE_DASH = '/(\s|' . RE::HTML_SPACES . ')-(\s|' . RE::HTML_SPACES . ')/xui';  // ' - '.
+	const EN_DASH_WORDS             = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|' . U::NO_BREAK_SPACE . ')/u';
+	const EN_DASH_NUMBERS           = "/(\b\d+(\.?))\-(\d+\\2)/";
+	const EN_DASH_PHONE_NUMBERS     = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/";
+
+	// Date handling.
+	const DATE_YYYY_MM_DD = '/
+		(
+			(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+			[12][0-9]{3}
+		)
+		[\-' . U::EN_DASH . ']
+		(
+			(?:[0][1-9]|[1][0-2])
+		)
+		[\-' . U::EN_DASH . "]
+			(
+				(?:[0][1-9]|[12][0-9]|[3][0-1])
+				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+		)
+	/xu';
+
+	const DATE_MM_DD_YYYY = '/
+		(?:
+			(?:
+				(
+					(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+					(?:[0]?[1-9]|[1][0-2])
+				)
+				[\-' . U::EN_DASH . ']
+				(
+					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+				)
+			)
+			|
+			(?:
+				(
+					(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
+				)
+				[\-' . U::EN_DASH . ']
+				(
+					(?:[0]?[1-9]|[1][0-2])
+				)
+			)
+		)
+		[\-' . U::EN_DASH . "]
+		(
+			[12][0-9]{3}
+			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+		)
+	/xu';
+
+	const DATE_YYYY_MM = '/
+		(
+			(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+			[12][0-9]{3}
+		)
+		[\-' . U::EN_DASH . "]
+		(
+			(?:
+				(?:[0][1-9]|[1][0-2])
+				|
+				(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
+			)
+			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+		)
+	/xu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -52,25 +125,24 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$s     = $settings->dash_style();
-		$regex = $settings->get_regular_expressions();
+		$s = $settings->dash_style();
 
 		$textnode->data = str_replace( '---', U::EM_DASH, $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesParentheticalDoubleDash'], "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
+		$textnode->data = preg_replace( self::PARENTHETICAL_DOUBLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
 		$textnode->data = str_replace( '--', U::EN_DASH, $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesParentheticalSingleDash'], "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
+		$textnode->data = preg_replace( self::PARENTHETICAL_SINGLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $textnode->data );
 
-		$textnode->data = preg_replace( $regex['smartDashesEnDashWords'] ,       '$1' . U::EN_DASH . '$2',         $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashNumbers'],      "\$1{$s->interval_dash()}\$3",    $textnode->data );
-		$textnode->data = preg_replace( $regex['smartDashesEnDashPhoneNumbers'], '$1' . U::NO_BREAK_HYPHEN . '$2', $textnode->data ); // phone numbers.
-		$textnode->data = str_replace( 'xn' . U::EN_DASH,                        'xn--',                           $textnode->data ); // revert messed-up punycode.
+		$textnode->data = preg_replace( self::EN_DASH_WORDS ,        '$1' . U::EN_DASH . '$2',         $textnode->data );
+		$textnode->data = preg_replace( self::EN_DASH_NUMBERS,       "\$1{$s->interval_dash()}\$3",    $textnode->data );
+		$textnode->data = preg_replace( self::EN_DASH_PHONE_NUMBERS, '$1' . U::NO_BREAK_HYPHEN . '$2', $textnode->data ); // phone numbers.
+		$textnode->data = str_replace( 'xn' . U::EN_DASH,            'xn--',                           $textnode->data ); // revert messed-up punycode.
 
 		// Revert dates back to original formats
 		// YYYY-MM-DD.
-		$textnode->data = preg_replace( $regex['smartDashesYYYY-MM-DD'], '$1-$2-$3',     $textnode->data );
+		$textnode->data = preg_replace( self::DATE_YYYY_MM_DD, '$1-$2-$3',     $textnode->data );
 		// MM-DD-YYYY or DD-MM-YYYY.
-		$textnode->data = preg_replace( $regex['smartDashesMM-DD-YYYY'], '$1$3-$2$4-$5', $textnode->data );
+		$textnode->data = preg_replace( self::DATE_MM_DD_YYYY, '$1$3-$2$4-$5', $textnode->data );
 		// YYYY-MM or YYYY-DDDD next.
-		$textnode->data = preg_replace( $regex['smartDashesYYYY-MM'],    '$1-$2',        $textnode->data );
+		$textnode->data = preg_replace( self::DATE_YYYY_MM,    '$1-$2',        $textnode->data );
 	}
 }

@@ -29,6 +29,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\DOM;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
+use \PHP_Typography\RE;
 
 /**
  * Prevents the number part of numbered abbreviations from being split from the basename (if enabled).
@@ -39,20 +40,47 @@ use \PHP_Typography\U;
  *
  * @since 5.0.0
  */
-class Numbered_Abbreviation_Spacing_Fix extends Abstract_Node_Fix {
+class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
+	const _ISO           = 'ISO(?:\/(?:IEC|TR|TS))?';
+	const _ABBREVIATIONS = '
+		### Internationl standards
+		' . self::_ISO . '|
+
+		### German standards
+		DIN|
+		DIN[ ]EN(?:[ ]' . self::_ISO . ')?|
+		DIN[ ]EN[ ]ISP
+		DIN[ ]' . self::_ISO . '|
+		DIN[ ]IEC|
+		DIN[ ]CEN\/TS|
+		DIN[ ]CLC\/TS|
+		DIN[ ]CWA|
+		DIN[ ]VDE|
+
+		LN|VG|VDE|VDI
+
+		### Austrian standards
+		ÖNORM|
+		ÖNORM[ ](?:A|B|C|E|F|G|H|K|L|M|N|O|S|V|Z)|
+		ÖNORM[ ]EN(?:[ ]' . self::_ISO . ')?|
+		ÖNORM[ ]ETS|
+
+		ÖVE|ONR|
+
+		### Food additives
+		E
+	'; // required modifiers: x (multiline pattern).
+
+	const SETTING     = 'numberedAbbreviationSpacing';
+	const REPLACEMENT = '$1' . U::NO_BREAK_SPACE . '$2';
+	const REGEX       = '/\b(' . self::_ABBREVIATIONS . ')[' . RE::NORMAL_SPACES . ']+([0-9]+)/xu';
 
 	/**
-	 * Apply the fix to a given textnode.
+	 * Creates a new fix object.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @param bool $feed_compatible Optional. Default false.
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['numberedAbbreviationSpacing'] ) ) {
-			return;
-		}
-
-		$textnode->data = preg_replace( $settings->regex( 'numberedAbbreviationSpacing' ), '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
+	public function __construct( $feed_compatible = false ) {
+		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
 	}
 }

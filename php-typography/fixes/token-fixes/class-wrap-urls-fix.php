@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Text_Parser;
 use \PHP_Typography\U;
@@ -39,6 +41,17 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Wrap_URLs_Fix extends Hyphenate_Fix {
+	// Valid URL schemes.
+	const URL_SCHEME = '(?:https?|ftps?|file|nfs|feed|itms|itpc)';
+
+	const WRAP_URLS_DOMAIN_PARTS = '#(\-|\.)#';
+
+	/**
+	 * The URL matching regular expression.
+	 *
+	 * @var string
+	 */
+	protected $url_pattern;
 
 	/**
 	 * Creates a new fix instance.
@@ -47,6 +60,38 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 */
 	public function __construct( $feed_compatible = false ) {
 		parent::__construct( Token_Fix::OTHER, $feed_compatible );
+
+		// Combined URL pattern.
+		$this->url_pattern = '`(?:
+			\A
+			(?<schema>' . self::URL_SCHEME . ':\/\/)?	        # Subpattern 1: contains _http://_ if it exists
+			(?<domain>											# Subpattern 2: contains subdomains.domain.tld
+				(?:
+					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
+					[a-z0-9\-]{0,61}							# middle chrs of (sub)domain may be a hyphen;
+																# limit qty of middle chrs so total domain does not exceed 63 chrs
+					[a-z0-9]									# last chr of (sub)domain can not be a hyphen
+					\.											# dot separator
+				)+
+				(?:
+					' . RE::top_level_domains() . '             # validates top level domain
+				)
+				(?:												# optional port numbers
+					:
+					(?:
+						[1-5]?[0-9]{1,4} | 6[0-4][0-9]{3} | 65[0-4][0-9]{2} | 655[0-2][0-9] | 6553[0-5]
+					)
+				)?
+			)
+			(?<path>											# Subpattern 3: contains path following domain
+				(?:
+					\/											# marks nested directory
+					[a-z0-9\"\$\-_\.\+!\*\'\(\),;\?:@=&\#]+		# valid characters within directory structure
+				)*
+				[\/]?											# trailing slash if any
+			)
+			\Z
+		)`xi'; // required modifiers: x (multiline pattern) i (case insensitive).
 	}
 
 	/**
@@ -64,19 +109,16 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 			return $tokens;
 		}
 
-		// Various special characters and regular expressions.
-		$regex = $settings->get_regular_expressions();
-
 		// Test for and parse urls.
 		foreach ( $tokens as $token_index => $text_token ) {
-			if ( preg_match( $regex['wrapUrlsPattern'], $text_token->value, $url_match ) ) {
+			if ( preg_match( $this->url_pattern, $text_token->value, $url_match ) ) {
 
 				// $url_match['schema'] holds "http://".
 				// $url_match['domain'] holds "subdomains.domain.tld".
 				// $url_match['path']   holds the path after the domain.
 				$http = ( $url_match['schema'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
 
-				$domain_parts = preg_split( $regex['wrapUrlsDomainParts'], $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
+				$domain_parts = preg_split( self::WRAP_URLS_DOMAIN_PARTS, $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 
 				// This is a hack, but it works.
 				// First, we hyphenate each part, we need it formated like a group of words.

@@ -34,6 +34,8 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::__construct
  * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
@@ -73,6 +75,9 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
 	 *
 	 * @dataProvider provide_unit_spacing_data
 	 *
@@ -90,6 +95,9 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
 	 *
 	 * @dataProvider provide_unit_spacing_data
 	 *

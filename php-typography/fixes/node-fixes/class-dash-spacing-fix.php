@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -26,8 +27,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Applies spacing around dashes (if enabled).
@@ -37,6 +39,62 @@ use \PHP_Typography\DOM;
  * @since 5.0.0
  */
 class Dash_Spacing_Fix extends Abstract_Node_Fix {
+
+	const EM_DASH_SPACING = '/
+		(?:
+			\s
+			(' . U::EM_DASH . ')
+			\s
+		)
+		|
+		(?:
+			(?<=\S)                   # lookbehind assertion
+			(' . U::EM_DASH . ')
+			(?=\S)                    # lookahead assertion
+		)
+	/xu';
+
+	/**
+	 * Regular expression matching cached parenthetical dash.
+	 *
+	 * @var string
+	 */
+	protected $parenthetical_dash_spacing;
+
+	/**
+	 * Regular expression matching cached interval dash.
+	 *
+	 * @var string
+	 */
+	protected $interval_dash_spacing;
+
+	/**
+	 * Replacement pattern for em-dash spacing.
+	 *
+	 * @var string
+	 */
+	protected $em_dash_replacement;
+
+	/**
+	 * Replacement pattern for parenthetical dash spacing.
+	 *
+	 * @var string
+	 */
+	protected $parenthetical_dash_replacement;
+
+	/**
+	 * Replacement pattern for interval dash spacing.
+	 *
+	 * @var string
+	 */
+	protected $interval_dash_replacement;
+
+	/**
+	 * Cached dashes style.
+	 *
+	 * @var \PHP_Typography\Settings\Dashes|null
+	 */
+	protected $cached_dash_style;
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -51,11 +109,45 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$s     = $settings->dash_style();
-		$regex = $settings->get_regular_expressions();
+		$s = $settings->dash_style();
 
-		$textnode->data = preg_replace( $regex['dashSpacingEmDash'],            "{$s->interval_space()}\$1\$2{$s->interval_space()}",           $textnode->data );
-		$textnode->data = preg_replace( $regex['dashSpacingParentheticalDash'], "{$s->parenthetical_space()}\$1\$2{$s->parenthetical_space()}", $textnode->data );
-		$textnode->data = preg_replace( $regex['dashSpacingIntervalDash'],      "{$s->interval_space()}\$1\$2{$s->interval_space()}",           $textnode->data );
+		if ( $s != $this->cached_dash_style ) {
+			$this->update_dash_spacing_regex( $s->parenthetical_dash(), $s->parenthetical_space(), $s->interval_dash(), $s->interval_space() );
+			$this->cached_dash_style = $s;
+		}
+
+		$textnode->data = preg_replace( self::EM_DASH_SPACING,             $this->em_dash_replacement,            $textnode->data );
+		$textnode->data = preg_replace( $this->parenthetical_dash_spacing, $this->parenthetical_dash_replacement, $textnode->data );
+		$textnode->data = preg_replace( $this->interval_dash_spacing,      $this->interval_dash_replacement,      $textnode->data );
+	}
+
+	/**
+	 * Update the dash spacing regular expression.
+	 *
+	 * @param string $parenthetical       The dash character used for parenthetical dashes.
+	 * @param string $parenthetical_space The space character used around parenthetical dashes.
+	 * @param string $interval            The dash character used for interval dashes.
+	 * @param string $interval_space      The space character used around interval dashes.
+	 */
+	private function update_dash_spacing_regex( $parenthetical, $parenthetical_space, $interval, $interval_space ) {
+		$this->parenthetical_dash_spacing = "/
+			(?:
+				\s
+				({$parenthetical})
+				\s
+			)
+		/xu";
+
+		$this->interval_dash_spacing = "/
+			(?:
+				(?<=\S)             # lookbehind assertion
+				({$interval})
+				(?=\S)              # lookahead assertion
+			)
+		/xu";
+
+		$this->em_dash_replacement            = "{$interval_space}\$1\$2{$interval_space}"; // is this correct?
+		$this->parenthetical_dash_replacement = "{$parenthetical_space}\$1\$2{$parenthetical_space}";
+		$this->interval_dash_replacement      = "{$interval_space}\$1\$2{$interval_space}";
 	}
 }

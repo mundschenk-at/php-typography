@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Strings;
 use \PHP_Typography\U;
@@ -39,6 +41,30 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Dewidow_Fix extends Abstract_Node_Fix {
+	const REGEX = '/
+		(?:
+			\A
+			|
+			(?:
+				(?<space_before>            # subpattern 1: space before (note: ZWSP is not a space)
+					[\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+
+				)
+				(?<neighbor>                # subpattern 2: neighbors widow (short as possible)
+					[^\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?
+				)
+			)
+		)
+		(?<space_between>                   # subpattern 3: space between
+			[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
+		)
+		(?<widow>                           # subpattern 4: widow
+			[\w\pM\-]+?                     # \w includes all alphanumeric Unicode characters but not composed characters
+		)
+		(?<trailing>                        # subpattern 5: any trailing punctuation or spaces
+			[^\w\pM]*
+		)
+		\Z
+	/xu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -56,7 +82,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = preg_replace_callback( $settings->regex( 'dewidow' ), function( array $widow ) use ( $settings ) {
+			$textnode->data = preg_replace_callback( self::REGEX, function( array $widow ) use ( $settings ) {
 				$func = Strings::functions( $widow[0] );
 
 				// If we are here, we know that widows are being protected in some fashion

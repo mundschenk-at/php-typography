@@ -67,6 +67,29 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	 */
 	protected $pull_double_class;
 
+
+	// Hanging punctuation.
+	const _DOUBLE_HANGING_PUNCTUATION =
+		'"' .
+		U::DOUBLE_QUOTE_OPEN .
+		U::DOUBLE_QUOTE_CLOSE .
+		U::DOUBLE_LOW_9_QUOTE .
+		U::DOUBLE_PRIME; // requires modifiers: x (multiline pattern) u (utf8).
+
+	const _SINGLE_HANGING_PUNCTUATION =
+		"'" .
+		U::SINGLE_QUOTE_OPEN .
+		U::SINGLE_QUOTE_CLOSE .
+		U::SINGLE_LOW_9_QUOTE .
+		U::SINGLE_PRIME .
+		U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
+
+	// Style hanging punctuation.
+	const STYLE_DOUBLE = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_SINGLE = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
+
 	/**
 	 * Creates a new classes dependent fix.
 	 *
@@ -108,18 +131,15 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 			$textnode->data = $textnode->data . $next_character;
 		}
 
-		// Various special characters and regular expressions.
-		$regex = $settings->get_regular_expressions();
-
-		$textnode->data = preg_replace( $regex['styleHangingPunctuationDouble'], '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( $regex['styleHangingPunctuationSingle'], '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( self::STYLE_DOUBLE, '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $textnode->data );
+		$textnode->data = preg_replace( self::STYLE_SINGLE, '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $textnode->data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
 		} else {
-			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialDouble'], '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( $regex['styleHangingPunctuationInitialSingle'], '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
+			$textnode->data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
 		}
 
 		// Remove any added characters.

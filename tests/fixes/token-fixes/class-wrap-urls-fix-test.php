@@ -35,6 +35,7 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_URLs_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\RE
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
