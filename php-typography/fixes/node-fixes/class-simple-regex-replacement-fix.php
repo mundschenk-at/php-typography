@@ -40,7 +40,7 @@ abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 
 	/**
 	 * The setting string used to enable/disable the fix (e.g. 'styleAmpersands').
-
+	 *
 	 * @var string
 	 */
 	protected $settings_switch;

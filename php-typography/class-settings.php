@@ -87,39 +87,11 @@ class Settings implements \ArrayAccess {
 	protected $inappropriate_tags = [];
 
 	/**
-	 * An array of various regex components (not complete patterns).
-	 *
-	 * @var array $components
-	 */
-	protected $components = [];
-
-	/**
-	 * An array of regex patterns.
-	 *
-	 * @var array $regex
-	 */
-	protected $regex = [];
-
-	/**
-	 * An array in the form of [ '$style' => [ 'open' => $chr, 'close' => $chr ] ]
-	 *
-	 * @var array
-	 */
-	protected $quote_styles = [];
-
-	/**
 	 * The current dash style.
 	 *
 	 * @var Settings\Dashes
 	 */
 	protected $dash_style;
-
-	/**
-	 * An array in the form of [ '$tag' => true ]
-	 *
-	 * @var array
-	 */
-	protected $block_tags = [];
 
 	/**
 	 * Sets up a new Settings object.
@@ -259,54 +231,6 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Retrieves the named components calculated from the current settings.
-	 *
-	 * @return array
-	 */
-	public function get_components() {
-		return $this->components;
-	}
-
-	/**
-	 * Retrieves the named component string.
-	 *
-	 * @param string $name The component name.
-	 *
-	 * @return string|bool Returns the component or false if it does not exist.
-	 */
-	public function component( $name ) {
-		if ( isset( $this->components[ $name ] ) ) {
-			return $this->components[ $name ];
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Retrieves the regular expressions calculated from the current settings.
-	 *
-	 * @return array
-	 */
-	public function get_regular_expressions() {
-		return $this->regex;
-	}
-
-	/**
-	 * Retrieves the named regular expression.
-	 *
-	 * @param string $name The regex name.
-	 *
-	 * @return string|bool Returns the regular expression or false if it does not exist.
-	 */
-	public function regex( $name ) {
-		if ( isset( $this->regex[ $name ] ) ) {
-			return $this->regex[ $name ];
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Initialize the PHP_Typography object.
 	 *
 	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
@@ -318,11 +242,6 @@ class Settings implements \ArrayAccess {
 
 		$this->primary_quote_style   = new Settings\Simple_Quotes( U::DOUBLE_QUOTE_OPEN, U::DOUBLE_QUOTE_CLOSE );
 		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
-
-		// All other encodings get the empty array.
-		// Set up regex patterns.
-		$this->initialize_components();
-		$this->initialize_patterns();
 
 		// Set up some arrays for quick HTML5 introspection.
 		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
@@ -402,560 +321,6 @@ class Settings implements \ArrayAccess {
 	}
 
 	/**
-	 * Sets up our regex components (but not complete patterns) for later use.
-	 *
-	 * Call before initialize_patterns().
-	 */
-	private function initialize_components() {
-
-		// Hanging punctuation.
-		$this->components['doubleHangingPunctuation'] = '
-			"' .
-			U::DOUBLE_QUOTE_OPEN .
-			U::DOUBLE_QUOTE_CLOSE .
-			U::DOUBLE_LOW_9_QUOTE .
-			U::DOUBLE_PRIME; // requires modifiers: x (multiline pattern) u (utf8).
-		$this->components['singleHangingPunctuation'] = "
-			'" .
-			U::SINGLE_QUOTE_OPEN .
-			U::SINGLE_QUOTE_CLOSE .
-			U::SINGLE_LOW_9_QUOTE .
-			U::SINGLE_PRIME .
-			U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
-
-		$this->components['hyphensArray'] = array_unique( [ '-', U::HYPHEN ] );
-		$this->components['hyphens']      = implode( '|', $this->components['hyphensArray'] );
-
-		$this->components['numbersPrime'] = '\b(?:\d+\/)?\d{1,3}';
-
-		// Initialize valid top level domains from IANA list.
-		$this->components['validTopLevelDomains'] = $this->get_top_level_domains_from_file( dirname( __DIR__ ) . '/vendor/IANA/tlds-alpha-by-domain.txt' );
-		// Valid URL schemes.
-		$this->components['urlScheme'] = '(?:https?|ftps?|file|nfs|feed|itms|itpc)';
-		// Combined URL pattern.
-		$this->components['urlPattern'] = "(?:
-			\A
-			(?<schema>{$this->components['urlScheme']}:\/\/)?	# Subpattern 1: contains _http://_ if it exists
-			(?<domain>											# Subpattern 2: contains subdomains.domain.tld
-				(?:
-					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
-					[a-z0-9\-]{0,61}							# middle chrs of (sub)domain may be a hyphen;
-																# limit qty of middle chrs so total domain does not exceed 63 chrs
-					[a-z0-9]									# last chr of (sub)domain can not be a hyphen
-					\.											# dot separator
-				)+
-				(?:
-					{$this->components['validTopLevelDomains']}	# validates top level domain
-				)
-				(?:												# optional port numbers
-					:
-					(?:
-						[1-5]?[0-9]{1,4} | 6[0-4][0-9]{3} | 65[0-4][0-9]{2} | 655[0-2][0-9] | 6553[0-5]
-					)
-				)?
-			)
-			(?<path>											# Subpattern 3: contains path following domain
-				(?:
-					\/											# marks nested directory
-					[a-z0-9\"\$\-_\.\+!\*\'\(\),;\?:@=&\#]+		# valid characters within directory structure
-				)*
-				[\/]?											# trailing slash if any
-			)
-			\Z
-		)"; // required modifiers: x (multiline pattern) i (case insensitive).
-
-		$this->components['wrapEmailsEmailPattern'] = "(?:
-			\A
-			[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
-			(?:
-				\.
-				[a-z0-9\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+
-			)*
-			@
-			(?:
-				[a-z0-9]
-				[a-z0-9\-]{0,61}
-				[a-z0-9]
-				\.
-			)+
-			(?:
-				{$this->components['validTopLevelDomains']}
-			)
-			\Z
-		)"; // required modifiers: x (multiline pattern) i (case insensitive).
-
-		$this->components['smartQuotesApostropheExceptions'] = [
-			"'tain" . U::APOSTROPHE . 't' => U::APOSTROPHE . 'tain' . U::APOSTROPHE . 't',
-			"'twere"                             => U::APOSTROPHE . 'twere',
-			"'twas"                              => U::APOSTROPHE . 'twas',
-			"'tis"                               => U::APOSTROPHE . 'tis',
-			"'til"                               => U::APOSTROPHE . 'til',
-			"'bout"                              => U::APOSTROPHE . 'bout',
-			"'nuff"                              => U::APOSTROPHE . 'nuff',
-			"'round"                             => U::APOSTROPHE . 'round',
-			"'cause"                             => U::APOSTROPHE . 'cause',
-			"'splainin"                          => U::APOSTROPHE . 'splainin',
-		];
-		$this->components['smartQuotesApostropheExceptionMatches']      = array_keys( $this->components['smartQuotesApostropheExceptions'] );
-		$this->components['smartQuotesApostropheExceptionReplacements'] = array_values( $this->components['smartQuotesApostropheExceptions'] );
-
-		// These patterns need to be updated whenever the quote style changes.
-		$this->update_smart_quotes_brackets();
-
-		// Marker for strings that should not be replaced.
-		$this->components['escapeMarker'] = '_E_S_C_A_P_E_D_';
-
-		// Smart diacritics "word non-boundaries".
-		$this->components['smartDiacriticsWordBoundaryInitial'] = '\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])';
-		$this->components['smartDiacriticsWordBoundaryFinal'] = '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)';
-	}
-
-	/**
-	 * Update smartQuotesBrackets component after quote style change.
-	 */
-	private function update_smart_quotes_brackets() {
-		$this->components['smartQuotesBrackets'] = [
-			// Single quotes.
-			"['"  => '[' . $this->secondary_quote_style->open(),
-			"{'"  => '{' . $this->secondary_quote_style->open(),
-			"('"  => '(' . $this->secondary_quote_style->open(),
-			"']"  => $this->secondary_quote_style->close() . ']',
-			"'}"  => $this->secondary_quote_style->close() . '}',
-			"')"  => $this->secondary_quote_style->close() . ')',
-
-			// Double quotes.
-			'["' => '[' . $this->primary_quote_style->open(),
-			'{"' => '{' . $this->primary_quote_style->open(),
-			'("' => '(' . $this->primary_quote_style->open(),
-			'"]' => $this->primary_quote_style->close() . ']',
-			'"}' => $this->primary_quote_style->close() . '}',
-			'")' => $this->primary_quote_style->close() . ')',
-
-			// Quotes & quotes.
-			"\"'" => $this->primary_quote_style->open() . $this->secondary_quote_style->open(),
-			"'\"" => $this->secondary_quote_style->close() . $this->primary_quote_style->close(),
-		];
-		$this->components['smartQuotesBracketMatches']      = array_keys( $this->components['smartQuotesBrackets'] );
-		$this->components['smartQuotesBracketReplacements'] = array_values( $this->components['smartQuotesBrackets'] );
-	}
-
-	/**
-	 * Load a list of top-level domains from a file.
-	 *
-	 * @param string $path The full path and filename.
-	 * @return string A list of top-level domains concatenated with '|'.
-	 */
-	public function get_top_level_domains_from_file( $path ) {
-		$domains = [];
-
-		if ( file_exists( $path ) ) {
-			$file = new \SplFileObject( $path );
-
-			while ( ! $file->eof() ) {
-				$line = $file->fgets();
-
-				if ( preg_match( '#^[a-zA-Z0-9][a-zA-Z0-9-]*$#', $line, $matches ) ) {
-					$domains[] = strtolower( $matches[0] );
-				}
-			}
-		}
-
-		if ( count( $domains ) > 0 ) {
-			return implode( '|', $domains );
-		} else {
-			return 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
-		}
-	}
-
-	/**
-	 * Sets up our regex patterns for later use.
-	 *
-	 * Call after intialize_components().
-	 */
-	private function initialize_patterns() {
-		// Actual regex patterns.
-		$this->regex['customDiacriticsDoubleQuoteKey']   = '/(?:")([^"]+)(?:"\s*=>)/';
-		$this->regex['customDiacriticsSingleQuoteKey']   = "/(?:')([^']+)(?:'\s*=>)/";
-		$this->regex['customDiacriticsDoubleQuoteValue'] = '/(?:=>\s*")([^"]+)(?:")/';
-		$this->regex['customDiacriticsSingleQuoteValue'] = "/(?:=>\s*')([^']+)(?:')/";
-
-		$this->regex['controlCharacters'] = '/\p{C}/Su'; // obsolete.
-
-		$this->regex['smartQuotesSingleQuotedNumbers']       = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoubleQuotedNumbers']       = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/u';
-		$this->regex['smartQuotesDoublePrime']               = "/({$this->components['numbersPrime']})''(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrimeCompound']       = "/({$this->components['numbersPrime']})''(?=-\w)/u";
-		$this->regex['smartQuotesDoublePrime1Glyph']         = "/({$this->components['numbersPrime']})\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesDoublePrime1GlyphCompound'] = "/({$this->components['numbersPrime']})\"(?=-\w)/u";
-		$this->regex['smartQuotesSinglePrime']               = "/({$this->components['numbersPrime']})'(?=\W|\Z)/u";
-		$this->regex['smartQuotesSinglePrimeCompound']       = "/({$this->components['numbersPrime']})'(?=-\w)/u";
-		$this->regex['smartQuotesSingleDoublePrime']         = "/({$this->components['numbersPrime']})'(\s*)(\b(?:\d+\/)?\d+)''(?=\W|\Z)/u";
-		$this->regex['smartQuotesSingleDoublePrime1Glyph']   = "/({$this->components['numbersPrime']})'(\s*)(\b(?:\d+\/)?\d+)\"(?=\W|\Z)/u";
-		$this->regex['smartQuotesCommaQuote']                = '/(?<=\s|\A),(?=\S)/';
-		$this->regex['smartQuotesApostropheWords']           = "/(?<=[\w])'(?=[\w])/u";
-		$this->regex['smartQuotesApostropheDecades']         = "/'(\d\d\b)/";
-		$this->regex['smartQuotesSingleQuoteOpen']           = "/'(?=[\w])/u";
-		$this->regex['smartQuotesSingleQuoteClose']          = "/(?<=[\w])'/u";
-		$this->regex['smartQuotesSingleQuoteOpenSpecial']    = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_.
-		$this->regex['smartQuotesSingleQuoteCloseSpecial']   = "/(?<=\S)'(?=\s|\Z)/";
-		$this->regex['smartQuotesDoubleQuoteOpen']           = '/"(?=[\w])/u';
-		$this->regex['smartQuotesDoubleQuoteClose']          = '/(?<=[\w])"/u';
-		$this->regex['smartQuotesDoubleQuoteOpenSpecial']    = '/(?<=\s|\A)"(?=\S)/';
-		$this->regex['smartQuotesDoubleQuoteCloseSpecial']   = '/(?<=\S)"(?=\s|\Z)/';
-
-		$this->regex['smartDashesParentheticalDoubleDash']   = "/(\s|" . RE::HTML_SPACES . ")--(\s|" . RE::HTML_SPACES . ")/xui"; // ' -- '.
-		$this->regex['smartDashesParentheticalSingleDash']   = "/(\s|" . RE::HTML_SPACES . ")-(\s|" . RE::HTML_SPACES . ")/xui";  // ' - '.
-		$this->regex['smartDashesEnDashWords']               = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . "|{$this->no_break_narrow_space})/u";
-		$this->regex['smartDashesEnDashNumbers']             = "/(\b\d+(\.?))\-(\d+\\2)/";
-		$this->regex['smartDashesEnDashPhoneNumbers']        = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/";
-		$this->regex['smartDashesYYYY-MM-DD']                = '/
-                (
-                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                    [12][0-9]{3}
-                )
-                [\-' . U::EN_DASH . ']
-                (
-                    (?:[0][1-9]|[1][0-2])
-                )
-                [\-' . U::EN_DASH . "]
-				(
-					(?:[0][1-9]|[12][0-9]|[3][0-1])
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-
-		$this->regex['smartDashesMM-DD-YYYY']                = '/
-                (?:
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0]?[1-9]|[1][0-2])
-                        )
-                        [\-' . U::EN_DASH . ']
-                        (
-                            (?:[0]?[1-9]|[12][0-9]|[3][0-1])
-                        )
-                    )
-                    |
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0]?[1-9]|[12][0-9]|[3][0-1])
-                        )
-                        [\-' . U::EN_DASH . ']
-                        (
-                            (?:[0]?[1-9]|[1][0-2])
-                        )
-                    )
-                )
-                [\-' . U::EN_DASH . "]
-				(
-					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-		$this->regex['smartDashesYYYY-MM']                   = '/
-                (
-                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                    [12][0-9]{3}
-                )
-                [\-' . U::EN_DASH . "]
-				(
-					(?:
-						(?:[0][1-9]|[1][0-2])
-						|
-						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
-					)
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-
-		// Smart math.
-		// First, let's find math equations.
-		$this->regex['smartMathEquation'] = "/
-				(?<=\A|\s)										# lookbehind assertion: proceeded by beginning of string or space
-				[\.,\'\"\¿\¡" . U::ELLIPSIS . $this->secondary_quote_style->open() . $this->primary_quote_style->open() . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . U::SINGLE_LOW_9_QUOTE . U::DOUBLE_LOW_9_QUOTE . ']*
-                                                                # allowed proceeding punctuation
-                [\-\(' . U::MINUS . ']*                  # optionally proceeded by dash, minus sign or open parenthesis
-                [0-9]+                                          # must begin with a number
-                (\.[0-9]+)?                                     # optionally allow decimal values after first integer
-                (                                               # followed by a math symbol and a number
-                    [\/\*x\-+=\^' . U::MINUS . U::MULTIPLICATION . U::DIVISION . ']
-                                                                # allowed math symbols
-                    [\-\(' . U::MINUS . ']*              # opptionally preceeded by dash, minus sign or open parenthesis
-                    [0-9]+                                      # must begin with a number
-                    (\.[0-9]+)?                                 # optionally allow decimal values after first integer
-                    [\-\(\)' . U::MINUS . "]*			# opptionally preceeded by dash, minus sign or parenthesis
-				)+
-				[\.,;:\'\"\?\!" . U::ELLIPSIS . $this->secondary_quote_style->close() . $this->primary_quote_style->close() . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . ']*
-                                                                # allowed trailing punctuation
-                (?=\Z|\s)                                       # lookahead assertion: followed by end of string or space
-            /ux';
-		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
-		$this->regex['smartMathRevertRange'] = '/
-                (
-                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                    \d+
-                )
-                [\-' . U::MINUS . "]
-				(
-					\d+
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-		// Revert fractions to basic slash.
-		// We'll leave styling fractions to smart_fractions.
-		$this->regex['smartMathRevertFraction'] = "/
-				(
-					(?<=\s|\A|\'|\"|" . U::NO_BREAK_SPACE . ')
-                    \d+
-                )
-                ' . U::DIVISION . "
-				(
-					\d+
-					(?:st|nd|rd|th)?
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-		// Revert date back to original formats:
-		// YYYY-MM-DD.
-		$this->regex['smartMathRevertDateYYYY-MM-DD'] = '/
-                (
-                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                    [12][0-9]{3}
-                )
-                [\-' . U::MINUS . ']
-                (
-                    (?:[0]?[1-9]|[1][0-2])
-                )
-                [\-' . U::MINUS . "]
-				(
-					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-		// MM-DD-YYYY or DD-MM-YYYY.
-		$this->regex['smartMathRevertDateMM-DD-YYYY'] = '/
-                (?:
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0]?[1-9]|[1][0-2])
-                        )
-                        [\-' . U::MINUS . ']
-                        (
-                            (?:[0]?[1-9]|[12][0-9]|[3][0-1])
-                        )
-                    )
-                    |
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0]?[1-9]|[12][0-9]|[3][0-1])
-                        )
-                        [\-' . U::MINUS . ']
-                        (
-                            (?:[0]?[1-9]|[1][0-2])
-                        )
-                    )
-                )
-                [\-' . U::MINUS . "]
-				(
-					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-		// YYYY-MM or YYYY-DDD next.
-		$this->regex['smartMathRevertDateYYYY-MM'] = '/
-                (
-                    (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                    [12][0-9]{3}
-                )
-                [\-' . U::MINUS . "]
-				(
-					(?:
-						(?:[0][1-9]|[1][0-2])
-						|
-						(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
-					)
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-
-		// MM/DD/YYYY or DD/MM/YYYY.
-		$this->regex['smartMathRevertDateMM/DD/YYYY'] = '/
-                (?:
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0][1-9]|[1][0-2])
-                        )
-                        [\/' . U::DIVISION . ']
-                        (
-                            (?:[0][1-9]|[12][0-9]|[3][0-1])
-                        )
-                    )
-                    |
-                    (?:
-                        (
-                            (?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-                            (?:[0][1-9]|[12][0-9]|[3][0-1])
-                        )
-                        [\/' . U::DIVISION . ']
-                        (
-                            (?:[0][1-9]|[1][0-2])
-                        )
-                    )
-                )
-                [\/' . U::DIVISION . "]
-				(
-					[12][0-9]{3}
-					(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-                )
-            /xu';
-
-
-		$this->regex['smartFractionsSpacing'] = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
-		$this->regex['smartFractionsReplacement'] = '/
-			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
-			(\d+)
-			(?:\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?)	# strip out any zero-width spaces inserted by wrap_hard_hyphens
-			(\d+)
-			(
-				(?:' . U::SINGLE_PRIME . '|' . U::DOUBLE_PRIME . ')? # handle fractions followed by prime symbols
-				(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?                          # handle ordinals after fractions
-				(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
-			)
-			/xu";
-		$this->regex['smartFractionsEscapeMM/YYYY'] = '/
-			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
-				(\d\d?)
-			(\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?)	# capture any zero-width spaces inserted by wrap_hard_hyphens
-				(
-					(?:19\d\d)|(?:20\d\d) # handle 4-decimal years in the 20th and 21st centuries
-				)
-				(
-					(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
-				)
-			/xu";
-
-		$year_regex = [];
-		for ( $year = 1900; $year < 2100; ++$year ) {
-			$year_regex[] = "(?: ( $year ) (\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?) ( ' . ( $year + 1 ) . ' ) )';
-		}
-		$this->regex['smartFractionsEscapeYYYY/YYYY'] = '/
-			(?<=\A|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space})		# lookbehind assertion: makes sure we are not messing up a url
-			(?| " . implode( '|', $year_regex ) . ' )
-			(
-				(?:\Z|\s|' . U::NO_BREAK_SPACE . "|{$this->no_break_narrow_space}|\.|\!|\?|\)|\;|\:|\'|\")	# makes sure we are not messing up a url
-			)
-			/xu";
-
-		$this->regex['smartOrdinalSuffix'] = "/\b(\d+)(st|nd|rd|th)\b/"; // End smart math.
-
-		// Smart marks.
-		$this->regex['smartMarksEscape501(c)'] = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/u';
-
-		// Whitespace handling.
-		$this->regex['singleCharacterWordSpacing'] = "/
-				(?:
-					(\s)
-					(\w)
-					[" . RE::NORMAL_SPACES . "]
-					(?=\w)
-				)
-			/xu";
-
-		$this->regex['dashSpacingEmDash'] = '/
-				(?:
-					\s
-					(' . U::EM_DASH . ')
-					\s
-				)
-				|
-				(?:
-					(?<=\S)							# lookbehind assertion
-					(' . U::EM_DASH . ')
-					(?=\S)							# lookahead assertion
-				)
-			/xu';
-		$this->regex['dashSpacingParentheticalDash'] = '/
-				(?:
-					\s
-					(' . U::EN_DASH . ')
-					\s
-				)
-			/xu';
-		$this->regex['dashSpacingIntervalDash'] = '/
-				(?:
-					(?<=\S)							# lookbehind assertion
-					(' . U::EN_DASH . ')
-					(?=\S)							# lookahead assertion
-				)
-			/xu';
-
-		$this->regex['spaceCollapseNormal']       = "/[" . RE::NORMAL_SPACES . "]+/xu";
-		$this->regex['spaceCollapseNonBreakable'] = "/(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*" . U::NO_BREAK_SPACE . "(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*/xu";
-		$this->regex['spaceCollapseOther']        = "/(?:[" . RE::NORMAL_SPACES . "])*(" . RE::HTML_SPACES . ")(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")*/xu";
-		$this->regex['spaceCollapseBlockStart']   = "/\A(?:[" . RE::NORMAL_SPACES . "]|" . RE::HTML_SPACES . ")+/xu";
-
-		// French punctuation spacing.
-		$this->regex['frenchPunctuationSpacingNarrow']       = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingFull']         = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingSemicolon']    = '/(\w+(?:\s?»)?)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
-		$this->regex['frenchPunctuationSpacingOpeningQuote'] = '/(\s|\A)(«)(\s?)(\w+)/u';
-		$this->regex['frenchPunctuationSpacingClosingQuote'] = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
-
-		// Wrap hard hyphens.
-		$this->regex['wrapHardHyphensRemoveEndingSpace'] = "/({$this->components['hyphens']})" . U::ZERO_WIDTH_SPACE . '$/';
-
-		// Wrap emails.
-		$this->regex['wrapEmailsMatchEmails']   = "/{$this->components['wrapEmailsEmailPattern']}/xi";
-		$this->regex['wrapEmailsReplaceEmails'] = '/([^a-zA-Z])/';
-
-		// Wrap URLs.
-		$this->regex['wrapUrlsPattern']     = "`{$this->components['urlPattern']}`xi";
-		$this->regex['wrapUrlsDomainParts'] = '#(\-|\.)#';
-
-		// Style hanging punctuation.
-		$this->regex['styleHangingPunctuationDouble'] = "/(\s)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
-		$this->regex['styleHangingPunctuationSingle'] = "/(\s)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
-		$this->regex['styleHangingPunctuationInitialDouble'] = "/(?:\A)([{$this->components['doubleHangingPunctuation']}])(\w+)/u";
-		$this->regex['styleHangingPunctuationInitialSingle'] = "/(?:\A)([{$this->components['singleHangingPunctuation']}])(\w+)/u";
-
-		// Dewidowing.
-		$this->regex['dewidow'] = '/
-				(?:
-					\A
-					|
-					(?:
-						(?<space_before>			# subpattern 1: space before (note: ZWSP is not a space)
-							[\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+
-						)
-						(?<neighbor>				# subpattern 2: neighbors widow (short as possible)
-							[^\s' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?
-						)
-					)
-				)
-				(?<space_between>					# subpattern 3: space between
-					[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
-				)
-				(?<widow>							# subpattern 4: widow
-					[\w\pM\-]+?                       # \w includes all alphanumeric Unicode characters but not composed characters
-				)
-				(?<trailing>					    # subpattern 5: any trailing punctuation or spaces
-					[^\w\pM]*
-				)
-				\Z
-			/xu';
-
-		// Add the "study" flag to all our regular expressions.
-		foreach ( $this->regex as &$regex ) {
-			$regex .= 'S';
-		}
-	}
-
-	/**
 	 * Enable lenient parser error handling (HTML is "best guess" if enabled).
 	 *
 	 * @param bool $on Optional. Default false.
@@ -989,12 +354,6 @@ class Settings implements \ArrayAccess {
 		} else {
 			$this->no_break_narrow_space = U::NO_BREAK_SPACE;
 		}
-
-		// Update French guillemets.
-		$this->quote_styles['doubleGuillemetsFrench'] = [
-			'open'  => U::GUILLEMET_OPEN . $this->no_break_narrow_space,
-			'close' => $this->no_break_narrow_space . U::GUILLEMET_CLOSE,
-		];
 	}
 
 	/**
@@ -1068,9 +427,6 @@ class Settings implements \ArrayAccess {
 
 		if ( ! empty( $quotes ) ) {
 			$this->primary_quote_style = $quotes;
-
-			// Update brackets component.
-			$this->update_smart_quotes_brackets();
 		} else {
 			trigger_error( "Invalid quote style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
 		}
@@ -1107,9 +463,6 @@ class Settings implements \ArrayAccess {
 
 		if ( ! empty( $quotes ) ) {
 			$this->secondary_quote_style = $quotes;
-
-			// Update brackets component.
-			$this->update_smart_quotes_brackets();
 		} else {
 			trigger_error( "Invalid quote style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
 		}
@@ -1142,32 +495,9 @@ class Settings implements \ArrayAccess {
 
 		if ( ! empty( $dashes ) ) {
 			$this->dash_style = $dashes;
-
-			// Update dash spacing regex.
-			$this->update_dash_spacing_regex();
 		} else {
 			trigger_error( "Invalid dash style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
 		}
-	}
-
-	/**
-	 * Update the dash spacing regular expression.
-	 */
-	private function update_dash_spacing_regex() {
-		$this->regex['dashSpacingParentheticalDash'] = "/
-			(?:
-				\s
-				({$this->dash_style->parenthetical_dash()})
-				\s
-			)
-			/xu";
-		$this->regex['dashSpacingIntervalDash'] = "/
-			(?:
-				(?<=\S)							# lookbehind assertion
-				({$this->dash_style->interval_dash()})
-				(?=\S)							# lookahead assertion
-			)
-			/xu";
 	}
 
 	/**
@@ -1247,16 +577,16 @@ class Settings implements \ArrayAccess {
 		return Arrays::array_map_assoc( function( $key, $replacement ) {
 
 			// Account for single and double quotes in keys ...
-			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteKey'], $replacement, $match ) ) {
+			if ( preg_match( '/(?:")([^"]+)(?:"\s*=>)/', $replacement, $match ) ) {
 				$key = $match[1];
-			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteKey'], $replacement, $match ) ) {
+			} elseif ( preg_match( "/(?:')([^']+)(?:'\s*=>)/", $replacement, $match ) ) {
 				$key = $match[1];
 			}
 
 			// ... and values.
-			if ( preg_match( $this->regex['customDiacriticsDoubleQuoteValue'], $replacement, $match ) ) {
+			if ( preg_match( '/(?:=>\s*")([^"]+)(?:")/', $replacement, $match ) ) {
 				$replacement = $match[1];
-			} elseif ( preg_match( $this->regex['customDiacriticsSingleQuoteValue'], $replacement, $match ) ) {
+			} elseif ( preg_match( "/(?:=>\s*')([^']+)(?:')/", $replacement, $match ) ) {
 				$replacement = $match[1];
 			}
 
@@ -1295,8 +625,9 @@ class Settings implements \ArrayAccess {
 	 * @param array $replacements     Resulting replacements. Passed by reference.
 	 */
 	private function parse_diacritics_rules( array $diacritics_rules, array &$patterns, array &$replacements ) {
+
 		foreach ( $diacritics_rules as $needle => $replacement ) {
-			$patterns[] = "/{$this->components['smartDiacriticsWordBoundaryInitial']}{$needle}{$this->components['smartDiacriticsWordBoundaryFinal']}/u";
+			$patterns[] = '/\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])' . $needle . '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)/u';
 			$replacements[ $needle ] = $replacement;
 		}
 	}

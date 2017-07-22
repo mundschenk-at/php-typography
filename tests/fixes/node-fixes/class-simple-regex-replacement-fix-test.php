@@ -22,29 +22,31 @@
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace PHP_Typography\Tests\Fixes\Token_Fixes;
+namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes;
+use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
 
 /**
- * Wrap_Emails_Fix unit test.
+ * Simple_Regex_Replacement_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_Emails_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_Emails_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix
  *
  * @uses ::__construct
- * @uses PHP_Typography\RE
+ * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::__construct
+ * @uses PHP_Typography\Arrays
+ * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
- * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix
  */
-class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
+class Simple_Regex_Replacement_Fix_Test extends Node_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -52,8 +54,6 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
 		parent::setUp();
-
-		$this->fix = new Token_Fixes\Wrap_Emails_Fix();
 	}
 
 	/**
@@ -62,23 +62,21 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$fix = new Token_Fixes\Wrap_Emails_Fix( true );
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Regex_Replacement_Fix::class, [ '/(.*)/', '*$1*', 'fooBar' ] );
 
-		$this->assertAttributeEquals( Token_Fix::OTHER, 'target', $fix, 'The fixer should be targetting OTHER tokens.' );
-		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
+		$this->assertAttributeEquals( '/(.*)/', 'regex',           $this->fix );
+		$this->assertAttributeEquals( 'fooBar', 'settings_switch', $this->fix );
+		$this->assertAttributeEquals( '*$1*',   'replacement',     $this->fix );
 	}
 
-
 	/**
-	 * Provide data for testing wrap_emails.
+	 * Provide data for testing apply_internal.
 	 *
 	 * @return array
 	 */
-	public function provide_wrap_emails_data() {
+	public function provide_apply_data() {
 		return [
-			[ 'code@example.org',         'code@&#8203;example.&#8203;org' ],
-			[ 'some.name@sub.domain.org', 'some.&#8203;name@&#8203;sub.&#8203;domain.&#8203;org' ],
-			[ 'funny123@summer1.org',     'funny1&#8203;2&#8203;3&#8203;@&#8203;summer1&#8203;.&#8203;org' ],
+			[ 'foo & bar', '*foo & bar*' ],
 		];
 	}
 
@@ -90,13 +88,14 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
-	 * @dataProvider provide_wrap_emails_data
+	 * @dataProvider provide_apply_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->s->set_email_wrap( true );
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Regex_Replacement_Fix::class, [ '/(.+)/u', '*$1*', 'styleAmpersands' ] );
+		$this->s->set_style_ampersands( true );
 
 		$this->assertFixResultSame( $input, $result );
 	}
@@ -109,13 +108,14 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
-	 * @dataProvider provide_wrap_emails_data
+	 * @dataProvider provide_apply_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->s->set_email_wrap( false );
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Regex_Replacement_Fix::class, [ '/(.+)/u', '*$1*', 'styleAmpersands' ] );
+		$this->s->set_style_ampersands( false );
 
 		$this->assertFixResultSame( $input, $input );
 	}

@@ -84,8 +84,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests initialization.
 	 *
 	 * @covers ::init
-	 * @covers ::initialize_components
-	 * @covers ::initialize_patterns
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
@@ -98,19 +96,13 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assertAttributeNotEmpty( 'regex', $s );
-		$this->assertAttributeNotEmpty( 'components', $s );
 		$this->assertAttributeEmpty( 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assertAttributeNotEmpty( 'regex', $s );
-		$this->assertAttributeNotEmpty( 'components', $s );
 		$this->assertAttributeNotEmpty( 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assertAttributeNotEmpty( 'regex', $second_settings );
-		$this->assertAttributeNotEmpty( 'components', $second_settings );
 		$this->assertAttributeNotEmpty( 'data', $second_settings );
 	}
 
@@ -277,56 +269,16 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tests get_components.
+	 * Tests custom_units.
 	 *
-	 * @covers ::get_components
+	 * @covers ::custom_units
 	 */
-	public function test_get_components() {
-		$s = $this->settings;
-		$c = $s->get_components();
-
-		$this->assertTrue( is_array( $c ) );
-		$this->assertGreaterThan( 0, count( $c ) );
-	}
-
-	/**
-	 * Tests component.
-	 *
-	 * @covers ::component
-	 */
-	public function test_component() {
+	public function test_custom_units() {
 		$s = $this->settings;
 
-		$this->assertFalse( $s->component( 'DoesNotExist' ) );
-		$this->assertEquals( $s->component( 'numbersPrime' ), '\b(?:\d+\/)?\d{1,3}' );
-		$this->assertEquals( $s->component( 'urlScheme' ), '(?:https?|ftps?|file|nfs|feed|itms|itpc)' );
+		$this->assertInternalType( 'string', $s->custom_units(), 'The result of custom_units() is not a string.' );
 	}
 
-	/**
-	 * Tests get_regular_expressions.
-	 *
-	 * @covers ::get_regular_expressions
-	 */
-	public function test_get_regular_expressions() {
-		$s = $this->settings;
-		$regexs = $s->get_regular_expressions();
-
-		$this->assertTrue( is_array( $regexs ) );
-		$this->assertGreaterThan( 0, count( $regexs ) );
-	}
-
-	/**
-	 * Tests regex.
-	 *
-	 * @covers ::regex
-	 */
-	public function test_regex() {
-		$s = $this->settings;
-
-		$this->assertFalse( $s->regex( 'DoesNotExist' ) );
-		$this->assertEquals( $s->regex( 'smartQuotesSingleQuotedNumbers' ), "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/uS" );
-		$this->assertEquals( $s->regex( 'smartDashesEnDashNumbers' ), "/(\b\d+(\.?))\-(\d+\\2)/S" );
-	}
 
 	/**
 	 * Tests set_ignore_parser_errors.
@@ -585,162 +537,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tests update_smart_quotes_brackets.
-	 *
-	 * @covers ::update_smart_quotes_brackets
-	 *
-	 * @uses ::set_smart_quotes_primary
-	 * @uses ::set_smart_quotes_secondary
-	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 * @uses PHP_Typography\Strings::mb_str_split
-	 */
-	public function test_update_smart_quotes_brackets() {
-		$s = $this->settings;
-		$quote_styles = [
-			'doubleCurled',
-			'doubleCurledReversed',
-			'doubleLow9',
-			'doubleLow9Reversed',
-			'singleCurled',
-			'singleCurledReversed',
-			'singleLow9',
-			'singleLow9Reversed',
-			// 'doubleGuillemetsFrench', // test doesn't work for this because it's actually two characters.
-			'doubleGuillemets',
-			'doubleGuillemetsReversed',
-			'singleGuillemets',
-			'singleGuillemetsReversed',
-			'cornerBrackets',
-			'whiteCornerBracket',
-		];
-
-		foreach ( $quote_styles as $primary_style ) {
-			$s->set_smart_quotes_primary( $primary_style );
-
-			foreach ( $quote_styles as $secondary_style ) {
-				$s->set_smart_quotes_secondary( $secondary_style );
-
-				$comp = \PHPUnit\Framework\Assert::readAttribute( $s, 'components' );
-
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
-
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['["'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"]'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['("'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['")'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['{"'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"}'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
-			}
-		}
-	}
-
-	/**
-	 * Assert that the given quote styles match.
-	 *
-	 * @param string $style Style name.
-	 * @param string $open  Opening quote character.
-	 * @param string $close Closing quote character.
-	 */
-	private function assertSmartQuotesStyle( $style, $open, $close ) {
-		switch ( $style ) {
-			case 'doubleCurled':
-				$this->assertSame( Strings::_uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleCurledReversed':
-				$this->assertSame( Strings::_uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleLow9':
-				$this->assertSame( Strings::_uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleLow9Reversed':
-				$this->assertSame( Strings::_uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleCurled':
-				$this->assertSame( Strings::_uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleCurledReversed':
-				$this->assertSame( Strings::_uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleLow9':
-				$this->assertSame( Strings::_uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleLow9Reversed':
-				$this->assertSame( Strings::_uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleGuillemetsFrench':
-				$this->assertSame( Strings::_uchr( 171 ) . Strings::_uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 160 ) . Strings::_uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleGuillemets':
-				$this->assertSame( Strings::_uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'doubleGuillemetsReversed':
-				$this->assertSame( Strings::_uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleGuillemets':
-				$this->assertSame( Strings::_uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'singleGuillemetsReversed':
-				$this->assertSame( Strings::_uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'cornerBrackets':
-				$this->assertSame( Strings::_uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			case 'whiteCornerBracket':
-				$this->assertSame( Strings::_uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
-				break;
-
-			default:
-				$this->assertTrue( false, "Invalid quote style $style." );
-		}
-	}
-
-	/**
 	 * Test set_smart_dashes.
 	 *
 	 * @covers ::set_smart_dashes
@@ -757,7 +553,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::update_dash_spacing_regex
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
@@ -786,7 +581,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style with a Dashes object.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::update_dash_spacing_regex
 	 */
 	public function test_set_smart_dashes_style_with_object() {
 		$s   = $this->settings;
@@ -1576,37 +1370,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::no_break_narrow_space
 	 */
 	public function test_set_true_no_break_narrow_space() {
-		$s   = $this->settings;
-		$s->set_true_no_break_narrow_space(); // defaults to false.
+		$s = $this->settings;
 
-		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 160 ) );
-		$this->assertAttributeContains( [
-			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 160 ),
-			'close' => Strings::_uchr( 160 ) . Strings::_uchr( 187 ),
-		], 'quote_styles', $s );
+		$s->set_true_no_break_narrow_space(); // defaults to false.
+		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_SPACE );
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
-
-		$this->assertSame( $s->no_break_narrow_space(), Strings::_uchr( 8239 ) );
-		$this->assertAttributeContains( [
-			'open'  => Strings::_uchr( 171 ) . Strings::_uchr( 8239 ),
-			'close' => Strings::_uchr( 8239 ) . Strings::_uchr( 187 ),
-		], 'quote_styles', $s );
-	}
-
-
-	/**
-	 * Tests get_top_level_domains_from_file.
-	 *
-	 * @covers ::get_top_level_domains_from_file
-	 */
-	public function test_get_top_level_domains_from_file() {
-		$default = 'ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|com|coop|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw';
-		$invalid_result = $this->settings->get_top_level_domains_from_file( '/some/invalid/path/to_a_non_existent_file.txt' );
-		$valid_result = $this->settings->get_top_level_domains_from_file( dirname( __DIR__ ) . '/vendor/IANA/tlds-alpha-by-domain.txt' );
-
-		$this->assertSame( $default, $invalid_result );
-		$this->assertNotSame( $valid_result, $invalid_result );
-		$this->assertNotEmpty( $valid_result );
+		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_NARROW_SPACE );
 	}
 }

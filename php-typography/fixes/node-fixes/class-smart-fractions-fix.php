@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
@@ -42,19 +43,59 @@ use \PHP_Typography\U;
  */
 class Smart_Fractions_Fix extends Abstract_Node_Fix {
 
-	/**
-	 * CSS class applied to the numerator part.
-	 *
-	 * @var string
-	 */
-	protected $numerator_class;
+	const SPACING = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
+	const FRACTION_MATCHING = '/
+		# lookbehind assertion: makes sure we are not messing up a url
+		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
+
+		(\d+)
+
+		# strip out any zero-width spaces inserted by wrap_hard_hyphens
+		(?:\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
+
+		(\d+)
+		(
+			# handle fractions followed by prime symbols
+			(?:' . U::SINGLE_PRIME . '|' . U::DOUBLE_PRIME . ')?
+
+			# handle ordinals after fractions
+			(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?
+
+			# makes sure we are not messing up a url
+			(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|")
+		)
+		/xu';
+	const ESCAPE_DATE_MM_YYYY = '/
+		# lookbehind assertion: makes sure we are not messing up a url
+		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
+
+			(\d\d?)
+
+		# capture any zero-width spaces inserted by wrap_hard_hyphens
+		(\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
+			(
+				# handle 4-decimal years in the 20th and 21st centuries
+				(?:19\d\d)|(?:20\d\d)
+			)
+			(
+				# makes sure we are not messing up a url
+				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|")
+			)
+		/xu';
 
 	/**
-	 * CSS class applied to the denominator part.
+	 * Regular expression matching consecutive years in the format YYYY/YYYY+1.
 	 *
 	 * @var string
 	 */
-	protected $denominator_class;
+	protected $escape_consecutive_years;
+
+	/**
+	 * Replacement expression including optional CSS classes.
+	 *
+	 * @var string
+	 */
+	protected $replacement;
 
 	/**
 	 * Creates a new fix instance.
@@ -66,9 +107,26 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 	public function __construct( $css_numerator, $css_denominator, $feed_compatible = false ) {
 		parent::__construct( $feed_compatible );
 
-		$this->numerator_class   = $css_numerator;
-		$this->denominator_class = $css_denominator;
+		// Escape consecutive years.
+		$year_regex = [];
+		for ( $year = 1900; $year < 2100; ++$year ) {
+			$year_regex[] = "(?: ( $year ) (\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?) ( ' . ( $year + 1 ) . ' ) )';
+		}
+		$this->escape_consecutive_years = '/
+			# lookbehind assertion: makes sure we are not messing up a url
+			(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
 
+			(?| ' . implode( '|', $year_regex ) . ' )
+			(
+				# makes sure we are not messing up a url
+				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|\")
+			)
+		/xu';
+
+		// Replace fractions.
+		$numerator_css     = empty( $css_numerator ) ? '' : ' class="' . $css_numerator . '"';
+		$denominator_css   = empty( $css_denominator ) ? '' : ' class="' . $css_denominator . '"';
+		$this->replacement = "<sup{$numerator_css}>\$1</sup>" . U::FRACTION_SLASH . "<sub{$denominator_css}>\$2</sub>\$3";
 	}
 
 	/**
@@ -83,29 +141,22 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		// Various special characters and regular expressions.
-		$regex      = $settings->get_regular_expressions();
-		$components = $settings->get_components();
-
 		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
+			$textnode->data = preg_replace( self::SPACING, '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
 		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( $regex['smartFractionsSpacing'], '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
+			$textnode->data = preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
 		}
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
 			// Escape sequences we don't want fractionified.
-			$textnode->data = preg_replace( $regex['smartFractionsEscapeYYYY/YYYY'], '$1' . $components['escapeMarker'] . '$2$3$4', $textnode->data );
-			$textnode->data = preg_replace( $regex['smartFractionsEscapeMM/YYYY'],   '$1' . $components['escapeMarker'] . '$2$3$4', $textnode->data );
+			$textnode->data = preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $textnode->data );
+			$textnode->data = preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $textnode->data );
 
 			// Replace fractions.
-			$numerator_css   = empty( $this->numerator_class ) ? '' : ' class="' . $this->numerator_class . '"';
-			$denominator_css = empty( $this->denominator_class ) ? '' : ' class="' . $this->denominator_class . '"';
-
-			$textnode->data  = preg_replace( $regex['smartFractionsReplacement'], "<sup{$numerator_css}>\$1</sup>" . U::FRACTION_SLASH . "<sub{$denominator_css}>\$2</sub>\$3", $textnode->data );
+			$textnode->data = preg_replace( self::FRACTION_MATCHING, $this->replacement, $textnode->data );
 
 			// Unescape escaped sequences.
-			$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );
+			$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $textnode->data );
 		}
 	}
 }

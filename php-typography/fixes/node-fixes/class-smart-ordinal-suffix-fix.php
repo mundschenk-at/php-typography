@@ -2,7 +2,8 @@
 /**
  *  This file is part of wp-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -41,11 +42,11 @@ use \PHP_Typography\DOM;
 class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 
 	/**
-	 * The CSS class to use for the suffix markup.
+	 * The replacement expression (depends on CSS class).
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $css_class;
+	private $replacement;
 
 	/**
 	 * Creates a new smart ordinal suffix fixer.
@@ -56,7 +57,8 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 	public function __construct( $css_class = null, $feed_compatible = false ) {
 		parent::__construct( $feed_compatible );
 
-		$this->css_class = $css_class;
+		$ordinal_class     = empty( $css_class ) ? '' : ' class="' . $css_class . '"';
+		$this->replacement = "\$1<sup{$ordinal_class}>\$2</sup>";
 	}
 
 	/**
@@ -71,7 +73,6 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$ordinal_class  = empty( $this->css_class ) ? '' : ' class="' . $this->css_class . '"';
-		$textnode->data = preg_replace( $settings->regex( 'smartOrdinalSuffix' ), '$1' . "<sup{$ordinal_class}>$2</sup>", $textnode->data );
+		$textnode->data = preg_replace( "/\b(\d+)(st|nd|rd|th)\b/", $this->replacement, $textnode->data );
 	}
 }

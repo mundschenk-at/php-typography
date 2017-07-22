@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
@@ -38,6 +39,8 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Smart_Marks_Fix extends Abstract_Node_Fix {
+
+	const ESCAPE_501C = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/u';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -51,12 +54,8 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		// Various special characters and regular expressions.
-		$regex      = $settings->get_regular_expressions();
-		$components = $settings->get_components();
-
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$textnode->data = preg_replace( $regex['smartMarksEscape501(c)'], '$1' . $components['escapeMarker'] . '$2' . $components['escapeMarker'] . '$3', $textnode->data );
+		$textnode->data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $textnode->data );
 
 		// Replace marks.
 		$textnode->data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,      $textnode->data );
@@ -66,6 +65,6 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		$textnode->data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $textnode->data );
 
 		// Un-escape escaped sequences.
-		$textnode->data = str_replace( $components['escapeMarker'], '', $textnode->data );
+		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $textnode->data );
 	}
 }
