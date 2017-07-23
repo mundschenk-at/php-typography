@@ -26,6 +26,7 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Settings;
+use \PHP_Typography\U;
 
 /**
  * Style_Initial_Quotes_Fix unit test.
@@ -91,6 +92,8 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply_internal
 	 *
 	 * @uses ::apply
+	 * @uses ::is_single_quote
+	 * @uses ::is_double_quote
 	 *
 	 * @dataProvider provide_style_initial_quotes_data
 	 *
@@ -113,6 +116,8 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply_internal
 	 *
 	 * @uses ::apply
+	 * @uses ::is_single_quote
+	 * @uses ::is_double_quote
 	 *
 	 * @dataProvider provide_style_initial_quotes_data
 	 *
@@ -127,5 +132,59 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 		$this->s->set_initial_quote_tags();
 
 		$this->assertFixResultSame( $input, $input, $left, $right, 'p', $is_title );
+	}
+
+	/**
+	 * Provides data for testing is_single_quote and is_double_quote.
+	 *
+	 * @return array
+	 */
+	public function provide_is_quote_data() {
+		return [
+			[ '"', false, true ],
+			[ U::DOUBLE_QUOTE_OPEN, false, true ],
+			[ U::GUILLEMET_OPEN, false, true ],
+			[ U::GUILLEMET_CLOSE, false, true ],
+			[ U::DOUBLE_LOW_9_QUOTE, false, true ],
+			[ "'", true, false ],
+			[ U::SINGLE_QUOTE_OPEN, true, false ],
+			[ U::SINGLE_LOW_9_QUOTE, true, false ],
+			[ U::SINGLE_ANGLE_QUOTE_OPEN, true, false ],
+			[ U::SINGLE_ANGLE_QUOTE_CLOSE, true, false ],
+			[ ',', true, false ],
+			[ '!', false, false ],
+			[ 'a', false, false ],
+			[ '-', false, false ],
+		];
+	}
+
+	/**
+	 * Test is_single_quote.
+	 *
+	 * @covers ::is_single_quote
+	 *
+	 * @dataProvider provide_is_quote_data
+	 *
+	 * @param string $quote   Quote character.
+	 * @param bool   $result  Expected result.
+	 * @param bool   $ignored Ignored.
+	 */
+	public function test_is_single_quote( $quote, $result, $ignored ) {
+		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_single_quote', [ $quote ] ) );
+	}
+
+	/**
+	 * Test is_double_quote.
+	 *
+	 * @covers ::is_double_quote
+	 *
+	 * @dataProvider provide_is_quote_data
+	 *
+	 * @param string $quote   Quote character.
+	 * @param bool   $ignored Ignored.
+	 * @param bool   $result  Expected result.
+	 */
+	public function test_is_double_quote( $quote, $ignored, $result ) {
+		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_double_quote', [ $quote ] ) );
 	}
 }
