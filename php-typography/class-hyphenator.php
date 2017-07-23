@@ -165,8 +165,7 @@ class Hyphenator {
 		}
 
 		$success = false;
-		$this->language = $lang;
-		$language_file_name = dirname( __FILE__ ) . '/lang/' . $this->language . '.json';
+		$language_file_name = dirname( __FILE__ ) . '/lang/' . $lang . '.json';
 
 		if ( file_exists( $language_file_name ) ) {
 			$raw_language_file = file_get_contents( $language_file_name );
@@ -175,22 +174,20 @@ class Hyphenator {
 				$language_file = json_decode( $raw_language_file, true );
 
 				if ( false !== $language_file ) {
-					$this->pattern_exceptions = $language_file['exceptions'];
+					$this->language           = $lang;
 					$this->pattern_trie       = Trie_Node::build_trie( $language_file['patterns'] );
+					$this->pattern_exceptions = $language_file['exceptions'];
 
 					$success = true;
 				}
-
-				unset( $raw_language_file );
-				unset( $language_file );
 			}
 		}
 
 		// Clean up.
 		if ( ! $success ) {
-			unset( $this->language );
-			unset( $this->pattern_trie );
-			unset( $this->pattern_exceptions );
+			$this->language = null;
+			$this->pattern_trie = null;
+			$this->pattern_exceptions = [];
 		}
 
 		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
@@ -258,7 +255,7 @@ class Hyphenator {
 
 		// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
 		// Note: This is different than uppercase words, where we are looking for title case.
-		if ( ! $hyphenate_title_case && $func['substr']( $the_key , 0 , 1 ) !== $func['substr']( $word, 0, 1 ) ) {
+		if ( ! $hyphenate_title_case && $func['substr']( $the_key, 0, 1 ) !== $func['substr']( $word, 0, 1 ) ) {
 			return $word;
 		}
 
@@ -278,10 +275,10 @@ class Hyphenator {
 
 		for ( $i = 0; $i < $word_length; $i++ ) {
 			if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
-				$hyphenated_word .= $hyphen . $word_parts[ $i ];
-			} else {
-				$hyphenated_word .= $word_parts[ $i ];
+				$hyphenated_word .= $hyphen;
 			}
+
+			$hyphenated_word .= $word_parts[ $i ];
 		}
 
 		return $hyphenated_word;
