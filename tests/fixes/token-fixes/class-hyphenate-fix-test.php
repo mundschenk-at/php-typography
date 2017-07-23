@@ -199,8 +199,8 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->fix->set_hyphenator( $h2 );
 
 		// Retrieve Hyphenator and assert results.
-		$this->assertEquals( $h2, $this->fix->get_hyphenator( $this->s ) );
-		$this->assertNotEquals( $h1, $this->fix->get_hyphenator( $this->s ) );
+		$this->assertSame( $h2, $this->fix->get_hyphenator( $this->s ) );
+		$this->assertNotSame( $h1, $this->fix->get_hyphenator( $this->s ) );
 	}
 
 
