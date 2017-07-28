@@ -29,6 +29,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\DOM;
 use \PHP_Typography\Hyphenator;
+use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Settings;
 use \PHP_Typography\U;
 
@@ -57,19 +58,26 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * Creates a new fix instance.
 	 *
-	 * @param int  $target          Optional. Default Token_Fix::WORDS.
-	 * @param bool $feed_compatible Optional. Default false.
+	 * @param Hyphenator_Cache|null $cache           Optional. Default null.
+	 * @param int                   $target          Optional. Default Token_Fix::WORDS.
+	 * @param bool                  $feed_compatible Optional. Default false.
 	 */
-	public function __construct( $target = Token_Fix::WORDS, $feed_compatible = false ) {
+	public function __construct( Hyphenator_Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
 		parent::__construct( $target, $feed_compatible );
+
+		if ( empty( $cache ) ) {
+			$cache = new Hyphenator_Cache();
+		}
+
+		$this->cache = $cache;
 	}
 
 	/**
-	 * The hyphenator instance.
+	 * The cache for Hyphenator instances.
 	 *
-	 * @var Hyphenator $hyphenator
+	 * @var Hyphenator_Cache
 	 */
-	protected $hyphenator;
+	protected $cache;
 
 	/**
 	 * Apply the tweak to a given textnode.
@@ -128,27 +136,27 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @return Hyphenator
 	 */
 	public function get_hyphenator( Settings $settings ) {
-		if ( ! isset( $this->hyphenator ) ) {
+		$lang       = $settings['hyphenLanguage'];
+		$exceptions = (array) $settings['hyphenationCustomExceptions'];
+		$hyphenator = $this->cache->get_hyphenator( $lang );
 
-			// Create and initialize our hyphenator instance.
-			$this->hyphenator = new Hyphenator(
-				isset( $settings['hyphenLanguage'] ) ? $settings['hyphenLanguage'] : null,
-				isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : []
-			);
+		if ( empty( $hyphenator ) ) {
+			$hyphenator = new Hyphenator( $lang, $exceptions );
+			$this->cache->set_hyphenator( $lang, $hyphenator );
 		} else {
-			$this->hyphenator->set_language( $settings['hyphenLanguage'] );
-			$this->hyphenator->set_custom_exceptions( isset( $settings['hyphenationCustomExceptions'] ) ? $settings['hyphenationCustomExceptions'] : [] );
+			$hyphenator->set_language( $lang ); // just for insurance.
+			$hyphenator->set_custom_exceptions( $exceptions );
 		}
 
-		return $this->hyphenator;
+		return $hyphenator;
 	}
 
 	/**
 	 * Injects an existing Hyphenator instance (to facilitate language caching).
 	 *
-	 * @param Hyphenator $hyphenator A hyphenator instance.
+	 * @param Hyphenator_Cache $cache Required.
 	 */
-	public function set_hyphenator( Hyphenator $hyphenator ) {
-		$this->hyphenator = $hyphenator;
+	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
+		$this->cache = $cache;
 	}
 }

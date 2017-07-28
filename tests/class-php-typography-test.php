@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use \PHP_Typography\PHP_Typography;
+use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Fixes\Node_Fix;
 use \PHP_Typography\Fixes\Token_Fix;
@@ -38,6 +39,7 @@ use \PHP_Typography\U;
  * @usesDefaultClass PHP_Typography\PHP_Typography
  *
  * @uses PHP_Typography\PHP_Typography
+ * @uses PHP_Typography\Hyphenator_Cache
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
@@ -2937,4 +2939,31 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $result, $this->invokeStaticMethod( PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
 	}
 
+	/**
+	 * Tests get_hyphenator_cache.
+	 *
+	 * @covers ::get_hyphenator_cache
+	 */
+	public function test_get_hyphenator_cache() {
+		$cache = $this->typo->get_hyphenator_cache();
+
+		$this->assertInstanceOf( Hyphenator_Cache::class, $cache );
+	}
+
+	/**
+	 * Tests set_hyphenator_cache.
+	 *
+	 * @covers ::set_hyphenator_cache
+	 *
+	 * @uses ::get_hyphenator_cache
+	 */
+	public function test_set_hyphenator_cache() {
+		$new_cache = new Hyphenator_Cache();
+		$old_cache = $this->typo->get_hyphenator_cache();
+
+		$this->assertNotSame( $old_cache, $new_cache );
+
+		$this->typo->set_hyphenator_cache( $new_cache );
+		$this->assertSame( $new_cache, $this->typo->get_hyphenator_cache() );
+	}
 }

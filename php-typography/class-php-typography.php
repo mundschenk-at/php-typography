@@ -89,6 +89,13 @@ class PHP_Typography {
 	private $process_words_fix;
 
 	/**
+	 * The hyphenator cache.
+	 *
+	 * @var Hyphenator_Cache
+	 */
+	protected $hyphenator_cache;
+
+	/**
 	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
 	 *
 	 * @var array
@@ -173,10 +180,12 @@ class PHP_Typography {
 		$this->register_node_fix( new Node_Fixes\Style_Hanging_Punctuation_Fix( $this->css_classes['push-single'], $this->css_classes['push-double'], $this->css_classes['pull-single'], $this->css_classes['pull-double'] ), self::HTML_INSERTION );
 
 		// Register token fixes.
+		$cache = $this->get_hyphenator_cache();
+
 		$this->register_token_fix( new Token_Fixes\Wrap_Hard_Hyphens_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix() );
-		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix() );
+		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix( $cache ) );
+		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix( $cache ) );
+		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix( $cache ) );
 		$this->register_token_fix( new Token_Fixes\Wrap_Emails_Fix() );
 	}
 
@@ -464,6 +473,28 @@ class PHP_Typography {
 		}
 
 		return $this->html5_parser;
+	}
+
+	/**
+	 * Retrieves the hyphenator cache.
+	 *
+	 * @return Hyphenator_Cache
+	 */
+	public function get_hyphenator_cache() {
+		if ( ! isset( $this->hyphenator_cache ) ) {
+			$this->hyphenator_cache = new Hyphenator_Cache();
+		}
+
+		return $this->hyphenator_cache;
+	}
+
+	/**
+	 * Injects an existing Hyphenator_Cache (to facilitate persistent language caching).
+	 *
+	 * @param Hyphenator_Cache $cache A hyphenator cache instance.
+	 */
+	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
+		$this->hyphenator_cache = $cache;
 	}
 
 	/**

@@ -35,6 +35,7 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Compounds_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Hyphenator_Cache
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
@@ -62,7 +63,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$fix = new Token_Fixes\Hyphenate_Compounds_Fix( true );
+		$fix = new Token_Fixes\Hyphenate_Compounds_Fix( null, true );
 
 		$this->assertAttributeEquals( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
 		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
