@@ -58,7 +58,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @return mixed Method return.
 	 */
-	protected function invokeMethod( &$object, $method_name, array $parameters = [] ) {
+	protected function invokeMethod( $object, $method_name, array $parameters = [] ) {
 		$reflection = new \ReflectionClass( get_class( $object ) );
 		$method = $reflection->getMethod( $method_name );
 		$method->setAccessible( true );
@@ -95,6 +95,52 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 		$property = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 		$property->setValue( $value );
+	}
+
+	/**
+	 * Sets the value of a private/protected property of a class.
+	 *
+	 * @param object     $object        Instantiated object that we will run method on.
+	 * @param string     $property_name Property to set.
+	 * @param mixed|null $value         The new value.
+	 */
+	protected function setValue( $object, $property_name, $value ) {
+		$reflection = new \ReflectionClass( $classname );
+		$property = $reflection->getProperty( $property_name );
+		$property->setAccessible( true );
+		$property->setValue( $object, $value );
+	}
+
+	/**
+	 * Retrieves the value of a private/protected property of a class.
+	 *
+	 * @param string $classname     A class whose property we will access.
+	 * @param string $property_name Property to set.
+	 *
+	 * @return mixed
+	 */
+	protected function getStaticValue( $classname, $property_name ) {
+		$reflection = new \ReflectionClass( $classname );
+		$property = $reflection->getProperty( $property_name );
+		$property->setAccessible( true );
+
+		return $property->getValue();
+	}
+
+	/**
+	 * Retrieves the value of a private/protected property of a class.
+	 *
+	 * @param object $object        Instantiated object that we will run method on.
+	 * @param string $property_name Property to set.
+	 *
+	 * @return mixed
+	 */
+	protected function getValue( $object, $property_name ) {
+		$reflection = new \ReflectionClass( get_class( $object ) );
+		$property = $reflection->getProperty( $property_name );
+		$property->setAccessible( true );
+
+		return $property->getValue( $object );
 	}
 
 	/**
