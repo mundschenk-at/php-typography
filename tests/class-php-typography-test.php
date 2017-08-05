@@ -1881,6 +1881,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', false ],
 			[ 'À "programmer"?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?', true ],
 			[ 'À "programmer":', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&nbsp;:', true ],
+			[ '<a href="#">foo</a>: bar', '<a href="#">foo</a>&nbsp;: bar', true ],
+			[ 'À «<a href="#">programmer</a>»:', '&Agrave; &laquo;&#8239;<a href="#">programmer</a>&#8239;&raquo;&nbsp;:', true ],
 		];
 	}
 

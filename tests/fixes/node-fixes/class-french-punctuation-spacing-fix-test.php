@@ -78,9 +78,23 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Provide data for testing French punctuation rules.
+	 *
+	 * @return array
+	 */
+	public function provide_french_punctuation_spacing_with_siblings_data() {
+		return [
+			[ ': foo', '&nbsp;: foo' ],
+			[ 'À «', '&Agrave; &laquo;&#8239;' ],
+		];
+	}
+
+	/**
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses ::remove_adjacent_characters
 	 *
 	 * @dataProvider provide_french_punctuation_spacing_data
 	 *
@@ -95,9 +109,30 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
+	 * Test apply with left and right textnode siblings.
+	 *
+	 * @covers ::apply
+	 *
+	 * @uses ::remove_adjacent_characters
+	 *
+	 * @dataProvider provide_french_punctuation_spacing_with_siblings_data
+	 *
+	 * @param string $html       HTML input.
+	 * @param string $result     Expected result.
+	 */
+	public function test_apply_with_siblings( $html, $result ) {
+		$this->s->set_french_punctuation_spacing( true );
+		$this->s->set_true_no_break_narrow_space( true );
+
+		$this->assertFixResultSame( $html, $result, 'foo', 'bar' );
+	}
+
+	/**
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses ::remove_adjacent_characters
 	 *
 	 * @dataProvider provide_french_punctuation_spacing_data
 	 *
