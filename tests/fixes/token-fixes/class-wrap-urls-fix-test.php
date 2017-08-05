@@ -35,6 +35,7 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_URLs_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Hyphenator_Cache
  * @uses PHP_Typography\RE
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
@@ -63,7 +64,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$fix = new Token_Fixes\Wrap_URLs_Fix( true );
+		$fix = new Token_Fixes\Wrap_URLs_Fix( null, true );
 
 		$this->assertAttributeEquals( Token_Fix::OTHER, 'target', $fix, 'The fixer should be targetting OTHER tokens.' );
 		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );

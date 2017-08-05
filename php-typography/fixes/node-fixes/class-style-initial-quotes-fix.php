@@ -85,43 +85,46 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 			$func            = Strings::functions( $textnode->data );
 			$first_character = $func['substr']( $textnode->data, 0, 1 );
 
-			switch ( $first_character ) {
-				case "'":
-				case U::SINGLE_QUOTE_OPEN:
-				case U::SINGLE_LOW_9_QUOTE:
-				case U::SINGLE_ANGLE_QUOTE_OPEN:
-				case U::SINGLE_ANGLE_QUOTE_CLOSE:
-				case ',':
-				case '"':
-				case U::DOUBLE_QUOTE_OPEN:
-				case U::GUILLEMET_OPEN:
-				case U::GUILLEMET_CLOSE:
-				case U::DOUBLE_LOW_9_QUOTE:
-					$block_level_parent = DOM::get_block_parent_name( $textnode );
+			if ( self::is_single_quote( $first_character ) || self::is_double_quote( $first_character ) ) {
+				$block_level_parent = DOM::get_block_parent_name( $textnode );
 
-					if ( $is_title ) {
-						// Assume page title is h2.
-						$block_level_parent = 'h2';
+				if ( $is_title ) {
+					// Assume page title is h2.
+					$block_level_parent = 'h2';
+				}
+
+				if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+					if ( self::is_single_quote( $first_character ) ) {
+						$span_class = $this->single_quote_class;
+					} else {
+						$span_class = $this->double_quote_class;
 					}
 
-					if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
-						switch ( $first_character ) {
-							case "'":
-							case U::SINGLE_QUOTE_OPEN:
-							case U::SINGLE_LOW_9_QUOTE:
-							case U::SINGLE_ANGLE_QUOTE_OPEN:
-							case U::SINGLE_ANGLE_QUOTE_CLOSE:
-							case ',':
-								$span_class = $this->single_quote_class;
-								break;
-
-							default: // double quotes or guillemets.
-								$span_class = $this->double_quote_class;
-						}
-
-						$textnode->data = '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
-					}
+					$textnode->data = '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
+				}
 			}
 		}
+	}
+
+	/**
+	 * Checks if the given string is a "single" quote character.
+	 *
+	 * @param string $quote Required.
+	 *
+	 * @return bool
+	 */
+	private static function is_single_quote( $quote ) {
+		return ( "'" === $quote || U::SINGLE_QUOTE_OPEN === $quote || U::SINGLE_LOW_9_QUOTE === $quote || U::SINGLE_ANGLE_QUOTE_OPEN === $quote || U::SINGLE_ANGLE_QUOTE_CLOSE === $quote || ',' === $quote );
+	}
+
+	/**
+	 * Checks if the given string is a "single" quote character.
+	 *
+	 * @param string $quote Required.
+	 *
+	 * @return bool
+	 */
+	private static function is_double_quote( $quote ) {
+		return ( '"' === $quote || U::DOUBLE_QUOTE_OPEN === $quote || U::GUILLEMET_OPEN === $quote || U::GUILLEMET_CLOSE === $quote || U::DOUBLE_LOW_9_QUOTE === $quote );
 	}
 }

@@ -35,6 +35,7 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Hyphenator_Cache
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
@@ -61,7 +62,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$fix = new Token_Fixes\Hyphenate_Fix( Token_Fix::COMPOUND_WORDS, true );
+		$fix = new Token_Fixes\Hyphenate_Fix( null, Token_Fix::COMPOUND_WORDS, true );
 
 		$this->assertAttributeEquals( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
 		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
@@ -180,27 +181,26 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	}
 
 	/**
-	 * Test set_hyphenator.
+	 * Test set_hyphenator_cache.
 	 *
-	 * @covers ::set_hyphenator()
+	 * @covers ::set_hyphenator_cache()
 	 *
 	 * @uses ::get_hyphenator
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
 	 * @uses PHP_Typography\Hyphenator::set_language
 	 */
-	public function test_set_hyphenator() {
+	public function test_set_hyphenator_cache() {
 
 		// Initial set-up.
-		$h1 = $this->fix->get_hyphenator( $this->s );
+		$internal_cache = $this->getValue( $this->fix, 'cache' );
+		$cache          = new \PHP_Typography\Hyphenator_Cache();
 
-		// Create external Hyphenator.
-		$h2 = new \PHP_Typography\Hyphenator();
-		$this->fix->set_hyphenator( $h2 );
+		$this->fix->set_hyphenator_cache( $cache );
 
-		// Retrieve Hyphenator and assert results.
-		$this->assertEquals( $h2, $this->fix->get_hyphenator( $this->s ) );
-		$this->assertNotEquals( $h1, $this->fix->get_hyphenator( $this->s ) );
+		// Retrieve cache and assert results.
+		$this->assertNotSame( $cache, $internal_cache );
+		$this->assertSame( $cache, $this->getValue( $this->fix, 'cache' ) );
 	}
 
 

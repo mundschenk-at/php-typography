@@ -62,13 +62,6 @@ class PHP_Typography {
 	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
 
 	/**
-	 * A hashmap of settings for the various typographic options.
-	 *
-	 * @var Settings
-	 */
-	protected $settings;
-
-	/**
 	 * A DOM-based HTML5 parser.
 	 *
 	 * @var \Masterminds\HTML5
@@ -96,11 +89,11 @@ class PHP_Typography {
 	private $process_words_fix;
 
 	/**
-	 * An array of Token_Fix implementations.
+	 * The hyphenator cache.
 	 *
-	 * @var array
+	 * @var Hyphenator_Cache
 	 */
-	private $token_fixes = [];
+	protected $hyphenator_cache;
 
 	/**
 	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
@@ -123,24 +116,34 @@ class PHP_Typography {
 	];
 
 	/**
+	 * Constant for signalling immediate initialization to the constructor.
+	 *
+	 * @var string
+	 */
+	const INIT_NOW  = 'now';
+
+	/**
+	 * Constant for signalling lazy (manual) initialization to the constructor.
+	 *
+	 * @var string
+	 */
+	const INIT_LAZY = 'lazy';
+
+	/**
 	 * Sets up a new PHP_Typography object.
 	 *
-	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
-	 * @param string  $init         Optional. Flag to control initialization. Valid inputs are 'now' and 'lazy'. Default 'now'.
+	 * @param string $init Optional. Flag to control initialization. Valid inputs are INIT_NOW and INIT_LAZY. Default INIT_NOW.
 	 */
-	public function __construct( $set_defaults = true, $init = 'now' ) {
-		if ( 'now' === $init ) {
-			$this->init( $set_defaults );
+	public function __construct( $init = self::INIT_NOW ) {
+		if ( self::INIT_NOW === $init ) {
+			$this->init();
 		}
 	}
 
 	/**
 	 * Initializes the PHP_Typography object.
-	 *
-	 * @param boolean $set_defaults Optional. If true, set default values for various properties. Default true.
 	 */
-	public function init( $set_defaults = true ) {
-		$this->settings          = new Settings( $set_defaults );
+	public function init() {
 		$this->process_words_fix = new Node_Fixes\Process_Words_Fix();
 
 		// Nodify anything that requires adjacent text awareness here.
@@ -177,584 +180,57 @@ class PHP_Typography {
 		$this->register_node_fix( new Node_Fixes\Style_Hanging_Punctuation_Fix( $this->css_classes['push-single'], $this->css_classes['push-double'], $this->css_classes['pull-single'], $this->css_classes['pull-double'] ), self::HTML_INSERTION );
 
 		// Register token fixes.
+		$cache = $this->get_hyphenator_cache();
+
 		$this->register_token_fix( new Token_Fixes\Wrap_Hard_Hyphens_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix() );
-		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix() );
+		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix( $cache ) );
+		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix( $cache ) );
+		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix( $cache ) );
 		$this->register_token_fix( new Token_Fixes\Wrap_Emails_Fix() );
-	}
-
-	/**
-	 * (Re)sets various options to their default values.
-	 */
-	public function set_defaults() {
-		$this->settings->set_defaults();
-	}
-
-	/**
-	 * Retrieves a copy (suitable for modification) of the internal settings.
-	 *
-	 * @return Settings|null A clone of the internal settings. Returns null if the settings object has not been initialized yet.
-	 */
-	public function get_settings() {
-		if ( ! empty( $this->settings ) ) {
-			return clone $this->settings;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Enables lenient parser error handling (like it was before release 3.5.2).
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_ignore_parser_errors( $on = false ) {
-		$this->settings->set_ignore_parser_errors( $on );
-	}
-
-	/**
-	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
-	 *
-	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
-	 */
-	public function set_parser_errors_handler( $handler = null ) {
-		$this->settings->set_parser_errors_handler( $handler );
-	}
-
-	/**
-	 * Enables usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_true_no_break_narrow_space( $on = false ) {
-		$this->settings->set_true_no_break_narrow_space( $on );
-	}
-
-	/**
-	 * Sets tags for which the typography of their children will be left untouched.
-	 *
-	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
-	 *                           Default [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ].
-	 */
-	public function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ) {
-		$this->settings->set_tags_to_ignore( $tags );
-	}
-
-	/**
-	 * Sets classes for which the typography of their children will be left untouched.
-	 *
-	 * @param string|array $classes Optional. A comma separated list or an array of class names. Default [ 'vcard', 'noTypo' ].
-	 */
-	 function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
-		$this->settings->set_classes_to_ignore( $classes );
-	}
-
-	/**
-	 * Sets IDs for which the typography of their children will be left untouched.
-	 *
-	 * @param string|array $ids Optional. A comma separated list or an array of tag names. Default empty array.
-	 */
-	public function set_ids_to_ignore( $ids = [] ) {
-		$this->settings->set_ids_to_ignore( $ids );
-	}
-
-	/**
-	 * Enables/disables typographic quotes.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_quotes( $on = true ) {
-		$this->settings->set_smart_quotes( $on );
-	}
-
-	/**
-	 * Sets the style for primary ('double') quotemarks.
-	 *
-	 * Allowed values for $style:
-	 * "doubleCurled" => "&ldquo;foo&rdquo;",
-	 * "doubleCurledReversed" => "&rdquo;foo&rdquo;",
-	 * "doubleLow9" => "&bdquo;foo&rdquo;",
-	 * "doubleLow9Reversed" => "&bdquo;foo&ldquo;",
-	 * "singleCurled" => "&lsquo;foo&rsquo;",
-	 * "singleCurledReversed" => "&rsquo;foo&rsquo;",
-	 * "singleLow9" => "&sbquo;foo&rsquo;",
-	 * "singleLow9Reversed" => "&sbquo;foo&lsquo;",
-	 * "doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
-	 * "doubleGuillemets" => "&laquo;foo&raquo;",
-	 * "doubleGuillemetsReversed" => "&raquo;foo&laquo;",
-	 * "singleGuillemets" => "&lsaquo;foo&rsaquo;",
-	 * "singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
-	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
-	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
-	 *
-	 * @param string $style Optional. Default 'doubleCurled.
-	 */
-	public function set_smart_quotes_primary( $style = 'doubleCurled' ) {
-		$this->settings->set_smart_quotes_primary( $style );
-	}
-
-	/**
-	 * Sets the style for secondary ('single') quotemarks.
-	 *
-	 * Allowed values for $style:
-	 * "doubleCurled" => "&ldquo;foo&rdquo;",
-	 * "doubleCurledReversed" => "&rdquo;foo&rdquo;",
-	 * "doubleLow9" => "&bdquo;foo&rdquo;",
-	 * "doubleLow9Reversed" => "&bdquo;foo&ldquo;",
-	 * "singleCurled" => "&lsquo;foo&rsquo;",
-	 * "singleCurledReversed" => "&rsquo;foo&rsquo;",
-	 * "singleLow9" => "&sbquo;foo&rsquo;",
-	 * "singleLow9Reversed" => "&sbquo;foo&lsquo;",
-	 * "doubleGuillemetsFrench" => "&laquo;&nbsp;foo&nbsp;&raquo;",
-	 * "doubleGuillemets" => "&laquo;foo&raquo;",
-	 * "doubleGuillemetsReversed" => "&raquo;foo&laquo;",
-	 * "singleGuillemets" => "&lsaquo;foo&rsaquo;",
-	 * "singleGuillemetsReversed" => "&rsaquo;foo&lsaquo;",
-	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
-	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
-	 *
-	 * @param string $style Optional. Default 'singleCurled'.
-	 */
-	public function set_smart_quotes_secondary( $style = 'singleCurled' ) {
-		$this->settings->set_smart_quotes_secondary( $style );
-	}
-
-	/**
-	 * Enables/disables replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_dashes( $on = true ) {
-		$this->settings->set_smart_dashes( $on );
-	}
-
-	/**
-	 * Sets the typographical conventions used by smart_dashes.
-	 *
-	 * Allowed values for $style:
-	 * - "traditionalUS"
-	 * - "international"
-	 *
-	 * @param string $style Optional. Default "englishTraditional".
-	 */
-	public function set_smart_dashes_style( $style = 'traditionalUS' ) {
-		$this->settings->set_smart_dashes_style( $style );
-	}
-
-	/**
-	 * Enables/disables replacement of "..." with "…".
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_ellipses( $on = true ) {
-		$this->settings->set_smart_ellipses( $on );
-	}
-
-	/**
-	 * Enables/disables replacement "creme brulee" with "crème brûlée".
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_diacritics( $on = true ) {
-		$this->settings->set_smart_diacritics( $on );
-	}
-
-	/**
-	 * Sets the language used for diacritics replacements.
-	 *
-	 * @param string $lang Optional. Has to correspond to a filename in 'diacritics/'. Default 'en-US'.
-	 */
-	public function set_diacritic_language( $lang = 'en-US' ) {
-		$this->settings->set_diacritic_language( $lang );
-	}
-
-	/**
-	 * Sets up custom diacritics replacements.
-	 *
-	 * @param string|array $replacements Optional An array formatted [needle=>replacement, needle=>replacement...],
-	 *                                   or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
-	 *                                   Default empty array.
-	 */
-	public function set_diacritic_custom_replacements( $replacements = [] ) {
-		$this->settings->set_diacritic_custom_replacements( $replacements );
-	}
-
-	/**
-	 * Enables/disables replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_marks( $on = true ) {
-		$this->settings->set_smart_marks( $on );
-	}
-
-	/**
-	 * Enables/disables proper mathematical symbols.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_math( $on = true ) {
-		$this->settings->set_smart_math( $on );
-	}
-
-	/**
-	 * Enables/disables replacement of 2^2 with 2<sup>2</sup>
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_exponents( $on = true ) {
-		$this->settings->set_smart_exponents( $on );
-	}
-
-	/**
-	 * Enables/disables replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_fractions( $on = true ) {
-		$this->settings->set_smart_fractions( $on );
-	}
-
-	/**
-	 * Enables/disables replacement of 1st with 1<sup>st</sup>.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_ordinal_suffix( $on = true ) {
-		$this->settings->set_smart_ordinal_suffix( $on );
-	}
-
-	/**
-	 * Enables/disables forcing single character words to next line with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_single_character_word_spacing( $on = true ) {
-		$this->settings->set_single_character_word_spacing( $on );
-	}
-
-	/**
-	 * Enables/disables fraction spacing.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_fraction_spacing( $on = true ) {
-		$this->settings->set_fraction_spacing( $on );
-	}
-
-	/**
-	 * Enables/disables keeping units and values together with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_unit_spacing( $on = true ) {
-		$this->settings->set_unit_spacing( $on );
-	}
-
-	/**
-	 * Enables/disables numbered abbreviations like "ISO 9000" together with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_numbered_abbreviation_spacing( $on = true ) {
-		$this->settings->set_numbered_abbreviation_spacing( $on );
-	}
-
-	/**
-	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_french_punctuation_spacing( $on = false ) {
-		$this->settings->set_french_punctuation_spacing( $on );
-	}
-
-	/**
-	 * Sets the list of units to keep together with their values.
-	 *
-	 * @param string|array $units Optional. A comma separated list or an array of units. Default empty array.
-	 */
-	public function set_units( $units = [] ) {
-		$this->settings->set_units( $units );
-	}
-
-	/**
-	 * Enables/disables wrapping of Em and En dashes are in thin spaces.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_dash_spacing( $on = true ) {
-		$this->settings->set_dash_spacing( $on );
-	}
-
-	/**
-	 * Enables/disables removal of extra whitespace characters.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_space_collapse( $on = true ) {
-		$this->settings->set_space_collapse( $on );
-	}
-
-	/**
-	 * Enables/disables widow handling.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_dewidow( $on = true ) {
-		$this->settings->set_dewidow( $on );
-	}
-
-	/**
-	 * Sets the maximum length of widows that will be protected.
-	 *
-	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the length to the default.
-	 */
-	public function set_max_dewidow_length( $length = 5 ) {
-		$this->settings->set_max_dewidow_length( $length );
-	}
-
-	/**
-	 * Sets the maximum length of pulled text to keep widows company.
-	 *
-	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the pull to the default.
-	 */
-	public function set_max_dewidow_pull( $length = 5 ) {
-		$this->settings->set_max_dewidow_pull( $length );
-	}
-
-	/**
-	 * Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_wrap_hard_hyphens( $on = true ) {
-		$this->settings->set_wrap_hard_hyphens( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping of urls.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_url_wrap( $on = true ) {
-		$this->settings->set_url_wrap( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping of email addresses.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_email_wrap( $on = true ) {
-		$this->settings->set_email_wrap( $on );
-	}
-
-	/**
-	 * Sets the minimum character requirement after an URL wrapping point.
-	 *
-	 * @param int $length Optional. Default 5. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_after_url_wrap( $length = 5 ) {
-		$this->settings->set_min_after_url_wrap( $length );
-	}
-
-	/**
-	 * Enables/disables wrapping of ampersands in <span class="amp">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_ampersands( $on = true ) {
-		$this->settings->set_style_ampersands( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping caps in <span class="caps">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_caps( $on = true ) {
-		$this->settings->set_style_caps( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_initial_quotes( $on = true ) {
-		$this->settings->set_style_initial_quotes( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping of numbers in <span class="numbers">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_numbers( $on = true ) {
-		$this->settings->set_style_numbers( $on );
-	}
-
-	/**
-	 * Enables/disables wrapping of punctiation and wide characters in <span class="pull-*">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_hanging_punctuation( $on = true ) {
-		$this->settings->set_style_hanging_punctuation( $on );
-	}
-
-	/**
-	 * Sets the list of tags where initial quotes and guillemets should be styled.
-	 *
-	 * @param string|array $tags Optional. A comma separated list or an array of tag names.
-	 *                           Default [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ].
-	 */
-	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
-		$this->settings->set_initial_quote_tags( $tags );
-	}
-
-	/**
-	 * Enables/disables hyphenation.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenation( $on = true ) {
-		$this->settings->set_hyphenation( $on );
-	}
-
-	/**
-	 * Sets the hyphenation pattern language.
-	 *
-	 * @param string $lang Optional. Has to correspond to a filename in 'lang'. Default 'en-US'.
-	 */
-	public function set_hyphenation_language( $lang = 'en-US' ) {
-		$this->settings->set_hyphenation_language( $lang );
-	}
-
-	/**
-	 * Sets the minimum length of a word that may be hyphenated.
-	 *
-	 * @param int $length Optional. Default 5. Trying to set the value to less than 2 resets the length to the default.
-	 */
-	public function set_min_length_hyphenation( $length = 5 ) {
-		$this->settings->set_min_length_hyphenation( $length );
-	}
-
-	/**
-	 * Sets the minimum character requirement before a hyphenation point.
-	 *
-	 * @param int $length Optional. Default 3. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_before_hyphenation( $length = 3 ) {
-		$this->settings->set_min_before_hyphenation( $length );
-	}
-
-	/**
-	 * Sets the minimum character requirement after a hyphenation point.
-	 *
-	 * @param int $length Optional. Default 2. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_after_hyphenation( $length = 2 ) {
-		$length = ( $length > 0 ) ? $length : 2;
-
-		$this->settings->set_min_after_hyphenation( $length );
-	}
-
-	/**
-	 * Enables/disables hyphenation of titles and headings.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_headings( $on = true ) {
-		$this->settings->set_hyphenate_headings( $on );
-	}
-
-	/**
-	 * Enables/disables hyphenation of words set completely in capital letters.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_all_caps( $on = true ) {
-		$this->settings->set_hyphenate_all_caps( $on );
-	}
-
-	/**
-	 * Enables/disables hyphenation of words starting with a capital letter.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_title_case( $on = true ) {
-		$this->settings->set_hyphenate_title_case( $on );
-	}
-
-	/**
-	 * Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_compounds( $on = true ) {
-		$this->settings->set_hyphenate_compounds( $on );
-	}
-
-	/**
-	 * Sets custom word hyphenations.
-	 *
-	 * @param string|array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
-	 *                                 In the latter case, only alphanumeric characters and hyphens are recognized. Default empty array.
-	 */
-	public function set_hyphenation_exceptions( $exceptions = [] ) {
-		$this->settings->set_hyphenation_exceptions( $exceptions );
 	}
 
 	/**
 	 * Modifies $html according to the defined settings.
 	 *
-	 * @param string        $html      A HTML fragment.
-	 * @param bool          $is_title  Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings|null $settings  Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string   $html      A HTML fragment.
+	 * @param Settings $settings  A settings object.
+	 * @param bool     $is_title  Optional. If the HTML fragment is a title. Default false.
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process( $html, $is_title = false, Settings $settings = null ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $is_title, $settings );
+	public function process( $html, Settings $settings, $is_title = false ) {
+		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $settings, $is_title );
 	}
 
 	/**
 	 * Modifies $html according to the defined settings, in a way that is appropriate for RSS feeds
 	 * (i.e. excluding processes that may not display well with limited character set intelligence).
 	 *
-	 * @param string        $html     A HTML fragment.
-	 * @param bool          $is_title Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings|null $settings Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string   $html     A HTML fragment.
+	 * @param Settings $settings  A settings object.
+	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process_feed( $html, $is_title = false, Settings $settings = null ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $is_title, $settings );
+	public function process_feed( $html, Settings $settings, $is_title = false ) {
+		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $settings, $is_title );
 	}
 
 	/**
 	 * Applies specific fixes to all textnodes of the HTML fragment.
 	 *
-	 * @param string        $html     A HTML fragment.
-	 * @param callable      $fixer    A callback that applies typography fixes to a single textnode.
-	 * @param bool          $is_title Optional. If the HTML fragment is a title. Default false.
-	 * @param Settings|null $settings Optional. A settings object. Default null (which means the internal settings will be used).
+	 * @param string   $html     A HTML fragment.
+	 * @param callable $fixer    A callback that applies typography fixes to a single textnode.
+	 * @param Settings $settings  A settings object.
+	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process_textnodes( $html, $fixer, $is_title = false, Settings $settings = null ) {
+	public function process_textnodes( $html, $fixer, Settings $settings, $is_title = false ) {
 		// Don't do aynthing if there is no valid callback.
 		if ( ! is_callable( $fixer ) ) {
 			trigger_error( 'PHP_Typography::process_textnodes called without a valid callback.', E_USER_WARNING ); // @codingStandardsIgnoreLine
 			return $html;
-		}
-
-		// Use internal settings if necessary.
-		if ( empty( $settings ) ) {
-			$settings = $this->settings;
 		}
 
 		if ( isset( $settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $settings['ignoreTags'], true ) || in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
@@ -984,17 +460,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Retrieves a unique hash value for the current settings.
-	 *
-	 * @param int $max_length Optional. The maximum number of bytes returned. Default 16.
-	 *
-	 * @return string An binary hash value for the current settings limited to $max_length.
-	 */
-	public function get_settings_hash( $max_length = 16 ) {
-		return $this->settings->get_hash( $max_length );
-	}
-
-	/**
 	 * Retrieves the HTML5 parser instance.
 	 *
 	 * @return \Masterminds\HTML5
@@ -1008,6 +473,28 @@ class PHP_Typography {
 		}
 
 		return $this->html5_parser;
+	}
+
+	/**
+	 * Retrieves the hyphenator cache.
+	 *
+	 * @return Hyphenator_Cache
+	 */
+	public function get_hyphenator_cache() {
+		if ( ! isset( $this->hyphenator_cache ) ) {
+			$this->hyphenator_cache = new Hyphenator_Cache();
+		}
+
+		return $this->hyphenator_cache;
+	}
+
+	/**
+	 * Injects an existing Hyphenator_Cache (to facilitate persistent language caching).
+	 *
+	 * @param Hyphenator_Cache $cache A hyphenator cache instance.
+	 */
+	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
+		$this->hyphenator_cache = $cache;
 	}
 
 	/**
