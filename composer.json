@@ -1,0 +1,23 @@
+{
+    "name": "mundschenk-at/php-typography",
+    "description": "A PHP library for improving your web typography",
+    "type": "library",
+    "license": "GPL 2.0+",
+    "authors": [
+        {
+            "name": "Peter Putzer",
+            "email": "github@mundschenk.at",
+            "homepage": "https://code.mundschenk.at",
+            "role": "Developer"
+        },
+        {
+            "name": "Jeffrey D. King",
+            "email": "jeff.king@weathersource.com",
+            "homepage": "http://kingdesk.com",
+            "role": "Original author"
+        }
+    ],
+    "require": {
+        "masterminds/html5": "^2.2"
+    }
+}

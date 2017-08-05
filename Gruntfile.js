@@ -10,19 +10,6 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         shell: {
-            update_html5: {
-                tmpDir: 'vendor/tmp',
-                sourceDir: '<%= shell.update_html5.tmpDir %>/src',
-                targetDir: 'vendor/Masterminds',
-                repository: 'https://github.com/Masterminds/html5-php.git',
-                command: [
-                    'mkdir -p <%= shell.update_html5.tmpDir %>',
-                    'git clone <%= shell.update_html5.repository %> <%= shell.update_html5.tmpDir %>',
-                    'cp -a <%= shell.update_html5.sourceDir %>/* <%= shell.update_html5.targetDir %>',
-                    'rm -rf <%= shell.update_html5.tmpDir %>' // cleanup
-                ].join(' && ')
-            },
-
             update_patterns: {
                 targetDir: 'php-typography/lang',
                 command: (function() {
@@ -92,7 +79,6 @@ module.exports = function(grunt) {
 
     // update various components
     grunt.registerTask('update:iana', ['curl:update-iana']);
-    grunt.registerTask('update:html5', ['shell:update_html5']);
     grunt.registerTask('update:patterns', ['shell:update_patterns']);
 
     grunt.registerTask('default', [

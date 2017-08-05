@@ -1,6 +1,11 @@
 # tmp files
 *~
 
+# Composer
+vendor/composer/*
+vendor/masterminds/*
+vendor/autoload.php
+
 # Node.js/Grunt
 node_modules/*
 

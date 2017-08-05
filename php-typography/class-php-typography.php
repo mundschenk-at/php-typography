@@ -35,8 +35,7 @@ use \PHP_Typography\Fixes\Token_Fixes;
 /**
  * HTML5-PHP - a DOM-based HTML5 parser
  */
-require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5.php';          // @codeCoverageIgnore
-require_once dirname( __DIR__ ) . '/vendor/Masterminds/HTML5/autoload.php'; // @codeCoverageIgnore
+require_once dirname( __DIR__ ) . '/vendor/autoload.php'; // @codeCoverageIgnore
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
