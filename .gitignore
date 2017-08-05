@@ -1,0 +1,17 @@
+# tmp files
+*~
+
+# Node.js/Grunt
+node_modules/*
+
+# SASS
+.sass-cache/*
+
+# ignore generated code coverage files
+tests/coverage/*
+
+# ignore dummy PHP file for language names
+php-typography/_language_names.php
+
+# macOS Finder
+.DS_Store
