@@ -204,10 +204,22 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: 'admin/css',
-                    src: ['**/*.css'],
+                    src: ['**/*.css', '!default-styles.css'],
                     dest: 'admin/css',
                     ext: '.css'
                 }]
+            },
+            dev_default_styles: {
+                files: [{
+                    expand: true,
+                    cwd: 'admin/css',
+                    src: ['default-styles.css'],
+                    dest: 'admin/css',
+                    ext: '.css'
+                }],
+                options: {
+                    map: false,
+                }
             },
             dist: {
                 files: [{
@@ -331,6 +343,7 @@ module.exports = function(grunt) {
         'regex_extract:language_names',
         'newer:delegate:sass:dev',
         'newer:postcss:dev',
+        'newer:postcss:dev_default_styles',
         'newer:minify'
     ]);
 };
