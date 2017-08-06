@@ -107,7 +107,7 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Echo hyphenation pattern file for wp-Typography.
+	 * Format hyphenation pattern file for wp-Typography.
 	 *
 	 * @param array $patterns An array of TeX hyphenation patterns.
 	 * @param array $exceptions {
@@ -116,8 +116,10 @@ class Pattern_Converter {
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
 	 * @param array $comments An array of TeX comments.
+	 *
+	 * @return string
 	 */
-	function write_results( array $patterns, array $exceptions, array $comments ) {
+	function format_results( array $patterns, array $exceptions, array $comments ) {
 		$pattern_mapping = [];
 
 		foreach ( $patterns as $pattern ) {
@@ -142,7 +144,7 @@ class Pattern_Converter {
 			'patterns'         => $pattern_mapping,
 		];
 
-		echo json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		return json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
@@ -255,7 +257,9 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Parse the given TeX file.
+	 * Convert the given TeX file.
+	 *
+	 * @return string
 	 */
 	function convert() {
 		if ( ! file_exists( $this->url ) ) {
@@ -306,6 +310,6 @@ class Pattern_Converter {
 			}
 		}
 
-		$this->write_results( $patterns, $exceptions, $comments );
+		return $this->format_results( $patterns, $exceptions, $comments );
 	}
 }

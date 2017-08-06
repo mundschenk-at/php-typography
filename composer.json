@@ -46,6 +46,15 @@
         ],
         "post-install-cmd": [
             "wget -NP src/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+        ],
+        "phpcs": [
+            "phpcs -p -s -v -n src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+        ],
+        "test": [
+            "phpunit --testsuite PHP-Typography"
+        ],
+        "coverage": [
+            "phpunit --testsuite PHP-Typography --coverage-html test/coverage"
         ]
     }
 }

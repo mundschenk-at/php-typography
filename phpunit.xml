@@ -7,7 +7,7 @@
 	verbose="true"
 >
 	<testsuites>
-	    <testsuite name="wpTypography">
+	    <testsuite name="PHP-Typography">
 			<directory suffix="-test.php">tests</directory>
 	    </testsuite>
 	</testsuites>
