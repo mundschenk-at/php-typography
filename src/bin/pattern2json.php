@@ -1,6 +1,6 @@
 <?php
 /**
- *  This file is part of wp-Typography.
+ *  This file is part of PHP-Typography.
  *
  *  Copyright 2015-2017 Peter Putzer.
  *
@@ -20,7 +20,7 @@
  *
  *  ***
  *
- *  @package wpTypography/PHPTypography/Converter
+ *  @package mundschenk-at/php-typography
  *  @author Peter Putzer <github@mundschenk.at>
  *  @license http://www.gnu.org/licenses/gpl-2.0.html
  */
