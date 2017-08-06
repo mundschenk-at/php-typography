@@ -35,10 +35,13 @@
     "autoload": {
         "classmap": ["src/"]
     },
-
     "autoload-dev": {
         "classmap": ["tests/"]
     },
+
+    "bin": [
+        "src/bin/update-patterns.php"
+    ],
 
     "scripts": {
         "post-update-cmd": [
