@@ -14,10 +14,10 @@ node_modules/*
 tests/coverage/*
 
 # ignore dummy PHP file for language names
-php-typography/_language_names.php
+src/_language_names.php
 
 # IANA TLD list
-php-typography/IANA/tlds-alpha-by-domain.txt
+src/IANA/*
 
 # macOS Finder
 .DS_Store

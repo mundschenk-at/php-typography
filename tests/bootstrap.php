@@ -58,7 +58,7 @@ spl_autoload_register( 'tests_autoloader' );
 /**
  * Autoloading PHP_Typography.
  */
-require_once dirname( __DIR__ ) . '/php-typography/php-typography-autoload.php';
+require_once dirname( __DIR__ ) . '/src/php-typography-autoload.php';
 
 /**
  * Load HTML parser for function testing.

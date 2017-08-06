@@ -23,10 +23,10 @@
 
     "scripts": {
         "post-update-cmd": [
-            "wget -NP php-typography/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+            "wget -NP src/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
         ],
         "post-install-cmd": [
-            "wget -NP php-typography/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+            "wget -NP src/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
         ]
     }
 }
