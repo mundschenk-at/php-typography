@@ -40,15 +40,19 @@
     },
 
     "bin": [
-        "src/bin/update-patterns.php"
+        "src/bin/update-patterns.php",
+        "src/bin/update-iana.php"
     ],
 
     "scripts": {
         "post-update-cmd": [
-            "wget -NP src/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+            "@update-iana"
         ],
         "post-install-cmd": [
-            "wget -NP src/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+            "@update-iana"
+        ],
+        "update-iana": [
+            "php src/bin/update-iana.php"
         ],
         "phpcs": [
             "phpcs -p -s -v -n src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"

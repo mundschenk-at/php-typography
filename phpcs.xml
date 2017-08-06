@@ -16,6 +16,7 @@
 	</rule>
 	<rule ref="WordPress-VIP">
 		<exclude name="WordPress.VIP.RestrictedFunctions.error_log" />
+		<exclude name="WordPress.VIP.FileSystemWritesDisallow" />
 	</rule>
 	<rule ref="Squiz.Commenting.LongConditionClosingComment">
 		<exclude name="Squiz.Commenting.LongConditionClosingComment" />
@@ -26,9 +27,6 @@
 			<property name="customPropertiesWhitelist" type="array" value="nodeValue,parentNode,childNodes,tagName,ownerDocument,nextSibling,previousSibling,firstChild,lastChild" />
 		</properties>
 	</rule>
-	<rule ref="WordPress.VIP.FileSystemWritesDisallow.file_ops_file_put_contents">
-	    <exclude-pattern>bin/update-patterns.php</exclude-pattern>
-	 </rule>
 
 	<!-- Include sniffs for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibility">
