@@ -31,7 +31,13 @@ namespace PHP_Typography\Bin;
 /**
  * Autoload parser classes
  */
-require_once dirname( dirname( __DIR__ ) ) . '/vendor/autoload.php';
+$autoload = dirname( dirname( __DIR__ ) ) . '/vendor/autoload.php';
+if ( file_exists( $autoload ) ) {
+	require_once $autoload;
+} else {
+	// We are a dependency of another project.
+	require_once dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/autoload.php';
+}
 
 $target_directory = dirname( __DIR__ ) . '/lang';
 $patterns_list    = json_decode( file_get_contents( __DIR__ . '/patterns.json' ), true );
