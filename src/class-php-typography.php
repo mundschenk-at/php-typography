@@ -33,11 +33,6 @@ use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Fixes\Token_Fixes;
 
 /**
- * HTML5-PHP - a DOM-based HTML5 parser
- */
-require_once dirname( __DIR__ ) . '/vendor/autoload.php'; // @codeCoverageIgnore
-
-/**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
  *
  * If used with multibyte language, UTF-8 encoding is required.

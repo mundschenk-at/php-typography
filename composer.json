@@ -17,8 +17,17 @@
             "role": "Original author"
         }
     ],
+
     "require": {
         "masterminds/html5": "^2.2"
+    },
+
+    "autoload": {
+        "classmap": ["src/"]
+    },
+
+    "autoload-dev": {
+        "classmap": ["tests/"]
     },
 
     "scripts": {
