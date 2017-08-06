@@ -19,5 +19,14 @@
     ],
     "require": {
         "masterminds/html5": "^2.2"
+    },
+
+    "scripts": {
+        "post-update-cmd": [
+            "wget -NP php-typography/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+        ],
+        "post-install-cmd": [
+            "wget -NP php-typography/IANA https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
+        ]
     }
 }

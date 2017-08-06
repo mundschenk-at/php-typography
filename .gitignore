@@ -2,9 +2,7 @@
 *~
 
 # Composer
-vendor/composer/*
-vendor/masterminds/*
-vendor/autoload.php
+vendor/*
 
 # Node.js/Grunt
 node_modules/*
@@ -17,6 +15,9 @@ tests/coverage/*
 
 # ignore dummy PHP file for language names
 php-typography/_language_names.php
+
+# IANA TLD list
+php-typography/IANA/tlds-alpha-by-domain.txt
 
 # macOS Finder
 .DS_Store

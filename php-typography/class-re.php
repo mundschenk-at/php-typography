@@ -133,7 +133,7 @@ abstract class RE {
 	public static function top_level_domains() {
 		if ( empty( self::$top_level_domains_pattern ) ) {
 			// Initialize valid top level domains from IANA list.
-			self::$top_level_domains_pattern = self::get_top_level_domains_from_file( dirname( __DIR__ ) . '/vendor/IANA/tlds-alpha-by-domain.txt' );
+			self::$top_level_domains_pattern = self::get_top_level_domains_from_file( __DIR__ . '/IANA/tlds-alpha-by-domain.txt' );
 		}
 
 		return self::$top_level_domains_pattern;
