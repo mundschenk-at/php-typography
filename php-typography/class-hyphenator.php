@@ -44,7 +44,7 @@ class Hyphenator {
 	/**
 	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
-	 * @var Trie_Node
+	 * @var Trie_Node|null
 	 */
 	protected $pattern_trie;
 
@@ -82,7 +82,7 @@ class Hyphenator {
 	 * The current hyphenation language.
 	 * Stored in the short form (e.g. "en-US").
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	protected $language;
 
@@ -106,9 +106,7 @@ class Hyphenator {
 	/**
 	 * Sets custom word hyphenations.
 	 *
-	 * @param string|array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen (or a string list
-	 *                                 of such words). In the latter case, only alphanumeric characters and hyphens are recognized.
-	 *                                 Default empty array.
+	 * @param array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen. Default empty array.
 	 */
 	public function set_custom_exceptions( array $exceptions = [] ) {
 		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
