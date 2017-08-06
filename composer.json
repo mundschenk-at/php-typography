@@ -25,7 +25,11 @@
         "masterminds/html5": "^2.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "6.*"
+        "phpunit/phpunit": "6.*",
+        "squizlabs/php_codesniffer": "^2.9",
+        "wp-coding-standards/wpcs": "dev-master",
+        "wimg/php-compatibility": "dev-master",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1"
     },
 
     "autoload": {
