@@ -22,7 +22,7 @@
         "php": ">=5.6.0",
         "ext-pcre": "*",
         "ext-mbstring": "*",
-        "masterminds/html5": "^2.2"
+        "masterminds/html5": "2.x-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "6.*",
