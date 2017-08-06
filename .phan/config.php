@@ -47,4 +47,7 @@ return [
 	// to a class property that wasn't explicitly
 	// defined.
 	'allow_missing_properties' => true,
+
+	// Disable warnings about xdebug.
+	'skip_slow_php_options_warning' => true,
 ];
