@@ -677,7 +677,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 				[ 'foo', 'bar', 'ha' ],
 				[ 'fóò', 'bâr', 'hä' ],
 			],
-
+			[
+				'"fo\'o" => "fó\'ò", "bar" => "bâr"' . ", 'h\"a' => 'h\"ä'",
+				[ "fo'o", 'bar', 'h"a' ],
+				[ "fó'ò", 'bâr', 'h"ä' ],
+			],
 			[
 				[
 					'fööbar' => 'fúbar',

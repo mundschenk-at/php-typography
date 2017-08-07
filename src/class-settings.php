@@ -577,17 +577,13 @@ class Settings implements \ArrayAccess {
 		return Arrays::array_map_assoc( function( $key, $replacement ) {
 
 			// Account for single and double quotes in keys ...
-			if ( preg_match( '/(?:")([^"]+)(?:"\s*=>)/', $replacement, $match ) ) {
-				$key = $match[1];
-			} elseif ( preg_match( "/(?:')([^']+)(?:'\s*=>)/", $replacement, $match ) ) {
-				$key = $match[1];
+			if ( preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
+				$key = $match[2];
 			}
 
 			// ... and values.
-			if ( preg_match( '/(?:=>\s*")([^"]+)(?:")/', $replacement, $match ) ) {
-				$replacement = $match[1];
-			} elseif ( preg_match( "/(?:=>\s*')([^']+)(?:')/", $replacement, $match ) ) {
-				$replacement = $match[1];
+			if ( preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
+				$replacement = $match[2];
 			}
 
 			return [ $key, $replacement ];
