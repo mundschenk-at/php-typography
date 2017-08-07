@@ -167,11 +167,3 @@ abstract class Strings {
 		return $params;
 	}
 }
-
-/**
- * Set UTF-8 as the default encoding for mb_* functions.
- *
- * Not sure if this is necessary - but error_log seems to have problems with
- * the strings otherwise.
- */
-mb_internal_encoding( 'UTF-8' );  // @codeCoverageIgnore
