@@ -41,21 +41,48 @@ class Pattern_Converter {
 	 *
 	 * @var string
 	 */
-	private $url;
+	protected $url;
 
 	/**
 	 * Human-readable language name.
 	 *
 	 * @var string
 	 */
-	private $language;
+	protected $language;
 
 	/**
 	 * Allowed word characters in PCRE syntax.
 	 *
 	 * @var string
 	 */
-	private $word_characters;
+	protected $word_characters;
+
+	/**
+	 * Creates a new converter object.
+	 *
+	 * @param string $url      The TeX pattern file URL.
+	 * @param string $language A human-readable language name.
+	 */
+	public function __construct( $url, $language ) {
+		$this->url      = $url;
+		$this->language = $language;
+
+		$this->word_characters = join( [
+			"\w.'ʼ᾽ʼ᾿’",
+			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
+			'\p{Bengali}',
+			'\p{Gujarati}',
+			'\p{Gurmukhi}',
+			'\p{Kannada}',
+			'\p{Oriya}',
+			'\p{Tamil}',
+			'\p{Telugu}',
+			'\p{Malayalam}',
+			'\p{Thai}',
+			'-',
+		] );
+	}
 
 	/**
 	 * Retrieve patgen segment from TeX hyphenation pattern.
@@ -63,7 +90,7 @@ class Pattern_Converter {
 	 * @param string $pattern TeX hyphenation pattern.
 	 * @return string
 	 */
-	function get_segment( $pattern ) {
+	protected function get_segment( $pattern ) {
 		return preg_replace( '/[0-9]/', '', str_replace( '.', '_', $pattern ) );
 	}
 
@@ -74,7 +101,7 @@ class Pattern_Converter {
 	 *
 	 * @return string|null Script exits on error.
 	 */
-	function get_sequence( $pattern ) {
+	protected function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
 		$result = [];
 
@@ -119,7 +146,7 @@ class Pattern_Converter {
 	 *
 	 * @return string
 	 */
-	function format_results( array $patterns, array $exceptions, array $comments ) {
+	protected function format_results( array $patterns, array $exceptions, array $comments ) {
 		$pattern_mapping = [];
 
 		foreach ( $patterns as $pattern ) {
@@ -148,33 +175,6 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Creates a new converter object.
-	 *
-	 * @param string $url      The TeX pattern file URL.
-	 * @param string $language A human-readable language name.
-	 */
-	function __construct( $url, $language ) {
-		$this->url      = $url;
-		$this->language = $language;
-
-		$this->word_characters = join( [
-			"\w.'ʼ᾽ʼ᾿’",
-			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
-			'\p{Bengali}',
-			'\p{Gujarati}',
-			'\p{Gurmukhi}',
-			'\p{Kannada}',
-			'\p{Oriya}',
-			'\p{Tamil}',
-			'\p{Telugu}',
-			'\p{Malayalam}',
-			'\p{Thai}',
-			'-',
-		] );
-	}
-
-	/**
 	 * Try to match squences of TeX hyphenation exceptions.
 	 *
 	 * @param string $line A line from the TeX pattern file.
@@ -184,9 +184,11 @@ class Pattern_Converter {
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
 	 *
-	 * @return boolean|null Script exits on error.
+	 * @throws RangeException Thrown when the exception line is malformed.
+	 *
+	 * @return bool
 	 */
-	function match_exceptions( $line, array &$exceptions ) {
+	protected function match_exceptions( $line, array &$exceptions ) {
 		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
@@ -206,8 +208,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in exceptions.
 			return true;
 		} else {
-			echo "Error: unknown exception line $line\n"; // xss ok.
-			die( -1000 );
+			throw new RangeException( "Error: unknown exception line $line\n" );
 		}
 
 		return true;
@@ -219,9 +220,11 @@ class Pattern_Converter {
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
 	 *
-	 * @return boolean
+	 * @throws RangeException Thrown when the pattern line is malformed.
+	 *
+	 * @return bool
 	 */
-	function match_patterns( $line, array &$patterns ) {
+	protected function match_patterns( $line, array &$patterns ) {
 		if ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
@@ -238,8 +241,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			echo 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n"; // xss ok.
-			die( -1000 );
+			throw new RangeException( 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n" );
 		}
 
 		return true;
@@ -259,14 +261,16 @@ class Pattern_Converter {
 	/**
 	 * Convert the given TeX file.
 	 *
+	 * @throws RangeException Thrown when a line cannot be parsed at all.
+	 * @throws RuntimeException Thrown when file does not exist.
+	 *
 	 * @return string
 	 */
-	function convert() {
+	public function convert() {
 		if ( ! file_exists( $this->url ) ) {
 			$file_headers = @get_headers( $this->url );
 			if ( 'HTTP/1.0 404 Not Found' === $file_headers[0] ) {
-				echo "Error: unknown pattern file '{$this->url}'\n"; // xss ok.
-				die( -3 );
+				throw new RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
 			}
 		}
 
@@ -304,8 +308,7 @@ class Pattern_Converter {
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
 					continue; // Do nothing.
 				} else {
-					echo "Error: unknown line $line\n"; // xss ok.
-					die( -1000 );
+					throw new RangeException( "Error: unknown line $line\n" );
 				}
 			}
 		}
