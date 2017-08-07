@@ -54,6 +54,9 @@
         "update-iana": [
             "php src/bin/update-iana.php"
         ],
+        "update-patterns": [
+            "php src/bin/update-patterns.php"
+        ],
         "phpcs": [
             "phpcs -p -s -v -n src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
         ],
