@@ -58,10 +58,10 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
 		)
 		(?<widow>                           # subpattern 4: widow
-			[\w\pM\-]+?                     # \w includes all alphanumeric Unicode characters but not composed characters
+			[\w\p{M}\-]+?                     # \w includes all alphanumeric Unicode characters but not composed characters
 		)
 		(?<trailing>                        # subpattern 5: any trailing punctuation or spaces
-			[^\w\pM]*
+			[^\w\p{M}]*
 		)
 		\Z
 	/xu';
