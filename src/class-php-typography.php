@@ -220,13 +220,7 @@ class PHP_Typography {
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process_textnodes( $html, $fixer, Settings $settings, $is_title = false ) {
-		// Don't do aynthing if there is no valid callback.
-		if ( ! is_callable( $fixer ) ) {
-			trigger_error( 'PHP_Typography::process_textnodes called without a valid callback.', E_USER_WARNING ); // @codingStandardsIgnoreLine
-			return $html;
-		}
-
+	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false ) {
 		if ( isset( $settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $settings['ignoreTags'], true ) || in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
