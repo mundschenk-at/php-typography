@@ -330,7 +330,7 @@ class PHP_Typography {
 	 * @param string             $html     The HTML fragment to parse (not a complete document).
 	 * @param Settings           $settings The settings to apply.
 	 *
-	 * @return \DOMDocument The encoding has already been set to UTF-8. Returns null if there were parsing errors.
+	 * @return \DOMDocument|null The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
 	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
 		// Silence some parsing errors for invalid HTML.
