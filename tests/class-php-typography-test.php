@@ -2042,8 +2042,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_dewidow_with_hyphenation_data() {
 		return [
-			[ 'this is fucking ri...', 'this is fuck&shy;ing&nbsp;ri...', 4, 2 ],
-			[ 'this is fucking fucking', 'this is fuck&shy;ing fuck&shy;ing', 4, 2 ],
+			[ 'this is riding ri...', 'this is rid&shy;ing&nbsp;ri...', 4, 2 ],
+			[ 'this is riding riding', 'this is rid&shy;ing riding', 4, 2 ], // No soft hyphens in widows.
 		];
 	}
 
