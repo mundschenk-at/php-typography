@@ -58,7 +58,8 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
 		)
 		(?<widow>                           # subpattern 4: widow
-			[\w\p{M}\-]+?                     # \w includes all alphanumeric Unicode characters but not composed characters
+			                                # \w includes all alphanumeric Unicode characters but not composed characters
+			[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?
 		)
 		(?<trailing>                        # subpattern 5: any trailing punctuation or spaces
 			[^\w\p{M}]*
@@ -88,8 +89,8 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped
 				// as such, we will strip soft hyphens and zero-width-spaces.
-				$widow['widow']    = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['widow'] ); // TODO: check if this can match here.
-				$widow['widow']    = str_replace( U::SOFT_HYPHEN,     '', $widow['widow'] ); // TODO: check if this can match here.
+				$widow['widow']    = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['widow'] );
+				$widow['widow']    = str_replace( U::SOFT_HYPHEN,     '', $widow['widow'] );
 				$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", U::NO_BREAK_SPACE, $widow['trailing'] );
 				$widow['trailing'] = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['trailing'] );
 				$widow['trailing'] = str_replace( U::SOFT_HYPHEN,     '', $widow['trailing'] );

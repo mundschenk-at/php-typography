@@ -66,6 +66,10 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2 ],   // ... or hair space.
 			[ 'bla foo bar', 'bla foo bar', 2, 2 ],
 			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
+			[ 'bla foo bär&hellip;!', 'bla foo&nbsp;b&auml;r&hellip;!', 3, 3 ],
+			[ 'bla foo bär&shy;!', 'bla foo&nbsp;b&auml;r!', 3, 3 ],
+			[ 'bla foo b&shy;är!', 'bla foo&nbsp;b&auml;r!', 3, 3 ],
+			[ 'bla foo b&#8203;är!', 'bla foo&nbsp;b&auml;r!', 3, 3 ],
 			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
 			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2 ],
 			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2 ],
