@@ -8,6 +8,8 @@
     -   PHP_Typography broken into smaller classes (one for each "fix").
     -   Default Settings removed.
 *   _Bugfix_: French punctuation spacing after links (and other inline tags) fixed.
+*   _Bugfix_: Lone ampersands are treated as single-character words.
+*   _Bugfix_: Hyphenated words are properly de-widowed.
 
 ## 4.2.1 - June 9, 2017
 
@@ -22,7 +24,7 @@
     -   German (Traditional)
     -   Latin
     -   Latin (Liturgical)
-*   _Change:_ Updated list of valid top-level domains.
+*   _Change_: Updated list of valid top-level domains.
 
 ## 4.1.2 - May 26, 2017
 
@@ -42,12 +44,12 @@
 
 ## 4.0.1 - January 7, 2017
 
-*   _Bugfix:_ Workaround for PHP 5.3 issue in `dewidow` callback.
+*   _Bugfix_: Workaround for PHP 5.3 issue in `dewidow` callback.
 
 ## 4.0.0 - January 6, 2017
 
-*   _Feature:_ New Settings API added.
-*   _Feature:_ New hyphenation languages
+*   _Feature_: New Settings API added.
+*   _Feature_: New hyphenation languages
     -   Hindi,
     -   Marathi,
     -   Occitan,
@@ -55,11 +57,11 @@
     -   Panjabi,
     -   Tamil,
     -   Telugu.
-*   _Change:_ Updated list of valid top-level domains.
+*   _Change_: Updated list of valid top-level domains.
 
 ## 3.5.3 - December 17, 2016
 
-*   _Bugfix:_ Remove ambiguous entries from German diacritics replacement file.
+*   _Bugfix_: Remove ambiguous entries from German diacritics replacement file.
 
 ## 3.5.2
 
@@ -67,16 +69,16 @@ _Skipped._
 
 ## 3.5.1 - November 05, 2016
 
-*   _Bugfix:_ Quotes ending in numbers were sometimes interpreted as primes.
+*   _Bugfix_: Quotes ending in numbers were sometimes interpreted as primes.
 
 ## 3.5.0 - October 21, 2016
 
-*   _Feature:_ Added "Latin (Liturgical)" as a new hyphenation language.
-*   _Change:_ Updated list of valid top-level domains.
-*   _Change:_ Updated HTML5 parser (html5-php) to 2.2.2.
-*   _Bugfix:_ Custom hyphenations with more than one hyphenation point were not working properly.
-*   _Bugfix:_ The `min_after` hyphenation setting was off by one.
-*   _Bugfix:_ Fractions did not play nice with prime symbols.
+*   _Feature_: Added "Latin (Liturgical)" as a new hyphenation language.
+*   _Change_: Updated list of valid top-level domains.
+*   _Change_:_ Updated HTML5 parser (html5-php) to 2.2.2.
+*   _Bugfix_: Custom hyphenations with more than one hyphenation point were not working properly.
+*   _Bugfix_: The `min_after` hyphenation setting was off by one.
+*   _Bugfix_: Fractions did not play nice with prime symbols.
 
 ## 3.4.0 - July 10, 2016
 
