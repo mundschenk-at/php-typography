@@ -159,9 +159,9 @@ abstract class DOM {
 	/**
 	 * Retrieves a character from the given \DOMNode.
 	 *
+	 * @since 5.0.0
+	 *
 	 * @param  \DOMNode $node         Required.
-	 * @param  [type]   $position     The position parameter for `substr`.
-	 * @param  [type]   $length       The length parameter for `substr`.
 	 * @param  int      $position     The position parameter for `substr`.
 	 * @param  int      $length       The length parameter for `substr`.
 	 * @param  callable $get_textnode A function to retrieve the \DOMText from the node.
@@ -213,6 +213,8 @@ abstract class DOM {
 
 	/**
 	 * Retrieves an adjacent \DOMText sibling if there is one.
+	 *
+	 * @since 5.0.0
 	 *
 	 * @param callable      $iterate             Takes a reference \DOMElement and returns a \DOMText (or null).
 	 * @param callable      $get_adjacent_parent Takes a single \DOMElement parameter and returns a \DOMText (or null).
@@ -282,6 +284,8 @@ abstract class DOM {
 	/**
 	 * Retrieves an edge \DOMText child of the element specified by the callable.
 	 * Block-level child elements are ignored.
+	 *
+	 * @since 5.0.0
 	 *
 	 * @param callable      $iteration Takes two parameters, a \DOMNodeList and
 	 *                                 a reference to the \DOMText used as the result.
