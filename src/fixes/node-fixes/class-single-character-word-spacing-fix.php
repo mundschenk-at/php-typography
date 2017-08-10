@@ -43,7 +43,7 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 	const REGEX = '/
 		(?:
 			(\s)
-			(\w)
+			(\w|&amp;)
 			[' . RE::NORMAL_SPACES . ']
 			(?=\w)
 		)

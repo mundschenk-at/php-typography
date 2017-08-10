@@ -64,6 +64,8 @@ class Single_Character_Word_Spacing_Fix_Test extends Node_Fix_Testcase {
 		return [
 			[ 'A cat in a tree', 'A cat in a&nbsp;tree' ],
 			[ 'Works with strange characters like ä too. But not Ä or does it?', 'Works with strange characters like &auml;&nbsp;too. But not &Auml;&nbsp;or does it?' ],
+			[ 'B & E', 'B &amp;&nbsp;E' ],
+			[ 'Der Mundschenk & Cie.', 'Der Mundschenk &amp;&nbsp;Cie.' ],
 		];
 	}
 
