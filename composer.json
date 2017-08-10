@@ -64,7 +64,7 @@
             "phpunit --testsuite PHP-Typography"
         ],
         "coverage": [
-            "phpunit --testsuite PHP-Typography --coverage-html test/coverage"
+            "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
         ]
     }
 }
