@@ -637,7 +637,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
-	 * @expectedException \PHPUnit\Framework\Error\Warning
+	 * @expectedException \TypeError
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -650,31 +650,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s->set_defaults();
 
 		$this->typo->process_textnodes( $html, 'bar', $s );
-	}
-
-
-	/**
-	 * Test process_textnodes without a fixer instance (and look at return value).
-	 *
-	 * @covers ::process_textnodes
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
-	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 *
-	 * @dataProvider provide_process_data
-	 *
-	 * @param string      $html   HTML input.
-	 * @param string      $result Entity-escaped output.
-	 * @param bool|string $feed   Use process_feed. If $feed is a string, use instead of $result.
-	 */
-	public function test_process_textnodes_no_fixer_return_value( $html, $result, $feed ) {
-		$s = $this->s;
-		$s->set_defaults();
-
-		$this->assertSame( $html, $this->clean_html( @$this->typo->process_textnodes( $html, 'bar', $s ) ) );
 	}
 
 	/**

@@ -278,6 +278,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * Test get_prev_chr.
 	 *
 	 * @covers ::get_prev_chr
+	 * @covers ::get_adjacent_chr
 	 * @covers ::get_previous_textnode
 	 * @covers ::get_adjacent_textnode
 	 *
@@ -314,6 +315,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * Test get_next_chr.
 	 *
 	 * @covers ::get_next_chr
+	 * @covers ::get_adjacent_chr
 	 * @covers ::get_next_textnode
 	 * @covers ::get_adjacent_textnode
 	 *

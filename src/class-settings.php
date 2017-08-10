@@ -417,19 +417,11 @@ class Settings implements \ArrayAccess {
 	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
 	 *
 	 * @param string $style Defaults to 'doubleCurled.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_primary( $style = Quote_Style::DOUBLE_CURLED ) {
-		if ( $style instanceof Settings\Quotes ) {
-			$quotes = $style;
-		} else {
-			$quotes = Quote_Style::get_styled_quotes( $style, $this );
-		}
-
-		if ( ! empty( $quotes ) ) {
-			$this->primary_quote_style = $quotes;
-		} else {
-			trigger_error( "Invalid quote style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
-		}
+		$this->primary_quote_style = $this->get_quote_style( $style );
 	}
 
 	/**
@@ -453,19 +445,50 @@ class Settings implements \ArrayAccess {
 	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
 	 *
 	 * @param string $style Defaults to 'singleCurled'.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_secondary( $style = Quote_Style::SINGLE_CURLED ) {
-		if ( $style instanceof Settings\Quotes ) {
-			$quotes = $style;
+		$this->secondary_quote_style = $this->get_quote_style( $style );
+	}
+
+	/**
+	 * Retrieves a Quotes instance from a given style.
+	 *
+	 * @param  Settings\Quotes|string $style A Quotes instance or a quote style constant.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
+	 *
+	 * @return Settings\Quotes
+	 */
+	protected function get_quote_style( $style ) {
+		return $this->get_style( $style, Settings\Quotes::class, [ Quote_Style::class, 'get_styled_quotes' ], 'quote' );
+	}
+
+	/**
+	 * Retrieves an object from a given style.
+	 *
+	 * @param  object|string $style          A style object instance or a style constant.
+	 * @param  string        $expected_class A class name.
+	 * @param  callable      $get_style      A function that returns a style object from a given style constant.
+	 * @param  string        $description    Style description for the exception message.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
+	 *
+	 * @return object An instance of $expected_class.
+	 */
+	protected function get_style( $style, $expected_class, callable $get_style, $description ) {
+		if ( $style instanceof $expected_class ) {
+			$object = $style;
 		} else {
-			$quotes = Quote_Style::get_styled_quotes( $style, $this );
+			$object = $get_style( $style, $this );
 		}
 
-		if ( ! empty( $quotes ) ) {
-			$this->secondary_quote_style = $quotes;
-		} else {
-			trigger_error( "Invalid quote style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
+		if ( empty( $object ) ) {
+			throw new \DomainException( "Invalid $description style $style." );
 		}
+
+		return $object;
 	}
 
 	/**
@@ -485,19 +508,11 @@ class Settings implements \ArrayAccess {
 	 * - "international"
 	 *
 	 * @param string|Settings\Dashes $style Optional. Default Dash_Style::TRADITIONAL_US.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ) {
-		if ( $style instanceof Settings\Dashes ) {
-			$dashes = $style;
-		} else {
-			$dashes = Dash_Style::get_styled_dashes( $style, $this );
-		}
-
-		if ( ! empty( $dashes ) ) {
-			$this->dash_style = $dashes;
-		} else {
-			trigger_error( "Invalid dash style $style.", E_USER_WARNING ); // @codingStandardsIgnoreLine.
-		}
+		$this->dash_style = $this->get_style( $style, Settings\Dashes::class, [ Dash_Style::class, 'get_styled_dashes' ], 'dash' );
 	}
 
 	/**

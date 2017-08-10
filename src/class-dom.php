@@ -142,18 +142,7 @@ abstract class DOM {
 	 * @return string A single character (or the empty string).
 	 */
 	public static function get_prev_chr( \DOMNode $element ) {
-		$previous_textnode = self::get_previous_textnode( $element );
-
-		if ( isset( $previous_textnode ) && isset( $previous_textnode->data ) ) {
-			// First determine encoding.
-			$func = Strings::functions( $previous_textnode->data );
-
-			if ( ! empty( $func ) ) {
-				return preg_replace( '/\p{C}/Su', '', $func['substr']( $previous_textnode->data, - 1 ) );
-			}
-		} // @codeCoverageIgnore
-
-		return '';
+		return self::get_adjacent_chr( $element, -1, 1, [ __CLASS__, 'get_previous_textnode' ] );
 	}
 
 	/**
@@ -164,16 +153,32 @@ abstract class DOM {
 	 * @return string A single character (or the empty string).
 	 */
 	public static function get_next_chr( \DOMNode $element ) {
-		$next_textnode = self::get_next_textnode( $element );
+		return self::get_adjacent_chr( $element, 0, 1, [ __CLASS__, 'get_next_textnode' ] );
+	}
 
-		if ( isset( $next_textnode ) && isset( $next_textnode->data ) ) {
-			// First determine encoding.
-			$func = Strings::functions( $next_textnode->data );
+	/**
+	 * Retrieves a character from the given \DOMNode.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param  \DOMNode $node         Required.
+	 * @param  int      $position     The position parameter for `substr`.
+	 * @param  int      $length       The length parameter for `substr`.
+	 * @param  callable $get_textnode A function to retrieve the \DOMText from the node.
+	 *
+	 * @return string The character or an empty string.
+	 */
+	private static function get_adjacent_chr( \DOMNode $node, $position, $length, callable $get_textnode ) {
+		$textnode = $get_textnode( $node );
+
+		if ( isset( $textnode ) && isset( $textnode->data ) ) {
+			// Determine encoding.
+			$func = Strings::functions( $textnode->data );
 
 			if ( ! empty( $func ) ) {
-				return preg_replace( '/\p{C}/Su', '', $func['substr']( $next_textnode->data, 0, 1 ) );
+				return preg_replace( '/\p{C}/Su', '', $func['substr']( $textnode->data, $position, $length ) );
 			}
-		} // @codeCoverageIgnore
+		}
 
 		return '';
 	}
@@ -208,6 +213,8 @@ abstract class DOM {
 
 	/**
 	 * Retrieves an adjacent \DOMText sibling if there is one.
+	 *
+	 * @since 5.0.0
 	 *
 	 * @param callable      $iterate             Takes a reference \DOMElement and returns a \DOMText (or null).
 	 * @param callable      $get_adjacent_parent Takes a single \DOMElement parameter and returns a \DOMText (or null).
@@ -277,6 +284,8 @@ abstract class DOM {
 	/**
 	 * Retrieves an edge \DOMText child of the element specified by the callable.
 	 * Block-level child elements are ignored.
+	 *
+	 * @since 5.0.0
 	 *
 	 * @param callable      $iteration Takes two parameters, a \DOMNodeList and
 	 *                                 a reference to the \DOMText used as the result.
