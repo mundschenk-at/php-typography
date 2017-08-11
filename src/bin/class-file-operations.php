@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 /**
  *  This file is part of PHP-Typography.
@@ -29,33 +28,28 @@
 namespace PHP_Typography\Bin;
 
 /**
- * Autoload parser classes
+ * Encapsulate some common file operations (including on remote files).
  */
-$autoload = dirname( dirname( __DIR__ ) ) . '/vendor/autoload.php';
-if ( file_exists( $autoload ) ) {
-	require_once $autoload;
-} else {
-	// We are a dependency of another project.
-	require_once dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/autoload.php';
-}
+abstract class File_Operations {
 
-$target_directory = dirname( __DIR__ ) . '/lang';
-$patterns_list    = json_decode( file_get_contents( __DIR__ . '/patterns.json' ), true );
+	/**
+	 * Retrieve a HTTP response code via cURL.
+	 *
+	 * @param  string $url Required.
+	 *
+	 * @return int
+	 */
+	public static function get_http_response_code( $url ) {
 
-foreach ( $patterns_list['list'] as $pattern ) {
-	$language = $pattern['name'];
-	$url      = $pattern['url'];
-	$filename = $pattern['short'] . '.json';
+		$curl = curl_init();
+		curl_setopt_array( $curl, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_URL            => $url,
+		] );
+		curl_exec( $curl );
+		$response_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+		curl_close( $curl );
 
-	$converter = new Pattern_Converter( $url, $language );
-
-	echo "Parsing $language TeX file and converting it to lang/$filename ..."; // phpcs: XSS ok.
-
-	try {
-		$json_pattern = $converter->convert();
-		file_put_contents( $target_directory . '/' . $filename, $json_pattern );
-		echo " done\n";
-	} catch ( \Exception $e ) {
-		echo " error, skipping\n";
+		return $response_code;
 	}
 }

@@ -9,13 +9,15 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
-		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
 		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact" />
 		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect" />
 		<exclude name="PEAR.Functions.FunctionCallSignature.Indent" />
+		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
+		<exclude name="WordPress.WP.AlternativeFunctions" />
+		<exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped" />
 	</rule>
 	<rule ref="WordPress-VIP">
-		<exclude name="WordPress.VIP.RestrictedFunctions.error_log" />
+		<exclude name="WordPress.VIP.RestrictedFunctions.file_get_contents_file_get_contents" />
 		<exclude name="WordPress.VIP.FileSystemWritesDisallow" />
 	</rule>
 	<rule ref="Squiz.Commenting.LongConditionClosingComment">
@@ -28,8 +30,21 @@
 		</properties>
 	</rule>
 
+	<rule ref="WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting">
+		<exclude-pattern>*/tests/class-*-test.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting">
+		<exclude-pattern>*/tests/class-*-test.php</exclude-pattern>
+	</rule>
+
+	<rule ref="Squiz.PHP.CommentedOutCode">
+		<properties>
+			<property name="maxPercentage" value="60" />
+		</properties>
+	</rule>
+
 	<!-- Include sniffs for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibility">
-		<config name="testVersion" value="5.4-7.1"/>
+		<config name="testVersion" value="5.6-7.1"/>
 	</rule>
 </ruleset>

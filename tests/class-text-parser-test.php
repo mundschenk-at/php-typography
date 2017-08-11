@@ -161,7 +161,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	public function test_load_url() {
 		$parser = $this->parser;
 
-		$string = 'Quoth the raven, "nevermore"! Please open http://example.org or wordpress:wordpress or wordpress:w@rdpress or @example or @:@:@:risk.';
+		$string = 'Quoth the raven, "nevermore"! Please open http://example.org or foo:WordPress or foo:W@rdPress or @example or @:@:@:risk.';
 		$this->assertTrue( $parser->load( $string ) );
 
 		$tokens = $parser->get_all();
@@ -177,10 +177,10 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 			15 => new Token( 'http://example.org', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			19 => new Token( 'wordpress:wordpress', Token::OTHER ),
+			19 => new Token( 'foo:WordPress', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
-			23 => new Token( 'wordpress:w@rdpress', Token::OTHER ),
+			23 => new Token( 'foo:W@rdPress', Token::OTHER ),
 		], $tokens );
 		$this->assertArraySubset( [
 			27 => new Token( '@example', Token::OTHER ),

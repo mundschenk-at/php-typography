@@ -480,8 +480,6 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 			4 => 9,
 		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
 
-		;
-
 		$this->assertSame( [
 			2 => 9,
 		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );

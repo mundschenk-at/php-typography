@@ -43,9 +43,8 @@ $source_file = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt';
 $target_file = dirname( __DIR__ ) . '/IANA/tlds-alpha-by-domain.txt';
 
 if ( ! file_exists( $source_file ) ) {
-	$file_headers = @get_headers( $source_file );
-	if ( 'HTTP/1.0 404 Not Found' === $file_headers[0] ) {
-		echo "Error: unknown TLD file '{$source_file}'\n"; // xss ok.
+	if ( 404 === File_Operations::get_http_response_code( $source_file ) ) {
+		echo "Error: unknown TLD file '{$source_file}'\n";
 		die( -3 );
 	}
 }
