@@ -27,7 +27,7 @@
 
 namespace PHP_Typography\Bin;
 
-use \PHP_Typography\Strings as Strings;
+use \PHP_Typography\Strings;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.
@@ -99,7 +99,9 @@ class Pattern_Converter {
 	 *
 	 * @param string $pattern TeX hyphenation pattern.
 	 *
-	 * @return string|null Script exits on error.
+	 * @throws \RangeException Thrown when the calculated pattern length is invalid.
+	 *
+	 * @return string
 	 */
 	protected function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
@@ -125,9 +127,7 @@ class Pattern_Converter {
 		$sequence = implode( $result );
 
 		if ( $count !== $count_seg + 1 ) {
-			trigger_error( "Invalid segment length $count for pattern $pattern (result sequence $sequence)", E_USER_ERROR ); // @codingStandardsIgnoreLine
-
-			die( -3000 );
+			throw new \RangeException( "Invalid segment length $count for pattern $pattern (result sequence $sequence)." );
 		}
 
 		return $sequence;
