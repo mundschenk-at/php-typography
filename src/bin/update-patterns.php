@@ -47,7 +47,7 @@ foreach ( $patterns_list['list'] as $pattern ) {
 	$url      = $pattern['url'];
 	$filename = $pattern['short'] . '.json';
 
-	$converter = new Pattern_Converter( $url , $language );
+	$converter = new Pattern_Converter( $url, $language );
 
 	echo "Parsing $language TeX file and converting it to lang/$filename ..."; // phpcs: XSS ok.
 

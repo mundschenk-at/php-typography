@@ -259,6 +259,27 @@ class Pattern_Converter {
 	}
 
 	/**
+	 * Retrieve a HTTP response code via cURL.
+	 *
+	 * @param  string $url Required.
+	 *
+	 * @return int
+	 */
+	private static function get_http_response_code( $url ) {
+
+		$curl = curl_init();
+		curl_setopt_array( $curl, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_URL            => $url,
+		] );
+		curl_exec( $curl );
+		$response_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+		curl_close( $curl );
+
+		return $response_code;
+	}
+
+	/**
 	 * Convert the given TeX file.
 	 *
 	 * @throws \RangeException Thrown when a line cannot be parsed at all.
@@ -267,11 +288,8 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	public function convert() {
-		if ( ! file_exists( $this->url ) ) {
-			$file_headers = @get_headers( $this->url );
-			if ( 'HTTP/1.0 404 Not Found' === $file_headers[0] ) {
-				throw new \RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
-			}
+		if ( ! file_exists( $this->url ) && 404 === self::get_http_response_code( $this->url ) ) {
+			throw new \RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
 		}
 
 		// Results.
