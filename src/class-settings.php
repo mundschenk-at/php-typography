@@ -374,7 +374,7 @@ class Settings implements \ArrayAccess {
 	 *
 	 * @param string|array $classes A comma separated list or an array of class names.
 	 */
-	 function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
+	public function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ) {
 		$this->data['ignoreClasses'] = Strings::maybe_split_parameters( $classes );
 	}
 
