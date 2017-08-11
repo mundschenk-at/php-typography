@@ -59,7 +59,7 @@
             "php src/bin/update-patterns.php"
         ],
         "phpcs": [
-            "phpcs -p -s -v -n src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
         ],
         "test": [
             "phpunit --testsuite PHP-Typography"
