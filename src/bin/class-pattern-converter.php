@@ -184,7 +184,7 @@ class Pattern_Converter {
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
 	 *
-	 * @throws RangeException Thrown when the exception line is malformed.
+	 * @throws \RangeException Thrown when the exception line is malformed.
 	 *
 	 * @return bool
 	 */
@@ -208,7 +208,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in exceptions.
 			return true;
 		} else {
-			throw new RangeException( "Error: unknown exception line $line\n" );
+			throw new \RangeException( "Error: unknown exception line $line\n" );
 		}
 
 		return true;
@@ -220,7 +220,7 @@ class Pattern_Converter {
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
 	 *
-	 * @throws RangeException Thrown when the pattern line is malformed.
+	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
 	 * @return bool
 	 */
@@ -241,7 +241,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			throw new RangeException( 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n" );
+			throw new \RangeException( 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n" );
 		}
 
 		return true;
@@ -261,8 +261,8 @@ class Pattern_Converter {
 	/**
 	 * Convert the given TeX file.
 	 *
-	 * @throws RangeException Thrown when a line cannot be parsed at all.
-	 * @throws RuntimeException Thrown when file does not exist.
+	 * @throws \RangeException Thrown when a line cannot be parsed at all.
+	 * @throws \RuntimeException Thrown when file does not exist.
 	 *
 	 * @return string
 	 */
@@ -270,7 +270,7 @@ class Pattern_Converter {
 		if ( ! file_exists( $this->url ) ) {
 			$file_headers = @get_headers( $this->url );
 			if ( 'HTTP/1.0 404 Not Found' === $file_headers[0] ) {
-				throw new RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
+				throw new \RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
 			}
 		}
 
@@ -308,7 +308,7 @@ class Pattern_Converter {
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
 					continue; // Do nothing.
 				} else {
-					throw new RangeException( "Error: unknown line $line\n" );
+					throw new \RangeException( "Error: unknown line $line\n" );
 				}
 			}
 		}
