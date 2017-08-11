@@ -32,6 +32,7 @@ The best way to use this package is through Composer:
 
 ```BASH
 $ composer require mundschenk-at/php-typography
+$ vendor/bin/update-iana.php
 ```
 
 ## Basic Usage
