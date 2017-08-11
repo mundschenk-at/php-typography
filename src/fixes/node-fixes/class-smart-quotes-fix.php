@@ -165,7 +165,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$single_open  = $single->open();
 		$single_close = $single->close();
 
-		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) {
+		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // WPCS: loose comparison ok.
 			$this->update_smart_quotes_brackets( $double_open, $double_close, $single_open, $single_close );
 			$this->cached_primary_quotes   = $double;
 			$this->cached_secondary_quotes = $single;

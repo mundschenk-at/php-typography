@@ -111,7 +111,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 		// Various special characters and regular expressions.
 		$s = $settings->dash_style();
 
-		if ( $s != $this->cached_dash_style ) {
+		if ( $s != $this->cached_dash_style ) { // WPCS: loose comparison ok.
 			$this->update_dash_spacing_regex( $s->parenthetical_dash(), $s->parenthetical_space(), $s->interval_dash(), $s->interval_space() );
 			$this->cached_dash_style = $s;
 		}
