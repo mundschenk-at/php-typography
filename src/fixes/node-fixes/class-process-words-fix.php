@@ -85,14 +85,6 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 		$tokens[ Token_Fix::WORDS ]          = $text_parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
 		$tokens[ Token_Fix::OTHER ]          = $text_parser->get_other();
 
-		/*
-		$parsed_mixed_words    = $this->wrap_hard_hyphens( $parsed_mixed_words, $settings );
-		$parsed_compound_words = $this->hyphenate_compounds( $parsed_compound_words, $settings, $is_title, $textnode );
-		$parsed_words          = $this->hyphenate( $parsed_words, $settings, $is_title, $textnode );
-		$parsed_other          = $this->wrap_urls( $parsed_other, $settings );
-		$parsed_other          = $this->wrap_emails( $parsed_other, $settings );
-		*/
-
 		// Process individual text parts here.
 		foreach ( $this->token_fixes as $fix ) {
 			$t = $fix->target();
