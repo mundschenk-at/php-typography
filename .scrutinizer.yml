@@ -1,7 +1,6 @@
 filter:
     paths:
         - 'src/*'
-        - 'tests/*'
 
 build:
     cache:
