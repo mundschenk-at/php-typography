@@ -30,7 +30,8 @@
         "squizlabs/php_codesniffer": "^3.0.2",
         "wp-coding-standards/wpcs": "^0.13",
         "wimg/php-compatibility": "^8.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1",
+        "phpstan/phpstan": "^0.8.0"
     },
 
     "autoload": {
@@ -66,6 +67,9 @@
         ],
         "coverage": [
             "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
+        ],
+        "phpstan": [
+            "phpstan analyse src/ tests/ --ansi"
         ]
     }
 }
