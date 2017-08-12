@@ -302,6 +302,9 @@ class Hyphenator {
 		for ( $start = 0; $start < $search_length; ++$start ) {
 			// Start from the trie root node.
 			$node = $this->pattern_trie;
+			if ( null === $node ) {
+				break;
+			}
 
 			// Walk through the trie while storing detected patterns.
 			for ( $step = $start; $step < $search_length; ++$step ) {

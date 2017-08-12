@@ -56,6 +56,13 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	];
 
 	/**
+	 * The cache for Hyphenator instances.
+	 *
+	 * @var Hyphenator_Cache
+	 */
+	protected $cache;
+
+	/**
 	 * Creates a new fix instance.
 	 *
 	 * @param Hyphenator_Cache|null $cache           Optional. Default null.
@@ -65,19 +72,12 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	public function __construct( Hyphenator_Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
 		parent::__construct( $target, $feed_compatible );
 
-		if ( empty( $cache ) ) {
+		if ( null === $cache ) {
 			$cache = new Hyphenator_Cache();
 		}
 
 		$this->cache = $cache;
 	}
-
-	/**
-	 * The cache for Hyphenator instances.
-	 *
-	 * @var Hyphenator_Cache
-	 */
-	protected $cache;
 
 	/**
 	 * Apply the tweak to a given textnode.
@@ -95,7 +95,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 		}
 
 		$is_heading = false;
-		if ( ! empty( $textnode ) && ! empty( $textnode->parentNode ) ) {
+		if ( null !== $textnode && ! empty( $textnode->parentNode ) ) {
 			$block_level_parent = DOM::get_block_parent_name( $textnode );
 
 			if ( ! empty( $block_level_parent ) && isset( $this->heading_tags[ $block_level_parent ] ) ) {
@@ -140,7 +140,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 		$exceptions = (array) $settings['hyphenationCustomExceptions'];
 		$hyphenator = $this->cache->get_hyphenator( $lang );
 
-		if ( empty( $hyphenator ) ) {
+		if ( null === $hyphenator ) {
 			$hyphenator = new Hyphenator( $lang, $exceptions );
 			$this->cache->set_hyphenator( $lang, $hyphenator );
 		} else {
