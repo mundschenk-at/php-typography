@@ -326,13 +326,9 @@ class Text_Parser {
 	/**
 	 * Turns the array of strings into an array of tokens.
 	 *
-	 * @param array $parts An array of non-empty strings.
+	 * @param string[] $parts An array of non-empty strings.
 	 *
-	 * @return array {
-	 *         An array of numerically indexed tokens.
-	 *
-	 *         @type Token $index A token may combine several input parts.
-	 * }
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	protected static function tokenize( array $parts ) {
 		$tokens = [];
@@ -362,10 +358,10 @@ class Text_Parser {
 	/**
 	 * Parse ambigious tokens (that may need to be combined with the predecessors).
 	 *
-	 * @param int    $expected_type Either Token::WORD or Token::OTHER.
-	 * @param string $part          The string fragment to parse.
-	 * @param array  $tokens        The token array. Passed by reference.
-	 * @param int    $index         The current index. Passed by reference.
+	 * @param int     $expected_type Either Token::WORD or Token::OTHER.
+	 * @param string  $part          The string fragment to parse.
+	 * @param Token[] $tokens        The token array. Passed by reference.
+	 * @param int     $index         The current index. Passed by reference.
 	 */
 	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) {
 
@@ -457,11 +453,7 @@ class Text_Parser {
 	/**
 	 * Updates the 'value' field for all matching tokens.
 	 *
-	 * @param array $tokens {
-	 *      An array of tokens.
-	 *
-	 *      @type Text_Parser\Token $index
-	 * }
+	 * @param Token[] $tokens An array of tokens.
 	 */
 	public function update( $tokens ) {
 		foreach ( $tokens as $index => $token ) {
@@ -472,7 +464,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the currently set text.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_all() {
 		return $this->text;
@@ -481,7 +473,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "space".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_spaces() {
 		return $this->get_type( Token::SPACE );
@@ -490,7 +482,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "punctuation".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_punctuation() {
 		return $this->get_type( Token::PUNCTUATION );
@@ -503,7 +495,7 @@ class Text_Parser {
 	 * @param int $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
 	 * @param int $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
@@ -597,7 +589,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "other".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_other() {
 		return $this->get_type( Token::OTHER );
@@ -608,7 +600,7 @@ class Text_Parser {
 	 *
 	 * @param int $type The type to get.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_type( $type ) {
 		$tokens = [];
