@@ -67,7 +67,7 @@ class Pattern_Converter {
 		$this->url      = $url;
 		$this->language = $language;
 
-		$this->word_characters = join( [
+		$this->word_characters = join( '', [
 			"\w.'ʼ᾽ʼ᾿’",
 			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
 			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
