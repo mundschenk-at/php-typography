@@ -26,6 +26,8 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Settings\Quote_Style;
+use \PHP_Typography\Strings;
 
 /**
  * Smart_Quotes_Fix unit test.
@@ -97,7 +99,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function provide_smart_quotes_special_data() {
 		return [
-			[ '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ],
+			[ '("Some" word', '(&raquo;Some&laquo; word', Quote_Style::DOUBLE_GUILLEMETS_REVERSED, Quote_Style::SINGLE_GUILLEMETS_REVERSED ],
 		];
 	}
 
@@ -175,71 +177,4 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 
 		$this->assertFixResultSame( $html, $html );
 	}
-
-
-	/**
-	 * Tests update_smart_quotes_brackets.
-	 *
-	 * @covers ::update_smart_quotes_brackets
-	 *
-	 * @uses ::set_smart_quotes_primary
-	 * @uses ::set_smart_quotes_secondary
-	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 * @uses PHP_Typography\Strings::mb_str_split
-	 */
-	public function foo_test_update_smart_quotes_brackets() {
-		$s = $this->settings;
-		$quote_styles = [
-			'doubleCurled',
-			'doubleCurledReversed',
-			'doubleLow9',
-			'doubleLow9Reversed',
-			'singleCurled',
-			'singleCurledReversed',
-			'singleLow9',
-			'singleLow9Reversed',
-			// 'doubleGuillemetsFrench', // test doesn't work for this because it's actually two characters.
-			'doubleGuillemets',
-			'doubleGuillemetsReversed',
-			'singleGuillemets',
-			'singleGuillemetsReversed',
-			'cornerBrackets',
-			'whiteCornerBracket',
-		];
-
-		foreach ( $quote_styles as $primary_style ) {
-			$s->set_smart_quotes_primary( $primary_style );
-
-			foreach ( $quote_styles as $secondary_style ) {
-				$s->set_smart_quotes_secondary( $secondary_style );
-
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["['"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["']"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["('"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["')"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["{'"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'}"] )[0] );
-				$this->assertSmartQuotesStyle( $secondary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[0] );
-
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['["'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"]'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['("'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['")'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['{"'] )[1],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']['"}'] )[0] );
-				$this->assertSmartQuotesStyle( $primary_style,
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["\"'"] )[0],
-											   Strings::mb_str_split( $comp['smartQuotesBrackets']["'\""] )[1] );
-			}
-		}
-	}
-
 }

@@ -259,7 +259,7 @@ class Text_Parser {
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
 	 *
-	 * @var string
+	 * @var callable|null
 	 */
 	private $current_strtoupper = null;
 
@@ -326,13 +326,9 @@ class Text_Parser {
 	/**
 	 * Turns the array of strings into an array of tokens.
 	 *
-	 * @param array $parts An array of non-empty strings.
+	 * @param string[] $parts An array of non-empty strings.
 	 *
-	 * @return array {
-	 *         An array of numerically indexed tokens.
-	 *
-	 *         @type Token $index A token may combine several input parts.
-	 * }
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	protected static function tokenize( array $parts ) {
 		$tokens = [];
@@ -362,10 +358,10 @@ class Text_Parser {
 	/**
 	 * Parse ambigious tokens (that may need to be combined with the predecessors).
 	 *
-	 * @param int    $expected_type Either Token::WORD or Token::OTHER.
-	 * @param string $part          The string fragment to parse.
-	 * @param array  $tokens        The token array. Passed by reference.
-	 * @param int    $index         The current index. Passed by reference.
+	 * @param int     $expected_type Either Token::WORD or Token::OTHER.
+	 * @param string  $part          The string fragment to parse.
+	 * @param Token[] $tokens        The token array. Passed by reference.
+	 * @param int     $index         The current index. Passed by reference.
 	 */
 	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) {
 
@@ -457,11 +453,7 @@ class Text_Parser {
 	/**
 	 * Updates the 'value' field for all matching tokens.
 	 *
-	 * @param array $tokens {
-	 *      An array of tokens.
-	 *
-	 *      @type Text_Parser\Token $index
-	 * }
+	 * @param Token[] $tokens An array of tokens.
 	 */
 	public function update( $tokens ) {
 		foreach ( $tokens as $index => $token ) {
@@ -472,7 +464,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the currently set text.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_all() {
 		return $this->text;
@@ -481,7 +473,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "space".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_spaces() {
 		return $this->get_type( Token::SPACE );
@@ -490,7 +482,7 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "punctuation".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_punctuation() {
 		return $this->get_type( Token::PUNCTUATION );
@@ -503,7 +495,7 @@ class Text_Parser {
 	 * @param int $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
 	 * @param int $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
@@ -536,17 +528,9 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_letters_policy( Token $token, $policy ) {
-
-		// Short circuit.
-		if ( self::ALLOW_ALL_LETTERS === $policy ) {
-			return true;
-		}
-
-		$lettered = preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $token->value );
-
-		return
-			( self::REQUIRE_ALL_LETTERS === $policy && $lettered === $token->value ) ||
-			( self::NO_ALL_LETTERS === $policy && $lettered !== $token->value );
+		return $this->check_policy( $token, $policy, self::ALLOW_ALL_LETTERS, self::REQUIRE_ALL_LETTERS, self::NO_ALL_LETTERS, function( $value ) {
+			return preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
+		} );
 	}
 
 	/**
@@ -558,18 +542,9 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_caps_policy( Token $token, $policy ) {
-
-		// Short circuit.
-		if ( self::ALLOW_ALL_CAPS === $policy ) {
-			return true;
-		}
-
-		// Token value in all-caps.
-		$capped = call_user_func( $this->current_strtoupper, $token->value );
-
-		return
-			( self::REQUIRE_ALL_CAPS === $policy && $capped === $token->value ) ||
-			( self::NO_ALL_CAPS === $policy && $capped !== $token->value );
+		return $this->check_policy( $token, $policy, self::ALLOW_ALL_CAPS, self::REQUIRE_ALL_CAPS, self::NO_ALL_CAPS, function( $value ) {
+			return call_user_func( $this->current_strtoupper, $value );
+		} );
 	}
 
 	/**
@@ -581,23 +556,41 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_compounds_policy( Token $token, $policy ) {
+		return $this->check_policy( $token, $policy, self::ALLOW_COMPOUNDS, self::NO_COMPOUNDS, self::REQUIRE_COMPOUNDS, function( $value ) {
+			return preg_replace( '/-/S', '', $value );
+		} );
+	}
+
+	/**
+	 * Check if the value of the token conforms to the given policy.
+	 *
+	 * @param  Token    $token             Required.
+	 * @param  int      $policy            The policy to check.
+	 * @param  int      $permissive_policy ALLOW_* policy constant.
+	 * @param  int      $equal_policy      Policy constant to check when the transformed value is equal to the original token.
+	 * @param  int      $non_equal_policy  Policy constant to check when the transformed value is different from the original token.
+	 * @param  callable $transform_token   Function to transform the token value.
+	 *
+	 * @return bool
+	 */
+	protected function check_policy( Token $token, $policy, $permissive_policy, $equal_policy, $non_equal_policy, callable $transform_token ) {
 
 		// Short circuit.
-		if ( self::ALLOW_COMPOUNDS === $policy ) {
+		if ( $permissive_policy === $policy ) {
 			return true;
 		}
 
-		$uncompound = preg_replace( '/-/S', '', $token->value );
+		$transformed = $transform_token( $token->value );
 
 		return
-			( self::REQUIRE_COMPOUNDS === $policy && $uncompound !== $token->value ) ||
-			( self::NO_COMPOUNDS === $policy && $uncompound === $token->value );
+			( $equal_policy === $policy && $transformed === $token->value ) ||
+			( $non_equal_policy === $policy && $transformed !== $token->value );
 	}
 
 	/**
 	 * Retrieves all tokens of the type "other".
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_other() {
 		return $this->get_type( Token::OTHER );
@@ -608,7 +601,7 @@ class Text_Parser {
 	 *
 	 * @param int $type The type to get.
 	 *
-	 * @return array    An array of Text_Parser\Token.
+	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_type( $type ) {
 		$tokens = [];

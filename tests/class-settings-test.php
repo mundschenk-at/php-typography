@@ -44,7 +44,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	/**
 	 * Settings fixture.
 	 *
-	 * @var Settings
+	 * @var \PHP_Typography\Settings
 	 */
 	protected $settings;
 

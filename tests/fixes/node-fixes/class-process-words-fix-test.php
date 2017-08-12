@@ -47,6 +47,13 @@ use \PHP_Typography\Settings;
 class Process_Words_Fix_Test extends Node_Fix_Testcase {
 
 	/**
+	 * Our test object.
+	 *
+	 * @var Node_Fixes\Process_Words_Fix
+	 */
+	protected $fix;
+
+	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */

@@ -47,6 +47,13 @@ use \PHP_Typography\Settings;
 class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 
 	/**
+	 * Our test object.
+	 *
+	 * @var Token_Fixes\Hyphenate_Fix
+	 */
+	protected $fix;
+
+	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
@@ -259,7 +266,14 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 
 		$parent = new \DOMElement( $parent_tag, $input );
 
-		$this->assertFixResultSame( $input, $result, false, $parent->firstChild );
+		/**
+		 * Always a \DOMText.
+		 *
+		 * @var \DOMText
+		 */
+		$textnode = $parent->firstChild;
+
+		$this->assertFixResultSame( $input, $result, false, $textnode );
 	}
 
 	/**

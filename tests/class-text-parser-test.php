@@ -66,7 +66,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$parser = new Text_Parser( [ 'UTF-8' ] );
+		$parser = new Text_Parser();
 
 		$this->assertAttributeCount( 0, 'text', $parser );
 		$this->assertAttributeEmpty( 'current_strtoupper', $parser );
@@ -423,6 +423,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @uses ::conforms_to_caps_policy
 	 * @uses ::conforms_to_compounds_policy
 	 * @uses ::conforms_to_letters_policy
+	 * @uses ::check_policy
 	 * @uses ::get_type
 	 * @uses ::is_preceeded_by
 	 * @uses ::load
@@ -507,6 +508,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test conforms_to_letters_policy.
 	 *
 	 * @covers ::conforms_to_letters_policy
+	 * @covers ::check_policy
 	 * @dataProvider provide_conforms_to_letters_policy_data
 	 *
 	 * @uses ::load
@@ -553,6 +555,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test conforms_to_caps_policy.
 	 *
 	 * @covers ::conforms_to_caps_policy
+	 * @covers ::check_policy
 	 * @dataProvider provide_conforms_to_caps_policy_data
 	 *
 	 * @uses ::load
@@ -601,6 +604,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Test conforms_to_compounds_policy.
 	 *
 	 * @covers ::conforms_to_compounds_policy
+	 * @covers ::check_policy
 	 * @dataProvider provide_conforms_to_compounds_policy
 	 *
 	 * @uses ::load

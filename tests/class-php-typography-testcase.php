@@ -105,7 +105,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param mixed|null $value         The new value.
 	 */
 	protected function setValue( $object, $property_name, $value ) {
-		$reflection = new \ReflectionClass( $classname );
+		$reflection = new \ReflectionClass( get_class( $object ) );
 		$property = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 		$property->setValue( $object, $value );
@@ -147,7 +147,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * Helper function to generate a valid token list from strings.
 	 *
 	 * @param string $value The string to tokenize.
-	 * @param string $type  Optional. Default 'word'.
+	 * @param int    $type  Optional. Default 'word'.
 	 *
 	 * @return array
 	 */
@@ -198,6 +198,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 
 		// Ensure clean HTML even when a scalar was passed.
 		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+		$expected = [];
 		foreach ( $expected_value as $index => $token ) {
 			$expected[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
 		}
@@ -233,7 +234,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 				$expected = $this->tokenize( $expected_value );
 			}
 		} else {
-			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, (array) $expected_value, '$expected_value has to be a string or an array of tokens.' );
 			$expected = $expected_value;
 		}
 

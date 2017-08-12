@@ -30,7 +30,8 @@
         "squizlabs/php_codesniffer": "^3.0.2",
         "wp-coding-standards/wpcs": "^0.13",
         "wimg/php-compatibility": "^8.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1",
+        "phpstan/phpstan": "^0.8.0"
     },
 
     "autoload": {
@@ -58,14 +59,22 @@
         "update-patterns": [
             "php src/bin/update-patterns.php"
         ],
-        "phpcs": [
-            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
-        ],
         "test": [
             "phpunit --testsuite PHP-Typography"
         ],
         "coverage": [
             "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
+        ],
+        "check": [
+            "@phpcs",
+            "@phpstan"
+        ],
+        "phpcs": [
+            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+        ],
+        "phpstan": [
+            "phpstan analyse --configuration=.phpstan.neon --level=7 --ansi src/",
+            "phpstan analyse --configuration=.phpstan.neon --level=6 --ansi tests/"
         ]
     }
 }

@@ -67,7 +67,7 @@ class Pattern_Converter {
 		$this->url      = $url;
 		$this->language = $language;
 
-		$this->word_characters = join( [
+		$this->word_characters = join( '', [
 			"\w.'ʼ᾽ʼ᾿’",
 			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
 			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
@@ -111,11 +111,13 @@ class Pattern_Converter {
 			if ( ctype_digit( $chr ) ) {
 				$result[] = $chr;
 			} else {
+				// Append '0' if this is the first character or the previous character was not a number.
 				if ( ! isset( $characters[ $index - 1 ] ) || ! ctype_digit( $characters[ $index - 1 ] ) ) {
 					$result[] = '0';
 				}
 
-				if ( ! isset( $characters[ $index + 1 ] ) && ! ctype_digit( $characters[ $index ] ) ) {
+				// Append '0' if this is the last character.
+				if ( ! isset( $characters[ $index + 1 ] ) ) {
 					$result[] = '0';
 				}
 			}
