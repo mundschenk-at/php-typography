@@ -761,10 +761,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_handle_parsing_errors() {
 		return [
-			[ E_USER_WARNING, 'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], true ],
-			[ E_USER_ERROR,   'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], false ],
-			[ E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',       '666', [], false ],
-			[ E_USER_NOTICE,  'Fake error message', '/some/path/DOMTreeBuilder.php', '666', [], false ],
+			[ E_USER_WARNING, 'Fake error message', '/some/path/DOMTreeBuilder.php', 666, [], true ],
+			[ E_USER_ERROR,   'Fake error message', '/some/path/DOMTreeBuilder.php', 666, [], false ],
+			[ E_USER_WARNING, 'Fake error message', '/some/path/SomeFile.php',       666, [], false ],
+			[ E_USER_NOTICE,  'Fake error message', '/some/path/DOMTreeBuilder.php', 666, [], false ],
 		];
 	}
 
@@ -778,7 +778,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param  int    $errno      Error type constant.
 	 * @param  string $errstr     Error message.
 	 * @param  string $errfile    File path.
-	 * @param  string $errline    Line number.
+	 * @param  int    $errline    Line number.
 	 * @param  array  $errcontext Stack context.
 	 * @param  bool   $result     The expected result.
 	 */
@@ -2275,7 +2275,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertInstanceOf( '\DOMDocument', $dom );
 		$original_node = $dom->getElementsByTagName( 'p' )->item( 0 );
 		$parent        = $original_node->parentNode;
-		$new_nodes     = $this->typo->replace_node_with_html( $original_node, '<div><span>bar</span></div>' );
+		$new_nodes     = (array) $this->typo->replace_node_with_html( $original_node, '<div><span>bar</span></div>' );
 
 		$this->assertTrue( is_array( $new_nodes ) );
 		$this->assertContainsOnlyInstancesOf( '\DOMNode', $new_nodes );

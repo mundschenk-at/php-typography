@@ -96,8 +96,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
 		$h->set_language( 'foobar' );
-		$this->assertFalse( isset( $h->pattern ) );
-		$this->assertFalse( isset( $h->pattern_exceptions ) );
+		$this->assertAttributeEmpty( 'pattern_trie', $h );
+		$this->assertAttributeEmpty( 'pattern_exceptions', $h );
 
 		$h->set_language( 'no' );
 		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty Norwegian pattern array' );
