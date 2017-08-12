@@ -1,23 +1,34 @@
+filter:
+    paths:
+        - 'src/*'
+        - 'tests/*'
+
 build:
+    cache:
+        directories:
+            - ~/.composer   # Composer home directory (avoid fetching already fetched packages)
+            # vendor is already included.
+
     environment:
+        rabbitmq: false
+        mysql: false
+        postgresql: false
+        mongodb: false
+        elasticsearch: false
+        redis: false
+        memcached: false
+        neo4j: false
         php:
             version: 7.1
     tests:
         override:
-            # Define some variables.
-            - COMMAND=vendor/bin/phpcs
-            # Remvoe old analysis results.
-            - rm -f /tmp/analysis_result_phpcs
-            # Save version information.
-            - echo "php_code_sniffer" > "${SCRUTINIZER_VERSION_FILE:-/dev/null}"
-            - $COMMAND --version >> "${SCRUTINIZER_VERSION_FILE:-/dev/null}"
-            - VERSION="unknown"
-            - if [ -f "$SCRUTINIZER_VERSION_FILE" ]; then VERSION=$(cat $SCRUTINIZER_VERSION_FILE); fi
-            # Print version information.
-            - echo "Running $COMMAND --report=checkstyle $* ($VERSION)" >&2
-            # Finally, run PHPCS.
-            - $COMMAND --config-set installed_paths ../../wp-coding-standards/wpcs/,../../wimg/php-compatibility
-            - $COMMAND -p src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php --colors --report-checkstyle=/tmp/analysis_result_phpcs "$@" >&2 || true
-            # Print & rmeove results file.
-            - cat /tmp/analysis_result_phpcs
-            - rm -f /tmp/analysis_result_phpcs
+            -
+                command: .scrutinizer/phpcs-run
+                analysis:
+                    file: /tmp/analysis_result_phpcs
+                    format: 'general-checkstyle'     # The supported format by Scrutinizer
+
+
+tools:
+    php_code_sniffer: false
+    php_cs_fixer: false
