@@ -36,7 +36,7 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	/**
 	 * Settings object.
 	 *
-	 * @var Ssttings
+	 * @var Settings
 	 */
 	protected $s;
 

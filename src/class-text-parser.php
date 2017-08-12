@@ -259,7 +259,7 @@ class Text_Parser {
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
 	 *
-	 * @var string
+	 * @var callable|null
 	 */
 	private $current_strtoupper = null;
 

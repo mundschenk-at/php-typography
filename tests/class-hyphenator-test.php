@@ -36,7 +36,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	/**
 	 * Hyphenator fixture.
 	 *
-	 * @var Hyphenator
+	 * @var \PHP_Typography\Hyphenator
 	 */
 	protected $h;
 

@@ -26,6 +26,7 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Strings;
 
 /**
  * Smart_Quotes_Fix unit test.
@@ -188,7 +189,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function foo_test_update_smart_quotes_brackets() {
-		$s = $this->settings;
+		$s = $this->s;
 		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
