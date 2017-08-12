@@ -26,6 +26,7 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Settings\Quote_Style;
 use \PHP_Typography\Strings;
 
 /**
@@ -98,7 +99,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function provide_smart_quotes_special_data() {
 		return [
-			[ '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ],
+			[ '("Some" word', '(&raquo;Some&laquo; word', Quote_Style::DOUBLE_GUILLEMETS_REVERSED, Quote_Style::SINGLE_GUILLEMETS_REVERSED ],
 		];
 	}
 
