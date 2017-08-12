@@ -73,7 +73,8 @@
             "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
         ],
         "phpstan": [
-            "phpstan analyse --level 7 src/ tests/ --ansi"
+            "phpstan analyse --level 7 --ansi src/",
+            "phpstan analyse --level 6 --ansi tests/"
         ]
     }
 }
