@@ -59,17 +59,21 @@
         "update-patterns": [
             "php src/bin/update-patterns.php"
         ],
-        "phpcs": [
-            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
-        ],
         "test": [
             "phpunit --testsuite PHP-Typography"
         ],
         "coverage": [
             "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
         ],
+        "check": [
+            "@phpcs",
+            "@phpstan"
+        ],
+        "phpcs": [
+            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+        ],
         "phpstan": [
-            "phpstan analyse src/ tests/ --ansi"
+            "phpstan analyse --level 7 src/ tests/ --ansi"
         ]
     }
 }
