@@ -111,11 +111,13 @@ class Pattern_Converter {
 			if ( ctype_digit( $chr ) ) {
 				$result[] = $chr;
 			} else {
+				// Append '0' if this is the first character or the previous character was not a number.
 				if ( ! isset( $characters[ $index - 1 ] ) || ! ctype_digit( $characters[ $index - 1 ] ) ) {
 					$result[] = '0';
 				}
 
-				if ( ! isset( $characters[ $index + 1 ] ) && ! ctype_digit( $characters[ $index ] ) ) {
+				// Append '0' if this is the last character.
+				if ( ! isset( $characters[ $index + 1 ] ) ) {
 					$result[] = '0';
 				}
 			}
