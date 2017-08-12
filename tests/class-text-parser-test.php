@@ -66,7 +66,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$parser = new Text_Parser( [ 'UTF-8' ] );
+		$parser = new Text_Parser();
 
 		$this->assertAttributeCount( 0, 'text', $parser );
 		$this->assertAttributeEmpty( 'current_strtoupper', $parser );
