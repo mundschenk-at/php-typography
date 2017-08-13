@@ -29,6 +29,10 @@ namespace PHP_Typography\Bin;
 
 /**
  * Encapsulate some common file operations (including on remote files).
+ *
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 5.0.0
  */
 abstract class File_Operations {
 

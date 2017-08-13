@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Text_Parser\Token;
 use \PHP_Typography\U;
 
 /**
@@ -68,12 +69,12 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	/**
 	 * Apply the tweak to a given textnode.
 	 *
-	 * @param array         $tokens   Required.
+	 * @param Token[]       $tokens   Required.
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
 	 *
-	 * @return array An array of tokens.
+	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( ! empty( $settings['hyphenHardWrap'] ) || ! empty( $settings['smartDashes'] ) ) {

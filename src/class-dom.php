@@ -259,14 +259,7 @@ abstract class DOM {
 	 * @return \DOMText|null The first child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	public static function get_first_textnode( \DOMNode $node = null, $recursive = false ) {
-		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$first_textnode = null ) {
-			$i = 0;
-
-			while ( $i < $children->length && empty( $first_textnode ) ) {
-				$first_textnode = self::get_first_textnode( $children->item( $i ), true );
-				$i++;
-			}
-		}, $node, $recursive );
+		return self::get_edge_textnode( [ __CLASS__, __FUNCTION__ ], $node, $recursive, false );
 	}
 
 	/**
@@ -278,14 +271,7 @@ abstract class DOM {
 	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	public static function get_last_textnode( \DOMNode $node = null, $recursive = false ) {
-		return self::get_edge_textnode( function( \DOMNodeList $children, \DOMText &$last_textnode = null ) {
-			$i = $children->length - 1;
-
-			while ( $i >= 0 && empty( $last_textnode ) ) {
-				$last_textnode = self::get_last_textnode( $children->item( $i ), true );
-				$i--;
-			}
-		}, $node, $recursive );
+		return self::get_edge_textnode( [ __CLASS__, __FUNCTION__ ], $node, $recursive, true );
 	}
 
 	/**
@@ -294,14 +280,14 @@ abstract class DOM {
 	 *
 	 * @since 5.0.0
 	 *
-	 * @param callable      $iteration Takes two parameters, a \DOMNodeList and
-	 *                                 a reference to the \DOMText used as the result.
-	 * @param \DOMNode|null $node      Optional. Default null.
-	 * @param bool          $recursive Should be set to true on recursive calls. Optional. Default false.
+	 * @param callable      $get_textnode Takes two parameters, a \DOMNode and a boolean flag for recursive calls.
+	 * @param \DOMNode|null $node         Optional. Default null.
+	 * @param bool          $recursive    Should be set to true on recursive calls. Optional. Default false.
+	 * @param bool          $reverse      Whether to iterate forward or backward. Optional. Default false.
 	 *
 	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
-	private static function get_edge_textnode( callable $iteration, \DOMNode $node = null, $recursive = false ) {
+	private static function get_edge_textnode( callable $get_textnode, \DOMNode $node = null, $recursive = false, $reverse = false ) {
 		if ( ! isset( $node ) ) {
 			return null;
 		}
@@ -318,7 +304,15 @@ abstract class DOM {
 		$edge_textnode = null;
 
 		if ( $node->hasChildNodes() ) {
-			$iteration( $node->childNodes, $edge_textnode );
+			$children    = $node->childNodes;
+			$max         = $children->length;
+			$index       = $reverse ? $max - 1 : 0;
+			$incrementor = $reverse ? -1 : +1;
+
+			while ( $index >= 0 && $index < $max && null === $edge_textnode ) {
+				$edge_textnode = $get_textnode( $children->item( $index ), true );
+				$index += $incrementor;
+			}
 		}
 
 		return $edge_textnode;

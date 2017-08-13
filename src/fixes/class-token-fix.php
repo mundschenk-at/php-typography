@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes;
 
 use \PHP_Typography\Settings;
+use \PHP_Typography\Text_Parser\Token;
 
 /**
  * All fixes that apply to parsed text tokens should implement this interface.
@@ -45,12 +46,12 @@ interface Token_Fix {
 	/**
 	 * Apply the fix to a given textnode.
 	 *
-	 * @param array         $tokens   Required.
+	 * @param Token[]       $tokens   Required.
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
 	 *
-	 * @return array An array of tokens.
+	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null );
 

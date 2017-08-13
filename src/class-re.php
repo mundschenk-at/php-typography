@@ -29,6 +29,8 @@ namespace PHP_Typography;
 
 /**
  * Common regular expression components.
+ *
+ * @since 5.0.0
  */
 abstract class RE {
 	/**

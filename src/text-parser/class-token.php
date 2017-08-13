@@ -31,6 +31,10 @@ namespace PHP_Typography\Text_Parser;
  *
  * Multibyte characters are assumed to be encoded as UTF-8.
  *
+ * @since 5.0.0
+ *
+ * @author Peter Putzer <github@mundschenk.at>
+ *
  * @property-read string $value The token value.
  * @property-read int    $type  The token type. Can be any of the following constants:
  * - Token::SPACE
