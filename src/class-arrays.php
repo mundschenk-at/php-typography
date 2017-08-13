@@ -28,6 +28,10 @@ namespace PHP_Typography;
 
 /**
  * A utility class to help with array manipulation.
+ *
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 5.0.0
  */
 abstract class Arrays {
 	/**

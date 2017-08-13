@@ -29,6 +29,8 @@ namespace PHP_Typography;
 
 /**
  * A utility class to handle fast and save string function access.
+ *
+ * @since 4.2.0
  */
 abstract class Strings {
 	/**

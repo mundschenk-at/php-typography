@@ -33,7 +33,9 @@ use \PHP_Typography\Settings\Quote_Style;
 /**
  * Store settings for the PHP_Typography class.
  *
- *  @author Peter Putzer <github@mundschenk.at>
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 4.0.0
  */
 class Settings implements \ArrayAccess {
 

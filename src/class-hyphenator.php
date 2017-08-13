@@ -37,7 +37,9 @@ use PHP_Typography\Hyphenator\Trie_Node;
  * Portions of this code have been inspired by:
  *  - hyphenator-php (https://nikonyrh.github.io/phphyphenation.html)
  *
- *  @author Peter Putzer <github@mundschenk.at>
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 3.4.0
  */
 class Hyphenator {
 

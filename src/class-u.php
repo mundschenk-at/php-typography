@@ -28,6 +28,10 @@ namespace PHP_Typography;
 
 /**
  * Named Unicode characters (in UTF-8 encoding).
+ *
+ * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @since 5.0.0
  */
 interface U {
 
@@ -51,7 +55,7 @@ interface U {
 	const EM_DASH                    = "\xe2\x80\x94";
 	const SINGLE_QUOTE_OPEN          = "\xe2\x80\x98";
 	const SINGLE_QUOTE_CLOSE         = "\xe2\x80\x99";
-	const APOSTROPHE                 = "\xe2\x80\x99"; // defined seperate from singleQuoteClose so quotes can be redefined in set_smart_quotes_language() without disrupting apostrophies.
+	const APOSTROPHE                 = "\xe2\x80\x99"; // defined seperate from SINGLE_QUOTE_CLOSE to preserve semantics.
 	const SINGLE_LOW_9_QUOTE         = "\xe2\x80\x9a";
 	const DOUBLE_QUOTE_OPEN          = "\xe2\x80\x9c";
 	const DOUBLE_QUOTE_CLOSE         = "\xe2\x80\x9d";
