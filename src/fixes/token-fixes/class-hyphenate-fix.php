@@ -31,6 +31,7 @@ use \PHP_Typography\DOM;
 use \PHP_Typography\Hyphenator;
 use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Text_Parser\Token;
 use \PHP_Typography\U;
 
 /**
@@ -82,12 +83,12 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * Apply the tweak to a given textnode.
 	 *
-	 * @param array         $tokens   Required.
+	 * @param Token[]       $tokens   Required.
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
 	 *
-	 * @return array An array of tokens.
+	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenation'] ) ) {
@@ -114,11 +115,11 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * Really hyphenates given text fragment.
 	 *
-	 * @param array    $tokens Filtered to words.
+	 * @param Token[]  $tokens Filtered to words.
 	 * @param Settings $settings           The settings to apply.
 	 * @param string   $hyphen             Hyphenation character. Optional. Default is the soft hyphen character (`&shy;`).
 	 *
-	 * @return array The hyphenated text tokens.
+	 * @return Token[] The hyphenated text tokens.
 	 */
 	protected function do_hyphenate( array $tokens, Settings $settings, $hyphen = U::SOFT_HYPHEN ) {
 		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {

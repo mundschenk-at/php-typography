@@ -30,6 +30,7 @@ use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Text_Parser;
+use \PHP_Typography\Text_Parser\Token;
 
 /**
  * Hyphenates hyphenated compound words (if enabled).
@@ -55,12 +56,12 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 	/**
 	 * Apply the tweak to a given textnode.
 	 *
-	 * @param array         $tokens   Required.
+	 * @param Token[]       $tokens   Required.
 	 * @param Settings      $settings Required.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
 	 *
-	 * @return array An array of tokens.
+	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
 		if ( empty( $settings['hyphenateCompounds'] ) ) {
