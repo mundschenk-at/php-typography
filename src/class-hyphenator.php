@@ -292,6 +292,10 @@ class Hyphenator {
 	 * @return array The hyphenation pattern.
 	 */
 	protected function lookup_word_pattern( $key, callable $strlen, callable $str_split ) {
+		if ( null === $this->pattern_trie ) {
+			return []; // abort early.
+		}
+
 		// Add underscores to make out-of-index checks unnecessary,
 		// also hyphenation is done in lower case.
 		$search        = '_' . $key . '_';
@@ -302,9 +306,6 @@ class Hyphenator {
 		for ( $start = 0; $start < $search_length; ++$start ) {
 			// Start from the trie root node.
 			$node = $this->pattern_trie;
-			if ( null === $node ) {
-				break;
-			}
 
 			// Walk through the trie while storing detected patterns.
 			for ( $step = $start; $step < $search_length; ++$step ) {
