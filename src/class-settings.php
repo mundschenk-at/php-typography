@@ -484,7 +484,7 @@ class Settings implements \ArrayAccess {
 			$object = $get_style( $style, $this );
 		}
 
-		if ( empty( $object ) ) {
+		if ( ! $object instanceof $expected_class ) {
 			throw new \DomainException( "Invalid $description style $style." );
 		}
 
