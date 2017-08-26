@@ -1,6 +1,9 @@
 # Change History
 
-## 5.0.0. - unreleased
+## 5.0.1. - August 26, 2017
+*   _Bugfix_: Hyphenator caching was not really working.
+
+## 5.0.0. - August 13, 2017
 
 *   _Feature_: Use Composer for dependencies.
 *   _Change_: API refactoring:
