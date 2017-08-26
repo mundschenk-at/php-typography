@@ -26,6 +26,8 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Fixes\Token_Fix;
+use \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
+use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Settings;
 
 /**
@@ -138,5 +140,27 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 
 		$this->fix->register_token_fix( $fake_token_fixer );
 		$this->assertAttributeContains( $fake_token_fixer, 'token_fixes', $this->fix, 'The registered fixer is not present in the $token_fixes array.' );
+	}
+
+	/**
+	 * Tests update_hyphenator_cache.
+	 *
+	 * @covers ::update_hyphenator_cache
+	 *
+	 * @uses ::register_token_fix
+	 * @uses PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix
+	 * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix::__construct
+	 */
+	public function test_update_hyphenator_cache() {
+		// Create a stub for the Hyphenator_Cache class.
+		$fake_cache = $this->createMock( Hyphenator_Cache::class );
+
+		// Create a stub for the Hyphenate_Fix class.
+		$token_fixer = new Hyphenate_Fix();
+
+		$this->fix->register_token_fix( $token_fixer );
+		$this->fix->update_hyphenator_cache( $fake_cache );
+
+		$this->assertAttributeSame( $fake_cache, 'cache', $token_fixer, 'The hyphenator cache was not update correctly.' );
 	}
 }

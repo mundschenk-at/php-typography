@@ -29,7 +29,9 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Text_Parser;
 use \PHP_Typography\Settings;
 use \PHP_Typography\DOM;
+use \PHP_Typography\Hyphenator_Cache;
 use \PHP_Typography\Fixes\Token_Fix;
+use \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
 
 /**
  * Tokenizes the content of a textnode and process the individual words separately.
@@ -118,5 +120,18 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	 */
 	public function register_token_fix( Token_Fix $fix ) {
 		$this->token_fixes[] = $fix;
+	}
+
+	/**
+	 * Sets the hyphenator cache for all registered token fixes (that require one).
+	 *
+	 * @param Hyphenator_Cache $cache A cache instance.
+	 */
+	public function update_hyphenator_cache( Hyphenator_Cache $cache ) {
+		foreach ( $this->token_fixes as $fix ) {
+			if ( $fix instanceof Hyphenate_Fix ) {
+				$fix->set_hyphenator_cache( $cache );
+			}
+		}
 	}
 }
