@@ -413,6 +413,25 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests lookup_word_pattern.
+	 *
+	 * @covers ::lookup_word_pattern
+	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Strings::functions
+	 * @uses PHP_Typography\Strings::mb_str_split
+	 */
+	public function test_lookup_word_pattern_invalid_pattern_trie() {
+		$string = 'unknown';
+
+		// Make pattern trie invalid.
+		$this->setValue( $this->h, 'pattern_trie', null );
+
+		$this->assertSame( [], $this->invokeMethod( $this->h, 'lookup_word_pattern', [ $string, 'strlen', 'str_split' ] ) );
+	}
+
+	/**
 	 * Tests hyphenate.
 	 *
 	 * @covers ::hyphenate

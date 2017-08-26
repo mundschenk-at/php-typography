@@ -483,6 +483,11 @@ class PHP_Typography {
 	 */
 	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
 		$this->hyphenator_cache = $cache;
+
+		// Change hyphenator cache for existing node fixes.
+		if ( null !== $this->process_words_fix ) {
+			$this->process_words_fix->update_hyphenator_cache( $cache );
+		}
 	}
 
 	/**
