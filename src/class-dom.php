@@ -194,7 +194,7 @@ abstract class DOM {
 		return self::get_adjacent_textnode( function( &$another_node = null ) {
 			$another_node = $another_node->previousSibling;
 			return self::get_last_textnode( $another_node );
-		}, __METHOD__, $node );
+		}, [ __CLASS__, __FUNCTION__ ], $node );
 	}
 
 	/**
@@ -208,7 +208,7 @@ abstract class DOM {
 		return self::get_adjacent_textnode( function( &$another_node = null ) {
 			$another_node = $another_node->nextSibling;
 			return self::get_first_textnode( $another_node );
-		}, __METHOD__, $node );
+		}, [ __CLASS__, __FUNCTION__ ], $node );
 	}
 
 	/**
