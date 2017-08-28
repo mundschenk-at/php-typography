@@ -637,8 +637,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 *
-	 * @expectedException \TypeError
-	 *
 	 * @dataProvider provide_process_data
 	 *
 	 * @param string      $html   HTML input.
@@ -648,6 +646,13 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	public function test_process_textnodes_no_fixer( $html, $result, $feed ) {
 		$s = $this->s;
 		$s->set_defaults();
+
+		// PHP < 7.0 raises an error instead of throwing an "exception".
+		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
+			$this->expectException( \PHPUnit_Framework_Error::class );
+		} else {
+			$this->expectException( \TypeError::class );
+		}
 
 		$this->typo->process_textnodes( $html, 'bar', $s );
 	}
