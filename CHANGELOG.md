@@ -1,12 +1,18 @@
 # Change History
 
 ## 5.1.0 - coming soon
+
 *   _Change_: Started adding some benchmarks.
+*   _Change_: Updated HTML5 parser (html5-php) to 2.3.0:
+    -   Tokenizer performance improved by 20 percent.
+    -   Various small bugfixes.
 
 ## 5.0.2. - August 28, 2017
+
 *   _Bugfix_: Fatal error on PHP 5.6.x (caused by using `__METHOD__` as a variable function) fixed.
 
 ## 5.0.1. - August 26, 2017
+
 *   _Bugfix_: Hyphenator caching was not really working.
 
 ## 5.0.0. - August 13, 2017
@@ -84,7 +90,7 @@ _Skipped._
 
 *   _Feature_: Added "Latin (Liturgical)" as a new hyphenation language.
 *   _Change_: Updated list of valid top-level domains.
-*   _Change_:_ Updated HTML5 parser (html5-php) to 2.2.2.
+*   _Change_: Updated HTML5 parser (html5-php) to 2.2.2.
 *   _Bugfix_: Custom hyphenations with more than one hyphenation point were not working properly.
 *   _Bugfix_: The `min_after` hyphenation setting was off by one.
 *   _Bugfix_: Fractions did not play nice with prime symbols.
