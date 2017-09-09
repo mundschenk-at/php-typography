@@ -28,6 +28,7 @@
 namespace PHP_Typography;
 
 use PHP_Typography\Hyphenator\Trie_Node;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * Hyphenates tokenized text.
@@ -206,9 +207,9 @@ class Hyphenator {
 	 * @param int    $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
 	 * @param int    $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
 	 *
-	 * @return array The modified text tokens.
+	 * @return Token[] The modified text tokens.
 	 */
-	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
+	public function hyphenate( array $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
 		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
 			return $parsed_text_tokens;
 		}

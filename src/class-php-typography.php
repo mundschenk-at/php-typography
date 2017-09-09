@@ -381,7 +381,7 @@ class PHP_Typography {
 	 * @param \DOMNode  $initial_node The starting node of the XPath query.
 	 * @param Settings  $settings     The settings to apply.
 	 *
-	 * @return array An array of \DOMNode (can be empty).
+	 * @return \DOMNode[] An array of \DOMNode (can be empty).
 	 */
 	public function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
 		$elements = [];
@@ -532,7 +532,7 @@ class PHP_Typography {
 	 *
 	 * @param string $path The path in which to look for language plugin files.
 	 *
-	 * @return array An array in the form ( $language_code => $language_name ).
+	 * @return string[] An array in the form ( $language_code => $language_name ).
 	 */
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
@@ -562,9 +562,10 @@ class PHP_Typography {
 	/**
 	 * Retrieves the list of valid hyphenation languages.
 	 *
-	 * The language names are translation-ready but not translated yet.
+	 * Note that this method reads all the language files on disc, so you should
+	 * cache the results if possible.
 	 *
-	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
+	 * @return string[] An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	public static function get_hyphenation_languages() {
 		return self::get_language_plugin_list( __DIR__ . '/lang/' );
@@ -573,9 +574,10 @@ class PHP_Typography {
 	/**
 	 * Retrieves the list of valid diacritic replacement languages.
 	 *
-	 * The language names are translation-ready but not translated yet.
+	 * Note that this method reads all the language files on disc, so you should
+	 * cache the results if possible.
 	 *
-	 * @return array An array in the form of ( LANG_CODE => LANGUAGE ).
+	 * @return string[] An array in the form of ( LANG_CODE => LANGUAGE ).
 	 */
 	public static function get_diacritic_languages() {
 		return self::get_language_plugin_list( __DIR__ . '/diacritics/' );
