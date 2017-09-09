@@ -100,6 +100,7 @@ class Functions_Bench {
 	 * Benchmark mb_str_split method.
 	 *
 	 * @ParamProviders({"provide_process_filenames"})
+	 * @Revs(10)
 	 *
 	 * @param  array $params The parameters.
 	 */
@@ -130,5 +131,84 @@ class Functions_Bench {
 		}
 
 		self::mb_str_split_422( $html );
+	}
+
+	/**
+	 * Unicode uchr implementation using json_decode.
+	 *
+	 * @param  int $code Unicode codepoint.
+	 *
+	 * @return string
+	 */
+	public function json_uchr( $code ) {
+		return json_decode( sprintf( '"\u%04d"', $code ) );
+	}
+
+	/**
+	 * Input data for uchr tests.
+	 *
+	 * @return array
+	 */
+	public function provide_uchr_codes() {
+		return [
+			[ 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ],
+			[ 8205 ],
+		];
+	}
+
+	/**
+	 * Benchmark uchr method.
+	 *
+	 * @ParamProviders({"provide_uchr_codes"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+
+	 * @param  array $params The parameters.
+	 */
+	public function bench__uchr( $params ) {
+		if ( is_array( $params ) ) {
+			foreach ( $params as $code ) {
+				\PHP_Typography\Strings::_uchr( $code );
+			}
+		} else {
+			\PHP_Typography\Strings::_uchr( $params );
+		}
+	}
+
+	/**
+	 * Benchmark uchr method.
+	 *
+	 * @ParamProviders({"provide_uchr_codes"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_json_uchr( $params ) {
+		if ( is_array( $params ) ) {
+			foreach ( $params as $code ) {
+				self::json_uchr( $code );
+			}
+		} else {
+			self::json_uchr( $params );
+		}
+	}
+
+	/**
+	 * Benchmark uchr method.
+	 *
+	 * @ParamProviders({"provide_uchr_codes"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_intlchar_chr( $params ) {
+		if ( class_exists( 'IntlChar' ) ) {
+			if ( is_array( $params ) ) {
+				foreach ( $params as $code ) {
+					\IntlChar::chr( $code );
+				}
+			} else {
+				\IntlChar::chr( $params );
+			}
+		}
 	}
 }
