@@ -35,6 +35,11 @@
 		"name"  : "German (Traditional)",
 		"url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-de-1901.tex"
 	},
+  {
+    "short" : "de-CH-1901",
+    "name"  : "Swiss German (Traditional)",
+    "url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-de-ch-1901.tex"
+  },
 	{
 		"short" : "de",
 		"name"  : "German",
