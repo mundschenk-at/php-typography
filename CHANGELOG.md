@@ -1,5 +1,8 @@
 # Change History
 
+## 5.1.0 - coming soon
+*   _Change_: Started adding some benchmarks.
+
 ## 5.0.2. - August 28, 2017
 *   _Bugfix_: Fatal error on PHP 5.6.x (caused by using `__METHOD__` as a variable function) fixed.
 

@@ -2839,7 +2839,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	public function provide_parse_html_with_errors_data() {
 		return [
 			[ '<div>foobar</div></p>', 'Line 0, Col 0: Could not find closing tag for p' ],
-			[ '<a href="http://example.org?foo=xx&bar=yy">foobar</a>', "Line 1, Col 65: No match in entity table for 'bar'" ],
+			[ '<a href="http://example.org?foo=xx&+dark">foobar</a>', "Line 1, Col 62: No match in entity table for ''" ],
 		];
 	}
 
