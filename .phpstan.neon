@@ -9,6 +9,7 @@ parameters:
 		- '#Call to an undefined method [a-zA-Z0-9\\_]+::expects\(\)#'
 		- '#Access to an undefined property PHPUnit_Framework_MockObject_MockObject::\$[a-zA-Z0-9_]+#'
 		- '#Call to an undefined method PHPUnit_Framework_MockObject_MockObject::[a-zA-Z0-9_]+\(\)#'
+		- '#Class PHPUnit_Framework_Error not found\.#'
 
 	universalObjectCratesClasses:
 		- PHP_Typography\Settings
