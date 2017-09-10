@@ -970,6 +970,28 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests set_dewidow_word_number.
+	 *
+	 * @covers ::set_dewidow_word_number
+	 */
+	public function test_set_dewidow_word_number() {
+		$this->settings->set_dewidow_word_number( 10 );
+		$this->assertSame( 1, $this->settings['dewidowWordNumber'] );
+
+		$this->settings->set_dewidow_word_number( 1 );
+		$this->assertSame( 1, $this->settings['dewidowWordNumber'] );
+
+		$this->settings->set_dewidow_word_number( 2 );
+		$this->assertSame( 2, $this->settings['dewidowWordNumber'] );
+
+		$this->settings->set_dewidow_word_number( 3 );
+		$this->assertSame( 3, $this->settings['dewidowWordNumber'] );
+
+		$this->settings->set_dewidow_word_number( 4 );
+		$this->assertSame( 1, $this->settings['dewidowWordNumber'] );
+	}
+
+	/**
 	 * Tests set_max_dewidow_pull.
 	 *
 	 * @covers ::set_max_dewidow_pull

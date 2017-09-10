@@ -2000,18 +2000,31 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_dewidow_data() {
 		return [
-			[ 'bla foo b', 'bla foo&nbsp;b', 3, 2 ],
-			[ 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2 ], // don't replace thin space...
-			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2 ],   // ... or hair space.
-			[ 'bla foo bar', 'bla foo bar', 2, 2 ],
-			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
-			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3 ],
-			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2 ],
-			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2 ],
-			[ 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3 ], // &shy; not matched.
-			[ 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3 ], // &shy; not matched, but syllable after is.
-			[ 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3 ],
-			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo b', 'bla foo&nbsp;b', 3, 2, 1 ],
+			[ 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2, 1 ], // don't replace thin space...
+			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2, 1 ],   // ... or hair space.
+			[ 'bla foo bar', 'bla foo bar', 2, 2, 1 ],
+			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1 ],
+			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1 ],
+			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2, 1 ],
+			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2, 1 ],
+			[ 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3, 1 ], // &shy; not matched.
+			[ 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3, 1 ], // &shy; not matched, but syllable after is.
+			[ 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3, 1 ],
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3, 1 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3, 2 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 7, 1 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 8, 4, 1 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar&nbsp;bar', 7, 7, 2 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 1 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 2 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 3 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 7, 1 ],
+			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 2 ],
+			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 3 ],
+			[ 'bla bla foo bar bar', 'bla bla foo bar&nbsp;bar', 3, 11, 1 ],
+			[ 'bla bla foo bar bar', 'bla bla foo&nbsp;bar&nbsp;bar', 3, 11, 2 ],
+			[ 'bla bla foo bar bar', 'bla bla&nbsp;foo&nbsp;bar&nbsp;bar', 3, 11, 3 ],
 		];
 	}
 
@@ -2022,8 +2035,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_dewidow_with_hyphenation_data() {
 		return [
-			[ 'this is riding ri...', 'this is rid&shy;ing&nbsp;ri...', 4, 2 ],
-			[ 'this is riding riding', 'this is rid&shy;ing riding', 4, 2 ], // No soft hyphens in widows.
+			[ 'this is riding ri...', 'this is rid&shy;ing&nbsp;ri...', 4, 2, 1 ],
+			[ 'this is riding riding', 'this is rid&shy;ing riding', 4, 2, 1 ], // No soft hyphens in widows.
 		];
 	}
 
@@ -2037,15 +2050,17 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_dewidow_data
 	 *
-	 * @param string $html       HTML input.
-	 * @param string $result     Expected result.
-	 * @param int    $max_pull   Maximum number of pulled characters.
-	 * @param int    $max_length Maximum word length for dewidowing.
+	 * @param string $html        HTML input.
+	 * @param string $result      Expected result.
+	 * @param int    $max_pull    Maximum number of pulled characters.
+	 * @param int    $max_length  Maximum word length for dewidowing.
+	 * @param int    $word_number Maximum number of words in widow.
 	 */
-	public function test_dewidow( $html, $result, $max_pull, $max_length ) {
+	public function test_dewidow( $html, $result, $max_pull, $max_length, $word_number ) {
 		$this->s->set_dewidow( true );
 		$this->s->set_max_dewidow_pull( $max_pull );
 		$this->s->set_max_dewidow_length( $max_length );
+		$this->s->set_dewidow_word_number( $word_number );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -2063,12 +2078,13 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_dewidow_with_hyphenation_data
 	 *
-	 * @param string $html       HTML input.
-	 * @param string $result     Expected result.
-	 * @param int    $max_pull   Maximum number of pulled characters.
-	 * @param int    $max_length Maximum word length for dewidowing.
+	 * @param string $html        HTML input.
+	 * @param string $result      Expected result.
+	 * @param int    $max_pull    Maximum number of pulled characters.
+	 * @param int    $max_length  Maximum word length for dewidowing.
+	 * @param int    $word_number Maximum number of words in widow.
 	 */
-	public function test_dewidow_with_hyphenation( $html, $result, $max_pull, $max_length ) {
+	public function test_dewidow_with_hyphenation( $html, $result, $max_pull, $max_length, $word_number ) {
 		$this->s->set_dewidow( true );
 		$this->s->set_hyphenation( true );
 		$this->s->set_hyphenation_language( 'en-US' );
@@ -2077,6 +2093,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_min_after_hyphenation( 2 );
 		$this->s->set_max_dewidow_pull( $max_pull );
 		$this->s->set_max_dewidow_length( $max_length );
+		$this->s->set_dewidow_word_number( $word_number );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -2091,15 +2108,17 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_dewidow_data
 	 *
-	 * @param string $html       HTML input.
-	 * @param string $result     Expected result.
-	 * @param int    $max_pull   Maximum number of pulled characters.
-	 * @param int    $max_length Maximum word length for dewidowing.
+	 * @param string $html        HTML input.
+	 * @param string $result      Expected result.
+	 * @param int    $max_pull    Maximum number of pulled characters.
+	 * @param int    $max_length  Maximum word length for dewidowing.
+	 * @param int    $word_number Maximum number of words in widow.
 	 */
-	public function test_dewidow_off( $html, $result, $max_pull, $max_length ) {
+	public function test_dewidow_off( $html, $result, $max_pull, $max_length, $word_number ) {
 		$this->s->set_dewidow( false );
 		$this->s->set_max_dewidow_pull( $max_pull );
 		$this->s->set_max_dewidow_length( $max_length );
+		$this->s->set_dewidow_word_number( $word_number );
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
