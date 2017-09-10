@@ -3,11 +3,12 @@
 ## 5.1.0 - coming soon
 
 *   _Feature_: New hyphenation language "Swiss-German (Traditional)" added.
+*   _Feature_: Dewidowing can now be applied to the final 1–3 words.
 *   _Change_: Started adding some benchmarks.
 *   _Change_: Updated HTML5 parser (html5-php) to 2.3.0:
     -   Tokenizer performance improved by 20 percent.
     -   Various small bugfixes.
-    
+
 ## 5.0.2. - August 28, 2017
 
 *   _Bugfix_: Fatal error on PHP 5.6.x (caused by using `__METHOD__` as a variable function) fixed.

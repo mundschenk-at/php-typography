@@ -41,7 +41,10 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class Dewidow_Fix extends Abstract_Node_Fix {
-	const REGEX = '/
+	const SPACE_BETWEEN = '[\s]+'; // \s includes all special spaces (but not ZWSP) with the u flag.
+	const WIDOW = '[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?'; // \w includes all alphanumeric Unicode characters but not composed characters.
+
+	const REGEX_START = '/
 		(?:
 			\A
 			|
@@ -55,17 +58,21 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			)
 		)
 		(?<space_between>                   # subpattern 3: space between
-			[\s]+                           # \s includes all special spaces (but not ZWSP) with the u flag
+			' . self::SPACE_BETWEEN . '
 		)
 		(?<widow>                           # subpattern 4: widow
-			                                # \w includes all alphanumeric Unicode characters but not composed characters
-			[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?
-		)
-		(?<trailing>                        # subpattern 5: any trailing punctuation or spaces
+			' . self::WIDOW . '
+			(?:
+				' . self::SPACE_BETWEEN . self::WIDOW . '
+			){0,'; // The maximum number of repetitions is missing.
+
+	const REGEX_END =
+		'})
+		(?<trailing>                       # subpattern 5: any trailing punctuation or spaces
 			[^\w\p{M}]*
 		)
 		\Z
-	/xu';
+	/Sxu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -83,39 +90,74 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = preg_replace_callback( self::REGEX, function( array $widow ) use ( $settings ) {
-				$func = Strings::functions( $widow[0] );
+			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings['dewidowMaxPull'], $settings['dewidowMaxLength'], $settings['dewidowWordNumber'] );
+		}
+	}
 
-				// If we are here, we know that widows are being protected in some fashion
-				// with that, we will assert that widows should never be hyphenated or wrapped
-				// as such, we will strip soft hyphens and zero-width-spaces.
-				$widow['widow']    = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['widow'] );
-				$widow['widow']    = str_replace( U::SOFT_HYPHEN,     '', $widow['widow'] );
-				$widow['trailing'] = preg_replace( "/\s+/{$func['u']}", U::NO_BREAK_SPACE, $widow['trailing'] );
-				$widow['trailing'] = str_replace( U::ZERO_WIDTH_SPACE, '', $widow['trailing'] );
-				$widow['trailing'] = str_replace( U::SOFT_HYPHEN,     '', $widow['trailing'] );
+	/**
+	 * Dewidow a given text fragment.
+	 *
+	 * @param  string $text        The text fragment to dewidow.
+	 * @param  array  $func        An array of string functions.
+	 * @param  int    $max_pull    Maximum number of characters pulled from previous line.
+	 * @param  int    $max_length  Maximum widow length.
+	 * @param  int    $word_number Maximum number of words allowed in widow.
+	 *
+	 * @return string
+	 */
+	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number ) {
+		if ( $word_number < 1 ) {
+			return $text; // We are done.
+		}
 
+		// Do what we have to do.
+		return preg_replace_callback( self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END, function( array $widow ) use ( $func, $max_pull, $max_length, $word_number ) {
+
+			// If we are here, we know that widows are being protected in some fashion
+			// with that, we will assert that widows should never be hyphenated or wrapped
+			// as such, we will strip soft hyphens and zero-width-spaces.
+			$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
+			$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $func['u'] ) );
+
+			if (
 				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
-				if ( '' === $widow['space_before'] || strstr( U::NO_BREAK_SPACE, $widow['space_before'] ) ) {
-					return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-				}
+				'' === $widow['space_before'] || strstr( U::NO_BREAK_SPACE, $widow['space_before'] ) ||
 
 				// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
-				if ( $func['strlen']( $widow['neighbor'] ) > $settings['dewidowMaxPull'] ||
-					 $func['strlen']( $widow['widow'] ) > $settings['dewidowMaxLength'] ) {
-						return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-				}
+				$func['strlen']( $widow['neighbor'] ) > $max_pull || $func['strlen']( $widow['widow'] ) > $max_length ||
 
 				// Never replace thin and hair spaces with &nbsp;.
-				switch ( $widow['space_between'] ) {
-					case U::THIN_SPACE:
-					case U::HAIR_SPACE:
-						return $widow['space_before'] . $widow['neighbor'] . $widow['space_between'] . $widow['widow'] . $widow['trailing'];
-				}
+				U::THIN_SPACE === $widow['space_between'] || U::HAIR_SPACE === $widow['space_between']
+			) {
+				return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1 );
+			}
 
-				// Let's protect some widows!
-				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . $widow['widow'] . $widow['trailing'];
-			}, $textnode->data );
-		}
+			// Let's protect some widows!
+			return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $func['u'] ) . $widow['trailing'];
+		}, $text );
+	}
+
+
+	/**
+	 * Strip zero-width space and soft hyphens from the given string.
+	 *
+	 * @param  string $string Required.
+	 *
+	 * @return string
+	 */
+	protected static function strip_breaking_characters( $string ) {
+		return str_replace( [ U::ZERO_WIDTH_SPACE, U::SOFT_HYPHEN ], '', $string );
+	}
+
+	/**
+	 * Strip zero-width space and soft hyphens from the given string.
+	 *
+	 * @param  string $string  Required.
+	 * @param  string $unicode The "u" flag for Unicode regular expressions or an empty string.
+	 *
+	 * @return string
+	 */
+	protected static function make_space_nonbreaking( $string, $unicode ) {
+		return preg_replace( "/\s+/{$unicode}", U::NO_BREAK_SPACE, $string );
 	}
 }

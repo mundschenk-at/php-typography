@@ -291,6 +291,7 @@ class Settings implements \ArrayAccess {
 		$this->set_dewidow();
 		$this->set_max_dewidow_length();
 		$this->set_max_dewidow_pull();
+		$this->set_dewidow_word_number();
 		$this->set_wrap_hard_hyphens();
 		$this->set_url_wrap();
 		$this->set_email_wrap();
@@ -796,6 +797,17 @@ class Settings implements \ArrayAccess {
 		$length = ( $length > 1 ) ? $length : 5;
 
 		$this->data['dewidowMaxLength'] = $length;
+	}
+
+	/**
+	 * Sets the maximum number of words considered for dewidowing.
+	 *
+	 * @param int $number Defaults to 1. Only 1, 2 and 3 are valid.
+	 */
+	public function set_dewidow_word_number( $number = 1 ) {
+		$number = ( $number > 3 || $number < 1 ) ? 1 : $number;
+
+		$this->data['dewidowWordNumber'] = $number;
 	}
 
 	/**
