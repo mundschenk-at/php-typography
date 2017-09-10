@@ -1,6 +1,6 @@
 # Change History
 
-## 5.1.0 - coming soon
+## 5.1.0 - September 10, 2017
 
 *   _Feature_: New hyphenation language "Swiss-German (Traditional)" added.
 *   _Feature_: Dewidowing can now be applied to the final 1–3 words.
