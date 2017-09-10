@@ -5,19 +5,19 @@
  *  Copyright 2014-2017 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  *  ***
  *
@@ -28,6 +28,7 @@
 namespace PHP_Typography;
 
 use PHP_Typography\Hyphenator\Trie_Node;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * Hyphenates tokenized text.
@@ -206,9 +207,9 @@ class Hyphenator {
 	 * @param int    $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
 	 * @param int    $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
 	 *
-	 * @return array The modified text tokens.
+	 * @return Token[] The modified text tokens.
 	 */
-	public function hyphenate( $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
+	public function hyphenate( array $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
 		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
 			return $parsed_text_tokens;
 		}
