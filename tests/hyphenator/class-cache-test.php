@@ -59,6 +59,26 @@ class Cache_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests serialization & the has_changed property.
+	 *
+	 * @covers ::__sleep
+	 * @covers ::has_changed
+	 *
+	 * @uses ::set_hyphenator
+	 * @uses ::get_hyphenator
+	 */
+	public function test_has_changed() {
+		$this->assertFalse( $this->c->has_changed() );
+		$this->c->set_hyphenator( 'de', $this->createMock( \PHP_Typography\Hyphenator::class ) );
+		$this->assertTrue( $this->c->has_changed() );
+
+		$new_c = unserialize( serialize( $this->c ) ); // @codingStandardsIgnoreLine
+		$this->assertInstanceOf( \PHP_Typography\Hyphenator\Cache::class, $new_c );
+		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $new_c->get_hyphenator( 'de' ) );
+		$this->assertFalse( $new_c->has_changed() );
+	}
+
+	/**
 	 * Tests set_hyphenator.
 	 *
 	 * @covers ::set_hyphenator

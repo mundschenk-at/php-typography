@@ -45,6 +45,24 @@ class Cache {
 	protected $cache = [];
 
 	/**
+	 * A flag that indicated that the cache has changed since creation/deserialization.
+	 *
+	 * @var bool
+	 */
+	protected $changed = false;
+
+	/**
+	 * Ignore the "changed" flag during serialization.
+	 *
+	 * @return array
+	 */
+	public function __sleep() {
+		return [
+			'cache',
+		];
+	}
+
+	/**
 	 * Caches a Hyphenator instance.
 	 *
 	 * @param string     $lang       A language code.
@@ -52,6 +70,7 @@ class Cache {
 	 */
 	public function set_hyphenator( $lang, Hyphenator $hyphenator ) {
 		$this->cache[ $lang ] = $hyphenator;
+		$this->changed        = true;
 	}
 
 	/**
@@ -67,5 +86,15 @@ class Cache {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Determines whether the cache (not its content) has been modified since
+	 * instance creatino (or deserialization).
+	 *
+	 * @return bool
+	 */
+	public function has_changed() {
+		return $this->changed;
 	}
 }
