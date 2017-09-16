@@ -85,7 +85,7 @@ class PHP_Typography {
 	/**
 	 * The hyphenator cache.
 	 *
-	 * @var Hyphenator_Cache
+	 * @var Hyphenator\Cache
 	 */
 	protected $hyphenator_cache;
 
@@ -466,22 +466,22 @@ class PHP_Typography {
 	/**
 	 * Retrieves the hyphenator cache.
 	 *
-	 * @return Hyphenator_Cache
+	 * @return Hyphenator\Cache
 	 */
 	public function get_hyphenator_cache() {
 		if ( ! isset( $this->hyphenator_cache ) ) {
-			$this->hyphenator_cache = new Hyphenator_Cache();
+			$this->hyphenator_cache = new Hyphenator\Cache();
 		}
 
 		return $this->hyphenator_cache;
 	}
 
 	/**
-	 * Injects an existing Hyphenator_Cache (to facilitate persistent language caching).
+	 * Injects an existing Hyphenator\Cache (to facilitate persistent language caching).
 	 *
-	 * @param Hyphenator_Cache $cache A hyphenator cache instance.
+	 * @param Hyphenator\Cache $cache A hyphenator cache instance.
 	 */
-	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
 		$this->hyphenator_cache = $cache;
 
 		// Change hyphenator cache for existing node fixes.

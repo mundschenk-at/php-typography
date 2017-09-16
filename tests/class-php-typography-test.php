@@ -25,7 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use \PHP_Typography\PHP_Typography;
-use \PHP_Typography\Hyphenator_Cache;
+use \PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Fixes\Node_Fix;
 use \PHP_Typography\Fixes\Token_Fix;
@@ -39,7 +39,7 @@ use \PHP_Typography\U;
  * @usesDefaultClass PHP_Typography\PHP_Typography
  *
  * @uses PHP_Typography\PHP_Typography
- * @uses PHP_Typography\Hyphenator_Cache
+ * @uses PHP_Typography\Hyphenator\Cache
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes

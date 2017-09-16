@@ -28,7 +28,7 @@
 namespace PHP_Typography\Fixes\Token_Fixes;
 
 use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Hyphenator_Cache;
+use \PHP_Typography\Hyphenator\Cache;
 use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Text_Parser;
@@ -58,10 +58,10 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	/**
 	 * Creates a new fix instance.
 	 *
-	 * @param Hyphenator_Cache|null $cache           Optional. Default null.
-	 * @param bool                  $feed_compatible Optional. Default false.
+	 * @param Cache|null $cache           Optional. Default null.
+	 * @param bool       $feed_compatible Optional. Default false.
 	 */
-	public function __construct( Hyphenator_Cache $cache = null, $feed_compatible = false ) {
+	public function __construct( Cache $cache = null, $feed_compatible = false ) {
 		parent::__construct( $cache, Token_Fix::OTHER, $feed_compatible );
 
 		// Combined URL pattern.
