@@ -29,7 +29,7 @@ namespace PHP_Typography\Fixes\Token_Fixes;
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\DOM;
 use \PHP_Typography\Hyphenator;
-use \PHP_Typography\Hyphenator_Cache;
+use \PHP_Typography\Hyphenator\Cache;
 use \PHP_Typography\Settings;
 use \PHP_Typography\Text_Parser\Token;
 use \PHP_Typography\U;
@@ -59,22 +59,22 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * The cache for Hyphenator instances.
 	 *
-	 * @var Hyphenator_Cache
+	 * @var Hyphenator\Cache
 	 */
 	protected $cache;
 
 	/**
 	 * Creates a new fix instance.
 	 *
-	 * @param Hyphenator_Cache|null $cache           Optional. Default null.
-	 * @param int                   $target          Optional. Default Token_Fix::WORDS.
-	 * @param bool                  $feed_compatible Optional. Default false.
+	 * @param Cache|null $cache Optional. Default null.
+	 * @param int        $target          Optional. Default Token_Fix::WORDS.
+	 * @param bool       $feed_compatible Optional. Default false.
 	 */
-	public function __construct( Hyphenator_Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
+	public function __construct( Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
 		parent::__construct( $target, $feed_compatible );
 
 		if ( null === $cache ) {
-			$cache = new Hyphenator_Cache();
+			$cache = new Hyphenator\Cache();
 		}
 
 		$this->cache = $cache;
@@ -155,9 +155,9 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * Injects an existing Hyphenator instance (to facilitate language caching).
 	 *
-	 * @param Hyphenator_Cache $cache Required.
+	 * @param Hyphenator\Cache $cache Required.
 	 */
-	public function set_hyphenator_cache( Hyphenator_Cache $cache ) {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
 		$this->cache = $cache;
 	}
 }
