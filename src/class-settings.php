@@ -1023,14 +1023,17 @@ class Settings implements \ArrayAccess {
 	/**
 	 * Retrieves a unique hash value for the current settings.
 	 *
-	 * @param int $max_length The maximum number of bytes returned. Optional. Default 16.
+	 * @since 5.2.0 The new parameter $raw_output has been added.
+	 *
+	 * @param int  $max_length Optional. The maximum number of bytes returned (0 for unlimited). Default 16.
+	 * @param bool $raw_output Optional. Wether to return raw binary data for the hash. Default true.
 	 *
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
-	public function get_hash( $max_length = 16 ) {
-		$hash = md5( json_encode( $this->data ), true );
+	public function get_hash( $max_length = 16, $raw_output = true ) {
+		$hash = md5( json_encode( $this->data ), $raw_output );
 
-		if ( $max_length < strlen( $hash ) ) {
+		if ( $max_length < strlen( $hash ) && $max_length > 0 ) {
 			$hash = substr( $hash, 0, $max_length );
 		}
 
