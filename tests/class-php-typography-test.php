@@ -138,18 +138,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			'applet',
 			'object',
 			'param',
-		];
-		$self_closing_tags = [
-			'area',
-			'base',
-			'basefont',
-			'br',
-			'frame',
-			'hr',
-			'img',
-			'input',
-			'link',
-			'meta',
+			'svg',
+			'math',
 		];
 
 		// Default tags.
@@ -177,16 +167,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
-		foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $s['ignoreTags'] );
-		}
 
 		// Auto-close tag and something else.
 		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
 		$this->assertContains( 'foo', $s['ignoreTags'] );
-		foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $s['ignoreTags'] );
-		}
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}

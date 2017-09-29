@@ -77,12 +77,16 @@ class Settings implements \ArrayAccess {
 	/**
 	 * An array containing all self-closing HTML5 tags.
 	 *
+	 * @deprecated 5.2.0 Use DOM::self_closing_tags() if necessary.
+	 *
 	 * @var array
 	 */
 	protected $self_closing_tags = [];
 
 	/**
 	 * A array of tags we should never touch.
+	 *
+	 * @deprecated 5.2.0 Use DOM::inappropriate_tags() if necessary.
 	 *
 	 * @var array
 	 */
@@ -246,10 +250,8 @@ class Settings implements \ArrayAccess {
 		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
 
 		// Set up some arrays for quick HTML5 introspection.
-		$this->self_closing_tags = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
-			return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
-		} );
-		$this->inappropriate_tags = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' ];
+		$this->self_closing_tags  = array_flip( DOM::self_closing_tags() );
+		$this->inappropriate_tags = array_flip( DOM::inappropriate_tags() );
 
 		if ( $set_defaults ) {
 			$this->set_defaults();
@@ -368,8 +370,7 @@ class Settings implements \ArrayAccess {
 		// Ensure that we pass only lower-case tag names to XPath.
 		$tags = array_filter( array_map( 'strtolower', Strings::maybe_split_parameters( $tags ) ), 'ctype_alnum' );
 
-		// Self closing tags shouldn't be in $tags.
-		$this->data['ignoreTags'] = array_unique( array_merge( array_diff( $tags, $this->self_closing_tags ), $this->inappropriate_tags ) );
+		$this->data['ignoreTags'] = array_unique( array_merge( $tags, $this->inappropriate_tags ) );
 	}
 
 	/**
