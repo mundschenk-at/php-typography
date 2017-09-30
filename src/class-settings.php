@@ -37,7 +37,7 @@ use \PHP_Typography\Settings\Quote_Style;
  *
  * @since 4.0.0
  */
-class Settings implements \ArrayAccess {
+class Settings implements \ArrayAccess, \JsonSerializable {
 
 	/**
 	 * The current no-break narrow space character.
@@ -188,6 +188,24 @@ class Settings implements \ArrayAccess {
 	 */
 	public function offsetGet( $offset ) {
 		return isset( $this->data[ $offset ] ) ? $this->data[ $offset ] : null;
+	}
+
+	/**
+	 * Provides a JSON serialization of the settings.
+	 *
+	 * @return mixed
+	 */
+	public function jsonSerialize() {
+		return array_merge(
+			$this->data,
+			[
+				'no_break_narrow_space'  => $this->no_break_narrow_space,
+				'primary_quotes'         => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
+				'secondary_quotes'       => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
+				'dash_style'             => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
+				'custom_units'           => $this->custom_units,
+			]
+		);
 	}
 
 	/**
@@ -1034,7 +1052,7 @@ class Settings implements \ArrayAccess {
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
 	public function get_hash( $max_length = 16, $raw_output = true ) {
-		$hash = md5( json_encode( $this->data ), $raw_output );
+		$hash = md5( json_encode( $this ), $raw_output );
 
 		if ( $max_length < strlen( $hash ) && $max_length > 0 ) {
 			$hash = substr( $hash, 0, $max_length );
