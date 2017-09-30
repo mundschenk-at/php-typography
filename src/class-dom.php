@@ -44,13 +44,6 @@ abstract class DOM {
 	private static $block_tags;
 
 	/**
-	 * An array of self-closing tags.
-	 *
-	 * @var array
-	 */
-	private static $self_closing_tags;
-
-	/**
 	 * An array of tags that should never be modified.
 	 *
 	 * @var array
@@ -92,27 +85,6 @@ abstract class DOM {
 		}
 
 		return self::$block_tags;
-	}
-
-	/**
-	 * Retrieves an array of self closing tags.
-	 *
-	 * @param bool $reset Optional. Default false.
-	 *
-	 * @return array {
-	 *         An array of boolean values indexed by tagname.
-	 *
-	 *         @type bool $tag `true` if the tag is a self-closing tag.
-	 * }
-	 */
-	public static function self_closing_tags( $reset = false ) {
-		if ( empty( self::$self_closing_tags ) || $reset ) {
-			self::$self_closing_tags = array_flip( array_filter( array_keys( Elements::$html5 ), function( $tag ) {
-					return Elements::isA( $tag, Elements::VOID_TAG );
-				} ) );
-		}
-
-		return self::$self_closing_tags;
 	}
 
 	/**

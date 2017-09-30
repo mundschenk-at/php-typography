@@ -95,29 +95,6 @@ class DOM_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Test self_closing_tags.
-	 *
-	 * @covers ::self_closing_tags
-	 */
-	public function test_self_closing_tags() {
-		$self_closing_tags = DOM::self_closing_tags( true );
-		$this->assertInternalType( 'array', $self_closing_tags );
-
-		$tag_names = array_keys( $self_closing_tags );
-		$this->assertContainsOnly( 'string', $tag_names );
-
-		// Some self-closing tags native to HTML5-PHP.
-		$this->assertContains( 'hr', $tag_names );
-		$this->assertContains( 'param', $tag_names );
-		$this->assertContains( 'img', $tag_names );
-
-		// Not self-containing tags.
-		$this->assertNotContains( 'p', $tag_names );
-		$this->assertNotContains( 'div', $tag_names );
-		$this->assertNotContains( 'span', $tag_names );
-	}
-
-	/**
 	 * Test inappropriate_tags.
 	 *
 	 * @covers ::inappropriate_tags

@@ -77,7 +77,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * An array containing all self-closing HTML5 tags.
 	 *
-	 * @deprecated 5.2.0 Use DOM::self_closing_tags() if necessary.
+	 * @deprecated 5.2.0 Not used anymore, will be removed in 6.0.0.
 	 *
 	 * @var array
 	 */
@@ -86,7 +86,7 @@ class Settings implements \ArrayAccess {
 	/**
 	 * A array of tags we should never touch.
 	 *
-	 * @deprecated 5.2.0 Use DOM::inappropriate_tags() if necessary.
+	 * @deprecated 5.2.0 Use DOM::inappropriate_tags() if necessary. Will be removed in 6.0.0.
 	 *
 	 * @var array
 	 */
@@ -250,7 +250,9 @@ class Settings implements \ArrayAccess {
 		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
 
 		// Set up some arrays for quick HTML5 introspection.
-		$this->self_closing_tags  = array_flip( DOM::self_closing_tags() );
+		$this->self_closing_tags  = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
+				return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
+			} );
 		$this->inappropriate_tags = array_flip( DOM::inappropriate_tags() );
 
 		if ( $set_defaults ) {

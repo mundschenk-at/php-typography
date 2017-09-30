@@ -40,7 +40,6 @@ use \PHP_Typography\Settings\Quotes;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings::_uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
- * @uses PHP_Typography\DOM::self_closing_tags
  */
 class Settings_Test extends PHP_Typography_Testcase {
 	/**
@@ -75,7 +74,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
-	 * @uses PHP_Typography\DOM::self_closing_tags
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
@@ -96,7 +94,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
-	 * @uses PHP_Typography\DOM::self_closing_tags
 	 */
 	public function test_initialization() {
 		$s = $this->settings;
