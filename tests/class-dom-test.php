@@ -95,6 +95,37 @@ class DOM_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test inappropriate_tags.
+	 *
+	 * @covers ::inappropriate_tags
+	 */
+	public function test_inappropriate_tags() {
+		$inappropriate_tags = DOM::inappropriate_tags( true );
+		$this->assertInternalType( 'array', $inappropriate_tags );
+
+		$tag_names = array_keys( $inappropriate_tags );
+		$this->assertContainsOnly( 'string', $tag_names );
+
+		// Some tags we should never touch.
+		$this->assertContains( 'svg', $tag_names );
+		$this->assertContains( 'param', $tag_names );
+		$this->assertContains( 'map', $tag_names );
+		$this->assertContains( 'button', $tag_names );
+		$this->assertContains( 'select', $tag_names );
+		$this->assertContains( 'optgroup', $tag_names );
+		$this->assertContains( 'option', $tag_names );
+		$this->assertContains( 'head', $tag_names );
+		$this->assertContains( 'applet', $tag_names );
+		$this->assertContains( 'object', $tag_names );
+		$this->assertContains( 'math', $tag_names );
+
+		// Normal tags tags.
+		$this->assertNotContains( 'p', $tag_names );
+		$this->assertNotContains( 'div', $tag_names );
+		$this->assertNotContains( 'span', $tag_names );
+	}
+
+	/**
 	 * Test nodelist_to_array.
 	 *
 	 * @covers ::nodelist_to_array

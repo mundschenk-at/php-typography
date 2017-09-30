@@ -27,6 +27,8 @@
 
 namespace PHP_Typography;
 
+use \Masterminds\HTML5\Elements;
+
 /**
  * Some static methods for DOM manipulation.
  *
@@ -42,17 +44,41 @@ abstract class DOM {
 	private static $block_tags;
 
 	/**
-	 * Retrieves an array of block tag names.
+	 * An array of tags that should never be modified.
+	 *
+	 * @var array
+	 */
+	private static $inappropriate_tags;
+
+	const ADDITIONAL_INAPPROPRIATE_TAGS = [
+		'button',
+		'select',
+		'optgroup',
+		'option',
+		'map',
+		'head',
+		'applet',
+		'object',
+		'svg',
+		'math',
+	];
+
+	/**
+	 * Retrieves an array of block tags.
 	 *
 	 * @param bool $reset Optional. Default false.
 	 *
-	 * @return array
+	 * @return array {
+	 *         An array of boolean values indexed by tagname.
+	 *
+	 *         @type bool $tag `true` if the tag is a block tag.
+	 * }
 	 */
 	public static function block_tags( $reset = false ) {
 		if ( empty( self::$block_tags ) || $reset ) {
 			self::$block_tags = array_merge(
-				array_flip( array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
-					return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::BLOCK_TAG );
+				array_flip( array_filter( array_keys( Elements::$html5 ), function( $tag ) {
+					return Elements::isA( $tag, Elements::BLOCK_TAG );
 				} ) ),
 				array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
 			);
@@ -61,6 +87,32 @@ abstract class DOM {
 		return self::$block_tags;
 	}
 
+	/**
+	 * Retrieves an array of tags that we should never touch.
+	 *
+	 * @param bool $reset Optional. Default false.
+	 *
+	 * @return array {
+	 *         An array of boolean values indexed by tagname.
+	 *
+	 *         @type bool $tag `true` if the tag should never be modified in any way.
+	 * }
+	 */
+	public static function inappropriate_tags( $reset = false ) {
+		if ( empty( self::$inappropriate_tags ) || $reset ) {
+			self::$inappropriate_tags = array_flip( array_merge(
+				array_filter( array_keys( Elements::$html5 ), function( $tag ) {
+					return
+						Elements::isA( $tag, Elements::VOID_TAG ) ||
+						Elements::isA( $tag, Elements::TEXT_RAW ) ||
+						Elements::isA( $tag, Elements::TEXT_RCDATA );
+				} ),
+				self::ADDITIONAL_INAPPROPRIATE_TAGS
+			) );
+		}
+
+		return self::$inappropriate_tags;
+	}
 
 	/**
 	 * Converts \DOMNodeList to array;

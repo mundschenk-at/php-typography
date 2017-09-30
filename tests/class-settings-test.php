@@ -39,6 +39,7 @@ use \PHP_Typography\Settings\Quotes;
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings::_uchr
+ * @uses PHP_Typography\DOM::inappropriate_tags
  */
 class Settings_Test extends PHP_Typography_Testcase {
 	/**
@@ -72,6 +73,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
+	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
@@ -91,6 +93,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\Arrays::array_map_assoc
+	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_initialization() {
 		$s = $this->settings;
@@ -328,8 +331,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_tags_to_ignore() {
 		$s = $this->settings;
-		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param' ];
-		$self_closing_tags = [ 'area', 'base', 'basefont', 'br', 'frame', 'hr', 'img', 'input', 'link', 'meta' ];
+		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
 
 		// Default tags.
 		$s->set_tags_to_ignore( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] );
@@ -337,16 +339,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
-		foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $s['ignoreTags'] );
-		}
 
 		// Auto-close tag and something else.
 		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
 		$this->assertContains( 'foo', $s['ignoreTags'] );
-		foreach ( $self_closing_tags as $tag ) {
-			$this->assertNotContains( $tag, $s['ignoreTags'] );
-		}
+
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
