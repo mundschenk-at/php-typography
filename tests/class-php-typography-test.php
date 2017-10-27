@@ -1767,6 +1767,44 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @return array
 	 */
+	public function provide_unit_spacing_dewidow_data() {
+		return [
+			[ 'It was 2 m.', 'It was&nbsp;2&#8239;m.' ],
+			[ 'Bis zu 3 km/h', 'Bis zu 3&#8239;km/h' ],
+			[ '5 sg 44 kg', '5 sg 44&#8239;kg' ],
+			[ 'Es hat 100 &deg;C', 'Es hat 100&#8239;&deg;C' ],
+		];
+	}
+
+	/**
+	 * Test unit_spacing with true narrow no-break space and dewidowing.
+	 *
+	 * @coversNothing
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 *
+	 * @dataProvider provide_unit_spacing_dewidow_data
+	 *
+	 * @param string $input  HTML input.
+	 * @param string $result Expected result.
+	 */
+	public function test_unit_spacing_dewidow( $input, $result ) {
+		$this->s->set_unit_spacing( true );
+		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->set_dewidow( true );
+		$this->s->set_max_dewidow_pull( 10 );
+		$this->s->set_max_dewidow_length( 3 );
+		$this->s->set_dewidow_word_number( 2 );
+
+		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input, $this->s ) ) );
+	}
+
+	/**
+	 * Provide data for testing unit_spacing.
+	 *
+	 * @return array
+	 */
 	public function provide_numbered_abbreviation_spacing_data() {
 		return [
 			[ 'ÖNORM A 1080:2007', '&Ouml;NORM A&nbsp;1080:2007' ],
