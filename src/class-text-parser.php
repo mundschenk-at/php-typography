@@ -245,7 +245,7 @@ class Text_Parser {
 	)
 	'; // required modifiers: x (multiline pattern) u (utf8).
 
-	// Find any text
+	// Find any text.
 	const _ANY_TEXT = self::_SPACE . '|' . self::_PUNCTUATION . '|' . self::_WORD; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
 
 	// Regular expressions.

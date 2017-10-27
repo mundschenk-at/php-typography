@@ -267,10 +267,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @param \PHP_Typography\Text_Parser $parser The parser to use.
 	 */
 	public function test_reload( Text_Parser $parser ) {
+		// Parsed string: 'Quoth the raven, "nevermore"! Äöüß?'.
 		$tokens = $parser->get_all();
-		$tokens[12] = $tokens[12]->with_value( '' ); // ?.
-		$tokens[11] = $tokens[11]->with_value( '' ); // Äöüß
-		$tokens[10] = $tokens[10]->with_value( '' ); //
+		$tokens[12] = $tokens[12]->with_value( '' ); // "?".
+		$tokens[11] = $tokens[11]->with_value( '' ); // "Äöüß".
+		$tokens[10] = $tokens[10]->with_value( '' ); // " ".
 		$tokens[9]  = $tokens[9]->with_value( $tokens[9]->value . '!' );
 		$parser->update( $tokens );
 
@@ -347,9 +348,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$this->assertTrue( $parser->load( $interesting ) );
 
 		$tokens = $parser->get_all();
-		$tokens[12] = $tokens[12]->with_value( '' ); // ?.
-		$tokens[11] = $tokens[11]->with_value( '' ); // Äöüß
-		$tokens[10] = $tokens[10]->with_value( '' ); //
+		$tokens[12] = $tokens[12]->with_value( '' ); // "?".
+		$tokens[11] = $tokens[11]->with_value( '' ); // "Äöüß".
+		$tokens[10] = $tokens[10]->with_value( '' ); // " ".
 		$tokens[9]  = $tokens[9]->with_value( $tokens[9]->value . '!' );
 		$parser->update( $tokens );
 
