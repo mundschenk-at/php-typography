@@ -21,12 +21,7 @@ build:
             version: 7.1
     tests:
         override:
-            -
-                command: .scrutinizer/phpcs-run
-                analysis:
-                    file: /tmp/analysis_result_phpcs
-                    format: 'general-checkstyle'     # The supported format by Scrutinizer
-
+            - phpcs-run -p src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php
 
 tools:
     php_code_sniffer: false
