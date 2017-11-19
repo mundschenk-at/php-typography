@@ -64,8 +64,8 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 		return [
 			[ '<p>creme brulee</p>', '<p>crème brûlée</p>', 'en-US' ],
 			[ 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ],
-			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'de-DE' ],
-			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'de-DE' ],
+			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'en-US' ],
+			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'en-US' ],
 		];
 	}
 
