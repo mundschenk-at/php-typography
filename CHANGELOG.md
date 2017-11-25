@@ -1,5 +1,8 @@
 # Change History
 
+## 5.2.2 - November 25, 2017
+*   _Bugfix_: Remove some ambiguous diacritics replacements from the German language file.
+
 ## 5.2.1 - October 27, 2017
 *   _Bugfix_: Dewidow didn't honor narrow spaces.
 
