@@ -28,7 +28,9 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
+use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Strings;
 use \PHP_Typography\U;
 
 /**
@@ -151,22 +153,18 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$previous_character = DOM::get_prev_chr( $textnode );
-		if ( '' !== $previous_character ) {
-			$node_data = $previous_character . $node_data;
-		}
-		$next_character = DOM::get_next_chr( $textnode );
-		if ( '' !== $next_character ) {
-			$node_data = $node_data . $next_character;
-		}
+		$next_character     = DOM::get_next_chr( $textnode );
+		$node_data          = "{$previous_character}{$node_data}{$next_character}";
 
 		// Various special characters and regular expressions.
 		$double = $settings->primary_quote_style();
 		$single = $settings->secondary_quote_style();
 
-		$double_open  = $double->open();
-		$double_close = $double->close();
-		$single_open  = $single->open();
-		$single_close = $single->close();
+		// Mark quotes to ensure proper removal of replaced adjacent characters.
+		$double_open  = RE::ESCAPE_MARKER . $double->open() . RE::ESCAPE_MARKER;
+		$double_close = RE::ESCAPE_MARKER . $double->close() . RE::ESCAPE_MARKER;
+		$single_open  = RE::ESCAPE_MARKER . $single->open() . RE::ESCAPE_MARKER;
+		$single_close = RE::ESCAPE_MARKER . $single->close() . RE::ESCAPE_MARKER;
 
 		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // WPCS: loose comparison ok.
 			$this->update_smart_quotes_brackets( $double_open, $double_close, $single_open, $single_close );
@@ -223,8 +221,46 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = str_replace( "'", $single_close, $node_data );
 		$node_data = str_replace( '"', $double_close, $node_data );
 
-		// If we have adjacent characters remove them from the text.
-		$textnode->data = self::remove_adjacent_characters( $node_data, $previous_character, $next_character );
+		// Check if adjacent characters where replaced with multi-byte replacements.
+		$quotes          = [ $double_open, $double_close, $single_open, $single_close ];
+		$func            = Strings::functions( $node_data );
+		$substr          = $func['substr'];
+		$strlen          = $func['strlen'];
+		$previous_length = self::calc_adjacent_length( $strlen( $previous_character ), $previous_character, $node_data, $quotes, $substr, $strlen, false );
+		$next_length     = self::calc_adjacent_length( $strlen( $next_character ), $next_character, $node_data, $quotes, $substr, $strlen, true );
+
+		// If we have adjacent characters, remove them from the text.
+		$node_data      = self::remove_adjacent_characters( $node_data, $previous_length, $next_length );
+
+		// Remove the escape markers and restore the text to the actual node.
+		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
+	}
+
+	/**
+	 * Calculates the adjacent character length.
+	 *
+	 * @param  int      $current_length     The current length of the adjacent character(s).
+	 * @param  string   $adjacent_character The adjacent character.
+	 * @param  string   $haystack           The complete string.
+	 * @param  string[] $needles            The replacement(s) to look for.
+	 * @param  callable $substr             A `substr`-like function.
+	 * @param  callable $strlen             A 'strlen'-like function.
+	 * @param  bool     $reverse            Optional. Default false.
+	 *
+	 * @return int
+	 */
+	private static function calc_adjacent_length( $current_length, $adjacent_character, $haystack, array $needles, callable $substr, callable $strlen, $reverse = false ) {
+		if ( $current_length > 0 && $adjacent_character !== $substr( $haystack, $reverse ? -$current_length : $current_length ) ) {
+			foreach ( $needles as $needle ) {
+				$len = $strlen( $needle );
+
+				if ( $needle === $substr( $haystack, ( $reverse ? -$len : 0 ), $len ) ) {
+					return $len;
+				}
+			}
+		}
+
+		return $current_length;
 	}
 
 	/**

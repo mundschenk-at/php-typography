@@ -89,6 +89,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 			[ "2/4'",                              '2/4&prime;' ],
 			[ '3/44"',                             '3/44&Prime;' ],
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
+			[ 'Some "word")',                      'Some &ldquo;word&rdquo;)' ],
 		];
 	}
 
@@ -99,7 +100,28 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function provide_smart_quotes_special_data() {
 		return [
-			[ '("Some" word', '(&raquo;Some&laquo; word', Quote_Style::DOUBLE_GUILLEMETS_REVERSED, Quote_Style::SINGLE_GUILLEMETS_REVERSED ],
+			[
+				'("Some" word',
+				'(&raquo;Some&laquo; word',
+				Quote_Style::DOUBLE_GUILLEMETS_REVERSED,
+				Quote_Style::SINGLE_GUILLEMETS_REVERSED,
+			],
+			[
+				' et <code>aria-labelledby</code>',
+				' et <code>aria-labelledby</code>',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
+				Quote_Style::SINGLE_CURLED,
+				'"',
+				'',
+			],
+			[
+				'foo',
+				'foo',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
+				Quote_Style::SINGLE_CURLED,
+				'"',
+				'"',
+			],
 		];
 	}
 
@@ -107,6 +129,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::calc_adjacent_length
 	 *
 	 * @uses ::update_smart_quotes_brackets
 	 *
@@ -116,13 +139,16 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result    Expected entity-escaped result.
 	 * @param string $primary   Primary quote style.
 	 * @param string $secondary Secondard  quote style.
+	 * @param string $previous  Optional. Default ''.
+	 * @param string $next      Optional. Default ''.
 	 */
-	public function test_smart_quotes_special( $html, $result, $primary, $secondary ) {
+	public function test_smart_quotes_special( $html, $result, $primary, $secondary, $previous = '', $next = '' ) {
+		$this->s->set_tags_to_ignore( [ 'code' ] );
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary( $primary );
 		$this->s->set_smart_quotes_secondary( $secondary );
 
-		$this->assertFixResultSame( $html, $result );
+		$this->assertFixResultSame( $html, $result, $previous, $next );
 	}
 
 	/**
@@ -130,6 +156,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 * @covers ::update_smart_quotes_brackets
+	 * @covers ::calc_adjacent_length
 	 *
 	 * @dataProvider provide_smart_quotes_data
 	 *
@@ -146,6 +173,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply with left and right textnode siblings.
 	 *
 	 * @covers ::apply
+	 * @covers ::calc_adjacent_length
 	 *
 	 * @uses ::update_smart_quotes_brackets
 	 *

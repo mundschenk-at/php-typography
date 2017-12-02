@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 
 use \PHP_Typography\DOM;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Strings;
 use \PHP_Typography\U;
 
 /**
@@ -124,15 +125,13 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		$node_data = $textnode->data;
 
 		// We need the parent.
-		$block = DOM::get_block_parent( $textnode );
+		$block     = DOM::get_block_parent( $textnode );
 		$firstnode = ! empty( $block ) ? DOM::get_first_textnode( $block ) : null;
 
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
-		if ( '' !== $next_character ) {
-			$node_data = $node_data . $next_character;
-		}
+		$node_data      = "{$node_data}{$next_character}"; // We have no interest in preceeding characters for this fix.
 
 		$node_data = preg_replace( self::STYLE_DOUBLE, '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $node_data );
 		$node_data = preg_replace( self::STYLE_SINGLE, '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $node_data );
@@ -146,6 +145,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		}
 
 		// Remove any added characters.
-		$textnode->data = self::remove_adjacent_characters( $node_data, '', $next_character );
+		$strlen         = Strings::functions( $node_data )['strlen'];
+		$textnode->data = self::remove_adjacent_characters( $node_data, 0, $strlen( $next_character ) );
 	}
 }
