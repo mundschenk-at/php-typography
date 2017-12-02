@@ -791,7 +791,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @return array
 	 */
 	public function provide_smart_quotes_data() {
-		return array(
+		return [
 			[ '<span>"Double", \'single\'</span>', '<span>&ldquo;Double&rdquo;, &lsquo;single&rsquo;</span>' ],
 			[ '<p>"<em>This is nuts.</em>"</p>',   '<p>&ldquo;<em>This is nuts.</em>&rdquo;</p>' ],
 			[ '"This is so 1996", he said.',       '&ldquo;This is so 1996&rdquo;, he said.' ],
@@ -805,8 +805,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Hier 1" "Typ 2" einsetzen',         'Hier 1&Prime; &ldquo;Typ 2&rdquo; einsetzen' ],
 			[ "2/4'",                              '2/4&prime;' ],
 			[ '3/44"',                             '3/44&Prime;' ],
-			array( '("Some" word',                      '(&ldquo;Some&rdquo; word' ),
-		);
+			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
+		];
 	}
 
 	/**
@@ -849,14 +849,33 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test smart_quotes with French quotes (two characters!).
+	 *
+	 * @coversNothing
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 */
+	public function test_smart_quotes_french() {
+		$html   = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
+		$result = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
+
+		$this->s->set_tags_to_ignore( [ 'code' ] );
+		$this->s->set_smart_quotes( true );
+		$this->s->set_smart_quotes_primary( Settings\Quote_Style::DOUBLE_GUILLEMETS_FRENCH );
+
+		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
+	}
+
+	/**
 	 * Provide data for testing smart quotes.
 	 *
 	 * @return array
 	 */
 	public function provide_smart_quotes_special_data() {
-		return array(
-			array( '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ),
-		);
+		return [
+			[ '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ],
+		];
 	}
 
 	/**

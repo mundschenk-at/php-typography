@@ -79,25 +79,27 @@ abstract class Abstract_Node_Fix implements Node_Fix {
 	 * Remove adjacent characters from given string.
 	 *
 	 * @since 4.2.2
+	 * @since 5.1.3 $prev_char and $next_char replaced with $prev_length and $next_length
+	 *              to support multi-characters replacements.
 	 *
-	 * @param  string $string    The string.
-	 * @param  string $prev_char Optional. Default ''. The removed character is not required to be the same.
-	 * @param  string $next_char Optional. Default ''. The removed character is not required to be the same.
+	 * @param  string $string      The string.
+	 * @param  int    $prev_length Optional. Default 0. The number of characters to remove at the beginning.
+	 * @param  int    $next_length Optional. Default 0. The number of characters to remove at the end.
 	 *
-	 * @return string            The string without `$prev_char` and `$next_char`.
+	 * @return string              The string without the characters from adjacent nodes.
 	 */
-	protected static function remove_adjacent_characters( $string, $prev_char = '', $next_char = '' ) {
+	protected static function remove_adjacent_characters( $string, $prev_length = 0, $next_length = 0 ) {
 		// Use the most efficient string functions.
 		$func = Strings::functions( $string );
 
 		// Remove previous character.
-		if ( '' !== $prev_char ) {
-			$string = $func['substr']( $string, 1, $func['strlen']( $string ) );
+		if ( $prev_length > 0 ) {
+			$string = $func['substr']( $string, $prev_length, $func['strlen']( $string ) );
 		}
 
 		// Remove next character.
-		if ( '' !== $next_char ) {
-			$string = $func['substr']( $string, 0, $func['strlen']( $string ) - 1 );
+		if ( $next_length > 0 ) {
+			$string = $func['substr']( $string, 0, $func['strlen']( $string ) - $next_length );
 		}
 
 		return $string;

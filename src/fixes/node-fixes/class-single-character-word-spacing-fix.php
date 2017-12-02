@@ -29,6 +29,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\DOM;
 use \PHP_Typography\RE;
 use \PHP_Typography\Settings;
+use \PHP_Typography\Strings;
 use \PHP_Typography\U;
 
 /**
@@ -61,20 +62,18 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Clone the node's data attribute for the duration.
+		$node_data = $textnode->data;
+
 		// Add $next_character and $previous_character for context.
 		$previous_character = DOM::get_prev_chr( $textnode );
-		if ( '' !== $previous_character ) {
-			$textnode->data = $previous_character . $textnode->data;
-		}
+		$next_character     = DOM::get_next_chr( $textnode );
+		$node_data          = "{$previous_character}{$node_data}{$next_character}";
 
-		$next_character = DOM::get_next_chr( $textnode );
-		if ( '' !== $next_character ) {
-			$textnode->data = $textnode->data . $next_character;
-		}
-
-		$textnode->data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $textnode->data );
+		$node_data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $node_data );
 
 		// If we have adjacent characters remove them from the text.
-		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );
+		$strlen         = Strings::functions( $node_data )['strlen'];
+		$textnode->data = self::remove_adjacent_characters( $node_data, $strlen( $previous_character ), $strlen( $next_character ) );
 	}
 }

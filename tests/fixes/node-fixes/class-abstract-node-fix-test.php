@@ -109,6 +109,6 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result The trimmed string.
 	 */
 	public function test_remove_adjacent_characters( $string, $prev, $next, $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, $prev, $next ] ) );
+		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, mb_strlen( $prev ), mb_strlen( $next ) ] ) );
 	}
 }
