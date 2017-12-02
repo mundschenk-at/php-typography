@@ -120,6 +120,9 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
+		// Clone the node's data attribute for the duration.
+		$node_data = $textnode->data;
+
 		// We need the parent.
 		$block = DOM::get_block_parent( $textnode );
 		$firstnode = ! empty( $block ) ? DOM::get_first_textnode( $block ) : null;
@@ -128,21 +131,21 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
-			$textnode->data = $textnode->data . $next_character;
+			$node_data = $node_data . $next_character;
 		}
 
-		$textnode->data = preg_replace( self::STYLE_DOUBLE, '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $textnode->data );
-		$textnode->data = preg_replace( self::STYLE_SINGLE, '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $textnode->data );
+		$node_data = preg_replace( self::STYLE_DOUBLE, '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $node_data );
+		$node_data = preg_replace( self::STYLE_SINGLE, '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $node_data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$textnode->data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
+			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
 		} else {
-			$textnode->data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $textnode->data );
-			$textnode->data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $textnode->data );
+			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
 		}
 
 		// Remove any added characters.
-		$textnode->data = self::remove_adjacent_characters( $textnode->data, '', $next_character );
+		$textnode->data = self::remove_adjacent_characters( $node_data, '', $next_character );
 	}
 }

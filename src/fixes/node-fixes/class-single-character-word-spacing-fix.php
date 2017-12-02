@@ -61,20 +61,23 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Clone the node's data attribute for the duration.
+		$node_data = $textnode->data;
+
 		// Add $next_character and $previous_character for context.
 		$previous_character = DOM::get_prev_chr( $textnode );
 		if ( '' !== $previous_character ) {
-			$textnode->data = $previous_character . $textnode->data;
+			$node_data = $previous_character . $node_data;
 		}
 
 		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
-			$textnode->data = $textnode->data . $next_character;
+			$node_data = $node_data . $next_character;
 		}
 
-		$textnode->data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $textnode->data );
+		$node_data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $node_data );
 
 		// If we have adjacent characters remove them from the text.
-		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );
+		$textnode->data = self::remove_adjacent_characters( $node_data, $previous_character, $next_character );
 	}
 }

@@ -145,15 +145,18 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Clone the node's data attribute for the duration.
+		$node_data = $textnode->data;
+
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$previous_character = DOM::get_prev_chr( $textnode );
 		if ( '' !== $previous_character ) {
-			$textnode->data = $previous_character . $textnode->data;
+			$node_data = $previous_character . $node_data;
 		}
 		$next_character = DOM::get_next_chr( $textnode );
 		if ( '' !== $next_character ) {
-			$textnode->data = $textnode->data . $next_character;
+			$node_data = $node_data . $next_character;
 		}
 
 		// Various special characters and regular expressions.
@@ -172,56 +175,56 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
-		$textnode->data = preg_replace( self::SINGLE_QUOTED_NUMBERS, "{$single_open}\$1{$single_close}", $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_QUOTED_NUMBERS, "{$double_open}\$1{$double_close}", $textnode->data );
+		$node_data = preg_replace( self::SINGLE_QUOTED_NUMBERS, "{$single_open}\$1{$single_close}", $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTED_NUMBERS, "{$double_open}\$1{$double_close}", $node_data );
 
 		// Guillemets.
-		$textnode->data = str_replace( '<<',       U::GUILLEMET_OPEN,  $textnode->data );
-		$textnode->data = str_replace( '&lt;&lt;', U::GUILLEMET_OPEN,  $textnode->data );
-		$textnode->data = str_replace( '>>',       U::GUILLEMET_CLOSE, $textnode->data );
-		$textnode->data = str_replace( '&gt;&gt;', U::GUILLEMET_CLOSE, $textnode->data );
+		$node_data = str_replace( '<<',       U::GUILLEMET_OPEN,  $node_data );
+		$node_data = str_replace( '&lt;&lt;', U::GUILLEMET_OPEN,  $node_data );
+		$node_data = str_replace( '>>',       U::GUILLEMET_CLOSE, $node_data );
+		$node_data = str_replace( '&gt;&gt;', U::GUILLEMET_CLOSE, $node_data );
 
 		// Primes.
-		$textnode->data = preg_replace( self::SINGLE_DOUBLE_PRIME,           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $textnode->data );
-		$textnode->data = preg_replace( self::SINGLE_DOUBLE_PRIME_1_GLYPH,   '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_PRIME,                  '$1' . U::DOUBLE_PRIME,                            $textnode->data ); // should not interfere with regular quote matching.
-		$textnode->data = preg_replace( self::SINGLE_PRIME,                  '$1' . U::SINGLE_PRIME,                            $textnode->data );
-		$textnode->data = preg_replace( self::SINGLE_PRIME_COMPOUND,         '$1' . U::SINGLE_PRIME,                            $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_PRIME_COMPOUND,         '$1' . U::DOUBLE_PRIME,                            $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_PRIME_1_GLYPH,          '$1' . U::DOUBLE_PRIME,                            $textnode->data ); // should not interfere with regular quote matching.
-		$textnode->data = preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND, '$1' . U::DOUBLE_PRIME,                            $textnode->data );
+		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME,           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
+		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME_1_GLYPH,   '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME,                  '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
+		$node_data = preg_replace( self::SINGLE_PRIME,                  '$1' . U::SINGLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::SINGLE_PRIME_COMPOUND,         '$1' . U::SINGLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME_COMPOUND,         '$1' . U::DOUBLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH,          '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
+		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND, '$1' . U::DOUBLE_PRIME,                            $node_data );
 
 		// Backticks.
-		$textnode->data = str_replace( '``', $double_open,  $textnode->data );
-		$textnode->data = str_replace( '`',  $single_open,  $textnode->data );
-		$textnode->data = str_replace( "''", $double_close, $textnode->data );
+		$node_data = str_replace( '``', $double_open,  $node_data );
+		$node_data = str_replace( '`',  $single_open,  $node_data );
+		$node_data = str_replace( "''", $double_close, $node_data );
 
 		// Comma quotes.
-		$textnode->data = str_replace( ',,', U::DOUBLE_LOW_9_QUOTE, $textnode->data );
-		$textnode->data = preg_replace( self::COMMA_QUOTE, U::SINGLE_LOW_9_QUOTE, $textnode->data ); // like _,¿hola?'_.
+		$node_data = str_replace( ',,', U::DOUBLE_LOW_9_QUOTE, $node_data );
+		$node_data = preg_replace( self::COMMA_QUOTE, U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
 
 		// Apostrophes.
-		$textnode->data = preg_replace( self::APOSTROPHE_WORDS,   U::APOSTROPHE,        $textnode->data );
-		$textnode->data = preg_replace( self::APOSTROPHE_DECADES, U::APOSTROPHE . '$1', $textnode->data ); // decades: '98.
-		$textnode->data = str_replace( $this->apostrophe_exception_matches, $this->apostrophe_exception_replacements, $textnode->data );
+		$node_data = preg_replace( self::APOSTROPHE_WORDS,   U::APOSTROPHE,        $node_data );
+		$node_data = preg_replace( self::APOSTROPHE_DECADES, U::APOSTROPHE . '$1', $node_data ); // decades: '98.
+		$node_data = str_replace( $this->apostrophe_exception_matches, $this->apostrophe_exception_replacements, $node_data );
 
 		// Quotes.
-		$textnode->data = str_replace( $this->brackets_matches, $this->brackets_replacements, $textnode->data );
-		$textnode->data = preg_replace( self::SINGLE_QUOTE_OPEN,          $single_open,  $textnode->data );
-		$textnode->data = preg_replace( self::SINGLE_QUOTE_CLOSE,         $single_close, $textnode->data );
-		$textnode->data = preg_replace( self::SINGLE_QUOTE_OPEN_SPECIAL,  $single_open,  $textnode->data ); // like _'¿hola?'_.
-		$textnode->data = preg_replace( self::SINGLE_QUOTE_CLOSE_SPECIAL, $single_close, $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_QUOTE_OPEN,          $double_open,  $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_QUOTE_CLOSE,         $double_close, $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_QUOTE_OPEN_SPECIAL,  $double_open,  $textnode->data );
-		$textnode->data = preg_replace( self::DOUBLE_QUOTE_CLOSE_SPECIAL, $double_close, $textnode->data );
+		$node_data = str_replace( $this->brackets_matches, $this->brackets_replacements, $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN,          $single_open,  $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE,         $single_close, $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN_SPECIAL,  $single_open,  $node_data ); // like _'¿hola?'_.
+		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE_SPECIAL, $single_close, $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN,          $double_open,  $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE,         $double_close, $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN_SPECIAL,  $double_open,  $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE_SPECIAL, $double_close, $node_data );
 
 		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
-		$textnode->data = str_replace( "'", $single_close, $textnode->data );
-		$textnode->data = str_replace( '"', $double_close, $textnode->data );
+		$node_data = str_replace( "'", $single_close, $node_data );
+		$node_data = str_replace( '"', $double_close, $node_data );
 
 		// If we have adjacent characters remove them from the text.
-		$textnode->data = self::remove_adjacent_characters( $textnode->data, $previous_character, $next_character );
+		$textnode->data = self::remove_adjacent_characters( $node_data, $previous_character, $next_character );
 	}
 
 	/**
