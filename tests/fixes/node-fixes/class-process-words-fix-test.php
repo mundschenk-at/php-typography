@@ -27,7 +27,7 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 use \PHP_Typography\Fixes\Node_Fixes;
 use \PHP_Typography\Fixes\Token_Fix;
 use \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
-use \PHP_Typography\Hyphenator_Cache;
+use \PHP_Typography\Hyphenator\Cache;
 use \PHP_Typography\Settings;
 
 /**
@@ -152,8 +152,8 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 	 * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix::__construct
 	 */
 	public function test_update_hyphenator_cache() {
-		// Create a stub for the Hyphenator_Cache class.
-		$fake_cache = $this->createMock( Hyphenator_Cache::class );
+		// Create a stub for the Hyphenator\Cache class.
+		$fake_cache = $this->createMock( Cache::class );
 
 		// Create a stub for the Hyphenate_Fix class.
 		$token_fixer = new Hyphenate_Fix();
