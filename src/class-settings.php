@@ -75,24 +75,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	protected $data = [];
 
 	/**
-	 * An array containing all self-closing HTML5 tags.
-	 *
-	 * @deprecated 5.2.0 Not used anymore, will be removed in 6.0.0.
-	 *
-	 * @var array
-	 */
-	protected $self_closing_tags = [];
-
-	/**
-	 * A array of tags we should never touch.
-	 *
-	 * @deprecated 5.2.0 Use DOM::inappropriate_tags() if necessary. Will be removed in 6.0.0.
-	 *
-	 * @var array
-	 */
-	protected $inappropriate_tags = [];
-
-	/**
 	 * The current dash style.
 	 *
 	 * @var Settings\Dashes
@@ -267,12 +249,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->primary_quote_style   = new Settings\Simple_Quotes( U::DOUBLE_QUOTE_OPEN, U::DOUBLE_QUOTE_CLOSE );
 		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
 
-		// Set up some arrays for quick HTML5 introspection.
-		$this->self_closing_tags  = array_filter( array_keys( \Masterminds\HTML5\Elements::$html5 ), function( $tag ) {
-				return \Masterminds\HTML5\Elements::isA( $tag, \Masterminds\HTML5\Elements::VOID_TAG );
-			} );
-		$this->inappropriate_tags = array_flip( DOM::inappropriate_tags() );
-
 		if ( $set_defaults ) {
 			$this->set_defaults();
 		}
@@ -390,7 +366,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		// Ensure that we pass only lower-case tag names to XPath.
 		$tags = array_filter( array_map( 'strtolower', Strings::maybe_split_parameters( $tags ) ), 'ctype_alnum' );
 
-		$this->data['ignoreTags'] = array_unique( array_merge( $tags, $this->inappropriate_tags ) );
+		$this->data['ignoreTags'] = array_unique( array_merge( $tags, array_flip( DOM::inappropriate_tags() ) ) );
 	}
 
 	/**
