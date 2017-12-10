@@ -71,8 +71,8 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Lazy-load text parser.
-		$text_parser  = $this->get_text_parser();
-		$tokens = [];
+		$text_parser = $this->get_text_parser();
+		$tokens      = [];
 
 		// Set up parameters for word categories.
 		$mixed_caps       = empty( $settings['hyphenateAllCaps'] ) ? Text_Parser::ALLOW_ALL_CAPS : Text_Parser::NO_ALL_CAPS;

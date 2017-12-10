@@ -46,7 +46,7 @@ abstract class Dash_Style {
 	/**
 	 * "International" dash style (using en dashes).
 	 */
-	const INTERNATIONAL  = 'international';
+	const INTERNATIONAL = 'international';
 
 	/**
 	 * Available dash styles.

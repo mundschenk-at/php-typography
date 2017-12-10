@@ -42,7 +42,7 @@ use \PHP_Typography\U;
  */
 class Dewidow_Fix extends Abstract_Node_Fix {
 	const SPACE_BETWEEN = '[\s]+'; // \s includes all special spaces (but not ZWSP) with the u flag.
-	const WIDOW = '[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?'; // \w includes all alphanumeric Unicode characters but not composed characters.
+	const WIDOW         = '[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?'; // \w includes all alphanumeric Unicode characters but not composed characters.
 
 	const REGEX_START = '/
 		(?:
@@ -160,16 +160,18 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * @return string
 	 */
 	protected static function make_space_nonbreaking( $string, $narrow_space ) {
-		return preg_replace( [
-			'/\s*' . U::THIN_SPACE . '\s*/u',
-			'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
-			'/\s+/u',
-			'/' . self::MASKED_NARROW_SPACE . '/',
-		], [
-			self::MASKED_NARROW_SPACE,
-			self::MASKED_NARROW_SPACE,
-			U::NO_BREAK_SPACE,
-			$narrow_space,
-		], $string );
+		return preg_replace(
+			[
+				'/\s*' . U::THIN_SPACE . '\s*/u',
+				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
+				'/\s+/u',
+				'/' . self::MASKED_NARROW_SPACE . '/',
+			], [
+				self::MASKED_NARROW_SPACE,
+				self::MASKED_NARROW_SPACE,
+				U::NO_BREAK_SPACE,
+				$narrow_space,
+			], $string
+		);
 	}
 }

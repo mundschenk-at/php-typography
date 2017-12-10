@@ -28,8 +28,8 @@
         "ext-curl": "*",
         "phpunit/phpunit": "5.*||6.*",
         "squizlabs/php_codesniffer": "^3.1.0",
-        "wp-coding-standards/wpcs": "^0.13.1",
-        "wimg/php-compatibility": "^8.0.1",
+        "wp-coding-standards/wpcs": "^0.14.0",
+        "wimg/php-compatibility": "^8.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
         "phpstan/phpstan": "^0.8.0",
         "phpbench/phpbench": "^1.0@dev"

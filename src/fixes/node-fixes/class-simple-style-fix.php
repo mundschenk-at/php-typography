@@ -72,9 +72,9 @@ abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
 	public function __construct( $regex, $settings_switch, $css_class, $feed_compatible = false ) {
 		parent::__construct( $css_class, $feed_compatible );
 
-		$this->regex = $regex;
+		$this->regex           = $regex;
 		$this->settings_switch = $settings_switch;
-		$this->css_class = $css_class;
+		$this->css_class       = $css_class;
 	}
 
 	/**

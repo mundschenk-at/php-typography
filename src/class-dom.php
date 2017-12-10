@@ -363,7 +363,7 @@ abstract class DOM {
 
 			while ( $index >= 0 && $index < $max && null === $edge_textnode ) {
 				$edge_textnode = $get_textnode( $children->item( $index ), true );
-				$index += $incrementor;
+				$index        += $incrementor;
 			}
 		}
 

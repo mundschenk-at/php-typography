@@ -114,7 +114,7 @@ class PHP_Typography {
 	 *
 	 * @var string
 	 */
-	const INIT_NOW  = 'now';
+	const INIT_NOW = 'now';
 
 	/**
 	 * Constant for signalling lazy (manual) initialization to the constructor.
@@ -237,9 +237,9 @@ class PHP_Typography {
 		}
 
 		// Query some nodes in the DOM.
-		$xpath = new \DOMXPath( $dom );
-		$body_node = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes = $xpath->query( '//text()', $body_node );
+		$xpath          = new \DOMXPath( $dom );
+		$body_node      = $xpath->query( '/html/body' )->item( 0 );
+		$all_textnodes  = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
@@ -332,7 +332,7 @@ class PHP_Typography {
 		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// Do the actual parsing.
-		$dom = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
+		$dom           = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
 		$dom->encoding = 'UTF-8';
 
 		// Restore original error handling.
@@ -384,7 +384,7 @@ class PHP_Typography {
 	 * @return \DOMNode[] An array of \DOMNode (can be empty).
 	 */
 	public function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
-		$elements = [];
+		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
 			$query_parts[] = '//' . implode( ' | //', $settings['ignoreTags'] );
@@ -536,22 +536,27 @@ class PHP_Typography {
 	 */
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-		$languages = [];
-		$handler = opendir( $path );
+		$languages             = [];
+		$handle                = opendir( $path );
 
 		// Read all files in directory.
-		while ( $file = readdir( $handler ) ) {
+		$file = readdir( $handle );
+		while ( $file ) {
 			// We only want the JSON files.
 			if ( '.json' === substr( $file, -5 ) ) {
 				$file_content = file_get_contents( $path . $file );
 				if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
 					$language_name = substr( $matches[1], 1, -1 );
 					$language_code = substr( $file, 0, -5 );
+
 					$languages[ $language_code ] = $language_name;
 				}
 			}
+
+			// Read next file.
+			$file = readdir( $handle );
 		}
-		closedir( $handler );
+		closedir( $handle );
 
 		// Sort translated language names according to current locale.
 		asort( $languages );

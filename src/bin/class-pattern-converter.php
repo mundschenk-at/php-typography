@@ -105,7 +105,7 @@ class Pattern_Converter {
 	 */
 	protected function get_sequence( $pattern ) {
 		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
-		$result = [];
+		$result     = [];
 
 		foreach ( $characters as $index => $chr ) {
 			if ( ctype_digit( $chr ) ) {
@@ -124,9 +124,9 @@ class Pattern_Converter {
 		}
 
 		// Do some error checking.
-		$count = count( $result );
+		$count     = count( $result );
 		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
-		$sequence = implode( $result );
+		$sequence  = implode( $result );
 
 		if ( $count !== $count_seg + 1 ) {
 			throw new \RangeException( "Invalid segment length $count for pattern $pattern (result sequence $sequence)." );
@@ -166,11 +166,11 @@ class Pattern_Converter {
 		}
 
 		$json_results = [
-			'language'         => $this->language,
-			'source_url'       => $this->url,
-			'copyright'        => array_map( 'rtrim', $comments ),
-			'exceptions'       => $json_exceptions,
-			'patterns'         => $pattern_mapping,
+			'language'   => $this->language,
+			'source_url' => $this->url,
+			'copyright'  => array_map( 'rtrim', $comments ),
+			'exceptions' => $json_exceptions,
+			'patterns'   => $pattern_mapping,
 		];
 
 		return json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );

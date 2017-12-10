@@ -120,7 +120,7 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result Entity-escaped result.
 	 * @param string $style  Dash style.
 	 */
-	 public function test_apply( $input, $result, $style ) {
+	public function test_apply( $input, $result, $style ) {
 		$this->s->set_dash_spacing( true );
 		$this->s->set_smart_dashes_style( $style );
 
@@ -138,7 +138,7 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @param string $input HTML input.
 	 */
-	 public function test_apply_unchanged( $input ) {
+	public function test_apply_unchanged( $input ) {
 		$this->s->set_dash_spacing( true );
 
 		$this->s->set_smart_dashes_style( 'traditionalUS' );

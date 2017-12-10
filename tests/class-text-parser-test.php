@@ -85,7 +85,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_load() {
 		$too_long = 'A really long string with a word that is wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwway too long.';
+
 		$still_too_long = 'A really long string with a word that is aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalmost too long.';
+
 		$almost_too_long = 'A really long string with a word that is aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalmost too long.';
 
 		$parser = $this->parser;
@@ -268,7 +270,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_reload( Text_Parser $parser ) {
 		// Parsed string: 'Quoth the raven, "nevermore"! Äöüß?'.
-		$tokens = $parser->get_all();
+		$tokens     = $parser->get_all();
 		$tokens[12] = $tokens[12]->with_value( '' ); // "?".
 		$tokens[11] = $tokens[11]->with_value( '' ); // "Äöüß".
 		$tokens[10] = $tokens[10]->with_value( '' ); // " ".
@@ -295,7 +297,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_unload() {
 		$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
-		$parser = $this->parser;
+		$parser      = $this->parser;
 
 		$this->assertTrue( $parser->load( $interesting ) );
 
@@ -318,7 +320,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @uses ::tokenize
 	 */
 	public function test_clear() {
-		$parser = $this->parser;
+		$parser      = $this->parser;
 		$interesting = 'Quoth the raven, "nevermore"!';
 
 		$this->assertTrue( $parser->load( $interesting ) );
@@ -343,11 +345,11 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * @uses ::unload
 	 */
 	public function test_update() {
-		$parser = $this->parser;
+		$parser      = $this->parser;
 		$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
 		$this->assertTrue( $parser->load( $interesting ) );
 
-		$tokens = $parser->get_all();
+		$tokens     = $parser->get_all();
 		$tokens[12] = $tokens[12]->with_value( '' ); // "?".
 		$tokens[11] = $tokens[11]->with_value( '' ); // "Äöüß".
 		$tokens[10] = $tokens[10]->with_value( '' ); // " ".
@@ -372,7 +374,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_all() {
 		$interesting = 'Quoth the raven, "nevermore"!';
-		$parser = $this->parser;
+		$parser      = $this->parser;
 		$this->assertTrue( $parser->load( $interesting ) );
 
 		$tokens = $parser->get_all();
@@ -573,7 +575,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser = $this->parser;
 		$parser->load( $value ); // Ensure that encoding can be determined.
 
-		$token  = new Token( $value, $type );
+		$token = new Token( $value, $type );
 
 		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_caps_policy', [ $token, $policy ] ) );
 	}
@@ -622,7 +624,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser = $this->parser;
 		$parser->load( $value ); // Ensure that encoding can be determined.
 
-		$token  = new Token( $value, $type );
+		$token = new Token( $value, $type );
 
 		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_compounds_policy', [ $token, $policy ] ) );
 	}
@@ -687,7 +689,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	public function test_get_type( Text_Parser $parser ) {
 		$parser->load( 'A few m1xed W0RDS.' );
 
-		$words = [];
+		$words  = [];
 		$tokens = $parser->get_all();
 		foreach ( $tokens as $index => $token ) {
 			if ( Token::WORD === $token->type ) {

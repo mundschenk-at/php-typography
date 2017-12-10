@@ -45,7 +45,7 @@ class Functions_Bench {
 			return false;
 		}
 
-		$result = [];
+		$result           = [];
 		$multibyte_length = mb_strlen( $str, $encoding );
 		for ( $i = 0; $i < $multibyte_length; $i += $length ) {
 			$result[] = mb_substr( $str, $i, $length, $encoding );
@@ -91,7 +91,7 @@ class Functions_Bench {
 				'filename' => __DIR__ . '/data/example1.html',
 			],
 			[
-				'html'     => '<span>A short fragment 1+2=3</span>',
+				'html' => '<span>A short fragment 1+2=3</span>',
 			],
 		];
 	}

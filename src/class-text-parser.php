@@ -89,6 +89,7 @@ class Text_Parser {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
+
 	const _SPACE = '(?:\s|' . self::_HTML_SPACING . ')+'; // required modifiers: x (multiline pattern) i (case insensitive) $utf8.
 
 	/**
@@ -127,6 +128,7 @@ class Text_Parser {
 				)
 			)
 		'; // required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
+
 	const _PUNCTUATION = '
 	(?:
 		(?:
@@ -139,7 +141,6 @@ class Text_Parser {
 		)+
 	)
 	';// required modifiers: x (multiline pattern) i (case insensitive) u (utf8).
-
 
 	/**
 	 * Letter connectors allowed in words
@@ -368,19 +369,19 @@ class Text_Parser {
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
 		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
 			$index--;
-			$old_part = $tokens[ $index ]->value;
+			$old_part         = $tokens[ $index ]->value;
 			$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
-		// Not preceeded by a non-space + punctuation.
-		} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-			$old_part   = $tokens[ $index - 1 ]->value;
-			$older_part = $tokens[ $index - 2 ]->value;
+		} // Not preceeded by a non-space + punctuation.
+		elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+			$old_part             = $tokens[ $index - 1 ]->value;
+			$older_part           = $tokens[ $index - 2 ]->value;
 			$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
 			unset( $tokens[ $index - 1 ] );
 			$index = $index - 2;
 
-		// All good.
-		} else {
+		} // All good.
+		else {
 			$tokens[ $index ] = new Token( $part, $expected_type );
 		}
 	}
@@ -446,7 +447,7 @@ class Text_Parser {
 	 * Clears the currently set text from the parser.
 	 */
 	public function clear() {
-		$this->text = [];
+		$this->text               = [];
 		$this->current_strtoupper = null;
 	}
 
@@ -508,10 +509,11 @@ class Text_Parser {
 
 		foreach ( $this->get_type( Token::WORD ) as $index => $token ) {
 
-			if ( $this->conforms_to_letters_policy( $token, $abc ) &&
-				 $this->conforms_to_caps_policy( $token, $caps ) &&
-				 $this->conforms_to_compounds_policy( $token, $comps ) ) {
-
+			if (
+				$this->conforms_to_letters_policy( $token, $abc ) &&
+				$this->conforms_to_caps_policy( $token, $caps ) &&
+				$this->conforms_to_compounds_policy( $token, $comps )
+			) {
 				$tokens[ $index ] = $token;
 			}
 		}

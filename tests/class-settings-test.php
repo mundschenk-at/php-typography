@@ -330,7 +330,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
-		$s = $this->settings;
+		$s             = $this->settings;
 		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
 
 		// Default tags.
@@ -480,7 +480,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
-		$s = $this->settings;
+		$s            = $this->settings;
 		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
@@ -567,7 +567,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
 	public function test_set_smart_dashes_style() {
-		$s   = $this->settings;
+		$s = $this->settings;
 
 		$s->set_smart_dashes_style( 'traditionalUS' );
 		$dashes = $s->dash_style();
@@ -594,7 +594,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_style
 	 */
 	public function test_set_smart_dashes_style_with_object() {
-		$s   = $this->settings;
+		$s = $this->settings;
 
 		// Create a stub for the Token_Fixer interface.
 		$fake_dashes = $this->createMock( Dashes::class );
@@ -892,7 +892,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_units() {
-		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
+		$units_as_array  = [ 'foo', 'bar', 'xx/yy' ];
 		$units_as_string = implode( ', ', $units_as_array );
 
 		$this->settings->set_units( $units_as_array );
@@ -1130,7 +1130,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_initial_quote_tags
 	 */
 	public function test_set_initial_quote_tags() {
-		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
+		$tags_as_array  = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
@@ -1191,6 +1191,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$s = $this->settings;
+
 		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		$s->set_hyphenation_language( $lang );
@@ -1219,6 +1220,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_hyphenation_language_again( $lang, $success ) {
 		$s = $this->settings;
+
 		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		for ( $i = 0; $i < 2; ++$i ) {
@@ -1374,7 +1376,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_hyphenation_exceptions_string() {
-		$s = $this->settings;
+		$s          = $this->settings;
 		$exceptions = 'Hu-go, Fö-ba-ß';
 
 		$s->set_hyphenation_exceptions( $exceptions );

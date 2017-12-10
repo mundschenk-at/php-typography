@@ -188,7 +188,7 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @param  mixed  $new_value Property value to set.
 	 */
 	public function test___set( $value, $type, $property, $new_value ) {
-		$token = new Token( $value, $type );
+		$token            = new Token( $value, $type );
 		$token->$property = $new_value;
 	}
 

@@ -181,11 +181,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		return array_merge(
 			$this->data,
 			[
-				'no_break_narrow_space'  => $this->no_break_narrow_space,
-				'primary_quotes'         => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
-				'secondary_quotes'       => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
-				'dash_style'             => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
-				'custom_units'           => $this->custom_units,
+				'no_break_narrow_space' => $this->no_break_narrow_space,
+				'primary_quotes'        => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
+				'secondary_quotes'      => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
+				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
+				'custom_units'          => $this->custom_units,
 			]
 		);
 	}
@@ -544,10 +544,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		$this->data['diacriticLanguage'] = $lang;
-		$language_file_name = dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
+		$language_file_name              = dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
 
 		if ( file_exists( $language_file_name ) ) {
-			$diacritics_file = json_decode( file_get_contents( $language_file_name ), true );
+			$diacritics_file              = json_decode( file_get_contents( $language_file_name ), true );
 			$this->data['diacriticWords'] = $diacritics_file['diacritic_words'];
 		} else {
 			unset( $this->data['diacriticWords'] );
@@ -612,7 +612,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * when the custom replacements are updated.
 	 */
 	private function update_diacritics_replacement_arrays() {
-		$patterns = [];
+		$patterns     = [];
 		$replacements = [];
 
 		if ( ! empty( $this->data['diacriticCustomReplacements'] ) ) {
@@ -638,7 +638,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	private function parse_diacritics_rules( array $diacritics_rules, array &$patterns, array &$replacements ) {
 
 		foreach ( $diacritics_rules as $needle => $replacement ) {
-			$patterns[] = '/\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])' . $needle . '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)/u';
+			$patterns[]              = '/\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])' . $needle . '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)/u';
 			$replacements[ $needle ] = $replacement;
 		}
 	}
@@ -754,7 +754,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			// Escape special chars.
 			$units[ $index ] = preg_replace( '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#', '\\\\$1', $unit );
 		}
-		$this->custom_units = implode( '|', $units );
+		$this->custom_units  = implode( '|', $units );
 		$this->custom_units .= ( $this->custom_units ) ? '|' : '';
 	}
 

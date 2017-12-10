@@ -103,7 +103,7 @@ final class Token {
 		if ( ! isset( $value ) || ! is_string( $value ) ) {
 			throw new \UnexpectedValueException( 'Value has to be a string.' );
 		} else {
-			$this->value   = $value;
+			$this->value = $value;
 		}
 
 		$this->mutable = false;
@@ -160,7 +160,7 @@ final class Token {
 			return $this;
 		}
 
-		$cloned_token = clone $this;
+		$cloned_token        = clone $this;
 		$cloned_token->value = $value;
 
 		return $cloned_token;

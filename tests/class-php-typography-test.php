@@ -102,7 +102,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
 		$this->typo = new PHP_Typography();
-		$this->s = new Settings( false );
+		$this->s    = new Settings( false );
 	}
 
 	/**
@@ -177,7 +177,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$s->set_tags_to_ignore( 'img foo  \	' ); // Should not result in an error.
 		$s->set_smart_quotes( true );
-		$html = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
+		$html     = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
 		$expected = '<p><foo>Ignore this "quote",</foo><span class="other"> but not &ldquo;this&rdquo; one.</span></p>';
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -201,9 +201,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -227,9 +229,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -256,9 +260,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -321,7 +327,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_hyphenation_languages() {
 
-		$expected = [
+		$expected     = [
 			'af',
 			'bg',
 			'ca',
@@ -394,7 +400,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_diacritic_languages() {
 
-		$expected = [ 'de-DE', 'en-US' ];
+		$expected     = [ 'de-DE', 'en-US' ];
 		$not_expected = [
 			'es',
 			'et',
@@ -2334,7 +2340,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::replace_node_with_html
 	 */
 	public function test_replace_node_with_html() {
-		$s = $this->s;
+		$s   = $this->s;
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), '<p>foo</p>', $s );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
@@ -2357,7 +2363,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_replace_node_with_html_invalid() {
 
-		$node = new \DOMText( 'foo' );
+		$node     = new \DOMText( 'foo' );
 		$new_node = $this->typo->replace_node_with_html( $node, 'bar' );
 
 		// Without a parent node, it's not possible to replace anything.
@@ -2781,8 +2787,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( true );
 
-		$this->assertSame('A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $this->s ) ) );
+		$this->assertSame(
+			'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
+			$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $this->s ) )
+		);
 	}
 
 
@@ -2811,8 +2819,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s['hyphenationPatternExceptions'] = [];
 		unset( $s['hyphenationExceptions'] );
 
-		$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $s, false ) ) );
+		$this->assertSame(
+			'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
+			$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $s, false ) )
+		);
 	}
 
 	/**
@@ -2879,8 +2889,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $ignore2 Ignored.
 	 */
 	public function test_parse_html_extended( $html, $ignore1, $ignore2 ) {
-				$p    = $this->typo->get_html5_parser();
-		$dom  = $this->typo->parse_html( $p, $html, $this->s );
+		$p   = $this->typo->get_html5_parser();
+		$dom = $this->typo->parse_html( $p, $html, $this->s );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
 
@@ -2914,7 +2924,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param  string $error_msg Expected error message.
 	 */
 	public function test_parse_html_with_errors( $html, $error_msg ) {
-				$s = $this->s;
+		$s = $this->s;
 
 		// Without an error handler.
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), $html, $s );
