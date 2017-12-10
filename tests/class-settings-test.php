@@ -38,7 +38,7 @@ use \PHP_Typography\Settings\Quotes;
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
- * @uses PHP_Typography\Strings::_uchr
+ * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
 class Settings_Test extends PHP_Typography_Testcase {
