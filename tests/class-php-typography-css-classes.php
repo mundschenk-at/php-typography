@@ -24,6 +24,8 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\Fixes\Registry;
+
 /**
  * Subclass of PHP_Typography for setting custom CSS classes.
  */
@@ -32,12 +34,9 @@ class PHP_Typography_CSS_Classes extends \PHP_Typography\PHP_Typography {
 	/**
 	 * Create new instance of PHP_Typography_CSS_Classes.
 	 *
-	 * @param string $init         Optional. Initialize immediately. Default 'now'.
-	 * @param array  $css_classes  Optional. An array of CSS classes. Default [].
+	 * @param array $css_classes  Optional. An array of CSS classes. Default [].
 	 */
-	public function __construct( $init = 'now', $css_classes = [] ) {
-		$this->css_classes = array_merge( $this->css_classes, $css_classes );
-
-		parent::__construct( $init );
+	public function __construct( $css_classes = [] ) {
+		parent::__construct( Registry::create( null, array_merge( Registry::DEFAULT_CSS_CLASSES, $css_classes ) ) );
 	}
 }

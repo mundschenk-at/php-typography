@@ -27,10 +27,7 @@
 
 namespace PHP_Typography;
 
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Fixes\Node_Fixes;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes;
+use PHP_Typography\Fixes\Registry;
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
@@ -47,40 +44,12 @@ use \PHP_Typography\Fixes\Token_Fixes;
  */
 class PHP_Typography {
 
-	const CHARACTERS         = 10;
-	const SPACING_PRE_WORDS  = 20;
-	const PROCESS_WORDS      = 30;
-	const SPACING_POST_WORDS = 40;
-	const HTML_INSERTION     = 50;
-
-	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
-
 	/**
 	 * A DOM-based HTML5 parser.
 	 *
 	 * @var \Masterminds\HTML5
 	 */
 	private $html5_parser;
-
-	/**
-	 * An array of Node_Fix implementations.
-	 *
-	 * @var array
-	 */
-	private $node_fixes = [
-		self::CHARACTERS         => [],
-		self::SPACING_PRE_WORDS  => [],
-		self::PROCESS_WORDS      => [],
-		self::SPACING_POST_WORDS => [],
-		self::HTML_INSERTION     => [],
-	];
-
-	/**
-	 * The token fix registry.
-	 *
-	 * @var Node_Fixes\Process_Words_Fix
-	 */
-	private $process_words_fix;
 
 	/**
 	 * The hyphenator cache.
@@ -90,97 +59,28 @@ class PHP_Typography {
 	protected $hyphenator_cache;
 
 	/**
-	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
+	 * The node fixes registry.
 	 *
-	 * @var array
+	 * @var Registry|null;
 	 */
-	protected $css_classes = [
-		'caps'        => 'caps',
-		'numbers'     => 'numbers',
-		'amp'         => 'amp',
-		'quo'         => 'quo',
-		'dquo'        => 'dquo',
-		'pull-single' => 'pull-single',
-		'pull-double' => 'pull-double',
-		'push-single' => 'push-single',
-		'push-double' => 'push-double',
-		'numerator'   => 'numerator',
-		'denominator' => 'denominator',
-		'ordinal'     => 'ordinal',
-	];
+	private $registry;
 
 	/**
-	 * Constant for signalling immediate initialization to the constructor.
+	 * Whether the Hyphenator\Cache of the $registry needs to be updated.
 	 *
-	 * @var string
+	 * @var bool
 	 */
-	const INIT_NOW = 'now';
-
-	/**
-	 * Constant for signalling lazy (manual) initialization to the constructor.
-	 *
-	 * @var string
-	 */
-	const INIT_LAZY = 'lazy';
+	private $update_registry_cache;
 
 	/**
 	 * Sets up a new PHP_Typography object.
 	 *
-	 * @param string $init Optional. Flag to control initialization. Valid inputs are INIT_NOW and INIT_LAZY. Default INIT_NOW.
+	 * @param Registry|null $registry Optional. A fix registry instance. Default null,
+	 *                                meaning the default fixes are used.
 	 */
-	public function __construct( $init = self::INIT_NOW ) {
-		if ( self::INIT_NOW === $init ) {
-			$this->init();
-		}
-	}
-
-	/**
-	 * Initializes the PHP_Typography object.
-	 */
-	public function init() {
-		$this->process_words_fix = new Node_Fixes\Process_Words_Fix();
-
-		// Nodify anything that requires adjacent text awareness here.
-		$this->register_node_fix( new Node_Fixes\Smart_Maths_Fix(),          self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Diacritics_Fix(),     self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Quotes_Fix( true ),   self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Dashes_Fix( true ),   self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Ellipses_Fix( true ), self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Marks_Fix( true ),    self::CHARACTERS );
-
-		// Keep spacing after smart character replacement.
-		$this->register_node_fix( new Node_Fixes\Single_Character_Word_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Dash_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Unit_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Numbered_Abbreviation_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\French_Punctuation_Spacing_Fix(),    self::SPACING_PRE_WORDS );
-
-		// Parse and process individual words.
-		$this->register_node_fix( $this->process_words_fix, self::PROCESS_WORDS );
-
-		// Some final space manipulation.
-		$this->register_node_fix( new Node_Fixes\Dewidow_Fix(),        self::SPACING_POST_WORDS );
-		$this->register_node_fix( new Node_Fixes\Space_Collapse_Fix(), self::SPACING_POST_WORDS );
-
-		// Everything that requires HTML injection occurs here (functions above assume tag-free content)
-		// pay careful attention to functions below for tolerance of injected tags.
-		$this->register_node_fix( new Node_Fixes\Smart_Ordinal_Suffix_Fix( $this->css_classes['ordinal'] ),                                 self::HTML_INSERTION ); // call before "style_numbers" and "smart_fractions".
-		$this->register_node_fix( new Node_Fixes\Smart_Exponents_Fix(),                                                                     self::HTML_INSERTION ); // call before "style_numbers".
-		$this->register_node_fix( new Node_Fixes\Smart_Fractions_Fix( $this->css_classes['numerator'], $this->css_classes['denominator'] ), self::HTML_INSERTION ); // call before "style_numbers" and after "smart_ordinal_suffix".
-		$this->register_node_fix( new Node_Fixes\Style_Caps_Fix( $this->css_classes['caps'] ),                                              self::HTML_INSERTION ); // Call before "style_numbers".
-		$this->register_node_fix( new Node_Fixes\Style_Numbers_Fix( $this->css_classes['numbers'] ),                                        self::HTML_INSERTION ); // Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
-		$this->register_node_fix( new Node_Fixes\Style_Ampersands_Fix( $this->css_classes['amp'] ),                                         self::HTML_INSERTION );
-		$this->register_node_fix( new Node_Fixes\Style_Initial_Quotes_Fix( $this->css_classes['quo'], $this->css_classes['dquo'] ),         self::HTML_INSERTION );
-		$this->register_node_fix( new Node_Fixes\Style_Hanging_Punctuation_Fix( $this->css_classes['push-single'], $this->css_classes['push-double'], $this->css_classes['pull-single'], $this->css_classes['pull-double'] ), self::HTML_INSERTION );
-
-		// Register token fixes.
-		$cache = $this->get_hyphenator_cache();
-
-		$this->register_token_fix( new Token_Fixes\Wrap_Hard_Hyphens_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Wrap_Emails_Fix() );
+	public function __construct( Registry $registry = null ) {
+		$this->registry              = $registry;
+		$this->update_registry_cache = ! empty( $registry );
 	}
 
 	/**
@@ -293,8 +193,8 @@ class PHP_Typography {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_fixes_to_html_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( self::GROUPS as $group ) {
-			foreach ( $this->node_fixes[ $group ] as $fix ) {
+		foreach ( $this->get_registry()->get_node_fixes() as $group => $fixes ) {
+			foreach ( $fixes as $fix ) {
 				$fix->apply( $textnode, $settings, $is_title );
 			}
 		}
@@ -308,8 +208,8 @@ class PHP_Typography {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_fixes_to_feed_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( self::GROUPS as $group ) {
-			foreach ( $this->node_fixes[ $group ] as $fix ) {
+		foreach ( $this->get_registry()->get_node_fixes() as $group => $fixes ) {
+			foreach ( $fixes as $fix ) {
 				if ( $fix->feed_compatible() ) {
 					$fix->apply( $textnode, $settings, $is_title );
 				}
@@ -448,6 +348,22 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Retrieves the fix registry.
+	 *
+	 * @return Registry
+	 */
+	public function get_registry() {
+		if ( ! isset( $this->registry ) ) {
+			$this->registry = Registry::create( $this->get_hyphenator_cache() );
+		} elseif ( $this->update_registry_cache ) {
+			$this->registry->update_hyphenator_cache( $this->get_hyphenator_cache() );
+			$this->update_registry_cache = false;
+		}
+
+		return $this->registry;
+	}
+
+	/**
 	 * Retrieves the HTML5 parser instance.
 	 *
 	 * @return \Masterminds\HTML5
@@ -484,47 +400,10 @@ class PHP_Typography {
 	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
 		$this->hyphenator_cache = $cache;
 
-		// Change hyphenator cache for existing node fixes.
-		if ( null !== $this->process_words_fix ) {
-			$this->process_words_fix->update_hyphenator_cache( $cache );
+		// Change hyphenator cache for existing token fixes.
+		if ( isset( $this->registry ) ) {
+			$this->registry->update_hyphenator_cache( $cache );
 		}
-	}
-
-	/**
-	 * Registers a node fix.
-	 *
-	 * @since 5.0.0
-	 *
-	 * @param Node_Fix $fix   Required.
-	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
-	 *
-	 * @throws \InvalidArgumentException Group is invalid.
-	 */
-	public function register_node_fix( Node_Fix $fix, $group ) {
-		switch ( $group ) {
-			case self::CHARACTERS:
-			case self::SPACING_PRE_WORDS:
-			case self::PROCESS_WORDS: // Used internally.
-			case self::SPACING_POST_WORDS:
-			case self::HTML_INSERTION:
-				break;
-
-			default:
-				throw new \InvalidArgumentException( "Invalid fixer group $group." );
-		}
-
-		$this->node_fixes[ $group ][] = $fix;
-	}
-
-	/**
-	 * Registers a token fix.
-	 *
-	 * @since 5.0.0
-	 *
-	 * @param Token_Fix $fix Required.
-	 */
-	public function register_token_fix( Token_Fix $fix ) {
-		$this->process_words_fix->register_token_fix( $fix );
 	}
 
 	/**
