@@ -93,7 +93,9 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process( $html, Settings $settings, $is_title = false ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $settings, $is_title );
+		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
+			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+		}, $settings, $is_title );
 	}
 
 	/**
@@ -107,7 +109,9 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $settings, $is_title );
+		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
+			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+		}, $settings, $is_title );
 	}
 
 	/**
@@ -183,38 +187,6 @@ class PHP_Typography {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Applies standard typography fixes to a textnode.
-	 *
-	 * @param \DOMText $textnode The node to process.
-	 * @param Settings $settings The settings to apply.
-	 * @param bool     $is_title Optional. Default false.
-	 */
-	protected function apply_fixes_to_html_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( $this->get_registry()->get_node_fixes() as $group => $fixes ) {
-			foreach ( $fixes as $fix ) {
-				$fix->apply( $textnode, $settings, $is_title );
-			}
-		}
-	}
-
-	/**
-	 * Applies typography fixes specific to RSS feeds to a textnode.
-	 *
-	 * @param \DOMText $textnode The node to process.
-	 * @param Settings $settings The settings to apply.
-	 * @param bool     $is_title Optional. Default false.
-	 */
-	protected function apply_fixes_to_feed_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( $this->get_registry()->get_node_fixes() as $group => $fixes ) {
-			foreach ( $fixes as $fix ) {
-				if ( $fix->feed_compatible() ) {
-					$fix->apply( $textnode, $settings, $is_title );
-				}
-			}
-		}
 	}
 
 	/**

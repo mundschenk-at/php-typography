@@ -26,6 +26,8 @@
 
 namespace PHP_Typography\Fixes;
 
+use PHP_Typography\Settings;
+
 use PHP_Typography\Hyphenator\Cache;
 
 use PHP_Typography\Fixes\Node_Fix;
@@ -139,6 +141,24 @@ class Registry {
 	 */
 	public function update_hyphenator_cache( Cache $cache ) {
 		$this->process_words_fix->update_hyphenator_cache( $cache );
+	}
+
+	/**
+	 * Applies typography fixes to a textnode.
+	 *
+	 * @param \DOMText $textnode The node to process.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Treat as title/heading tag if true.
+	 * @param bool     $is_feed  Check for feed compatibility if true.
+	 */
+	public function apply_fixes( \DOMText $textnode, Settings $settings, $is_title, $is_feed ) {
+		foreach ( $this->node_fixes as $group => $fixes ) {
+			foreach ( $fixes as $fix ) {
+				if ( ! $is_feed || $fix->feed_compatible() ) {
+					$fix->apply( $textnode, $settings, $is_title );
+				}
+			}
+		}
 	}
 
 	/**

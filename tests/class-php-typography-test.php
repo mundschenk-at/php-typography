@@ -444,7 +444,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test process.
 	 *
 	 * @covers ::process
-	 * @covers ::apply_fixes_to_html_node
 	 *
 	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
@@ -472,7 +471,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test process_feed.
 	 *
 	 * @covers ::process_feed
-	 * @covers ::apply_fixes_to_feed_node
 	 *
 	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
