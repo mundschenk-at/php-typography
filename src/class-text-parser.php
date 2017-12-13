@@ -584,9 +584,8 @@ class Text_Parser {
 
 		$transformed = $transform_token( $token->value );
 
-		return
-			( $equal_policy === $policy && $transformed === $token->value ) ||
-			( $non_equal_policy === $policy && $transformed !== $token->value );
+		return ( $equal_policy === $policy && $transformed === $token->value )
+			|| ( $non_equal_policy === $policy && $transformed !== $token->value );
 	}
 
 	/**

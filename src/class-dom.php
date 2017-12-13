@@ -102,10 +102,9 @@ abstract class DOM {
 		if ( empty( self::$inappropriate_tags ) || $reset ) {
 			self::$inappropriate_tags = array_flip( array_merge(
 				array_filter( array_keys( Elements::$html5 ), function( $tag ) {
-					return
-						Elements::isA( $tag, Elements::VOID_TAG ) ||
-						Elements::isA( $tag, Elements::TEXT_RAW ) ||
-						Elements::isA( $tag, Elements::TEXT_RCDATA );
+					return Elements::isA( $tag, Elements::VOID_TAG )
+						|| Elements::isA( $tag, Elements::TEXT_RAW )
+						|| Elements::isA( $tag, Elements::TEXT_RCDATA );
 				} ),
 				self::ADDITIONAL_INAPPROPRIATE_TAGS
 			) );
