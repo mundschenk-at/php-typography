@@ -161,7 +161,7 @@ class PHP_Typography {
 			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
 
 			// Apply fixes.
-			call_user_func( $fixer, $textnode, $settings, $is_title );
+			$fixer( $textnode, $settings, $is_title );
 
 			// Until now, we've only been working on a textnode: HTMLify result.
 			$this->replace_node_with_html( $textnode, $textnode->data );
@@ -215,7 +215,7 @@ class PHP_Typography {
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
 		if ( ! empty( $settings['parserErrorsHandler'] ) && ! empty( $errors ) ) {
-			$errors = call_user_func( $settings['parserErrorsHandler'], $errors );
+			$errors = $settings['parserErrorsHandler']( $errors );
 		}
 
 		// Return null if there are still unhandled parsing errors.

@@ -333,13 +333,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
 	 *
+	 * @since 6.0.0. callable type is enforced via typehinting.
+	 *
 	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
 	 */
-	public function set_parser_errors_handler( $handler = null ) {
-		if ( ! empty( $handler ) && ! is_callable( $handler ) ) {
-			return; // Invalid handler, abort.
-		}
-
+	public function set_parser_errors_handler( callable $handler = null ) {
 		$this->data['parserErrorsHandler'] = $handler;
 	}
 

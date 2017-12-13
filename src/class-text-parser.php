@@ -260,9 +260,9 @@ class Text_Parser {
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
 	 *
-	 * @var callable|null
+	 * @var callable
 	 */
-	private $current_strtoupper = null;
+	private $current_strtoupper = 'strtoupper';
 
 	/**
 	 * The tokenized text.
@@ -447,8 +447,7 @@ class Text_Parser {
 	 * Clears the currently set text from the parser.
 	 */
 	public function clear() {
-		$this->text               = [];
-		$this->current_strtoupper = null;
+		$this->text = [];
 	}
 
 	/**
@@ -500,7 +499,7 @@ class Text_Parser {
 	 */
 	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
-		if ( ! isset( $this->text ) || ! is_callable( $this->current_strtoupper ) ) {
+		if ( ! isset( $this->text ) ) {
 			return []; // abort.
 		}
 
@@ -544,9 +543,7 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_caps_policy( Token $token, $policy ) {
-		return $this->check_policy( $token, $policy, self::ALLOW_ALL_CAPS, self::REQUIRE_ALL_CAPS, self::NO_ALL_CAPS, function( $value ) {
-			return call_user_func( $this->current_strtoupper, $value );
-		} );
+		return $this->check_policy( $token, $policy, self::ALLOW_ALL_CAPS, self::REQUIRE_ALL_CAPS, self::NO_ALL_CAPS, $this->current_strtoupper );
 	}
 
 	/**

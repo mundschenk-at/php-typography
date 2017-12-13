@@ -69,7 +69,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser = new Text_Parser();
 
 		$this->assertAttributeCount( 0, 'text', $parser );
-		$this->assertAttributeEmpty( 'current_strtoupper', $parser );
+		$this->assertAttributeSame( 'strtoupper', 'current_strtoupper', $parser );
 	}
 
 	/**

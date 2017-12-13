@@ -315,6 +315,32 @@ class Settings_Test extends PHP_Typography_Testcase {
 		} );
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
+	}
+
+	/**
+	 * Tests set_parser_errors_handler with an invalid callback.
+	 *
+	 * @covers ::set_parser_errors_handler
+	 */
+	public function test_set_parser_errors_handler_invalid() {
+		$s = $this->settings;
+
+		// Default: no handler.
+		$this->assertEmpty( $s['parserErrorsHandler'] );
+
+		// Valid handler.
+		$s->set_parser_errors_handler( function( $errors ) {
+			return [];
+		} );
+		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+		$old_handler = $s['parserErrorsHandler'];
+
+		// PHP < 7.0 raises an error instead of throwing an "exception".
+		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
+			$this->expectException( \PHPUnit_Framework_Error::class );
+		} else {
+			$this->expectException( \TypeError::class );
+		}
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
