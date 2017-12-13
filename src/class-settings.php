@@ -136,9 +136,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param mixed  $value  The settings value.
 	 */
 	public function offsetSet( $offset, $value ) {
-		if ( is_null( $offset ) ) {
-			$this->data[] = $value;
-		} else {
+		if ( ! empty( $offset ) ) {
 			$this->data[ $offset ] = $value;
 		}
 	}
@@ -473,7 +471,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 *
-	 * @return object An instance of $expected_class.
+	 * @return mixed An instance of $expected_class.
 	 */
 	protected function get_style( $style, $expected_class, callable $get_style, $description ) {
 		if ( $style instanceof $expected_class ) {

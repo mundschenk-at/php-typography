@@ -100,7 +100,7 @@ final class Token {
 				throw new \UnexpectedValueException( "Invalid type $type." );
 		}
 
-		if ( ! isset( $value ) || ! is_string( $value ) ) {
+		if ( ! is_string( $value ) ) {
 			throw new \UnexpectedValueException( 'Value has to be a string.' );
 		} else {
 			$this->value = $value;

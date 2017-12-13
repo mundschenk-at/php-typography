@@ -499,7 +499,7 @@ class Text_Parser {
 	 */
 	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
 		// Return early if no text has been loaded.
-		if ( ! isset( $this->text ) ) {
+		if ( empty( $this->text ) ) {
 			return []; // abort.
 		}
 

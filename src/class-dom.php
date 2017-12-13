@@ -285,7 +285,13 @@ abstract class DOM {
 		 *
 		 * @var \DOMText|null
 		 */
-		$adjacent      = null;
+		$adjacent = null;
+
+		/**
+		 * The iterated node.
+		 *
+		 * @var \DOMNode|null
+		 */
 		$iterated_node = $node;
 
 		// Iterate to find adjacent node.

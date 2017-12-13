@@ -31,7 +31,7 @@
         "wp-coding-standards/wpcs": "^0.14.0",
         "wimg/php-compatibility": "^8.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
-        "phpstan/phpstan": "^0.8.0",
+        "phpstan/phpstan": "^0.9",
         "phpbench/phpbench": "^1.0@dev"
     },
 

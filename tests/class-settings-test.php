@@ -179,9 +179,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	public function test_offsetSet() {
 		$s = $this->settings;
 
+		// A key has to be used.
 		$this->assertFalse( isset( $s[0] ) );
 		$s[] = 666;
-		$this->assertEquals( 666, $s[0] );
+		$this->assertFalse( isset( $s[0] ) );
 
 		$this->assertFalse( isset( $s['new_key'] ) );
 		$s['new_key'] = 42;
