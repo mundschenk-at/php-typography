@@ -55,11 +55,16 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param object $object      Instantiated object that we will run method on.
 	 * @param string $method_name Method name to call.
 	 * @param array  $parameters  Array of parameters to pass into method.
+	 * @param string $classname   Optional. The class to use for accessing private properties.
 	 *
 	 * @return mixed Method return.
 	 */
-	protected function invokeMethod( $object, $method_name, array $parameters = [] ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	protected function invokeMethod( $object, $method_name, array $parameters = [], $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
 		$method     = $reflection->getMethod( $method_name );
 		$method->setAccessible( true );
 
@@ -103,9 +108,14 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param object     $object        Instantiated object that we will run method on.
 	 * @param string     $property_name Property to set.
 	 * @param mixed|null $value         The new value.
+	 * @param string     $classname     Optional. The class to use for accessing private properties.
 	 */
-	protected function setValue( $object, $property_name, $value ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	protected function setValue( $object, $property_name, $value, $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
 		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 		$property->setValue( $object, $value );
@@ -132,11 +142,16 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param object $object        Instantiated object that we will run method on.
 	 * @param string $property_name Property to set.
+	 * @param string $classname     Optional. The class to use for accessing private properties.
 	 *
 	 * @return mixed
 	 */
-	protected function getValue( $object, $property_name ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
+	protected function getValue( $object, $property_name, $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
 		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 
