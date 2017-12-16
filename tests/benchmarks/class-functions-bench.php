@@ -164,14 +164,8 @@ class Functions_Bench {
 
 	 * @param  array $params The parameters.
 	 */
-	public function bench__uchr( $params ) {
-		if ( is_array( $params ) ) {
-			foreach ( $params as $code ) {
-				\PHP_Typography\Strings::_uchr( $code );
-			}
-		} else {
-			\PHP_Typography\Strings::_uchr( $params );
-		}
+	public function bench_uchr( $params ) {
+		\PHP_Typography\Strings::uchr( $params );
 	}
 
 	/**
@@ -210,5 +204,88 @@ class Functions_Bench {
 				\IntlChar::chr( $params );
 			}
 		}
+	}
+
+	/**
+	 * Associative array mapping based on https://gist.github.com/jasand-pereza/84ecec7907f003564584.
+	 *
+	 * @param  callable $callback Required.
+	 * @param  array    $array    Required.
+	 *
+	 * @return array
+	 */
+	public static function array_manipulate( callable $callback, array $array ) {
+		$new = [];
+
+		foreach ( $array as $k => $v ) {
+			$u = $callback( $k, $v );
+			if ( ! empty( $u ) ) {
+				$new[ \key( $u ) ] = \current( $u );
+			}
+		}
+
+		return $new;
+	}
+
+	/**
+	 * Input data for array_manipulate tests.
+	 *
+	 * @return array
+	 */
+	public function provide_array_map_assoc() {
+		return [
+			[
+				'array' => [
+					'foo1'  => 'bar1',
+					'foo2'  => 'bar2',
+					'foo3'  => 'bar3',
+					'foo4'  => 'bar4',
+					'foo5'  => 'bar5',
+					'foo6'  => 'bar6',
+					'foo7'  => 'bar7',
+					'foo8'  => 'bar8',
+					'foo9'  => 'bar9',
+					'foo10' => 'bar10',
+					'foo11' => 'bar11',
+					'foo12' => 'bar12',
+					'foo13' => 'bar13',
+					'foo14' => 'bar14',
+					'foo15' => 'bar15',
+					'foo16' => 'bar16',
+					'foo17' => 'bar17',
+					'foo18' => 'bar18',
+					'foo19' => 'bar19',
+					'foo20' => 'bar20',
+				],
+			],
+		];
+	}
+
+	/**
+	 * Benchmark Arrays::array_map_assoc method.
+	 *
+	 * @ParamProviders({"provide_array_map_assoc"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_arrays_array_map_assoc( $params ) {
+		self::array_manipulate( function( $key, $value ) {
+			return [ $value, $key ];
+		}, $params['array'] );
+	}
+
+	/**
+	 * Benchmark array_manipulate method.
+	 *
+	 * @ParamProviders({"provide_array_map_assoc"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_array_manipulate( $params ) {
+		\PHP_Typography\Arrays::array_map_assoc( function( $key, $value ) {
+			return [ $value => $key ];
+		}, $params['array'] );
 	}
 }
