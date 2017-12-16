@@ -102,10 +102,9 @@ abstract class DOM {
 		if ( empty( self::$inappropriate_tags ) || $reset ) {
 			self::$inappropriate_tags = array_flip( array_merge(
 				array_filter( array_keys( Elements::$html5 ), function( $tag ) {
-					return
-						Elements::isA( $tag, Elements::VOID_TAG ) ||
-						Elements::isA( $tag, Elements::TEXT_RAW ) ||
-						Elements::isA( $tag, Elements::TEXT_RCDATA );
+					return Elements::isA( $tag, Elements::VOID_TAG )
+						|| Elements::isA( $tag, Elements::TEXT_RAW )
+						|| Elements::isA( $tag, Elements::TEXT_RCDATA );
 				} ),
 				self::ADDITIONAL_INAPPROPRIATE_TAGS
 			) );
@@ -286,7 +285,13 @@ abstract class DOM {
 		 *
 		 * @var \DOMText|null
 		 */
-		$adjacent      = null;
+		$adjacent = null;
+
+		/**
+		 * The iterated node.
+		 *
+		 * @var \DOMNode|null
+		 */
 		$iterated_node = $node;
 
 		// Iterate to find adjacent node.
@@ -363,7 +368,7 @@ abstract class DOM {
 
 			while ( $index >= 0 && $index < $max && null === $edge_textnode ) {
 				$edge_textnode = $get_textnode( $children->item( $index ), true );
-				$index += $incrementor;
+				$index        += $incrementor;
 			}
 		}
 

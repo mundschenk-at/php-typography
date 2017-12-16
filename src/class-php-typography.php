@@ -27,10 +27,8 @@
 
 namespace PHP_Typography;
 
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Fixes\Node_Fixes;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes;
+use PHP_Typography\Fixes\Registry;
+use PHP_Typography\Fixes\Default_Registry;
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
@@ -47,40 +45,12 @@ use \PHP_Typography\Fixes\Token_Fixes;
  */
 class PHP_Typography {
 
-	const CHARACTERS         = 10;
-	const SPACING_PRE_WORDS  = 20;
-	const PROCESS_WORDS      = 30;
-	const SPACING_POST_WORDS = 40;
-	const HTML_INSERTION     = 50;
-
-	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
-
 	/**
 	 * A DOM-based HTML5 parser.
 	 *
 	 * @var \Masterminds\HTML5
 	 */
 	private $html5_parser;
-
-	/**
-	 * An array of Node_Fix implementations.
-	 *
-	 * @var array
-	 */
-	private $node_fixes = [
-		self::CHARACTERS         => [],
-		self::SPACING_PRE_WORDS  => [],
-		self::PROCESS_WORDS      => [],
-		self::SPACING_POST_WORDS => [],
-		self::HTML_INSERTION     => [],
-	];
-
-	/**
-	 * The token fix registry.
-	 *
-	 * @var Node_Fixes\Process_Words_Fix
-	 */
-	private $process_words_fix;
 
 	/**
 	 * The hyphenator cache.
@@ -90,97 +60,28 @@ class PHP_Typography {
 	protected $hyphenator_cache;
 
 	/**
-	 * An array of CSS classes that are added for ampersands, numbers etc that can be overridden in a subclass.
+	 * The node fixes registry.
 	 *
-	 * @var array
+	 * @var Registry|null;
 	 */
-	protected $css_classes = [
-		'caps'        => 'caps',
-		'numbers'     => 'numbers',
-		'amp'         => 'amp',
-		'quo'         => 'quo',
-		'dquo'        => 'dquo',
-		'pull-single' => 'pull-single',
-		'pull-double' => 'pull-double',
-		'push-single' => 'push-single',
-		'push-double' => 'push-double',
-		'numerator'   => 'numerator',
-		'denominator' => 'denominator',
-		'ordinal'     => 'ordinal',
-	];
+	private $registry;
 
 	/**
-	 * Constant for signalling immediate initialization to the constructor.
+	 * Whether the Hyphenator\Cache of the $registry needs to be updated.
 	 *
-	 * @var string
+	 * @var bool
 	 */
-	const INIT_NOW  = 'now';
-
-	/**
-	 * Constant for signalling lazy (manual) initialization to the constructor.
-	 *
-	 * @var string
-	 */
-	const INIT_LAZY = 'lazy';
+	private $update_registry_cache;
 
 	/**
 	 * Sets up a new PHP_Typography object.
 	 *
-	 * @param string $init Optional. Flag to control initialization. Valid inputs are INIT_NOW and INIT_LAZY. Default INIT_NOW.
+	 * @param Registry|null $registry Optional. A fix registry instance. Default null,
+	 *                                meaning the default fixes are used.
 	 */
-	public function __construct( $init = self::INIT_NOW ) {
-		if ( self::INIT_NOW === $init ) {
-			$this->init();
-		}
-	}
-
-	/**
-	 * Initializes the PHP_Typography object.
-	 */
-	public function init() {
-		$this->process_words_fix = new Node_Fixes\Process_Words_Fix();
-
-		// Nodify anything that requires adjacent text awareness here.
-		$this->register_node_fix( new Node_Fixes\Smart_Maths_Fix(),          self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Diacritics_Fix(),     self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Quotes_Fix( true ),   self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Dashes_Fix( true ),   self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Ellipses_Fix( true ), self::CHARACTERS );
-		$this->register_node_fix( new Node_Fixes\Smart_Marks_Fix( true ),    self::CHARACTERS );
-
-		// Keep spacing after smart character replacement.
-		$this->register_node_fix( new Node_Fixes\Single_Character_Word_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Dash_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Unit_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\Numbered_Abbreviation_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$this->register_node_fix( new Node_Fixes\French_Punctuation_Spacing_Fix(),    self::SPACING_PRE_WORDS );
-
-		// Parse and process individual words.
-		$this->register_node_fix( $this->process_words_fix, self::PROCESS_WORDS );
-
-		// Some final space manipulation.
-		$this->register_node_fix( new Node_Fixes\Dewidow_Fix(),        self::SPACING_POST_WORDS );
-		$this->register_node_fix( new Node_Fixes\Space_Collapse_Fix(), self::SPACING_POST_WORDS );
-
-		// Everything that requires HTML injection occurs here (functions above assume tag-free content)
-		// pay careful attention to functions below for tolerance of injected tags.
-		$this->register_node_fix( new Node_Fixes\Smart_Ordinal_Suffix_Fix( $this->css_classes['ordinal'] ),                                 self::HTML_INSERTION ); // call before "style_numbers" and "smart_fractions".
-		$this->register_node_fix( new Node_Fixes\Smart_Exponents_Fix(),                                                                     self::HTML_INSERTION ); // call before "style_numbers".
-		$this->register_node_fix( new Node_Fixes\Smart_Fractions_Fix( $this->css_classes['numerator'], $this->css_classes['denominator'] ), self::HTML_INSERTION ); // call before "style_numbers" and after "smart_ordinal_suffix".
-		$this->register_node_fix( new Node_Fixes\Style_Caps_Fix( $this->css_classes['caps'] ),                                              self::HTML_INSERTION ); // Call before "style_numbers".
-		$this->register_node_fix( new Node_Fixes\Style_Numbers_Fix( $this->css_classes['numbers'] ),                                        self::HTML_INSERTION ); // Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
-		$this->register_node_fix( new Node_Fixes\Style_Ampersands_Fix( $this->css_classes['amp'] ),                                         self::HTML_INSERTION );
-		$this->register_node_fix( new Node_Fixes\Style_Initial_Quotes_Fix( $this->css_classes['quo'], $this->css_classes['dquo'] ),         self::HTML_INSERTION );
-		$this->register_node_fix( new Node_Fixes\Style_Hanging_Punctuation_Fix( $this->css_classes['push-single'], $this->css_classes['push-double'], $this->css_classes['pull-single'], $this->css_classes['pull-double'] ), self::HTML_INSERTION );
-
-		// Register token fixes.
-		$cache = $this->get_hyphenator_cache();
-
-		$this->register_token_fix( new Token_Fixes\Wrap_Hard_Hyphens_Fix() );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Hyphenate_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Wrap_URLs_Fix( $cache ) );
-		$this->register_token_fix( new Token_Fixes\Wrap_Emails_Fix() );
+	public function __construct( Registry $registry = null ) {
+		$this->registry              = $registry;
+		$this->update_registry_cache = ! empty( $registry );
 	}
 
 	/**
@@ -193,7 +94,9 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process( $html, Settings $settings, $is_title = false ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_html_node' ], $settings, $is_title );
+		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
+			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+		}, $settings, $is_title );
 	}
 
 	/**
@@ -207,7 +110,9 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false ) {
-		return $this->process_textnodes( $html, [ $this, 'apply_fixes_to_feed_node' ], $settings, $is_title );
+		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
+			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+		}, $settings, $is_title );
 	}
 
 	/**
@@ -237,9 +142,9 @@ class PHP_Typography {
 		}
 
 		// Query some nodes in the DOM.
-		$xpath = new \DOMXPath( $dom );
-		$body_node = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes = $xpath->query( '//text()', $body_node );
+		$xpath          = new \DOMXPath( $dom );
+		$body_node      = $xpath->query( '/html/body' )->item( 0 );
+		$all_textnodes  = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
@@ -257,7 +162,7 @@ class PHP_Typography {
 			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
 
 			// Apply fixes.
-			call_user_func( $fixer, $textnode, $settings, $is_title );
+			$fixer( $textnode, $settings, $is_title );
 
 			// Until now, we've only been working on a textnode: HTMLify result.
 			$this->replace_node_with_html( $textnode, $textnode->data );
@@ -286,38 +191,6 @@ class PHP_Typography {
 	}
 
 	/**
-	 * Applies standard typography fixes to a textnode.
-	 *
-	 * @param \DOMText $textnode The node to process.
-	 * @param Settings $settings The settings to apply.
-	 * @param bool     $is_title Optional. Default false.
-	 */
-	protected function apply_fixes_to_html_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( self::GROUPS as $group ) {
-			foreach ( $this->node_fixes[ $group ] as $fix ) {
-				$fix->apply( $textnode, $settings, $is_title );
-			}
-		}
-	}
-
-	/**
-	 * Applies typography fixes specific to RSS feeds to a textnode.
-	 *
-	 * @param \DOMText $textnode The node to process.
-	 * @param Settings $settings The settings to apply.
-	 * @param bool     $is_title Optional. Default false.
-	 */
-	protected function apply_fixes_to_feed_node( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		foreach ( self::GROUPS as $group ) {
-			foreach ( $this->node_fixes[ $group ] as $fix ) {
-				if ( $fix->feed_compatible() ) {
-					$fix->apply( $textnode, $settings, $is_title );
-				}
-			}
-		}
-	}
-
-	/**
 	 * Parse HTML5 fragment while ignoring certain warnings for invalid HTML code (e.g. duplicate IDs).
 	 *
 	 * @param \Masterminds\HTML5 $parser   An intialized parser object.
@@ -332,7 +205,7 @@ class PHP_Typography {
 		$xml_error_handling = libxml_use_internal_errors( true );
 
 		// Do the actual parsing.
-		$dom = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
+		$dom           = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
 		$dom->encoding = 'UTF-8';
 
 		// Restore original error handling.
@@ -343,7 +216,7 @@ class PHP_Typography {
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
 		if ( ! empty( $settings['parserErrorsHandler'] ) && ! empty( $errors ) ) {
-			$errors = call_user_func( $settings['parserErrorsHandler'], $errors );
+			$errors = $settings['parserErrorsHandler']( $errors );
 		}
 
 		// Return null if there are still unhandled parsing errors.
@@ -384,7 +257,7 @@ class PHP_Typography {
 	 * @return \DOMNode[] An array of \DOMNode (can be empty).
 	 */
 	public function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
-		$elements = [];
+		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
 			$query_parts[] = '//' . implode( ' | //', $settings['ignoreTags'] );
@@ -448,6 +321,22 @@ class PHP_Typography {
 	}
 
 	/**
+	 * Retrieves the fix registry.
+	 *
+	 * @return Registry
+	 */
+	public function get_registry() {
+		if ( ! isset( $this->registry ) ) {
+			$this->registry = new Default_Registry( $this->get_hyphenator_cache() );
+		} elseif ( $this->update_registry_cache ) {
+			$this->registry->update_hyphenator_cache( $this->get_hyphenator_cache() );
+			$this->update_registry_cache = false;
+		}
+
+		return $this->registry;
+	}
+
+	/**
 	 * Retrieves the HTML5 parser instance.
 	 *
 	 * @return \Masterminds\HTML5
@@ -484,47 +373,10 @@ class PHP_Typography {
 	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
 		$this->hyphenator_cache = $cache;
 
-		// Change hyphenator cache for existing node fixes.
-		if ( null !== $this->process_words_fix ) {
-			$this->process_words_fix->update_hyphenator_cache( $cache );
+		// Change hyphenator cache for existing token fixes.
+		if ( isset( $this->registry ) ) {
+			$this->registry->update_hyphenator_cache( $cache );
 		}
-	}
-
-	/**
-	 * Registers a node fix.
-	 *
-	 * @since 5.0.0
-	 *
-	 * @param Node_Fix $fix   Required.
-	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
-	 *
-	 * @throws \InvalidArgumentException Group is invalid.
-	 */
-	public function register_node_fix( Node_Fix $fix, $group ) {
-		switch ( $group ) {
-			case self::CHARACTERS:
-			case self::SPACING_PRE_WORDS:
-			case self::PROCESS_WORDS: // Used internally.
-			case self::SPACING_POST_WORDS:
-			case self::HTML_INSERTION:
-				break;
-
-			default:
-				throw new \InvalidArgumentException( "Invalid fixer group $group." );
-		}
-
-		$this->node_fixes[ $group ][] = $fix;
-	}
-
-	/**
-	 * Registers a token fix.
-	 *
-	 * @since 5.0.0
-	 *
-	 * @param Token_Fix $fix Required.
-	 */
-	public function register_token_fix( Token_Fix $fix ) {
-		$this->process_words_fix->register_token_fix( $fix );
 	}
 
 	/**
@@ -536,22 +388,27 @@ class PHP_Typography {
 	 */
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-		$languages = [];
-		$handler = opendir( $path );
+		$languages             = [];
+		$handle                = opendir( $path );
 
 		// Read all files in directory.
-		while ( $file = readdir( $handler ) ) {
+		$file = readdir( $handle );
+		while ( $file ) {
 			// We only want the JSON files.
 			if ( '.json' === substr( $file, -5 ) ) {
 				$file_content = file_get_contents( $path . $file );
 				if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
 					$language_name = substr( $matches[1], 1, -1 );
 					$language_code = substr( $file, 0, -5 );
+
 					$languages[ $language_code ] = $language_name;
 				}
 			}
+
+			// Read next file.
+			$file = readdir( $handle );
 		}
-		closedir( $handler );
+		closedir( $handle );
 
 		// Sort translated language names according to current locale.
 		asort( $languages );

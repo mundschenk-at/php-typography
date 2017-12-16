@@ -62,7 +62,7 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	public function __construct( $feed_compatible = false ) {
 		parent::__construct( Token_Fix::MIXED_WORDS, $feed_compatible );
 
-		$this->hyphens_array = array_unique( [ '-', U::HYPHEN ] );
+		$this->hyphens_array             = array_unique( [ '-', U::HYPHEN ] );
 		$this->remove_ending_space_regex = '/(' . implode( '|', $this->hyphens_array ) . ')' . U::ZERO_WIDTH_SPACE . '$/';
 	}
 

@@ -150,7 +150,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				// Break up the URL path to individual characters.
 				$path_parts = str_split( $url_match['path'], 1 );
 				$path_count = count( $path_parts );
-				$path = '';
+				$path       = '';
 				foreach ( $path_parts as $index => $path_part ) {
 					if ( 0 === $index || $path_count - $index < $settings['urlMinAfterWrap'] ) {
 						$path .= $path_part;

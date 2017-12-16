@@ -86,8 +86,8 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
 
 	// Style hanging punctuation.
-	const STYLE_DOUBLE = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
-	const STYLE_SINGLE = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_DOUBLE         = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_SINGLE         = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
 	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
 	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
 

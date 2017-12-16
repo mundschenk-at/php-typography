@@ -230,7 +230,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$next_length     = self::calc_adjacent_length( $strlen( $next_character ), $next_character, $node_data, $quotes, $substr, $strlen, true );
 
 		// If we have adjacent characters, remove them from the text.
-		$node_data      = self::remove_adjacent_characters( $node_data, $previous_length, $next_length );
+		$node_data = self::remove_adjacent_characters( $node_data, $previous_length, $next_length );
 
 		// Remove the escape markers and restore the text to the actual node.
 		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );

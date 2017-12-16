@@ -44,6 +44,7 @@ use \PHP_Typography\U;
 class Smart_Fractions_Fix extends Abstract_Node_Fix {
 
 	const SPACING = '/\b(\d+)\s(\d+\s?\/\s?\d+)\b/';
+
 	const FRACTION_MATCHING = '/
 		# lookbehind assertion: makes sure we are not messing up a url
 		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
@@ -65,6 +66,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|")
 		)
 		/xu';
+
 	const ESCAPE_DATE_MM_YYYY = '/
 		# lookbehind assertion: makes sure we are not messing up a url
 		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')

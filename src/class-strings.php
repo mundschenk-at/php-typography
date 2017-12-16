@@ -136,22 +136,10 @@ abstract class Strings {
 		// Deal with an array of character codes.
 		$str = '';
 		foreach ( $codes as $code ) {
-			$str .= self::_uchr( (int) $code );
+			$str .= html_entity_decode( '&#' . (int) $code . ';', ENT_NOQUOTES, 'UTF-8' );
 		}
 
 		return $str;
-	}
-	/**
-	 * Converts decimal value to unicode character.
-	 *
-	 * For internal use only.
-	 *
-	 * @param int $code Decimal value coresponding to unicode character.
-	 *
-	 * @return string Unicode character.
-	 */
-	public static function _uchr( $code ) {
-		return html_entity_decode( '&#' . $code . ';', ENT_NOQUOTES, 'UTF-8' );
 	}
 
 	/**

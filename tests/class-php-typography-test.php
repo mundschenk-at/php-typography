@@ -24,13 +24,21 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\PHP_Typography;
-use \PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
+use PHP_Typography\PHP_Typography;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
+
+use PHP_Typography\Fixes\Default_Registry;
+use PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Registry;
+
+use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
+
+use Brain\Monkey;
+
+use \Mockery as m;
 
 /**
  * PHP_Typography unit test.
@@ -41,12 +49,15 @@ use \PHP_Typography\U;
  * @uses PHP_Typography\PHP_Typography
  * @uses PHP_Typography\Hyphenator\Cache
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Dash_Style
+ * @uses PHP_Typography\Settings\Quote_Style
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\RE
+ * @uses PHP_Typography\Fixes\Registry
+ * @uses PHP_Typography\Fixes\Default_Registry
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix
@@ -102,14 +113,22 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
 		$this->typo = new PHP_Typography();
-		$this->s = new Settings( false );
+		$this->s    = new Settings( false );
 	}
 
 	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
+	 * Test constructor.
+	 *
+	 * @covers ::__construct
 	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
+	public function test_constructor() {
+		$typo = new PHP_Typography();
+		$this->assertNull( $this->getValue( $typo, 'registry' ) );
+		$this->assertFalse( $this->getValue( $typo, 'update_registry_cache' ) );
+
+		$typo = new PHP_Typography( m::mock( Registry::class ) );
+		$this->assertNotNull( $this->getValue( $typo, 'registry' ) );
+		$this->assertTrue( $this->getValue( $typo, 'update_registry_cache' ) );
 	}
 
 	/**
@@ -177,7 +196,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$s->set_tags_to_ignore( 'img foo  \	' ); // Should not result in an error.
 		$s->set_smart_quotes( true );
-		$html = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
+		$html     = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
 		$expected = '<p><foo>Ignore this "quote",</foo><span class="other"> but not &ldquo;this&rdquo; one.</span></p>';
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -201,9 +220,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -227,9 +248,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
@@ -256,62 +279,14 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>"But" not this.</span></p>';
+
 		$expected = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not &ldquo;this&rdquo; one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
+
 		$s->set_smart_quotes( true );
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
-
-	/**
-	 * Tests register_node_fix.
-	 *
-	 * @covers ::register_node_fix
-	 */
-	public function test_register_node_fix() {
-		foreach ( PHP_Typography::GROUPS as $group ) {
-			// Create a stub for the Node_Fix interface.
-			$fake_node_fixer = $this->createMock( Node_Fix::class );
-			$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
-
-			$this->typo->register_node_fix( $fake_node_fixer, $group );
-			$this->assertContains( $fake_node_fixer, $this->readAttribute( $this->typo, 'node_fixes' )[ $group ] );
-		}
-	}
-
-	/**
-	 * Tests register_node_fix.
-	 *
-	 * @covers ::register_node_fix
-	 *
-	 * @expectedException \InvalidArgumentException
-	 * @expectedExceptionMessageRegExp /^Invalid fixer group .+\.$/
-	 */
-	public function test_register_node_fix_invalid_group() {
-
-		// Create a stub for the Node_Fix interface.
-		$fake_node_fixer = $this->createMock( Node_Fix::class );
-		$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
-
-		$this->typo->register_node_fix( $fake_node_fixer, 'invalid group parameter' );
-	}
-
-	/**
-	 * Tests register_token_fix.
-	 *
-	 * @covers ::register_token_fix
-	 */
-	public function test_register_token_fix() {
-
-		// Create a stub for the Token_Fix interface.
-		$fake_token_fixer = $this->createMock( Token_Fix::class );
-		$fake_token_fixer->method( 'apply' )->willReturn( 'foo' );
-		$fake_token_fixer->method( 'target' )->willReturn( Token_Fix::MIXED_WORDS );
-
-		$this->typo->register_token_fix( $fake_token_fixer );
-		$this->assertTrue( true, 'An error occured during Token_Fix registration.' );
-	}
-
 
 	/**
 	 * Test get_hyphenation_languages.
@@ -321,7 +296,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_hyphenation_languages() {
 
-		$expected = [
+		$expected     = [
 			'af',
 			'bg',
 			'ca',
@@ -394,7 +369,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_diacritic_languages() {
 
-		$expected = [ 'de-DE', 'en-US' ];
+		$expected     = [ 'de-DE', 'en-US' ];
 		$not_expected = [
 			'es',
 			'et',
@@ -487,7 +462,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test process.
 	 *
 	 * @covers ::process
-	 * @covers ::apply_fixes_to_html_node
 	 *
 	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
@@ -515,7 +489,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test process_feed.
 	 *
 	 * @covers ::process_feed
-	 * @covers ::apply_fixes_to_feed_node
 	 *
 	 * @uses ::process_textnodes
 	 * @uses PHP_Typography\Hyphenator
@@ -1308,7 +1281,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( 'now', [
+		$typo = new PHP_Typography_CSS_Classes( [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
 		] );
@@ -1340,7 +1313,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_off( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( 'now', [
+		$typo = new PHP_Typography_CSS_Classes( [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
 		] );
@@ -1382,7 +1355,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_with_smart_quotes( $input, $result, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( 'now', [
+		$typo = new PHP_Typography_CSS_Classes( [
 			'numerator'   => $num_css_class,
 			'denominator' => $denom_css_class,
 		] );
@@ -1466,7 +1439,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( 'now', [
+		$typo = new PHP_Typography_CSS_Classes( [
 			'ordinal' => $css_class,
 		] );
 		$this->s->set_smart_ordinal_suffix( true );
@@ -1490,7 +1463,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix_off( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( 'now', [
+		$typo = new PHP_Typography_CSS_Classes( [
 			'ordinal' => $css_class,
 		] );
 		$this->s->set_smart_ordinal_suffix( false );
@@ -2334,7 +2307,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @covers ::replace_node_with_html
 	 */
 	public function test_replace_node_with_html() {
-		$s = $this->s;
+		$s   = $this->s;
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), '<p>foo</p>', $s );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
@@ -2349,6 +2322,39 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		}
 	}
 
+	/**
+	 * Tests get_registry.
+	 *
+	 * @covers ::get_registry
+	 *
+	 * @uses ::__construct
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_registry_default_registry() {
+
+		m::mock( 'alias:' . Default_Registry::class );
+		$typo = m::mock( PHP_Typography::class, [] )->makePartial();
+
+		$this->assertInstanceOf( Default_Registry::class, $typo->get_registry() );
+	}
+
+	/**
+	 * Tests get_registry.
+	 *
+	 * @covers ::get_registry
+	 *
+	 * @uses ::__construct
+	 */
+	public function test_get_registry_update_hyhpenator_cache() {
+		$reg  = m::mock( Registry::class )->makePartial();
+		$typo = m::mock( PHP_Typography::class, [ $reg ] )->makePartial();
+		$typo->shouldReceive( 'get_hyphenator_cache' )->once()->andReturn( m::mock( Hyphenator_Cache::class ) );
+		$reg->shouldReceive( 'update_hyphenator_cache' )->once()->with( m::type( Hyphenator_Cache::class ) );
+
+		$this->assertInstanceOf( Registry::class, $typo->get_registry() );
+	}
 
 	/**
 	 * Test replace_node_with_html.
@@ -2357,7 +2363,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_replace_node_with_html_invalid() {
 
-		$node = new \DOMText( 'foo' );
+		$node     = new \DOMText( 'foo' );
 		$new_node = $this->typo->replace_node_with_html( $node, 'bar' );
 
 		// Without a parent node, it's not possible to replace anything.
@@ -2781,8 +2787,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( true );
 
-		$this->assertSame('A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $this->s ) ) );
+		$this->assertSame(
+			'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
+			$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $this->s ) )
+		);
 	}
 
 
@@ -2811,28 +2819,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s['hyphenationPatternExceptions'] = [];
 		unset( $s['hyphenationExceptions'] );
 
-		$this->assertSame( 'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
-						   $this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $s, false ) ) );
-	}
-
-	/**
-	 * Test init.
-	 *
-	 * @covers ::init
-	 * @covers ::__construct
-	 *
-	 * @uses PHP_Typography\Hyphenator
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
-	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 */
-	public function test_init() {
-		$second_typo = new PHP_Typography( PHP_Typography::INIT_LAZY );
-		$this->assertAttributeEmpty( 'process_words_fix', $second_typo );
-
-		$second_typo->init();
-
-		$this->assertAttributeNotEmpty( 'process_words_fix', $second_typo );
+		$this->assertSame(
+			'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
+			$this->clean_html( $this->typo->process( 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', $s, false ) )
+		);
 	}
 
 	/**
@@ -2879,8 +2869,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $ignore2 Ignored.
 	 */
 	public function test_parse_html_extended( $html, $ignore1, $ignore2 ) {
-				$p    = $this->typo->get_html5_parser();
-		$dom  = $this->typo->parse_html( $p, $html, $this->s );
+		$p   = $this->typo->get_html5_parser();
+		$dom = $this->typo->parse_html( $p, $html, $this->s );
 
 		$this->assertInstanceOf( '\DOMDocument', $dom );
 
@@ -2914,7 +2904,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param  string $error_msg Expected error message.
 	 */
 	public function test_parse_html_with_errors( $html, $error_msg ) {
-				$s = $this->s;
+		$s = $this->s;
 
 		// Without an error handler.
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), $html, $s );
@@ -3000,12 +2990,28 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses ::get_hyphenator_cache
 	 */
 	public function test_set_hyphenator_cache() {
-		$new_cache = new Hyphenator_Cache();
+		$new_cache = m::mock( Hyphenator_Cache::class );
 		$old_cache = $this->typo->get_hyphenator_cache();
 
 		$this->assertNotSame( $old_cache, $new_cache );
 
 		$this->typo->set_hyphenator_cache( $new_cache );
 		$this->assertSame( $new_cache, $this->typo->get_hyphenator_cache() );
+	}
+
+	/**
+	 * Tests set_hyphenator_cache with registry.
+	 *
+	 * @covers ::set_hyphenator_cache
+	 */
+	public function test_set_hyphenator_cache_with_registry() {
+		$reg  = m::mock( Registry::class )->makePartial();
+		$typo = m::mock( PHP_Typography::class, [ $reg ] )->makePartial();
+
+		$new_cache = m::mock( Hyphenator_Cache::class );
+
+		$reg->shouldReceive( 'update_hyphenator_cache' )->once()->with( $new_cache );
+
+		$this->assertNull( $typo->set_hyphenator_cache( $new_cache ) );
 	}
 }

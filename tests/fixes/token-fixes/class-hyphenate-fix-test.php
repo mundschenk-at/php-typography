@@ -97,11 +97,11 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( true );
 
-		$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
+		$tokens     = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
 		$hyphenated = $this->invokeMethod( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
 		$this->assertTokensSame( $hyphenated, $tokens );
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->invokeMethod( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
 		$this->assertTokensNotSame( $hyphenated, $tokens, 'Different encodings should not be equal.' );
 	}
@@ -128,7 +128,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( false );
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->invokeMethod( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
 		$this->assertEquals( $tokens, $hyphenated );
 	}
@@ -156,7 +156,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 
 		$this->s['hyphenMinBefore'] = 0; // invalid value.
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->invokeMethod( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
 		$this->assertEquals( $tokens, $hyphenated );
 	}
@@ -178,13 +178,13 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s['hyphenMinAfter']              = 2;
 		$this->s['hyphenationCustomExceptions'] = [ 'foo-bar' ];
 		$this->s['hyphenLanguage']              = 'en-US';
-		$h = $this->fix->get_hyphenator( $this->s );
 
+		$h = $this->fix->get_hyphenator( $this->s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 
 		$this->s['hyphenationCustomExceptions'] = [ 'bar-foo' ];
-		$h = $this->fix->get_hyphenator( $this->s );
 
+		$h = $this->fix->get_hyphenator( $this->s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 	}
 

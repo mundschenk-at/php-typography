@@ -24,10 +24,16 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
-use \PHP_Typography\Settings\Dashes;
-use \PHP_Typography\Settings\Quotes;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
+
+use PHP_Typography\Settings\Dashes;
+use PHP_Typography\Settings\Quotes;
+
+use Brain\Monkey;
+
+use Mockery as m;
 
 /**
  * Unit test for Settings class.
@@ -38,7 +44,9 @@ use \PHP_Typography\Settings\Quotes;
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
- * @uses PHP_Typography\Strings::_uchr
+ * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+ * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
+ * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
 class Settings_Test extends PHP_Typography_Testcase {
@@ -58,21 +66,14 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
-	}
-
-	/**
 	 * Tests set_defaults.
 	 *
 	 * @covers ::set_defaults
 	 *
+	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
-	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_set_defaults() {
@@ -89,10 +90,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
+	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
-	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_initialization() {
@@ -179,9 +180,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	public function test_offsetSet() {
 		$s = $this->settings;
 
+		// A key has to be used.
 		$this->assertFalse( isset( $s[0] ) );
 		$s[] = 666;
-		$this->assertEquals( 666, $s[0] );
+		$this->assertFalse( isset( $s[0] ) );
 
 		$this->assertFalse( isset( $s['new_key'] ) );
 		$s['new_key'] = 42;
@@ -315,6 +317,32 @@ class Settings_Test extends PHP_Typography_Testcase {
 		} );
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
+	}
+
+	/**
+	 * Tests set_parser_errors_handler with an invalid callback.
+	 *
+	 * @covers ::set_parser_errors_handler
+	 */
+	public function test_set_parser_errors_handler_invalid() {
+		$s = $this->settings;
+
+		// Default: no handler.
+		$this->assertEmpty( $s['parserErrorsHandler'] );
+
+		// Valid handler.
+		$s->set_parser_errors_handler( function( $errors ) {
+			return [];
+		} );
+		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
+		$old_handler = $s['parserErrorsHandler'];
+
+		// PHP < 7.0 raises an error instead of throwing an "exception".
+		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
+			$this->expectException( \PHPUnit_Framework_Error::class );
+		} else {
+			$this->expectException( \TypeError::class );
+		}
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
@@ -330,7 +358,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
-		$s = $this->settings;
+		$s             = $this->settings;
 		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
 
 		// Default tags.
@@ -480,7 +508,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
-		$s = $this->settings;
+		$s            = $this->settings;
 		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
@@ -562,12 +590,13 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 * @covers ::get_dash_style
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
 	public function test_set_smart_dashes_style() {
-		$s   = $this->settings;
+		$s = $this->settings;
 
 		$s->set_smart_dashes_style( 'traditionalUS' );
 		$dashes = $s->dash_style();
@@ -594,7 +623,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_style
 	 */
 	public function test_set_smart_dashes_style_with_object() {
-		$s   = $this->settings;
+		$s = $this->settings;
 
 		// Create a stub for the Token_Fixer interface.
 		$fake_dashes = $this->createMock( Dashes::class );
@@ -728,7 +757,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::update_diacritics_replacement_arrays
 	 * @covers ::parse_diacritics_rules
 	 *
-	 * @uses PHP_Typography\Arrays::array_map_assoc
+	 * @uses ::array_map_assoc
 	 *
 	 * @dataProvider provide_set_diacritic_custom_replacements_data
 	 *
@@ -892,7 +921,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_units() {
-		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
+		$units_as_array  = [ 'foo', 'bar', 'xx/yy' ];
 		$units_as_string = implode( ', ', $units_as_array );
 
 		$this->settings->set_units( $units_as_array );
@@ -1130,7 +1159,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::set_initial_quote_tags
 	 */
 	public function test_set_initial_quote_tags() {
-		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
+		$tags_as_array  = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
@@ -1191,6 +1220,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$s = $this->settings;
+
 		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		$s->set_hyphenation_language( $lang );
@@ -1219,6 +1249,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_hyphenation_language_again( $lang, $success ) {
 		$s = $this->settings;
+
 		$s['hyphenationExceptions'] = []; // necessary for full coverage.
 
 		for ( $i = 0; $i < 2; ++$i ) {
@@ -1374,7 +1405,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_hyphenation_exceptions_string() {
-		$s = $this->settings;
+		$s          = $this->settings;
 		$exceptions = 'Hu-go, Fö-ba-ß';
 
 		$s->set_hyphenation_exceptions( $exceptions );
@@ -1444,5 +1475,47 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
 		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_NARROW_SPACE );
+	}
+
+	/**
+	 * Provide data for testing array_map_assoc.
+	 *
+	 * @return array
+	 */
+	public function provide_array_map_assoc_data() {
+		return [
+			[
+				function( $key, $value ) {
+						return [ $value => $value * 2 ];
+				},
+				[ 1, 2, 3 ],
+				[
+					1 => 2,
+					2 => 4,
+					3 => 6,
+				],
+			],
+			[
+				function( $key, $value ) {
+						return [];
+				},
+				[ 1, 2, 3 ],
+				[],
+			],
+		];
+	}
+
+	/**
+	 * Test array_map_assoc.
+	 *
+	 * @covers ::array_map_assoc
+	 * @dataProvider provide_array_map_assoc_data
+	 *
+	 * @param  callable $callable The function to apply to the array.
+	 * @param  array    $array    Input array.
+	 * @param  array    $result   Expected output array.
+	 */
+	public function test_array_map_assoc( callable $callable, array $array, array $result ) {
+		$this->assertSame( $result, $this->invokeStaticMethod( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }

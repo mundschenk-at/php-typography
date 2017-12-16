@@ -35,7 +35,6 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix
  *
  * @uses ::__construct
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
@@ -75,13 +74,13 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 		$feed_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $feed_fix, $feed_fix );
+		$bound    = $this->construct_caller->bindTo( $feed_fix, $feed_fix );
 		$bound( Token_Fix::WORDS, true );
 
 		$non_feed_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $non_feed_fix, $non_feed_fix );
+		$bound        = $this->construct_caller->bindTo( $non_feed_fix, $non_feed_fix );
 		$bound( Token_Fix::WORDS, false );
 
 		$this->assertAttributeEquals( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
@@ -99,13 +98,13 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 		$feed_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $feed_fix, $feed_fix );
+		$bound    = $this->construct_caller->bindTo( $feed_fix, $feed_fix );
 		$bound( Token_Fix::WORDS, true );
 
 		$non_feed_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $non_feed_fix, $non_feed_fix );
+		$bound        = $this->construct_caller->bindTo( $non_feed_fix, $non_feed_fix );
 		$bound( Token_Fix::WORDS, false );
 
 		$this->assertTrue( $feed_fix->feed_compatible(), 'The fixer should be feed_compatible.' );
@@ -123,13 +122,13 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 		$word_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $word_fix, $word_fix );
+		$bound    = $this->construct_caller->bindTo( $word_fix, $word_fix );
 		$bound( Token_Fix::WORDS, true );
 
 		$other_fix = $this->getMockBuilder( Token_Fixes\Abstract_Token_Fix::class )
 							->disableOriginalConstructor()
 							->getMockForAbstractClass();
-		$bound = $this->construct_caller->bindTo( $other_fix, $other_fix );
+		$bound     = $this->construct_caller->bindTo( $other_fix, $other_fix );
 		$bound( Token_Fix::OTHER, false );
 
 		$this->assertSame( Token_Fix::WORDS, $word_fix->target(), 'The fixer should target WORD tokens.' );

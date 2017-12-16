@@ -52,7 +52,7 @@ class PHP_Typography_Bench {
 	 * Initialize fixtures.
 	 */
 	public function init() {
-		$this->typo = new \PHP_Typography\PHP_Typography();
+		$this->typo     = new \PHP_Typography\PHP_Typography();
 		$this->settings = new \PHP_Typography\Settings();
 
 		$this->typo->process( '', $this->settings );
@@ -69,7 +69,7 @@ class PHP_Typography_Bench {
 				'filename' => __DIR__ . '/data/example1.html',
 			],
 			[
-				'html'     => '<span>A short fragment 1+2=3</span>',
+				'html' => '<span>A short fragment 1+2=3</span>',
 			],
 		];
 	}

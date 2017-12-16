@@ -122,7 +122,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 * Test uchr.
 	 *
 	 * @covers ::uchr
-	 * @uses ::_uchr
 	 *
 	 * @dataProvider provide_uchr_data
 	 *
@@ -137,7 +136,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 	 * Test uchr.
 	 *
 	 * @covers ::uchr
-	 * @uses ::_uchr
 	 *
 	 * @dataProvider provide_uchr_multi_data
 	 *
@@ -148,21 +146,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 		$this->assertSame( $result, call_user_func_array( [ 'PHP_Typography\Strings', 'uchr' ], $input ) );
 		$this->assertSame( $result, Strings::uchr( $input ) );
 	}
-
-	/**
-	 * Test _uchr.
-	 *
-	 * @covers ::_uchr
-	 *
-	 * @dataProvider provide_uchr_data
-	 *
-	 * @param  int    $code   Character code.
-	 * @param  string $result Expected result.
-	 */
-	public function test__uchr( $code, $result ) {
-		$this->assertSame( $result, Strings::_uchr( $code ) );
-	}
-
 
 	/**
 	 * Provide data for testing mb_str_split.

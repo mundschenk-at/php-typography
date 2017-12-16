@@ -30,6 +30,16 @@ use \PHP_Typography\Strings;
  * Abstract base class for \PHP_Typography\* unit tests.
  */
 abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
+
+	/**
+	 * Tears down the fixture, for example, closes a network connection.
+	 * This method is called after a test is executed.
+	 */
+	protected function tearDown() {
+		\Brain\Monkey\tearDown();
+		parent::tearDown();
+	}
+
 	/**
 	 * Return encoded HTML string (everything except <>"').
 	 *
@@ -55,12 +65,17 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param object $object      Instantiated object that we will run method on.
 	 * @param string $method_name Method name to call.
 	 * @param array  $parameters  Array of parameters to pass into method.
+	 * @param string $classname   Optional. The class to use for accessing private properties.
 	 *
 	 * @return mixed Method return.
 	 */
-	protected function invokeMethod( $object, $method_name, array $parameters = [] ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
-		$method = $reflection->getMethod( $method_name );
+	protected function invokeMethod( $object, $method_name, array $parameters = [], $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
+		$method     = $reflection->getMethod( $method_name );
 		$method->setAccessible( true );
 
 		return $method->invokeArgs( $object, $parameters );
@@ -77,7 +92,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 */
 	protected function invokeStaticMethod( $classname, $method_name, array $parameters = [] ) {
 		$reflection = new \ReflectionClass( $classname );
-		$method = $reflection->getMethod( $method_name );
+		$method     = $reflection->getMethod( $method_name );
 		$method->setAccessible( true );
 
 		return $method->invokeArgs( null, $parameters );
@@ -92,7 +107,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 */
 	protected function setStaticValue( $classname, $property_name, $value ) {
 		$reflection = new \ReflectionClass( $classname );
-		$property = $reflection->getProperty( $property_name );
+		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 		$property->setValue( $value );
 	}
@@ -103,10 +118,15 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param object     $object        Instantiated object that we will run method on.
 	 * @param string     $property_name Property to set.
 	 * @param mixed|null $value         The new value.
+	 * @param string     $classname     Optional. The class to use for accessing private properties.
 	 */
-	protected function setValue( $object, $property_name, $value ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
-		$property = $reflection->getProperty( $property_name );
+	protected function setValue( $object, $property_name, $value, $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
+		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 		$property->setValue( $object, $value );
 	}
@@ -121,7 +141,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 */
 	protected function getStaticValue( $classname, $property_name ) {
 		$reflection = new \ReflectionClass( $classname );
-		$property = $reflection->getProperty( $property_name );
+		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 
 		return $property->getValue();
@@ -132,12 +152,17 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 *
 	 * @param object $object        Instantiated object that we will run method on.
 	 * @param string $property_name Property to set.
+	 * @param string $classname     Optional. The class to use for accessing private properties.
 	 *
 	 * @return mixed
 	 */
-	protected function getValue( $object, $property_name ) {
-		$reflection = new \ReflectionClass( get_class( $object ) );
-		$property = $reflection->getProperty( $property_name );
+	protected function getValue( $object, $property_name, $classname = '' ) {
+		if ( empty( $classname ) ) {
+			$classname = get_class( $object );
+		}
+
+		$reflection = new \ReflectionClass( $classname );
+		$property   = $reflection->getProperty( $property_name );
 		$property->setAccessible( true );
 
 		return $property->getValue( $object );
@@ -165,7 +190,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @return array
 	 */
 	protected function tokenize_sentence( $value ) {
-		$words = explode( ' ', $value );
+		$words  = explode( ' ', $value );
 		$tokens = [];
 
 		foreach ( $words as $word ) {
@@ -259,7 +284,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param string $message   Optional. Default ''.
 	 */
 	protected function assertAttributeArrayHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref = new \ReflectionClass( get_class( $object ) );
+		$ref  = new \ReflectionClass( get_class( $object ) );
 		$prop = $ref->getProperty( $attribute );
 		$prop->setAccessible( true );
 
@@ -275,7 +300,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param string $message   Optional. Default ''.
 	 */
 	protected function assertAttributeArrayNotHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref = new \ReflectionClass( get_class( $object ) );
+		$ref  = new \ReflectionClass( get_class( $object ) );
 		$prop = $ref->getProperty( $attribute );
 		$prop->setAccessible( true );
 
@@ -292,78 +317,78 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	protected function assertSmartQuotesStyle( $style, $open, $close ) {
 		switch ( $style ) {
 			case 'doubleCurled':
-				$this->assertSame( Strings::_uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleCurledReversed':
-				$this->assertSame( Strings::_uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9':
-				$this->assertSame( Strings::_uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9Reversed':
-				$this->assertSame( Strings::_uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurled':
-				$this->assertSame( Strings::_uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurledReversed':
-				$this->assertSame( Strings::_uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9':
-				$this->assertSame( Strings::_uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9Reversed':
-				$this->assertSame( Strings::_uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( Strings::_uchr( 171 ) . Strings::_uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 160 ) . Strings::_uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ) . Strings::uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 160 ) . Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':
-				$this->assertSame( Strings::_uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsReversed':
-				$this->assertSame( Strings::_uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemets':
-				$this->assertSame( Strings::_uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemetsReversed':
-				$this->assertSame( Strings::_uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'cornerBrackets':
-				$this->assertSame( Strings::_uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'whiteCornerBracket':
-				$this->assertSame( Strings::_uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::_uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			default:

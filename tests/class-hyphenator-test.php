@@ -164,7 +164,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 *
 	 * @return array
 	 */
-	function provide_set_custom_exceptions_data() {
+	public function provide_set_custom_exceptions_data() {
 		return [
 			[ [ 'Hu-go', 'Fö-ba-ß' ], 2, 2 ],
 			[ [],                     0, 2 ],
@@ -222,7 +222,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_custom_exceptions_again() {
-		$h = $this->h;
+		$h          = $this->h;
 		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$h->set_custom_exceptions( $exceptions );
 		$h->set_language( 'de' ); // German has no pattern exceptions.
@@ -246,7 +246,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_set_custom_exceptions_unknown_encoding() {
-		$h = $this->h;
+		$h          = $this->h;
 		$exceptions = [ 'Hu-go', mb_convert_encoding( 'Fö-ba-ß', 'ISO-8859-2' ) ];
 		$h->set_custom_exceptions( $exceptions );
 
@@ -363,11 +363,11 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	public function test_hyphenate_wrong_encoding() {
 		$this->h->set_language( 'de' );
 
-		$tokens = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
+		$tokens     = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
 		$hyphenated = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
 		$this->assertTokensSame( $hyphenated, $tokens, 'Wrong encoding, value should be unchanged.' );
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
 		$this->assertTokensNotSame( $hyphenated, $tokens, 'Correct encoding, string should have been hyphenated.' );
 	}
@@ -387,7 +387,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	public function test_hyphenate_no_title_case() {
 		$this->h->set_language( 'de' );
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->h->hyphenate( $tokens, '|', false, 2, 2, 2 );
 		$this->assertEquals( $tokens, $hyphenated );
 	}
@@ -407,8 +407,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	public function test_hyphenate_invalid() {
 		$this->h->set_language( 'de' );
 
-		$tokens = $this->tokenize( 'Änderungsmeldung' );
-		$hyphenated  = $this->h->hyphenate( $tokens,  '|', true, 2, 0, 2 );
+		$tokens     = $this->tokenize( 'Änderungsmeldung' );
+		$hyphenated = $this->h->hyphenate( $tokens,  '|', true, 2, 0, 2 );
 		$this->assertEquals( $tokens, $hyphenated );
 	}
 
@@ -471,7 +471,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 		$this->h->set_language( 'en-US' );
 
 		// Unset some internal stuff.
-		$ref = new \ReflectionClass( '\PHP_Typography\Hyphenator' );
+		$ref  = new \ReflectionClass( '\PHP_Typography\Hyphenator' );
 		$prop = $ref->getProperty( 'pattern_exceptions' );
 		$prop->setAccessible( true );
 		$prop->setValue( $this->h, [] );
@@ -513,7 +513,7 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 * @uses \mb_convert_encoding
 	 */
 	public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
-		$h = $this->h;
+		$h         = $this->h;
 		$exception = mb_convert_encoding( 'Fö-ba-ß' , 'ISO-8859-2' );
 
 		$this->assertNull( $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ $exception ] ) );

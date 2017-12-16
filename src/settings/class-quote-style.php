@@ -43,21 +43,17 @@ abstract class Quote_Style {
 	const DOUBLE_CURLED_REVERSED     = 'doubleCurledReversed';
 	const DOUBLE_LOW_9               = 'doubleLow9';
 	const DOUBLE_LOW_9_REVERSED      = 'doubleLow9Reversed';
-
 	const SINGLE_CURLED              = 'singleCurled';
 	const SINGLE_CURLED_REVERSED     = 'singleCurledReversed';
 	const SINGLE_LOW_9               = 'singleLow9';
 	const SINGLE_LOW_9_REVERSED      = 'singleLow9Reversed';
-
 	const DOUBLE_GUILLEMETS          = 'doubleGuillemets';
 	const DOUBLE_GUILLEMETS_REVERSED = 'doubleGuillemetsReversed';
 	const DOUBLE_GUILLEMETS_FRENCH   = 'doubleGuillemetsFrench';
-
 	const SINGLE_GUILLEMETS          = 'singleGuillemets';
 	const SINGLE_GUILLEMETS_REVERSED = 'singleGuillemetsReversed';
-
-	const CORNER_BRACKETS             = 'cornerBrackets';
-	const WHITE_CORNER_BRACKETS       = 'whiteCornerBracket';
+	const CORNER_BRACKETS            = 'cornerBrackets';
+	const WHITE_CORNER_BRACKETS      = 'whiteCornerBracket';
 
 	/**
 	 * Available quote styles.

@@ -35,7 +35,6 @@ use \PHP_Typography\U;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Dewidow_Fix
  *
  * @uses ::__construct
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style

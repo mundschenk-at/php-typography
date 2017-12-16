@@ -45,7 +45,7 @@ class Functions_Bench {
 			return false;
 		}
 
-		$result = [];
+		$result           = [];
 		$multibyte_length = mb_strlen( $str, $encoding );
 		for ( $i = 0; $i < $multibyte_length; $i += $length ) {
 			$result[] = mb_substr( $str, $i, $length, $encoding );
@@ -91,7 +91,7 @@ class Functions_Bench {
 				'filename' => __DIR__ . '/data/example1.html',
 			],
 			[
-				'html'     => '<span>A short fragment 1+2=3</span>',
+				'html' => '<span>A short fragment 1+2=3</span>',
 			],
 		];
 	}
@@ -164,14 +164,8 @@ class Functions_Bench {
 
 	 * @param  array $params The parameters.
 	 */
-	public function bench__uchr( $params ) {
-		if ( is_array( $params ) ) {
-			foreach ( $params as $code ) {
-				\PHP_Typography\Strings::_uchr( $code );
-			}
-		} else {
-			\PHP_Typography\Strings::_uchr( $params );
-		}
+	public function bench_uchr( $params ) {
+		\PHP_Typography\Strings::uchr( $params );
 	}
 
 	/**
@@ -210,5 +204,102 @@ class Functions_Bench {
 				\IntlChar::chr( $params );
 			}
 		}
+	}
+
+	/**
+	 * Associative array mapping based on https://gist.github.com/jasand-pereza/84ecec7907f003564584.
+	 *
+	 * @param  callable $callback Required.
+	 * @param  array    $array    Required.
+	 *
+	 * @return array
+	 */
+	public static function array_manipulate( callable $callback, array $array ) {
+		$new = [];
+
+		foreach ( $array as $k => $v ) {
+			$u = $callback( $k, $v );
+			if ( ! empty( $u ) ) {
+				$new[ \key( $u ) ] = \current( $u );
+			}
+		}
+
+		return $new;
+	}
+
+	/**
+	 * Provides an array_map implementation with control over resulting array's keys.
+	 *
+	 * @param  callable $callable A callback function that needs to $key, $value pairs.
+	 *                            The callback should return tuple where the first part
+	 *                            will be used as the key and the second as the value.
+	 * @param  array    $array    The array.
+	 *
+	 * @return array
+	 */
+	public static function array_map_assoc( callable $callable, array $array ) {
+		return array_column( array_map( $callable, array_keys( $array ), $array ), 1, 0 );
+	}
+
+	/**
+	 * Input data for array_manipulate tests.
+	 *
+	 * @return array
+	 */
+	public function provide_array_map_assoc() {
+		return [
+			[
+				'array' => [
+					'foo1'  => 'bar1',
+					'foo2'  => 'bar2',
+					'foo3'  => 'bar3',
+					'foo4'  => 'bar4',
+					'foo5'  => 'bar5',
+					'foo6'  => 'bar6',
+					'foo7'  => 'bar7',
+					'foo8'  => 'bar8',
+					'foo9'  => 'bar9',
+					'foo10' => 'bar10',
+					'foo11' => 'bar11',
+					'foo12' => 'bar12',
+					'foo13' => 'bar13',
+					'foo14' => 'bar14',
+					'foo15' => 'bar15',
+					'foo16' => 'bar16',
+					'foo17' => 'bar17',
+					'foo18' => 'bar18',
+					'foo19' => 'bar19',
+					'foo20' => 'bar20',
+				],
+			],
+		];
+	}
+
+	/**
+	 * Benchmark Arrays::array_map_assoc method.
+	 *
+	 * @ParamProviders({"provide_array_map_assoc"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_arrays_array_map_assoc( $params ) {
+		self::array_manipulate( function( $key, $value ) {
+			return [ $value, $key ];
+		}, $params['array'] );
+	}
+
+	/**
+	 * Benchmark array_manipulate method.
+	 *
+	 * @ParamProviders({"provide_array_map_assoc"})
+	 * @OutputTimeUnit("microseconds", precision=3)
+	 *
+	 * @param  array $params The parameters.
+	 */
+	public function bench_array_manipulate( $params ) {
+		self::array_map_assoc( function( $key, $value ) {
+			return [ $value => $key ];
+		}, $params['array'] );
 	}
 }

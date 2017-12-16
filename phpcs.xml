@@ -9,12 +9,10 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
-		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact" />
-		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect" />
-		<exclude name="PEAR.Functions.FunctionCallSignature.Indent" />
 		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
 		<exclude name="WordPress.WP.AlternativeFunctions" />
 		<exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped" />
+		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
 	</rule>
 	<rule ref="WordPress-VIP">
 		<exclude name="WordPress.VIP.RestrictedFunctions.file_get_contents_file_get_contents" />
@@ -43,8 +41,15 @@
 		</properties>
 	</rule>
 
+	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
+		<properties>
+			<property name="exact" value="false" />
+			<property name="maxColumn" value="70" />
+		</properties>
+	</rule>
+
 	<!-- Include sniffs for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibility">
-		<config name="testVersion" value="5.6-7.1"/>
+		<config name="testVersion" value="5.6-7.2"/>
 	</rule>
 </ruleset>

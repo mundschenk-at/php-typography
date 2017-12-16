@@ -130,7 +130,7 @@ class Hyphenator {
 				continue; // unknown encoding, abort.
 			}
 
-			$exception = $func['strtolower']( $exception );
+			$exception                    = $func['strtolower']( $exception );
 			$exception_keys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );
 		}
 
@@ -165,7 +165,7 @@ class Hyphenator {
 			return true; // Bail out, no need to do anything.
 		}
 
-		$success = false;
+		$success            = false;
 		$language_file_name = dirname( __FILE__ ) . '/lang/' . $lang . '.json';
 
 		if ( file_exists( $language_file_name ) ) {
@@ -186,8 +186,8 @@ class Hyphenator {
 
 		// Clean up.
 		if ( ! $success ) {
-			$this->language = null;
-			$this->pattern_trie = null;
+			$this->language           = null;
+			$this->pattern_trie       = null;
 			$this->pattern_exceptions = [];
 		}
 
@@ -275,7 +275,7 @@ class Hyphenator {
 		$hyphenated_word = '';
 
 		for ( $i = 0; $i < $word_length; $i++ ) {
-			if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before) && ( $i <= $word_length - $min_after ) ) {
+			if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before ) && ( $i <= $word_length - $min_after ) ) {
 				$hyphenated_word .= $hyphen;
 			}
 
@@ -324,6 +324,7 @@ class Hyphenator {
 				foreach ( $node->offsets() as $pattern_offset ) {
 					$value  = $pattern_offset[0];
 					$offset = $pattern_offset[1] + $start - 1;
+
 					$word_pattern[ $offset ] = isset( $word_pattern[ $offset ] ) ? max( $word_pattern[ $offset ], $value ) : $value;
 				}
 			}
@@ -375,7 +376,7 @@ class Hyphenator {
 		$lowercase_hyphened_word_length = $func['strlen']( $exception );
 
 		$word_pattern = [];
-		$index = 0;
+		$index        = 0;
 
 		for ( $i = 0; $i < $lowercase_hyphened_word_length; $i++ ) {
 			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
