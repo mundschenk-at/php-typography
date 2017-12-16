@@ -30,6 +30,16 @@ use \PHP_Typography\Strings;
  * Abstract base class for \PHP_Typography\* unit tests.
  */
 abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
+
+	/**
+	 * Tears down the fixture, for example, closes a network connection.
+	 * This method is called after a test is executed.
+	 */
+	protected function tearDown() {
+		\Brain\Monkey\tearDown();
+		parent::tearDown();
+	}
+
 	/**
 	 * Return encoded HTML string (everything except <>"').
 	 *

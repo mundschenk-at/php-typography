@@ -79,15 +79,6 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
-
-	/**
 	 * Tests __construct.
 	 *
 	 * @covers ::__construct
