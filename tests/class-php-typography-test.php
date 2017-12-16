@@ -24,13 +24,21 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\PHP_Typography;
-use \PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
+use PHP_Typography\PHP_Typography;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
+
+use PHP_Typography\Fixes\Default_Registry;
+use PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Registry;
+
+use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
+
+use Brain\Monkey;
+
+use \Mockery as m;
 
 /**
  * PHP_Typography unit test.
@@ -108,10 +116,18 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
+	 * Test constructor.
+	 *
+	 * @covers ::__construct
 	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
+	public function test_constructor() {
+		$typo = new PHP_Typography();
+		$this->assertNull( $this->getValue( $typo, 'registry' ) );
+		$this->assertFalse( $this->getValue( $typo, 'update_registry_cache' ) );
+
+		$typo = new PHP_Typography( m::mock( Registry::class ) );
+		$this->assertNotNull( $this->getValue( $typo, 'registry' ) );
+		$this->assertTrue( $this->getValue( $typo, 'update_registry_cache' ) );
 	}
 
 	/**
@@ -2305,6 +2321,39 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		}
 	}
 
+	/**
+	 * Tests get_registry.
+	 *
+	 * @covers ::get_registry
+	 *
+	 * @uses ::__construct
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_registry_default_registry() {
+
+		m::mock( 'alias:' . Default_Registry::class );
+		$typo = m::mock( PHP_Typography::class, [] )->makePartial();
+
+		$this->assertInstanceOf( Default_Registry::class, $typo->get_registry() );
+	}
+
+	/**
+	 * Tests get_registry.
+	 *
+	 * @covers ::get_registry
+	 *
+	 * @uses ::__construct
+	 */
+	public function test_get_registry_update_hyhpenator_cache() {
+		$reg  = m::mock( Registry::class )->makePartial();
+		$typo = m::mock( PHP_Typography::class, [ $reg ] )->makePartial();
+		$typo->shouldReceive( 'get_hyphenator_cache' )->once()->andReturn( m::mock( Hyphenator_Cache::class ) );
+		$reg->shouldReceive( 'update_hyphenator_cache' )->once()->with( m::type( Hyphenator_Cache::class ) );
+
+		$this->assertInstanceOf( Registry::class, $typo->get_registry() );
+	}
 
 	/**
 	 * Test replace_node_with_html.
@@ -2940,12 +2989,28 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses ::get_hyphenator_cache
 	 */
 	public function test_set_hyphenator_cache() {
-		$new_cache = new Hyphenator_Cache();
+		$new_cache = m::mock( Hyphenator_Cache::class );
 		$old_cache = $this->typo->get_hyphenator_cache();
 
 		$this->assertNotSame( $old_cache, $new_cache );
 
 		$this->typo->set_hyphenator_cache( $new_cache );
 		$this->assertSame( $new_cache, $this->typo->get_hyphenator_cache() );
+	}
+
+	/**
+	 * Tests set_hyphenator_cache with registry.
+	 *
+	 * @covers ::set_hyphenator_cache
+	 */
+	public function test_set_hyphenator_cache_with_registry() {
+		$reg  = m::mock( Registry::class )->makePartial();
+		$typo = m::mock( PHP_Typography::class, [ $reg ] )->makePartial();
+
+		$new_cache = m::mock( Hyphenator_Cache::class );
+
+		$reg->shouldReceive( 'update_hyphenator_cache' )->once()->with( $new_cache );
+
+		$this->assertNull( $typo->set_hyphenator_cache( $new_cache ) );
 	}
 }
