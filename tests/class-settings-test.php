@@ -24,10 +24,16 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
-use \PHP_Typography\Settings\Dashes;
-use \PHP_Typography\Settings\Quotes;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
+
+use PHP_Typography\Settings\Dashes;
+use PHP_Typography\Settings\Quotes;
+
+use Brain\Monkey;
+
+use Mockery as m;
 
 /**
  * Unit test for Settings class.
@@ -38,6 +44,8 @@ use \PHP_Typography\Settings\Quotes;
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
+ * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+ * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
  * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
@@ -55,13 +63,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	protected function setUp() {
 		$this->settings = new \PHP_Typography\Settings( false );
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
 	}
 
 	/**
@@ -589,6 +590,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
+	 * @covers ::get_dash_style
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes

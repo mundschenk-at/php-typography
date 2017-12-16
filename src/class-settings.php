@@ -27,8 +27,8 @@
 
 namespace PHP_Typography;
 
-use \PHP_Typography\Settings\Dash_Style;
-use \PHP_Typography\Settings\Quote_Style;
+use PHP_Typography\Settings\Dash_Style;
+use PHP_Typography\Settings\Quote_Style;
 
 /**
  * Store settings for the PHP_Typography class.
@@ -176,7 +176,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return mixed
 	 */
 	public function jsonSerialize() {
-		return array_merge(
+		return \array_merge(
 			$this->data,
 			[
 				'no_break_narrow_space' => $this->no_break_narrow_space,
@@ -242,10 +242,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	private function init( $set_defaults = true ) {
 		$this->no_break_narrow_space = U::NO_BREAK_SPACE;  // used in unit spacing - can be changed to 8239 via set_true_no_break_narrow_space.
 
-		$this->dash_style = new Settings\Simple_Dashes( U::EM_DASH, U::THIN_SPACE, U::EN_DASH, U::THIN_SPACE );
+		$this->dash_style = $this->get_dash_style( Dash_Style::TRADITIONAL_US );
 
-		$this->primary_quote_style   = new Settings\Simple_Quotes( U::DOUBLE_QUOTE_OPEN, U::DOUBLE_QUOTE_CLOSE );
-		$this->secondary_quote_style = new Settings\Simple_Quotes( U::SINGLE_QUOTE_OPEN, U::SINGLE_QUOTE_CLOSE );
+		$this->primary_quote_style   = $this->get_quote_style( Quote_Style::DOUBLE_CURLED );
+		$this->secondary_quote_style = $this->get_quote_style( Quote_Style::SINGLE_CURLED );
 
 		if ( $set_defaults ) {
 			$this->set_defaults();
@@ -462,6 +462,21 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
+	 * Retrieves a Quotes instance from a given style.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @param  Settings\Dashes|string $style A Dashes instance or a dash style constant.
+	 *
+	 * @throws \DomainException Thrown if $style constant is invalid.
+	 *
+	 * @return Settings\Dashes
+	 */
+	protected function get_dash_style( $style ) {
+		return $this->get_style( $style, Settings\Dashes::class, [ Dash_Style::class, 'get_styled_dashes' ], 'dash' );
+	}
+
+	/**
 	 * Retrieves an object from a given style.
 	 *
 	 * @param  object|string $style          A style object instance or a style constant.
@@ -508,7 +523,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ) {
-		$this->dash_style = $this->get_style( $style, Settings\Dashes::class, [ Dash_Style::class, 'get_styled_dashes' ], 'dash' );
+		$this->dash_style = $this->get_dash_style( $style );
 	}
 
 	/**

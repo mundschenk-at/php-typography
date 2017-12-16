@@ -49,6 +49,8 @@ use \Mockery as m;
  * @uses PHP_Typography\PHP_Typography
  * @uses PHP_Typography\Hyphenator\Cache
  * @uses PHP_Typography\Settings
+ * @uses PHP_Typography\Settings\Dash_Style
+ * @uses PHP_Typography\Settings\Quote_Style
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
