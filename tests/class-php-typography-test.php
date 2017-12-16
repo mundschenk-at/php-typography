@@ -197,6 +197,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$s->set_tags_to_ignore( 'img foo  \	' ); // Should not result in an error.
 		$s->set_smart_quotes( true );
+		$s->set_smart_quotes_primary();
+		$s->set_smart_quotes_secondary();
 		$html     = '<p><foo>Ignore this "quote",</foo><span class="other"> but not "this" one.</span></p>';
 		$expected = '<p><foo>Ignore this "quote",</foo><span class="other"> but not &ldquo;this&rdquo; one.</span></p>';
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
@@ -227,6 +229,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
 
 		$s->set_smart_quotes( true );
+		$s->set_smart_quotes_primary();
+		$s->set_smart_quotes_secondary();
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
 
@@ -255,6 +259,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
 
 		$s->set_smart_quotes( true );
+		$s->set_smart_quotes_primary();
+		$s->set_smart_quotes_secondary();
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
 
@@ -286,6 +292,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				 <p><span>&ldquo;But&rdquo; not this.</span></p>';
 
 		$s->set_smart_quotes( true );
+		$s->set_smart_quotes_primary();
+		$s->set_smart_quotes_secondary();
 		$this->assertSame( $expected, $this->clean_html( $this->typo->process( $html, $s ) ) );
 	}
 
@@ -798,6 +806,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_smart_quotes( $html, $result ) {
 		$this->s->set_smart_quotes( true );
+		$this->s->set_smart_quotes_primary();
+		$this->s->set_smart_quotes_secondary();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -818,6 +828,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_smart_quotes_off( $html, $result ) {
 		$this->s->set_smart_quotes( false );
+		$this->s->set_smart_quotes_primary();
+		$this->s->set_smart_quotes_secondary();
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -837,6 +849,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_tags_to_ignore( [ 'code' ] );
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary( Settings\Quote_Style::DOUBLE_GUILLEMETS_FRENCH );
+		$this->s->set_smart_quotes_secondary();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -1362,6 +1375,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		] );
 		$this->s->set_smart_fractions( true );
 		$this->s->set_smart_quotes( true );
+		$this->s->set_smart_quotes_primary();
+		$this->s->set_smart_quotes_secondary();
 		$this->s->set_true_no_break_narrow_space( true );
 		$this->s->set_fraction_spacing( false );
 
@@ -1904,6 +1919,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		if ( $use_french_quotes ) {
 			$this->s->set_smart_quotes_primary( 'doubleGuillemetsFrench' );
+			$this->s->set_smart_quotes_secondary();
 			$this->s->set_smart_quotes( true );
 		}
 
@@ -1983,6 +1999,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->typo->process( '', $this->s );
 		$this->s->set_wrap_hard_hyphens( true );
 		$this->s->set_smart_dashes( true );
+		$this->s->set_smart_dashes_style();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 	}
