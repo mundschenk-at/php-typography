@@ -48,6 +48,7 @@ use \PHP_Typography\U;
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\RE
  * @uses PHP_Typography\Fixes\Registry
+ * @uses PHP_Typography\Fixes\Default_Registry
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Style_Fix

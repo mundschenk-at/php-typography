@@ -28,6 +28,7 @@
 namespace PHP_Typography;
 
 use PHP_Typography\Fixes\Registry;
+use PHP_Typography\Fixes\Default_Registry;
 
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
@@ -326,7 +327,7 @@ class PHP_Typography {
 	 */
 	public function get_registry() {
 		if ( ! isset( $this->registry ) ) {
-			$this->registry = Registry::create( $this->get_hyphenator_cache() );
+			$this->registry = new Default_Registry( $this->get_hyphenator_cache() );
 		} elseif ( $this->update_registry_cache ) {
 			$this->registry->update_hyphenator_cache( $this->get_hyphenator_cache() );
 			$this->update_registry_cache = false;

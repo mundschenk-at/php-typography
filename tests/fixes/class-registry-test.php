@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2017 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,8 +29,13 @@ use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
 use PHP_Typography\Settings;
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
+
+use Brain\Monkey;
+
+use \Mockery as m;
 
 /**
  * PHP_Typography unit test.
@@ -38,7 +43,6 @@ use PHP_Typography\U;
  * @coversDefaultClass PHP_Typography\Fixes\Registry
  * @usesDefaultClass PHP_Typography\Fixes\Registry
  *
- * @uses ::__construct
  * @uses ::register_node_fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  */
@@ -52,23 +56,62 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	protected $r;
 
 	/**
+	 * Test fixture.
+	 *
+	 * @var Process_Words_Fix
+	 */
+	protected $pw_fix;
+
+	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
+	protected function setUp() {
 		parent::setUp();
 
-		$this->r = new Registry();
+		$this->r      = m::mock( Registry::class )->makePartial();
+		$this->pw_fix = m::mock( Process_Words_Fix::class );
+		$this->setValue( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
+
+		$fixes                              = $this->getValue( $this->r, 'node_fixes', Registry::class );
+		$fixes[ Registry::PROCESS_WORDS ][] = $this->pw_fix;
+		$this->setValue( $this->r, 'node_fixes', $fixes, Registry::class );
 	}
 
 	/**
 	 * Tears down the fixture, for example, closes a network connection.
 	 * This method is called after a test is executed.
 	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
+	protected function tearDown() {
+		Monkey\tearDown();
 		parent::tearDown();
 	}
 
+	/**
+	 * Tests __construct.
+	 *
+	 * @covers ::__construct
+	 *
+	 * @uses \PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix::__construct
+	 */
+	public function test_constructor() {
+		$fix = m::mock( Registry::class )->makePartial();
+		$fix->shouldReceive( 'register_node_fix' )->once()->with( m::type( Process_Words_Fix::class ), Registry::PROCESS_WORDS );
+
+		$this->assertNull( $fix->__construct() );
+	}
+
+	/**
+	 * Tests get_node_fixes.
+	 *
+	 * @covers ::get_node_fixes
+	 */
+	public function test_get_node_fixes() {
+		$fixes = $this->r->get_node_fixes();
+
+		$this->assertInternalType( 'array', $fixes );
+		$this->assertCount( count( Registry::GROUPS ), $fixes );
+	}
 
 	/**
 	 * Tests register_node_fix.
@@ -78,8 +121,7 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	public function test_register_node_fix() {
 		foreach ( Registry::GROUPS as $group ) {
 			// Create a stub for the Node_Fix interface.
-			$fake_node_fixer = $this->createMock( Node_Fix::class );
-			$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
+			$fake_node_fixer = m::mock( Node_Fix::class );
 
 			$this->r->register_node_fix( $fake_node_fixer, $group );
 			$this->assertContains( $fake_node_fixer, $this->readAttribute( $this->r, 'node_fixes' )[ $group ] );
@@ -97,8 +139,7 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	public function test_register_node_fix_invalid_group() {
 
 		// Create a stub for the Node_Fix interface.
-		$fake_node_fixer = $this->createMock( Node_Fix::class );
-		$fake_node_fixer->method( 'apply' )->willReturn( 'foo' );
+		$fake_node_fixer = m::mock( Node_Fix::class );
 
 		$this->r->register_node_fix( $fake_node_fixer, 'invalid group parameter' );
 	}
@@ -114,13 +155,73 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	public function test_register_token_fix() {
 
 		// Create a stub for the Token_Fix interface.
-		$fake_token_fixer = $this->createMock( Token_Fix::class );
-		$fake_token_fixer->method( 'apply' )->willReturn( 'foo' );
-		$fake_token_fixer->method( 'target' )->willReturn( Token_Fix::MIXED_WORDS );
+		$fake_token_fixer = m::mock( Token_Fix::class );
+
+		$this->pw_fix->shouldReceive( 'register_token_fix' )->once()->with( $fake_token_fixer );
 
 		$this->r->register_token_fix( $fake_token_fixer );
 		$this->assertTrue( true, 'An error occured during Token_Fix registration.' );
 	}
 
+	/**
+	 * Tests update_hyphenator_cache.
+	 *
+	 * @covers ::update_hyphenator_cache
+	 */
+	public function test_update_hyphenator_cache() {
+		$cache = m::mock( \PHP_Typography\Hyphenator\Cache::class );
 
+		$this->pw_fix->shouldReceive( 'update_hyphenator_cache' )->once()->with( $cache );
+
+		$this->assertNull( $this->r->update_hyphenator_cache( $cache ) );
+	}
+
+	/**
+	 * Tests apply_fixes.
+	 *
+	 * @covers ::apply_fixes
+	 */
+	public function test_apply_fixes() {
+		$node = m::mock( \DOMText::class );
+		$s    = m::mock( Settings::class );
+
+		foreach ( Registry::GROUPS as $group ) {
+			$fix = m::mock( \PHP_Typography\Fixes\Node_Fix::class );
+			$this->r->register_node_fix( $fix, $group );
+			$fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
+		}
+
+		$this->pw_fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
+
+		$this->assertNull( $this->r->apply_fixes( $node, $s, false, false ) );
+	}
+
+	/**
+	 * Tests apply_fixes for feeds.
+	 *
+	 * @covers ::apply_fixes
+	 */
+	public function test_apply_fixes_to_feed() {
+		$node = m::mock( \DOMText::class );
+		$s    = m::mock( Settings::class );
+
+		$toggle = false;
+		foreach ( Registry::GROUPS as $group ) {
+			$fix = m::mock( \PHP_Typography\Fixes\Node_Fix::class );
+			$this->r->register_node_fix( $fix, $group );
+
+			$fix->shouldReceive( 'feed_compatible' )->once()->andReturn( $toggle );
+
+			if ( $toggle ) {
+				$fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
+			} else {
+				$fix->shouldNotReceive( 'apply' );
+			}
+		}
+
+		$this->pw_fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
+		$this->pw_fix->shouldReceive( 'feed_compatible' )->once()->andReturn( true );
+
+		$this->assertNull( $this->r->apply_fixes( $node, $s, false, true ) );
+	}
 }

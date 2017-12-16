@@ -52,24 +52,6 @@ class Registry {
 	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
 
 	/**
-	 * An array of CSS classes that are added for ampersands, numbers etc.
-	 */
-	const DEFAULT_CSS_CLASSES = [
-		'caps'        => 'caps',
-		'numbers'     => 'numbers',
-		'amp'         => 'amp',
-		'quo'         => 'quo',
-		'dquo'        => 'dquo',
-		'pull-single' => 'pull-single',
-		'pull-double' => 'pull-double',
-		'push-single' => 'push-single',
-		'push-double' => 'push-double',
-		'numerator'   => 'numerator',
-		'denominator' => 'denominator',
-		'ordinal'     => 'ordinal',
-	];
-
-	/**
 	 * An array of Node_Fix implementations.
 	 *
 	 * @var array
@@ -159,60 +141,5 @@ class Registry {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Creates a new default registry instance.
-	 *
-	 * @param Cache|null    $cache       Optional. A hyphenatation cache instance to use. Default null.
-	 * @param string[]|null $css_classes Optional. An array of CSS classes to use. Defaults to null (i.e. use the predefined classes).
-	 *
-	 * @return Registry
-	 */
-	public static function create( Cache $cache = null, array $css_classes = null ) {
-		$registry = new Registry();
-
-		if ( null === $css_classes ) {
-			$css_classes = self::DEFAULT_CSS_CLASSES;
-		}
-
-		// Nodify anything that requires adjacent text awareness here.
-		$registry->register_node_fix( new Node_Fixes\Smart_Maths_Fix(),          self::CHARACTERS );
-		$registry->register_node_fix( new Node_Fixes\Smart_Diacritics_Fix(),     self::CHARACTERS );
-		$registry->register_node_fix( new Node_Fixes\Smart_Quotes_Fix( true ),   self::CHARACTERS );
-		$registry->register_node_fix( new Node_Fixes\Smart_Dashes_Fix( true ),   self::CHARACTERS );
-		$registry->register_node_fix( new Node_Fixes\Smart_Ellipses_Fix( true ), self::CHARACTERS );
-		$registry->register_node_fix( new Node_Fixes\Smart_Marks_Fix( true ),    self::CHARACTERS );
-
-		// Keep spacing after smart character replacement.
-		$registry->register_node_fix( new Node_Fixes\Single_Character_Word_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$registry->register_node_fix( new Node_Fixes\Dash_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$registry->register_node_fix( new Node_Fixes\Unit_Spacing_Fix(),                  self::SPACING_PRE_WORDS );
-		$registry->register_node_fix( new Node_Fixes\Numbered_Abbreviation_Spacing_Fix(), self::SPACING_PRE_WORDS );
-		$registry->register_node_fix( new Node_Fixes\French_Punctuation_Spacing_Fix(),    self::SPACING_PRE_WORDS );
-
-		// Some final space manipulation.
-		$registry->register_node_fix( new Node_Fixes\Dewidow_Fix(),        self::SPACING_POST_WORDS );
-		$registry->register_node_fix( new Node_Fixes\Space_Collapse_Fix(), self::SPACING_POST_WORDS );
-
-		// Everything that requires HTML injection occurs here (functions above assume tag-free content)
-		// pay careful attention to functions below for tolerance of injected tags.
-		$registry->register_node_fix( new Node_Fixes\Smart_Ordinal_Suffix_Fix( $css_classes['ordinal'] ),                           self::HTML_INSERTION ); // call before "style_numbers" and "smart_fractions".
-		$registry->register_node_fix( new Node_Fixes\Smart_Exponents_Fix(),                                                         self::HTML_INSERTION ); // call before "style_numbers".
-		$registry->register_node_fix( new Node_Fixes\Smart_Fractions_Fix( $css_classes['numerator'], $css_classes['denominator'] ), self::HTML_INSERTION ); // call before "style_numbers" and after "smart_ordinal_suffix".
-		$registry->register_node_fix( new Node_Fixes\Style_Caps_Fix( $css_classes['caps'] ),                                        self::HTML_INSERTION ); // Call before "style_numbers".
-		$registry->register_node_fix( new Node_Fixes\Style_Numbers_Fix( $css_classes['numbers'] ),                                  self::HTML_INSERTION ); // Call after "smart_ordinal_suffix", "smart_exponents", "smart_fractions", and "style_caps".
-		$registry->register_node_fix( new Node_Fixes\Style_Ampersands_Fix( $css_classes['amp'] ),                                   self::HTML_INSERTION );
-		$registry->register_node_fix( new Node_Fixes\Style_Initial_Quotes_Fix( $css_classes['quo'], $css_classes['dquo'] ),         self::HTML_INSERTION );
-		$registry->register_node_fix( new Node_Fixes\Style_Hanging_Punctuation_Fix( $css_classes['push-single'], $css_classes['push-double'], $css_classes['pull-single'], $css_classes['pull-double'] ), self::HTML_INSERTION );
-
-		// Register token fixes.
-		$registry->register_token_fix( new Token_Fixes\Wrap_Hard_Hyphens_Fix() );
-		$registry->register_token_fix( new Token_Fixes\Hyphenate_Compounds_Fix( $cache ) );
-		$registry->register_token_fix( new Token_Fixes\Hyphenate_Fix( $cache ) );
-		$registry->register_token_fix( new Token_Fixes\Wrap_URLs_Fix( $cache ) );
-		$registry->register_token_fix( new Token_Fixes\Wrap_Emails_Fix() );
-
-		return $registry;
 	}
 }
