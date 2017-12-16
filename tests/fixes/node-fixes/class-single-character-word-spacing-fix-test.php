@@ -34,7 +34,6 @@ use \PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Single_Character_Word_Spacing_Fix
  *
  * @uses ::__construct
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style

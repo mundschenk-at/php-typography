@@ -70,10 +70,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::set_defaults
 	 *
+	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
-	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_set_defaults() {
@@ -90,10 +90,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
+	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
-	 * @uses PHP_Typography\Arrays::array_map_assoc
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_initialization() {
@@ -757,7 +757,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::update_diacritics_replacement_arrays
 	 * @covers ::parse_diacritics_rules
 	 *
-	 * @uses PHP_Typography\Arrays::array_map_assoc
+	 * @uses ::array_map_assoc
 	 *
 	 * @dataProvider provide_set_diacritic_custom_replacements_data
 	 *
@@ -1475,5 +1475,47 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
 		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_NARROW_SPACE );
+	}
+
+	/**
+	 * Provide data for testing array_map_assoc.
+	 *
+	 * @return array
+	 */
+	public function provide_array_map_assoc_data() {
+		return [
+			[
+				function( $key, $value ) {
+						return [ $value => $value * 2 ];
+				},
+				[ 1, 2, 3 ],
+				[
+					1 => 2,
+					2 => 4,
+					3 => 6,
+				],
+			],
+			[
+				function( $key, $value ) {
+						return [];
+				},
+				[ 1, 2, 3 ],
+				[],
+			],
+		];
+	}
+
+	/**
+	 * Test array_map_assoc.
+	 *
+	 * @covers ::array_map_assoc
+	 * @dataProvider provide_array_map_assoc_data
+	 *
+	 * @param  callable $callable The function to apply to the array.
+	 * @param  array    $array    Input array.
+	 * @param  array    $result   Expected output array.
+	 */
+	public function test_array_map_assoc( callable $callable, array $array, array $result ) {
+		$this->assertSame( $result, $this->invokeStaticMethod( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }

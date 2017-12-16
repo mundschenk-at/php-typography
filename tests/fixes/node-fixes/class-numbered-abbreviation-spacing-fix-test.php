@@ -36,7 +36,6 @@ use \PHP_Typography\Settings;
  * @uses ::__construct
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::__construct
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style

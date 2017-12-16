@@ -54,7 +54,6 @@ use \Mockery as m;
  * @uses PHP_Typography\Settings\Simple_Dashes
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Strings
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\RE
  * @uses PHP_Typography\Fixes\Registry

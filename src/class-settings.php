@@ -578,12 +578,12 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$this->data['diacriticCustomReplacements'] = Arrays::array_map_assoc( function( $key, $replacement ) {
+		$this->data['diacriticCustomReplacements'] = self::array_map_assoc( function( $key, $replacement ) {
 			$key         = strip_tags( trim( $key ) );
 			$replacement = strip_tags( trim( $replacement ) );
 
 			if ( ! empty( $key ) && ! empty( $replacement ) ) {
-				return [ $key, $replacement ];
+				return [ $key => $replacement ];
 			} else {
 				return [];
 			}
@@ -600,7 +600,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return array
 	 */
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
-		return Arrays::array_map_assoc( function( $key, $replacement ) {
+		return self::array_map_assoc( function( $key, $replacement ) {
 
 			// Account for single and double quotes in keys ...
 			if ( preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
@@ -612,8 +612,34 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 				$replacement = $match[2];
 			}
 
-			return [ $key, $replacement ];
+			return [ $key => $replacement ];
 		}, preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
+	}
+
+	/**
+	 * Provides an array_map implementation with control over resulting array's keys.
+	 *
+	 * Based on https://gist.github.com/jasand-pereza/84ecec7907f003564584.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @param  callable $callback A callback function that needs to return [ $key => $value ] pairs.
+	 * @param  array    $array    The array.
+	 *
+	 * @return array
+	 */
+	protected static function array_map_assoc( callable $callback, array $array ) {
+		$new = [];
+
+		foreach ( $array as $k => $v ) {
+			$u = $callback( $k, $v );
+
+			if ( ! empty( $u ) ) {
+				$new[ \key( $u ) ] = \current( $u );
+			}
+		}
+
+		return $new;
 	}
 
 	/**

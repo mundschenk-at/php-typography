@@ -38,7 +38,6 @@ use \PHP_Typography\U;
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::remove_adjacent_characters
  * @uses PHP_Typography\Fixes\Node_Fixes\Classes_Dependent_Fix::__construct
- * @uses PHP_Typography\Arrays
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
