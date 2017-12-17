@@ -33,7 +33,7 @@
         "wimg/php-compatibility": "^8.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
         "phpstan/phpstan": "^0.9",
-        "phpbench/phpbench": "^1.0@dev"
+        "phpbench/phpbench": "^0.13||^1.0@dev"
     },
 
     "autoload": {
