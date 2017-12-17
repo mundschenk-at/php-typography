@@ -738,9 +738,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
 	 *
-	 * @param bool $on Optional. Default true.
+	 * @since 6.0.0 The default value is now `false`.`
+	 *
+	 * @param bool $on Optional. Default false.
 	 */
-	public function set_french_punctuation_spacing( $on = true ) {
+	public function set_french_punctuation_spacing( $on = false ) {
 		$this->data['frenchPunctuationSpacing'] = $on;
 	}
 
