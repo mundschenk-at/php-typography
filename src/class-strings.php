@@ -36,25 +36,31 @@ abstract class Strings {
 	/**
 	 * Utility patterns for splitting string parameter lists into arrays.
 	 *
+	 * @internal
+	 *
 	 * @var string
 	 */
-	const _RE_PARAMETER_SPLITTING = '/[\s,]+/S';
+	const RE_PARAMETER_SPLITTING = '/[\s,]+/S';
 
 	/**
 	 * An array of encodings in detection order.
 	 *
 	 * ASCII has to be first to have a chance of detection.
 	 *
+	 * @internal
+	 *
 	 * @var array
 	 */
-	const _ENCODINGS = [ 'ASCII', 'UTF-8' ];
+	const ENCODINGS = [ 'ASCII', 'UTF-8' ];
 
 	/**
 	 * A hash map for string functions according to encoding.
 	 *
+	 * @internal
+	 *
 	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
 	 */
-	const _STRING_FUNCTIONS = [
+	const STRING_FUNCTIONS = [
 		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
 			'str_split'  => [ __CLASS__, 'mb_str_split' ],
@@ -90,7 +96,7 @@ abstract class Strings {
 	 * }
 	 */
 	public static function functions( $str ) {
-		return self::_STRING_FUNCTIONS[ mb_detect_encoding( $str, self::_ENCODINGS, true ) ];
+		return self::STRING_FUNCTIONS[ mb_detect_encoding( $str, self::ENCODINGS, true ) ];
 	}
 
 	/**
@@ -151,7 +157,7 @@ abstract class Strings {
 	 */
 	public static function maybe_split_parameters( $params ) {
 		if ( ! is_array( $params ) ) {
-			$params = preg_split( self::_RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+			$params = preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		return $params;
