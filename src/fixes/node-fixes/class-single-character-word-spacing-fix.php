@@ -38,13 +38,14 @@ use \PHP_Typography\U;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ * @since 6.0.0 The replacement now assumes decoded ampersands (i.e. plain "&" instead of "&amp;").
  */
 class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 
 	const REGEX = '/
 		(?:
 			(\s)
-			(\w|&amp;)
+			(\w|&)
 			[' . RE::NORMAL_SPACES . ']
 			(?=\w)
 		)

@@ -34,16 +34,15 @@ use \PHP_Typography\DOM;
  * if enabled.
  *
  * Call after style_caps so H&amp;J becomes <span class="caps">H<span class="amp">&amp;</span>J</span>.
- * Note that all standalone ampersands were previously converted to &amp;.
- * Only call if you are certain that no html tags have been injected containing "&amp;".
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ * @since 6.0.0 The replacement now assumes decoded ampersands (i.e. plain "&" instead of "&amp;").
  */
 class Style_Ampersands_Fix extends Simple_Style_Fix {
 
-	const REGEX           = '/(\&amp\;)/u';
+	const REGEX           = '/(&)/u';
 	const SETTINGS_SWITCH = 'styleAmpersands';
 
 

@@ -63,8 +63,7 @@ abstract class Node_Fix_Testcase extends PHP_Typography_Testcase {
 	 * @return \DOMText
 	 */
 	protected function create_textnode( $value ) {
-		// returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
-		return new \DOMText( htmlspecialchars( html_entity_decode( $value ), ENT_NOQUOTES, 'UTF-8', false ) );
+		return new \DOMText( html_entity_decode( $value ) );
 	}
 
 	/**
