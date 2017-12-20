@@ -141,7 +141,16 @@ class Functions_Bench {
 	 * @return string
 	 */
 	public function json_uchr( $code ) {
-		return json_decode( sprintf( '"\u%04d"', $code ) );
+		if ( is_array( $code ) ) {
+			$json = '';
+			foreach ( $code as $item ) {
+				$json .= sprintf( '"\u%04x"', $item );
+			}
+		} else {
+			$json = sprintf( '"\u%04x"', $code );
+		}
+
+		return json_decode( $json );
 	}
 
 	/**
@@ -177,13 +186,7 @@ class Functions_Bench {
 	 * @param  array $params The parameters.
 	 */
 	public function bench_json_uchr( $params ) {
-		if ( is_array( $params ) ) {
-			foreach ( $params as $code ) {
-				self::json_uchr( $code );
-			}
-		} else {
-			self::json_uchr( $params );
-		}
+		self::json_uchr( $params );
 	}
 
 	/**
@@ -197,8 +200,9 @@ class Functions_Bench {
 	public function bench_intlchar_chr( $params ) {
 		if ( class_exists( 'IntlChar' ) ) {
 			if ( is_array( $params ) ) {
+				$foo = '';
 				foreach ( $params as $code ) {
-					\IntlChar::chr( $code );
+					$foo .= \IntlChar::chr( $code );
 				}
 			} else {
 				\IntlChar::chr( $params );
