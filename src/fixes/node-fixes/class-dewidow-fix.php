@@ -44,6 +44,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	const SPACE_BETWEEN = '[\s]+'; // \s includes all special spaces (but not ZWSP) with the u flag.
 	const WIDOW         = '[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?'; // \w includes all alphanumeric Unicode characters but not composed characters.
 
+	// Mandatory UTF-8 modifer.
 	const REGEX_START = '/
 		(?:
 			\A
