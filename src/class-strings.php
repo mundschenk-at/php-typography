@@ -96,7 +96,7 @@ abstract class Strings {
 	 * }
 	 */
 	public static function functions( $str ) {
-		return self::STRING_FUNCTIONS[ mb_detect_encoding( $str, self::ENCODINGS, true ) ];
+		return self::STRING_FUNCTIONS[ \mb_detect_encoding( $str, self::ENCODINGS, true ) ];
 	}
 
 	/**
@@ -111,12 +111,12 @@ abstract class Strings {
 	 * @return array                An array of $split_length character chunks.
 	 */
 	public static function mb_str_split( $str, $split_length = 1 ) {
-		$result = preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
+		$result = \preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
 
 		if ( $split_length > 1 ) {
 			$splits = [];
-			foreach ( array_chunk( $result, $split_length ) as $chunk ) {
-				$splits[] = join( '', $chunk );
+			foreach ( \array_chunk( $result, $split_length ) as $chunk ) {
+				$splits[] = \join( '', $chunk );
 			}
 
 			$result = $splits;
@@ -135,8 +135,8 @@ abstract class Strings {
 	public static function uchr( $codes ) {
 
 		// Single character code.
-		if ( is_scalar( $codes ) ) {
-			$codes = func_get_args();
+		if ( \is_scalar( $codes ) ) {
+			$codes = \func_get_args();
 		}
 
 		// Deal with an array of character codes.
@@ -156,8 +156,8 @@ abstract class Strings {
 	 * @return array
 	 */
 	public static function maybe_split_parameters( $params ) {
-		if ( ! is_array( $params ) ) {
-			$params = preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+		if ( ! \is_array( $params ) ) {
+			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		return $params;
