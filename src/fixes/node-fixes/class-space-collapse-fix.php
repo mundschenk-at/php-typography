@@ -30,6 +30,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 use PHP_Typography\DOM;
 use PHP_Typography\RE;
 use PHP_Typography\Settings;
+use PHP_Typography\Strings;
 use PHP_Typography\U;
 
 /**
@@ -41,10 +42,10 @@ use PHP_Typography\U;
  */
 class Space_Collapse_Fix extends Abstract_Node_Fix {
 
-	const COLLAPSE_NORMAL_SPACES            = '/[' . RE::NORMAL_SPACES . ']+/xu';
-	const COLLAPSE_NON_BREAKABLE_SPACES     = '/(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*' . U::NO_BREAK_SPACE . '(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/xu';
-	const COLLAPSE_OTHER_SPACES             = '/(?:[' . RE::NORMAL_SPACES . '])*(' . RE::HTML_SPACES . ')(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/xu';
-	const COLLAPSE_SPACES_AT_START_OF_BLOCK = '/\A(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')+/xu';
+	const COLLAPSE_NORMAL_SPACES            = '/[' . RE::NORMAL_SPACES . ']+/Sx';
+	const COLLAPSE_NON_BREAKABLE_SPACES     = '/(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*' . U::NO_BREAK_SPACE . '(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/Sxu';
+	const COLLAPSE_OTHER_SPACES             = '/(?:[' . RE::NORMAL_SPACES . '])*(' . RE::HTML_SPACES . ')(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/Sxu';
+	const COLLAPSE_SPACES_AT_START_OF_BLOCK = '/\A(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')+/Sxu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -58,18 +59,25 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Cache textnode content.
+		$node_data = $textnode->data;
+		$f         = Strings::functions( $node_data );
+
 		// Normal spacing.
-		$textnode->data = preg_replace( self::COLLAPSE_NORMAL_SPACES, ' ', $textnode->data );
+		$node_data = preg_replace( self::COLLAPSE_NORMAL_SPACES . $f['u'], ' ', $node_data );
 
 		// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
-		$textnode->data = preg_replace( self::COLLAPSE_NON_BREAKABLE_SPACES, U::NO_BREAK_SPACE, $textnode->data );
+		$node_data = preg_replace( self::COLLAPSE_NON_BREAKABLE_SPACES, U::NO_BREAK_SPACE, $node_data );
 
 		// For any other spaceing, replace with the first occurance of an unusual space character.
-		$textnode->data = preg_replace( self::COLLAPSE_OTHER_SPACES, '$1', $textnode->data );
+		$node_data = preg_replace( self::COLLAPSE_OTHER_SPACES, '$1', $node_data );
 
 		// Remove all spacing at beginning of block level elements.
 		if ( '' === DOM::get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
-			$textnode->data = preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $textnode->data );
+			$node_data = preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $node_data );
 		}
+
+		// Restore textnode content.
+		$textnode->data = $node_data;
 	}
 }

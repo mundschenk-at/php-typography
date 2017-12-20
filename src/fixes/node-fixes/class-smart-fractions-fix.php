@@ -123,7 +123,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 				# makes sure we are not messing up a url
 				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|\")
 			)
-		/xu';
+		/Sxu';
 
 		// Replace fractions.
 		$numerator_css     = empty( $css_numerator ) ? '' : ' class="' . $css_numerator . '"';
@@ -143,22 +143,29 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Cache textnode content.
+		$node_data = $textnode->data;
+
 		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( self::SPACING, '$1' . $settings->no_break_narrow_space() . '$2', $textnode->data );
+			$node_data = preg_replace( self::SPACING, '$1' . $settings->no_break_narrow_space() . '$2', $node_data );
 		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
-			$textnode->data = preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $textnode->data );
+			$node_data = preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
 		}
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
 			// Escape sequences we don't want fractionified.
-			$textnode->data = preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $textnode->data );
-			$textnode->data = preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $textnode->data );
+			$node_data = preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
+			$node_data = preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
 
 			// Replace fractions.
-			$textnode->data = preg_replace( self::FRACTION_MATCHING, $this->replacement, $textnode->data );
+			$node_data = preg_replace( self::FRACTION_MATCHING, $this->replacement, $node_data );
 
 			// Unescape escaped sequences.
-			$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $textnode->data );
+			$node_data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
 		}
+
+		// Restore textnode content.
+		$textnode->data = $node_data;
+
 	}
 }

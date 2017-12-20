@@ -57,7 +57,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		[\.,;:\'\"\?\!" . U::ELLIPSIS . U::SINGLE_QUOTE_CLOSE . U::DOUBLE_QUOTE_CLOSE . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . ']*
 														# allowed trailing punctuation
 		(?=\Z|\s)                                       # lookahead assertion: followed by end of string or space
-	/ux';
+	/Sxu';
 
 	// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
 	const REVERT_RANGE = '/
@@ -70,7 +70,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				\d+
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 	// Revert fractions to basic slash.
 	const REVERT_FRACTION = "/
 			(
@@ -83,7 +83,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				(?:st|nd|rd|th)?
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 	// YYYY-MM-DD.
 	const REVERT_DATE_YYYY_MM_DD = '/
 			(
@@ -99,7 +99,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				(?:[0]?[1-9]|[12][0-9]|[3][0-1])
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 	// MM-DD-YYYY or DD-MM-YYYY.
 	const REVERT_DATE_MM_DD_YYYY = '/
 			(?:
@@ -130,7 +130,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				[12][0-9]{3}
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 	// YYYY-MM or YYYY-DDD next.
 	const REVERT_DATE_YYYY_MM = '/
 			(
@@ -146,7 +146,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				)
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 
 	// MM/DD/YYYY or DD/MM/YYYY.
 	const REVERT_DATE_MM_DD_YYYY_SLASHED = '/
@@ -178,7 +178,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 				[12][0-9]{3}
 				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
 			)
-		/xu';
+		/Sxu';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -192,32 +192,45 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Cache textnode content.
+		$node_data = $textnode->data;
+
 		// First, let's find math equations.
-		$textnode->data = preg_replace_callback( self::MATH_EQUATION, function( array $matches ) {
-			$matches[0] = str_replace( '-', U::MINUS,          $matches[0] );
-			$matches[0] = str_replace( '/', U::DIVISION,       $matches[0] );
-			$matches[0] = str_replace( 'x', U::MULTIPLICATION, $matches[0] );
-			$matches[0] = str_replace( '*', U::MULTIPLICATION, $matches[0] );
-
-			return $matches[0];
-
-		}, $textnode->data );
+		$node_data = preg_replace_callback( self::MATH_EQUATION, function( array $matches ) {
+			return str_replace(
+				[
+					'-',
+					'/',
+					'x',
+					'*',
+				], [
+					U::MINUS,
+					U::DIVISION,
+					U::MULTIPLICATION,
+					U::MULTIPLICATION,
+				],
+				$matches[0]
+			);
+		}, $node_data );
 
 		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
-		$textnode->data = preg_replace( self::REVERT_RANGE, '$1-$2', $textnode->data );
+		$node_data = preg_replace( self::REVERT_RANGE, '$1-$2', $node_data );
 
 		// Revert fractions to basic slash.
 		// We'll leave styling fractions to smart_fractions.
-		$textnode->data = preg_replace( self::REVERT_FRACTION, '$1/$2', $textnode->data );
+		$node_data = preg_replace( self::REVERT_FRACTION, '$1/$2', $node_data );
 
 		// Revert date back to original formats.
 		// YYYY-MM-DD.
-		$textnode->data = preg_replace( self::REVERT_DATE_YYYY_MM_DD,         '$1-$2-$3',     $textnode->data );
+		$node_data = preg_replace( self::REVERT_DATE_YYYY_MM_DD,         '$1-$2-$3',     $node_data );
 		// MM-DD-YYYY or DD-MM-YYYY.
-		$textnode->data = preg_replace( self::REVERT_DATE_MM_DD_YYYY,         '$1$3-$2$4-$5', $textnode->data );
+		$node_data = preg_replace( self::REVERT_DATE_MM_DD_YYYY,         '$1$3-$2$4-$5', $node_data );
 		// YYYY-MM or YYYY-DDD next.
-		$textnode->data = preg_replace( self::REVERT_DATE_YYYY_MM,            '$1-$2',        $textnode->data );
+		$node_data = preg_replace( self::REVERT_DATE_YYYY_MM,            '$1-$2',        $node_data );
 		// MM/DD/YYYY or DD/MM/YYYY.
-		$textnode->data = preg_replace( self::REVERT_DATE_MM_DD_YYYY_SLASHED, '$1$3/$2$4/$5', $textnode->data );
+		$node_data = preg_replace( self::REVERT_DATE_MM_DD_YYYY_SLASHED, '$1$3/$2$4/$5', $node_data );
+
+		// Restore textnode content.
+		$textnode->data = $node_data;
 	}
 }
