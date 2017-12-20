@@ -79,11 +79,13 @@ abstract class Classes_Dependent_Fix extends Abstract_Node_Fix {
 	/**
 	 * Apply the fix to a given textnode.
 	 *
+	 * @since 6.0.0 The method was accidentally made public and is now protected.
+	 *
 	 * @param \DOMText $textnode Required.
 	 * @param Settings $settings Required.
 	 * @param bool     $is_title Optional. Default false.
 	 *
 	 * @return void
 	 */
-	abstract public function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false );
+	abstract protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false );
 }
