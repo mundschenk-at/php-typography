@@ -140,12 +140,13 @@ abstract class Strings {
 		}
 
 		// Deal with an array of character codes.
-		$str = '';
+		$json = '"';
 		foreach ( $codes as $code ) {
-			$str .= html_entity_decode( '&#' . (int) $code . ';', ENT_NOQUOTES, 'UTF-8' );
+			$json .= sprintf( '\u%04x', $code );
 		}
+		$json .= '"';
 
-		return $str;
+		return \json_decode( $json );
 	}
 
 	/**
