@@ -26,10 +26,10 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
+use PHP_Typography\DOM;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
 
 /**
  * Adds a narrow no-break space before
@@ -46,9 +46,8 @@ use \PHP_Typography\U;
  */
 class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 	// Regular expressions with mandatary Unicode modifier.
-	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
+	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!;])(\s|\Z)/u';
 	const INSERT_FULL_SPACE                 = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
-	const INSERT_SPACE_BEFORE_SEMICOLON     = '/(\w+(?:\s?»)?)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
 	const INSERT_SPACE_AFTER_OPENING_QUOTE  = '/(\s|\A)(«)(\s?)(\w+)/u';
 	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
 
@@ -77,7 +76,6 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		$node_data = preg_replace( self::INSERT_SPACE_BEFORE_CLOSING_QUOTE, '$1' . $no_break_narrow_space . '$3$4', $node_data );
 		$node_data = preg_replace( self::INSERT_NARROW_SPACE,               '$1' . $no_break_narrow_space . '$3$4', $node_data );
 		$node_data = preg_replace( self::INSERT_FULL_SPACE,                 '$1' . U::NO_BREAK_SPACE . '$3$4',      $node_data );
-		$node_data = preg_replace( self::INSERT_SPACE_BEFORE_SEMICOLON,     '$1' . $no_break_narrow_space . '$3$4', $node_data );
 
 		// The next rule depends on the following characters as well.
 		$node_data = preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . $no_break_narrow_space . '$4', "{$node_data}{$next_character}" );
