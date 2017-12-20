@@ -163,7 +163,7 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::make_space_nonbreaking
 	 */
 	public function test_make_space_nonbreaking() {
-		$result = $this->invokeStaticMethod( Dewidow_Fix::class, 'make_space_nonbreaking', [ 'foo' . U::SOFT_HYPHEN . 'bar ' . U::ZERO_WIDTH_SPACE . ' baz' . U::ZERO_WIDTH_SPACE, 'u' ] );
+		$result = $this->invokeStaticMethod( Dewidow_Fix::class, 'make_space_nonbreaking', [ 'foo' . U::SOFT_HYPHEN . 'bar ' . U::ZERO_WIDTH_SPACE . ' baz' . U::ZERO_WIDTH_SPACE, U::NO_BREAK_SPACE, 'u' ] );
 
 		$this->assertSame( 'foo' . U::SOFT_HYPHEN . 'bar' . U::NO_BREAK_SPACE . U::ZERO_WIDTH_SPACE . U::NO_BREAK_SPACE . 'baz' . U::ZERO_WIDTH_SPACE, $result );
 	}
