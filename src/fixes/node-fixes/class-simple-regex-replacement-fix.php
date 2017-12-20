@@ -72,7 +72,7 @@ abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 	public function __construct( $regex, $replacement, $settings_switch, $feed_compatible = false ) {
 		parent::__construct( $feed_compatible );
 
-		$this->regex           = $regex;
+		$this->regex           = $regex . 'S'; // Add "Study" modifier.
 		$this->settings_switch = $settings_switch;
 		$this->replacement     = $replacement;
 	}

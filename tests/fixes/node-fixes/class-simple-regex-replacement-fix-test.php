@@ -63,7 +63,7 @@ class Simple_Regex_Replacement_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Regex_Replacement_Fix::class, [ '/(.*)/', '*$1*', 'fooBar' ] );
 
-		$this->assertAttributeEquals( '/(.*)/', 'regex',           $this->fix );
+		$this->assertAttributeEquals( '/(.*)/S', 'regex',           $this->fix );
 		$this->assertAttributeEquals( 'fooBar', 'settings_switch', $this->fix );
 		$this->assertAttributeEquals( '*$1*',   'replacement',     $this->fix );
 	}
