@@ -57,26 +57,26 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 	const NUMBERS_BEFORE_PRIME = '\b(?:\d+\/)?\d{1,3}';
 
-	const DOUBLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=\W|\Z)/u";
-	const DOUBLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=-\w)/u";
-	const DOUBLE_PRIME_1_GLYPH          = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=\W|\Z)/u';
-	const DOUBLE_PRIME_1_GLYPH_COMPOUND = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=-\w)/u';
-	const SINGLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z)/u";
-	const SINGLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=-\w)/u";
-	const SINGLE_DOUBLE_PRIME           = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)''(?=\W|\Z)/u";
-	const SINGLE_DOUBLE_PRIME_1_GLYPH   = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)\"(?=\W|\Z)/u";
+	const DOUBLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=\W|\Z)/";
+	const DOUBLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=-\w)/";
+	const DOUBLE_PRIME_1_GLYPH          = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=\W|\Z)/';
+	const DOUBLE_PRIME_1_GLYPH_COMPOUND = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=-\w)/';
+	const SINGLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z)/";
+	const SINGLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=-\w)/";
+	const SINGLE_DOUBLE_PRIME           = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)''(?=\W|\Z)/";
+	const SINGLE_DOUBLE_PRIME_1_GLYPH   = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)\"(?=\W|\Z)/";
 
-	const SINGLE_QUOTED_NUMBERS      = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/u";
-	const DOUBLE_QUOTED_NUMBERS      = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/u';
+	const SINGLE_QUOTED_NUMBERS      = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/";
+	const DOUBLE_QUOTED_NUMBERS      = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/';
 	const COMMA_QUOTE                = '/(?<=\s|\A),(?=\S)/';
-	const APOSTROPHE_WORDS           = "/(?<=[\w])'(?=[\w])/u";
+	const APOSTROPHE_WORDS           = "/(?<=[\w])'(?=[\w])/";
 	const APOSTROPHE_DECADES         = "/'(\d\d\b)/";
-	const SINGLE_QUOTE_OPEN          = "/'(?=[\w])/u";
-	const SINGLE_QUOTE_CLOSE         = "/(?<=[\w])'/u";
+	const SINGLE_QUOTE_OPEN          = "/'(?=[\w])/";
+	const SINGLE_QUOTE_CLOSE         = "/(?<=[\w])'/";
 	const SINGLE_QUOTE_OPEN_SPECIAL  = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_.
 	const SINGLE_QUOTE_CLOSE_SPECIAL = "/(?<=\S)'(?=\s|\Z)/";
-	const DOUBLE_QUOTE_OPEN          = '/"(?=[\w])/u';
-	const DOUBLE_QUOTE_CLOSE         = '/(?<=[\w])"/u';
+	const DOUBLE_QUOTE_OPEN          = '/"(?=[\w])/';
+	const DOUBLE_QUOTE_CLOSE         = '/(?<=[\w])"/';
 	const DOUBLE_QUOTE_OPEN_SPECIAL  = '/(?<=\s|\A)"(?=\S)/';
 	const DOUBLE_QUOTE_CLOSE_SPECIAL = '/(?<=\S)"(?=\s|\Z)/';
 
@@ -147,14 +147,12 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		// Clone the node's data attribute for the duration.
-		$node_data = $textnode->data;
-
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$previous_character = DOM::get_prev_chr( $textnode );
 		$next_character     = DOM::get_next_chr( $textnode );
-		$node_data          = "{$previous_character}{$node_data}{$next_character}";
+		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
+		$f                  = Strings::functions( $node_data );
 
 		// Various special characters and regular expressions.
 		$double = $settings->primary_quote_style();
@@ -173,8 +171,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
-		$node_data = preg_replace( self::SINGLE_QUOTED_NUMBERS, "{$single_open}\$1{$single_close}", $node_data );
-		$node_data = preg_replace( self::DOUBLE_QUOTED_NUMBERS, "{$double_open}\$1{$double_close}", $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTED_NUMBERS . $f['u'], "{$single_open}\$1{$single_close}", $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTED_NUMBERS . $f['u'], "{$double_open}\$1{$double_close}", $node_data );
 
 		// Guillemets.
 		$node_data = str_replace( '<<',       U::GUILLEMET_OPEN,  $node_data );
@@ -183,14 +181,14 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = str_replace( '&gt;&gt;', U::GUILLEMET_CLOSE, $node_data );
 
 		// Primes.
-		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME,           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
-		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME_1_GLYPH,   '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
-		$node_data = preg_replace( self::DOUBLE_PRIME,                  '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
-		$node_data = preg_replace( self::SINGLE_PRIME,                  '$1' . U::SINGLE_PRIME,                            $node_data );
-		$node_data = preg_replace( self::SINGLE_PRIME_COMPOUND,         '$1' . U::SINGLE_PRIME,                            $node_data );
-		$node_data = preg_replace( self::DOUBLE_PRIME_COMPOUND,         '$1' . U::DOUBLE_PRIME,                            $node_data );
-		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH,          '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
-		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND, '$1' . U::DOUBLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'],           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
+		$node_data = preg_replace( self::SINGLE_DOUBLE_PRIME_1_GLYPH . $f['u'],   '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME . $f['u'],                  '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
+		$node_data = preg_replace( self::SINGLE_PRIME . $f['u'],                  '$1' . U::SINGLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::SINGLE_PRIME_COMPOUND . $f['u'],         '$1' . U::SINGLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME_COMPOUND . $f['u'],         '$1' . U::DOUBLE_PRIME,                            $node_data );
+		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH . $f['u'],          '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
+		$node_data = preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND . $f['u'], '$1' . U::DOUBLE_PRIME,                            $node_data );
 
 		// Backticks.
 		$node_data = str_replace( '``', $double_open,  $node_data );
@@ -199,23 +197,23 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 		// Comma quotes.
 		$node_data = str_replace( ',,', U::DOUBLE_LOW_9_QUOTE, $node_data );
-		$node_data = preg_replace( self::COMMA_QUOTE, U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
+		$node_data = preg_replace( self::COMMA_QUOTE . $f['u'], U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
 
 		// Apostrophes.
-		$node_data = preg_replace( self::APOSTROPHE_WORDS,   U::APOSTROPHE,        $node_data );
-		$node_data = preg_replace( self::APOSTROPHE_DECADES, U::APOSTROPHE . '$1', $node_data ); // decades: '98.
+		$node_data = preg_replace( self::APOSTROPHE_WORDS . $f['u'],   U::APOSTROPHE,        $node_data );
+		$node_data = preg_replace( self::APOSTROPHE_DECADES . $f['u'], U::APOSTROPHE . '$1', $node_data ); // decades: '98.
 		$node_data = str_replace( $this->apostrophe_exception_matches, $this->apostrophe_exception_replacements, $node_data );
 
 		// Quotes.
 		$node_data = str_replace( $this->brackets_matches, $this->brackets_replacements, $node_data );
-		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN,          $single_open,  $node_data );
-		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE,         $single_close, $node_data );
-		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN_SPECIAL,  $single_open,  $node_data ); // like _'¿hola?'_.
-		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE_SPECIAL, $single_close, $node_data );
-		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN,          $double_open,  $node_data );
-		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE,         $double_close, $node_data );
-		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN_SPECIAL,  $double_open,  $node_data );
-		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE_SPECIAL, $double_close, $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN . $f['u'],          $single_open,  $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE . $f['u'],         $single_close, $node_data );
+		$node_data = preg_replace( self::SINGLE_QUOTE_OPEN_SPECIAL . $f['u'],  $single_open,  $node_data ); // like _'¿hola?'_.
+		$node_data = preg_replace( self::SINGLE_QUOTE_CLOSE_SPECIAL . $f['u'], $single_close, $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN . $f['u'],          $double_open,  $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE . $f['u'],         $double_close, $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_OPEN_SPECIAL . $f['u'],  $double_open,  $node_data );
+		$node_data = preg_replace( self::DOUBLE_QUOTE_CLOSE_SPECIAL . $f['u'], $double_close, $node_data );
 
 		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
 		$node_data = str_replace( "'", $single_close, $node_data );
@@ -223,14 +221,11 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 		// Check if adjacent characters where replaced with multi-byte replacements.
 		$quotes          = [ $double_open, $double_close, $single_open, $single_close ];
-		$func            = Strings::functions( $node_data );
-		$substr          = $func['substr'];
-		$strlen          = $func['strlen'];
-		$previous_length = self::calc_adjacent_length( $strlen( $previous_character ), $previous_character, $node_data, $quotes, $substr, $strlen, false );
-		$next_length     = self::calc_adjacent_length( $strlen( $next_character ), $next_character, $node_data, $quotes, $substr, $strlen, true );
+		$previous_length = self::calc_adjacent_length( $f['strlen']( $previous_character ), $previous_character, $node_data, $quotes, $f['substr'], $f['strlen'], false );
+		$next_length     = self::calc_adjacent_length( $f['strlen']( $next_character ), $next_character, $node_data, $quotes, $f['substr'], $f['strlen'], true );
 
 		// If we have adjacent characters, remove them from the text.
-		$node_data = self::remove_adjacent_characters( $node_data, $previous_length, $next_length );
+		$node_data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $previous_length, $next_length );
 
 		// Remove the escape markers and restore the text to the actual node.
 		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );

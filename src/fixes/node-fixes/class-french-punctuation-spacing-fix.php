@@ -45,7 +45,7 @@ use \PHP_Typography\U;
  * @since 5.0.0
  */
 class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
-	// Regular expressions.
+	// Regular expressions with mandatary Unicode modifier.
 	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!])(\s|\Z)/u';
 	const INSERT_FULL_SPACE                 = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
 	const INSERT_SPACE_BEFORE_SEMICOLON     = '/(\w+(?:\s?»)?)(\s?)((?<!&amp|&gt|&lt);)(\s|\Z)/u';
@@ -67,14 +67,12 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		// Use the proper non-breaking narrow space.
 		$no_break_narrow_space = $settings->no_break_narrow_space();
 
-		// Clone the node's data attribute for the duration.
-		$node_data = $textnode->data;
-
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$previous_character = DOM::get_prev_chr( $textnode );
 		$next_character     = DOM::get_next_chr( $textnode );
-		$node_data          = "{$previous_character}{$node_data}"; // $next_character is not included on purpose.
+		$node_data          = "{$previous_character}{$textnode->data}"; // $next_character is not included on purpose.
+		$f                  = Strings::functions( "{$node_data}{$next_character}" ); // Include $next_character for determining encodiing.
 
 		$node_data = preg_replace( self::INSERT_SPACE_BEFORE_CLOSING_QUOTE, '$1' . $no_break_narrow_space . '$3$4', $node_data );
 		$node_data = preg_replace( self::INSERT_NARROW_SPACE,               '$1' . $no_break_narrow_space . '$3$4', $node_data );
@@ -82,11 +80,9 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		$node_data = preg_replace( self::INSERT_SPACE_BEFORE_SEMICOLON,     '$1' . $no_break_narrow_space . '$3$4', $node_data );
 
 		// The next rule depends on the following characters as well.
-		$node_data = "{$node_data}{$next_character}";
-		$node_data = preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . $no_break_narrow_space . '$4', $node_data );
+		$node_data = preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . $no_break_narrow_space . '$4', "{$node_data}{$next_character}" );
 
 		// If we have adjacent characters remove them from the text.
-		$strlen         = Strings::functions( $node_data )['strlen'];
-		$textnode->data = self::remove_adjacent_characters( $node_data, $strlen( $previous_character ), $strlen( $next_character ) );
+		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );
 	}
 }

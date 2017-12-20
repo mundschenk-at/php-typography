@@ -86,10 +86,10 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
 
 	// Style hanging punctuation.
-	const STYLE_DOUBLE         = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
-	const STYLE_SINGLE         = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
-	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/u';
-	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/u';
+	const STYLE_DOUBLE         = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/';
+	const STYLE_SINGLE         = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/';
+	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/';
+	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/';
 
 	/**
 	 * Creates a new classes dependent fix.
@@ -121,9 +121,6 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		// Clone the node's data attribute for the duration.
-		$node_data = $textnode->data;
-
 		// We need the parent.
 		$block     = DOM::get_block_parent( $textnode );
 		$firstnode = ! empty( $block ) ? DOM::get_first_textnode( $block ) : null;
@@ -131,21 +128,21 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
-		$node_data      = "{$node_data}{$next_character}"; // We have no interest in preceeding characters for this fix.
+		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
+		$f              = Strings::functions( $node_data );
 
-		$node_data = preg_replace( self::STYLE_DOUBLE, '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $node_data );
-		$node_data = preg_replace( self::STYLE_SINGLE, '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $node_data );
+		$node_data = preg_replace( self::STYLE_DOUBLE . $f['u'], '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3', $node_data );
+		$node_data = preg_replace( self::STYLE_SINGLE . $f['u'], '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3', $node_data );
 
 		if ( empty( $block ) || $firstnode === $textnode ) {
-			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
-			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE . $f['u'], '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE . $f['u'], '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
 		} else {
-			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE, '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
-			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE, '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_DOUBLE . $f['u'], '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2', $node_data );
+			$node_data = preg_replace( self::STYLE_INITIAL_SINGLE . $f['u'], '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2', $node_data );
 		}
 
 		// Remove any added characters.
-		$strlen         = Strings::functions( $node_data )['strlen'];
-		$textnode->data = self::remove_adjacent_characters( $node_data, 0, $strlen( $next_character ) );
+		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], 0, $f['strlen']( $next_character ) );
 	}
 }
