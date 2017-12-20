@@ -26,9 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Strings;
+use PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
 
 /**
  * All fixes that apply to textnodes should implement this interface.

@@ -26,8 +26,8 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
-use \PHP_Typography\DOM;
+use PHP_Typography\Settings;
+use PHP_Typography\DOM;
 
 /**
  * Wraps ampersands in <span class="amp"> (i.e. H&amp;J becomes H<span class="amp">&amp;</span>J),

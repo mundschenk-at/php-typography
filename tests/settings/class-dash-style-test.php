@@ -24,11 +24,11 @@
 
 namespace PHP_Typography\Tests\Settings;
 
-use \PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Tests\PHP_Typography_Testcase;
 
-use \PHP_Typography\Settings\Dashes;
-use \PHP_Typography\Settings\Dash_Style;
-use \PHP_Typography\U;
+use PHP_Typography\Settings\Dashes;
+use PHP_Typography\Settings\Dash_Style;
+use PHP_Typography\U;
 
 /**
  * Dash_Style unit test.

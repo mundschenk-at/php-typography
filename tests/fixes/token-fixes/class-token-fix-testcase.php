@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
-use \PHP_Typography\Tests\PHP_Typography_Testcase;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Settings;
+use PHP_Typography\Fixes\Token_Fix;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.

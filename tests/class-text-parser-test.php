@@ -24,8 +24,8 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\Text_Parser\Token;
-use \PHP_Typography\Text_Parser;
+use PHP_Typography\Text_Parser\Token;
+use PHP_Typography\Text_Parser;
 
 /**
  * Unit test for \PHP_Typography\Text_Parser class.

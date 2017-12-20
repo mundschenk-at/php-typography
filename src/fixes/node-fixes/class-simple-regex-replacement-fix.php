@@ -26,8 +26,8 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
-use \PHP_Typography\DOM;
+use PHP_Typography\Settings;
+use PHP_Typography\DOM;
 
 /**
  * An abstract base class for providing simple fixes via a single regular expression replacement.

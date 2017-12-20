@@ -26,13 +26,13 @@
 
 namespace PHP_Typography\Fixes\Token_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\DOM;
-use \PHP_Typography\Hyphenator;
-use \PHP_Typography\Hyphenator\Cache;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Text_Parser\Token;
-use \PHP_Typography\U;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\DOM;
+use PHP_Typography\Hyphenator;
+use PHP_Typography\Hyphenator\Cache;
+use PHP_Typography\Settings;
+use PHP_Typography\Text_Parser\Token;
+use PHP_Typography\U;
 
 /**
  * Hyphenates a given text fragment (if enabled).

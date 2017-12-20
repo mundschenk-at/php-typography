@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\DOM;
+use PHP_Typography\DOM;
 
 /**
  * DOM unit test.

@@ -26,9 +26,9 @@
 
 namespace PHP_Typography\Fixes\Token_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Text_Parser\Token;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Settings;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * An abstract base class for token fixes.

@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes;
-use \PHP_Typography\Settings;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Token_Fixes;
+use PHP_Typography\Settings;
 
 /**
  * Wrap_Emails_Fix unit test.

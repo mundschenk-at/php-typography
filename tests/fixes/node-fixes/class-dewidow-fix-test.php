@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fixes\Dewidow_Fix;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use PHP_Typography\Fixes\Node_Fixes\Dewidow_Fix;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * Dewidow_Fix unit test.

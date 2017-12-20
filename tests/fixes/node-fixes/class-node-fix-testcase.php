@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Tests\PHP_Typography_Testcase;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Settings;
+use PHP_Typography\Fixes\Node_Fix;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.

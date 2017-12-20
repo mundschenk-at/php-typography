@@ -26,12 +26,12 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Text_Parser;
-use \PHP_Typography\Settings;
-use \PHP_Typography\DOM;
-use \PHP_Typography\Hyphenator\Cache;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
+use PHP_Typography\Text_Parser;
+use PHP_Typography\Settings;
+use PHP_Typography\DOM;
+use PHP_Typography\Hyphenator\Cache;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
 
 /**
  * Tokenizes the content of a textnode and process the individual words separately.
