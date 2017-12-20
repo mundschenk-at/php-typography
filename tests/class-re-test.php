@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\RE;
+use PHP_Typography\RE;
 
 /**
  * RE unit test.

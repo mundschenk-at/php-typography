@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
-use \PHP_Typography\Strings;
+use PHP_Typography\Strings;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.

@@ -26,8 +26,8 @@
 
 namespace PHP_Typography\Fixes;
 
-use \PHP_Typography\Settings;
-use \PHP_Typography\Text_Parser\Token;
+use PHP_Typography\Settings;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * All fixes that apply to parsed text tokens should implement this interface.

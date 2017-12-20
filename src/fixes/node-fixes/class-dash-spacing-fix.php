@@ -27,9 +27,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use PHP_Typography\DOM;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * Applies spacing around dashes (if enabled).
@@ -40,6 +40,7 @@ use \PHP_Typography\U;
  */
 class Dash_Spacing_Fix extends Abstract_Node_Fix {
 
+	// Mandatory UTF-8 modifier.
 	const EM_DASH_SPACING = '/
 		(?:
 			\s
@@ -116,9 +117,15 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 			$this->cached_dash_style = $s;
 		}
 
-		$textnode->data = preg_replace( self::EM_DASH_SPACING,             $this->em_dash_replacement,            $textnode->data );
-		$textnode->data = preg_replace( $this->parenthetical_dash_spacing, $this->parenthetical_dash_replacement, $textnode->data );
-		$textnode->data = preg_replace( $this->interval_dash_spacing,      $this->interval_dash_replacement,      $textnode->data );
+		// Cache $textnode->data for this fix.
+		$node_data = $textnode->data;
+
+		$node_data = preg_replace( self::EM_DASH_SPACING,             $this->em_dash_replacement,            $node_data );
+		$node_data = preg_replace( $this->parenthetical_dash_spacing, $this->parenthetical_dash_replacement, $node_data );
+		$node_data = preg_replace( $this->interval_dash_spacing,      $this->interval_dash_replacement,      $node_data );
+
+		// Restore textnode content.
+		$textnode->data = $node_data;
 	}
 
 	/**
@@ -130,6 +137,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 	 * @param string $interval_space      The space character used around interval dashes.
 	 */
 	private function update_dash_spacing_regex( $parenthetical, $parenthetical_space, $interval, $interval_space ) {
+		// Mandatory UTF-8 modifier.
 		$this->parenthetical_dash_spacing = "/
 			(?:
 				\s
@@ -138,6 +146,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 			)
 		/xu";
 
+		// Mandatory UTF-8 modifier.
 		$this->interval_dash_spacing = "/
 			(?:
 				(?<=\S)             # lookbehind assertion

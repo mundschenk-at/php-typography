@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests\Benchmarks;
 
-use \PHP_Typography\Hyphenator;
+use PHP_Typography\Hyphenator;
 
 /**
  * Differnet possible implementations of Hyphenator\Cache serialization benchmark.

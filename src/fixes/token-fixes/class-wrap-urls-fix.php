@@ -27,13 +27,13 @@
 
 namespace PHP_Typography\Fixes\Token_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Hyphenator\Cache;
-use \PHP_Typography\RE;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Text_Parser;
-use \PHP_Typography\Text_Parser\Token;
-use \PHP_Typography\U;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Hyphenator\Cache;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
+use PHP_Typography\Text_Parser;
+use PHP_Typography\Text_Parser\Token;
+use PHP_Typography\U;
 
 /**
  * Wraps URL parts zero-width spaces (if enabled).

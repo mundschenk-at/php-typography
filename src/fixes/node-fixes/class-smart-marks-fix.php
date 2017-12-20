@@ -26,10 +26,10 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\RE;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * Applies smart marks (if enabled).
@@ -40,7 +40,7 @@ use \PHP_Typography\U;
  */
 class Smart_Marks_Fix extends Abstract_Node_Fix {
 
-	const ESCAPE_501C = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/u';
+	const ESCAPE_501C = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/S';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -54,17 +54,20 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
+		// Cache textnode content.
+		$node_data = $textnode->data;
+
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$textnode->data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $textnode->data );
+		$node_data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
 
 		// Replace marks.
-		$textnode->data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,      $textnode->data );
-		$textnode->data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $textnode->data );
-		$textnode->data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK,  $textnode->data );
-		$textnode->data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $textnode->data );
-		$textnode->data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $textnode->data );
+		$node_data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,       $node_data );
+		$node_data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $node_data );
+		$node_data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK, $node_data );
+		$node_data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $node_data );
+		$node_data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $node_data );
 
-		// Un-escape escaped sequences.
-		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $textnode->data );
+		// Un-escape escaped sequences & resetore textnode content.
+		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
 	}
 }

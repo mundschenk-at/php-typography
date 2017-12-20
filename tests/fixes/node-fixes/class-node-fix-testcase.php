@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Tests\PHP_Typography_Testcase;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Settings;
+use PHP_Typography\Fixes\Node_Fix;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
@@ -63,8 +63,7 @@ abstract class Node_Fix_Testcase extends PHP_Typography_Testcase {
 	 * @return \DOMText
 	 */
 	protected function create_textnode( $value ) {
-		// returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
-		return new \DOMText( htmlspecialchars( html_entity_decode( $value ), ENT_NOQUOTES, 'UTF-8', false ) );
+		return new \DOMText( html_entity_decode( $value ) );
 	}
 
 	/**

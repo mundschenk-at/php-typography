@@ -27,7 +27,7 @@
 
 namespace PHP_Typography;
 
-use \Masterminds\HTML5\Elements;
+use Masterminds\HTML5\Elements;
 
 /**
  * Some static methods for DOM manipulation.

@@ -24,8 +24,8 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fixes\French_Punctuation_Spacing_Fix;
-use \PHP_Typography\Settings;
+use PHP_Typography\Fixes\Node_Fixes\French_Punctuation_Spacing_Fix;
+use PHP_Typography\Settings;
 
 /**
  * French_Punctuation_Spacing_Fix unit test.
@@ -69,6 +69,7 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 			[ 'Jean a dit: Foo', 'Jean a dit&nbsp;: Foo' ],
 			[ 'http://example.org', 'http://example.org' ],
 			[ 'foo &Ouml; & ; bar', 'foo &Ouml; &amp; ; bar' ],
+			[ 'foo; <bar>', 'foo&#8239;; <bar>' ],
 			[ '5 > 3', '5 > 3' ],
 			[ 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".' ],
 			[ '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;' ],

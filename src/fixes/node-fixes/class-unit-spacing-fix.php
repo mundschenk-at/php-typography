@@ -27,9 +27,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Settings;
-use \PHP_Typography\DOM;
-use \PHP_Typography\U;
+use PHP_Typography\Settings;
+use PHP_Typography\DOM;
+use PHP_Typography\U;
 
 /**
  * Prevents values being split from their units (if enabled).
@@ -93,7 +93,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		$this->replacement = "\$1{$settings->no_break_narrow_space()}\$2";
 
 		// Update regex with custom units.
-		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')\b/x';
+		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')\b/Sx';
 
 		parent::apply( $textnode, $settings, $is_title );
 	}

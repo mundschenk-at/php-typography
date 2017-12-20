@@ -27,7 +27,7 @@
 
 namespace PHP_Typography\Bin;
 
-use \PHP_Typography\Strings;
+use PHP_Typography\Strings;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.

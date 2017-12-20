@@ -24,8 +24,8 @@
 
 namespace PHP_Typography\Tests\Hyphenator;
 
-use \PHP_Typography\Tests\PHP_Typography_Testcase;
-use \PHP_Typography\Hyphenator\Trie_Node;
+use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Hyphenator\Trie_Node;
 
 /**
  * Trie_Node unit test.

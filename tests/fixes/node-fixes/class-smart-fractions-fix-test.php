@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fixes;
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use PHP_Typography\Fixes\Node_Fixes;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * Smart_Fractions_Fix unit test.

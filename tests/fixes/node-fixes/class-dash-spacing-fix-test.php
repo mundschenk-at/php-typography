@@ -24,8 +24,8 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fixes\Dash_Spacing_Fix;
-use \PHP_Typography\Settings;
+use PHP_Typography\Fixes\Node_Fixes\Dash_Spacing_Fix;
+use PHP_Typography\Settings;
 
 /**
  * Dash_Spacing_Fix unit test.

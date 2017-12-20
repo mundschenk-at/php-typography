@@ -24,9 +24,9 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes;
-use \PHP_Typography\Settings;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Token_Fixes;
+use PHP_Typography\Settings;
 
 /**
  * Hyphenate_Compounds_Fix unit test.

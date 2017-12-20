@@ -158,9 +158,6 @@ class PHP_Typography {
 				continue;
 			}
 
-			// Decode all characters except < > &.
-			$textnode->data = htmlspecialchars( $textnode->data, ENT_NOQUOTES, 'UTF-8' ); // returns < > & to encoded HTML characters (&lt; &gt; and &amp; respectively).
-
 			// Apply fixes.
 			$fixer( $textnode, $settings, $is_title );
 

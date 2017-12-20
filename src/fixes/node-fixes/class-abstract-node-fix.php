@@ -26,9 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fix;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Strings;
+use PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
 
 /**
  * All fixes that apply to textnodes should implement this interface.
@@ -81,25 +81,25 @@ abstract class Abstract_Node_Fix implements Node_Fix {
 	 * @since 4.2.2
 	 * @since 5.1.3 $prev_char and $next_char replaced with $prev_length and $next_length
 	 *              to support multi-characters replacements.
+	 * @since 6.0.0 New required parameters for strlen() and substr() added.
 	 *
-	 * @param  string $string      The string.
-	 * @param  int    $prev_length Optional. Default 0. The number of characters to remove at the beginning.
-	 * @param  int    $next_length Optional. Default 0. The number of characters to remove at the end.
+	 * @param  string   $string      The string.
+	 * @param  callable $strlen A strlen()-type function.
+	 * @param  callable $substr A substr()-type function.
+	 * @param  int      $prev_length Optional. Default 0. The number of characters to remove at the beginning.
+	 * @param  int      $next_length Optional. Default 0. The number of characters to remove at the end.
 	 *
 	 * @return string              The string without the characters from adjacent nodes.
 	 */
-	protected static function remove_adjacent_characters( $string, $prev_length = 0, $next_length = 0 ) {
-		// Use the most efficient string functions.
-		$func = Strings::functions( $string );
-
+	protected static function remove_adjacent_characters( $string, callable $strlen, callable $substr, $prev_length = 0, $next_length = 0 ) {
 		// Remove previous character.
 		if ( $prev_length > 0 ) {
-			$string = $func['substr']( $string, $prev_length, $func['strlen']( $string ) );
+			$string = $substr( $string, $prev_length, $strlen( $string ) );
 		}
 
 		// Remove next character.
 		if ( $next_length > 0 ) {
-			$string = $func['substr']( $string, 0, $func['strlen']( $string ) - $next_length );
+			$string = $substr( $string, 0, $strlen( $string ) - $next_length );
 		}
 
 		return $string;

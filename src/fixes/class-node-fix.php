@@ -26,7 +26,7 @@
 
 namespace PHP_Typography\Fixes;
 
-use \PHP_Typography\Settings;
+use PHP_Typography\Settings;
 
 /**
  * All fixes that apply to textnodes should implement this interface.

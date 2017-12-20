@@ -26,11 +26,11 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\RE;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
+use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
 
 /**
  * Prevent single character words from being alone (if enabled).
@@ -38,17 +38,18 @@ use \PHP_Typography\U;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ * @since 6.0.0 The replacement now assumes decoded ampersands (i.e. plain "&" instead of "&amp;").
  */
 class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 
 	const REGEX = '/
 		(?:
 			(\s)
-			(\w|&amp;)
+			(\w|&)
 			[' . RE::NORMAL_SPACES . ']
 			(?=\w)
 		)
-	/xu';
+	/x';
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -62,18 +63,16 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		// Clone the node's data attribute for the duration.
-		$node_data = $textnode->data;
-
 		// Add $next_character and $previous_character for context.
 		$previous_character = DOM::get_prev_chr( $textnode );
 		$next_character     = DOM::get_next_chr( $textnode );
-		$node_data          = "{$previous_character}{$node_data}{$next_character}";
+		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
+		$f                  = Strings::functions( $node_data );
 
-		$node_data = preg_replace( self::REGEX, '$1$2' . U::NO_BREAK_SPACE, $node_data );
+		// Replace spaces.
+		$node_data = preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );
 
 		// If we have adjacent characters remove them from the text.
-		$strlen         = Strings::functions( $node_data )['strlen'];
-		$textnode->data = self::remove_adjacent_characters( $node_data, $strlen( $previous_character ), $strlen( $next_character ) );
+		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );
 	}
 }

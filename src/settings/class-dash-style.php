@@ -26,8 +26,8 @@
 
 namespace PHP_Typography\Settings;
 
-use \PHP_Typography\Settings;
-use \PHP_Typography\U;
+use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * A factory class for different dash styles.

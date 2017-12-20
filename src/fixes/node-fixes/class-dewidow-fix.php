@@ -27,11 +27,11 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use \PHP_Typography\DOM;
-use \PHP_Typography\RE;
-use \PHP_Typography\Settings;
-use \PHP_Typography\Strings;
-use \PHP_Typography\U;
+use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
+use PHP_Typography\Strings;
+use PHP_Typography\U;
 
 /**
  * Prevents widows (if enabled).
@@ -44,6 +44,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	const SPACE_BETWEEN = '[\s]+'; // \s includes all special spaces (but not ZWSP) with the u flag.
 	const WIDOW         = '[\w\p{M}\-' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']+?'; // \w includes all alphanumeric Unicode characters but not composed characters.
 
+	// Mandatory UTF-8 modifer.
 	const REGEX_START = '/
 		(?:
 			\A
@@ -120,7 +121,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			// with that, we will assert that widows should never be hyphenated or wrapped
 			// as such, we will strip soft hyphens and zero-width-spaces.
 			$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
-			$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $func['u'] ) );
+			$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $narrow_space, $func['u'] ) );
 
 			if (
 				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
@@ -136,7 +137,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			}
 
 			// Let's protect some widows!
-			return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $narrow_space ) . $widow['trailing'];
+			return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $narrow_space, $func['u'] ) . $widow['trailing'];
 		}, $text );
 	}
 
@@ -156,16 +157,17 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 *
 	 * @param  string $string       Required.
 	 * @param  string $narrow_space The narrow no-break space character.
+	 * @param  string $u            Either 'u' or the empty string.
 	 *
 	 * @return string
 	 */
-	protected static function make_space_nonbreaking( $string, $narrow_space ) {
+	protected static function make_space_nonbreaking( $string, $narrow_space, $u ) {
 		return preg_replace(
 			[
 				'/\s*' . U::THIN_SPACE . '\s*/u',
 				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
-				'/\s+/u',
-				'/' . self::MASKED_NARROW_SPACE . '/',
+				"/\\s+/$u",
+				'/' . self::MASKED_NARROW_SPACE . "/$u",
 			], [
 				self::MASKED_NARROW_SPACE,
 				self::MASKED_NARROW_SPACE,

@@ -24,11 +24,11 @@
 
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
-use \PHP_Typography\Fixes\Node_Fixes;
-use \PHP_Typography\Fixes\Token_Fix;
-use \PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
-use \PHP_Typography\Hyphenator\Cache;
-use \PHP_Typography\Settings;
+use PHP_Typography\Fixes\Node_Fixes;
+use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
+use PHP_Typography\Hyphenator\Cache;
+use PHP_Typography\Settings;
 
 /**
  * Process_Words_Fix unit test.
