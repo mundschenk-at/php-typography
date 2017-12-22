@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\DOM;
 use PHP_Typography\PHP_Typography;
 use PHP_Typography\Settings;
 use PHP_Typography\Strings;
@@ -2852,7 +2853,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	public function test_parse_html() {
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), '<p>some text</p>', $this->s );
 
-		$this->assertInstanceOf( '\DOMDocument', $dom );
+		$this->assertInstanceOf( \DOMDocument::class, $dom );
 		$this->assertEquals( 1, $dom->getElementsByTagName( 'p' )->length );
 	}
 
@@ -2861,6 +2862,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Test parse_html.
 	 *
 	 * @covers ::parse_html
+	 *
+	 * @uses PHP_Typography\DOM::has_class
 	 *
 	 * @dataProvider provide_process_data
 	 *
@@ -2872,12 +2875,42 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$p   = $this->typo->get_html5_parser();
 		$dom = $this->typo->parse_html( $p, $html, $this->s );
 
-		$this->assertInstanceOf( '\DOMDocument', $dom );
+		$this->assertInstanceOf( \DOMDocument::class, $dom );
 
 		// Serialize the stuff again.
 		$xpath     = new \DOMXPath( $dom );
 		$body_node = $xpath->query( '/html/body' )->item( 0 );
 
+		$this->assertFalse( DOM::has_class( $body_node, 'bar' ) );
+		$this->assertFalse( DOM::has_class( $body_node, 'foo' ) );
+		$this->assertEquals( $html, $p->saveHTML( $body_node->childNodes ) );
+	}
+
+	/**
+	 * Test parse_html with injected classes.
+	 *
+	 * @covers ::parse_html
+	 *
+	 * @uses PHP_Typography\DOM::has_class
+	 *
+	 * @dataProvider provide_process_data
+	 *
+	 * @param string $html    HTML input.
+	 * @param string $ignore1 Ignored.
+	 * @param string $ignore2 Ignored.
+	 */
+	public function test_parse_html_extended_with_classes( $html, $ignore1, $ignore2 ) {
+		$p   = $this->typo->get_html5_parser();
+		$dom = $this->typo->parse_html( $p, $html, $this->s, [ 'foo', 'bar' ] );
+
+		$this->assertInstanceOf( \DOMDocument::class, $dom );
+
+		// Serialize the stuff again.
+		$xpath     = new \DOMXPath( $dom );
+		$body_node = $xpath->query( '/html/body' )->item( 0 );
+
+		$this->assertTrue( DOM::has_class( $body_node, 'bar' ) );
+		$this->assertTrue( DOM::has_class( $body_node, 'foo' ) );
 		$this->assertEquals( $html, $p->saveHTML( $body_node->childNodes ) );
 	}
 
