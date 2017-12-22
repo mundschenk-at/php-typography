@@ -87,45 +87,57 @@ class PHP_Typography {
 	/**
 	 * Modifies $html according to the defined settings.
 	 *
-	 * @param string   $html      A HTML fragment.
-	 * @param Settings $settings  A settings object.
-	 * @param bool     $is_title  Optional. If the HTML fragment is a title. Default false.
+	 * @since 6.0.0 Parameter $body_classes added.
+	 *
+	 * @param string   $html         A HTML fragment.
+	 * @param Settings $settings     A settings object.
+	 * @param bool     $is_title     Optional. If the HTML fragment is a title. Default false.
+	 * @param string[] $body_classes Optional. CSS classes added to the virtual
+	 *                               <body> element used for processing. Default [].
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process( $html, Settings $settings, $is_title = false ) {
+	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
 			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
-		}, $settings, $is_title );
+		}, $settings, $is_title, $body_classes );
 	}
 
 	/**
 	 * Modifies $html according to the defined settings, in a way that is appropriate for RSS feeds
 	 * (i.e. excluding processes that may not display well with limited character set intelligence).
 	 *
-	 * @param string   $html     A HTML fragment.
-	 * @param Settings $settings  A settings object.
-	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @since 6.0.0 Parameter $body_classes added.
+	 *
+	 * @param string   $html         A HTML fragment.
+	 * @param Settings $settings     A settings object.
+	 * @param bool     $is_title     Optional. If the HTML fragment is a title. Default false.
+	 * @param string[] $body_classes Optional. CSS classes added to the virtual
+	 *                               <body> element used for processing. Default [].
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process_feed( $html, Settings $settings, $is_title = false ) {
+	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
 			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
-		}, $settings, $is_title );
+		}, $settings, $is_title, $body_classes );
 	}
 
 	/**
 	 * Applies specific fixes to all textnodes of the HTML fragment.
 	 *
-	 * @param string   $html     A HTML fragment.
-	 * @param callable $fixer    A callback that applies typography fixes to a single textnode.
-	 * @param Settings $settings  A settings object.
-	 * @param bool     $is_title Optional. If the HTML fragment is a title. Default false.
+	 * @since 6.0.0 Parameter $body_classes added.
+	 *
+	 * @param string   $html         A HTML fragment.
+	 * @param callable $fixer        A callback that applies typography fixes to a single textnode.
+	 * @param Settings $settings     A settings object.
+	 * @param bool     $is_title     Optional. If the HTML fragment is a title. Default false.
+	 * @param string[] $body_classes Optional. CSS classes added to the virtual
+	 *                               <body> element used for processing. Default [].
 	 *
 	 * @return string The processed $html.
 	 */
-	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false ) {
+	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		if ( isset( $settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $settings['ignoreTags'], true ) || in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
@@ -134,7 +146,7 @@ class PHP_Typography {
 		$html5_parser = $this->get_html5_parser();
 
 		// Parse the HTML.
-		$dom = $this->parse_html( $html5_parser, $html, $settings );
+		$dom = $this->parse_html( $html5_parser, $html, $settings, $body_classes );
 
 		// Abort if there were parsing errors.
 		if ( empty( $dom ) ) {
@@ -190,19 +202,26 @@ class PHP_Typography {
 	/**
 	 * Parse HTML5 fragment while ignoring certain warnings for invalid HTML code (e.g. duplicate IDs).
 	 *
-	 * @param \Masterminds\HTML5 $parser   An intialized parser object.
-	 * @param string             $html     The HTML fragment to parse (not a complete document).
-	 * @param Settings           $settings The settings to apply.
+	 * @since 6.0.0 Parameter $body_classes added.
+	 *
+	 * @param \Masterminds\HTML5 $parser       An intialized parser object.
+	 * @param string             $html         The HTML fragment to parse (not a complete document).
+	 * @param Settings           $settings     The settings to apply.
+	 * @param string[]           $body_classes Optional. CSS classes added to the virtual
+	 *                                         <body> element used for processing. Default [].
 	 *
 	 * @return \DOMDocument|null The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
-	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings ) {
+	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings, array $body_classes = [] ) {
 		// Silence some parsing errors for invalid HTML.
 		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
 		$xml_error_handling = libxml_use_internal_errors( true );
 
+		// Inject <body> classes.
+		$body = empty( $body_classes ) ? 'body' : 'body class="' . implode( ' ', $body_classes ) . '"';
+
 		// Do the actual parsing.
-		$dom           = $parser->loadHTML( '<!DOCTYPE html><html><body>' . $html . '</body></html>' );
+		$dom           = $parser->loadHTML( "<!DOCTYPE html><html><{$body}>{$html}</body></html>" );
 		$dom->encoding = 'UTF-8';
 
 		// Restore original error handling.
