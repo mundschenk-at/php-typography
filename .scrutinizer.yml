@@ -26,3 +26,4 @@ build:
 tools:
     php_code_sniffer: false
     php_cs_fixer: false
+    external_code_coverage: true
