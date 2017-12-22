@@ -21,6 +21,11 @@ A PHP library for improving your web typography:
     -   numbers,
     -   initial quotes & guillemets.
 
+[![Build Status](https://travis-ci.org/mundschenk-at/php-typography.svg?branch=master)](https://travis-ci.org/mundschenk-at/php-typography)
+[![Latest Stable Version](https://poser.pugx.org/mundschenk-at/php-typography/v/stable)](https://packagist.org/packages/mundschenk-at/php-typography)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
+[![License](https://poser.pugx.org/mundschenk-at/php-typography/license)](https://packagist.org/packages/mundschenk-at/php-typography)
+
 ## Requirements
 
 *   PHP 5.6.0 or above
