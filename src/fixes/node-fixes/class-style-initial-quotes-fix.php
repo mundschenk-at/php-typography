@@ -78,32 +78,26 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) ) {
+		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) || null !== DOM::get_previous_textnode( $textnode ) ) {
 			return;
 		}
 
-		if ( '' === DOM::get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
+		$node_data       = $textnode->data;
+		$f               = Strings::functions( $node_data );
+		$first_character = $f['substr']( $node_data, 0, 1 );
 
-			$func            = Strings::functions( $textnode->data );
-			$first_character = $func['substr']( $textnode->data, 0, 1 );
+		if ( self::is_single_quote( $first_character ) ) {
+			$span_class = $this->single_quote_class;
+		} elseif ( self::is_double_quote( $first_character ) ) {
+			$span_class = $this->double_quote_class;
+		}
 
-			if ( self::is_single_quote( $first_character ) || self::is_double_quote( $first_character ) ) {
-				$block_level_parent = DOM::get_block_parent_name( $textnode );
+		if ( ! empty( $span_class ) ) {
+			// Assume page title is <h2>.
+			$block_level_parent = $is_title ? 'h2' : DOM::get_block_parent_name( $textnode );
 
-				if ( $is_title ) {
-					// Assume page title is h2.
-					$block_level_parent = 'h2';
-				}
-
-				if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
-					if ( self::is_single_quote( $first_character ) ) {
-						$span_class = $this->single_quote_class;
-					} else {
-						$span_class = $this->double_quote_class;
-					}
-
-					$textnode->data = '<span class="' . $span_class . '">' . $first_character . '</span>' . $func['substr']( $textnode->data, 1, $func['strlen']( $textnode->data ) );
-				}
+			if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+				$textnode->data = '<span class="' . $span_class . '">' . $first_character . '</span>' . $f['substr']( $node_data, 1, $f['strlen']( $node_data ) );
 			}
 		}
 	}

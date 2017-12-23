@@ -274,9 +274,7 @@ abstract class DOM {
 	 * @return \DOMText|null Null if $node is a block-level element or no text sibling exists.
 	 */
 	private static function get_adjacent_textnode( callable $iterate, callable $get_adjacent_parent, \DOMNode $node = null ) {
-		if ( ! isset( $node ) ) {
-			return null;
-		} elseif ( $node instanceof \DOMElement && isset( self::$block_tags[ $node->tagName ] ) ) {
+		if ( ! isset( $node ) || self::is_block_tag( $node ) ) {
 			return null;
 		}
 
@@ -351,10 +349,9 @@ abstract class DOM {
 
 		if ( $node instanceof \DOMText ) {
 			return $node;
-		} elseif ( ! $node instanceof \DOMElement ) {
-			// Return null if $node is neither \DOMText nor \DOMElement.
-			return null;
-		} elseif ( $recursive && isset( self::$block_tags[ $node->tagName ] ) ) {
+		} elseif ( ! $node instanceof \DOMElement || $recursive && self::is_block_tag( $node ) ) {
+			// Return null if $node is neither \DOMText nor \DOMElement or
+			// when we are recursing and already at the block level.
 			return null;
 		}
 
@@ -388,7 +385,7 @@ abstract class DOM {
 			return null;
 		}
 
-		while ( ! isset( self::$block_tags[ $parent->tagName ] ) && $parent->parentNode instanceof \DOMElement ) {
+		while ( ! self::is_block_tag( $parent ) && $parent->parentNode instanceof \DOMElement ) {
 			/**
 			 * The parent is sure to be a \DOMElement.
 			 *
@@ -415,6 +412,19 @@ abstract class DOM {
 		} else {
 			return '';
 		}
+	}
+
+	/**
+	 * Determines if a node is a block tag.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @param  \DOMNode $node Required.
+	 *
+	 * @return bool
+	 */
+	public static function is_block_tag( \DOMNode $node ) {
+		return $node instanceof \DOMElement && isset( self::$block_tags[ $node->tagName ] );
 	}
 }
 
