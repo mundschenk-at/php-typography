@@ -245,15 +245,15 @@ class PHP_Typography {
 	/**
 	 * Silently handle certain HTML parsing errors.
 	 *
+	 * @since 6.0.0 Unused parameters $errline and $errcontext removed.
+	 *
 	 * @param int    $errno      Error number.
 	 * @param string $errstr     Error message.
 	 * @param string $errfile    The file in which the error occurred.
-	 * @param int    $errline    The line in which the error occurred.
-	 * @param array  $errcontext Calling context.
 	 *
 	 * @return boolean Returns true if the error was handled, false otherwise.
 	 */
-	public function handle_parsing_errors( $errno, $errstr, $errfile, $errline, array $errcontext ) {
+	public function handle_parsing_errors( $errno, $errstr, $errfile ) {
 		if ( ! ( error_reporting() & $errno ) ) { // @codingStandardsIgnoreLine.
 			return true; // not interesting.
 		}
