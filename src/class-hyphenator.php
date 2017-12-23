@@ -260,22 +260,21 @@ class Hyphenator {
 			return $word;
 		}
 
-		// Give exceptions preference.
+		// Determine pattern.
 		if ( isset( $this->merged_exception_patterns[ $the_key ] ) ) {
-			$word_pattern = $this->merged_exception_patterns[ $the_key ];
+			// Give preference to exceptions.
+			$pattern = $this->merged_exception_patterns[ $the_key ];
+		} else {
+			// Lookup word pattern if there is no exception.
+			$pattern = $this->lookup_word_pattern( $the_key, $f['strlen'], $f['str_split'] );
 		}
 
-		// Lookup word pattern if there is no exception.
-		if ( ! isset( $word_pattern ) ) {
-			$word_pattern = $this->lookup_word_pattern( $the_key, $f['strlen'], $f['str_split'] );
-		}
-
-		// Add hyphen character based on $word_pattern.
+		// Add hyphen character based on pattern.
 		$word_parts      = $f['str_split']( $word, 1 );
 		$hyphenated_word = '';
 
 		for ( $i = 0; $i < $word_length; $i++ ) {
-			if ( isset( $word_pattern[ $i ] ) && self::is_odd( $word_pattern[ $i ] ) && ( $i >= $min_before ) && ( $i <= $word_length - $min_after ) ) {
+			if ( isset( $pattern[ $i ] ) && self::is_odd( $pattern[ $i ] ) && ( $i >= $min_before ) && ( $i <= $word_length - $min_after ) ) {
 				$hyphenated_word .= $hyphen;
 			}
 
