@@ -125,13 +125,13 @@ class Hyphenator {
 		// Do our thing.
 		$exception_keys = [];
 		foreach ( $exceptions as $exception ) {
-			$func = Strings::functions( $exception );
-			if ( empty( $func ) ) {
+			$f = Strings::functions( $exception );
+			if ( empty( $f ) ) {
 				continue; // unknown encoding, abort.
 			}
 
-			$exception                    = $func['strtolower']( $exception );
-			$exception_keys[ $exception ] = preg_replace( "#-#{$func['u']}", '', $exception );
+			$exception                    = $f['strtolower']( $exception );
+			$exception_keys[ $exception ] = preg_replace( "#-#{$f['u']}", '', $exception );
 		}
 
 		// Update exceptions.
@@ -240,23 +240,23 @@ class Hyphenator {
 	 */
 	protected function hyphenate_word( $word, $hyphen, $hyphenate_title_case, $min_length, $min_before, $min_after ) {
 		// Quickly reference string functions according to encoding.
-		$func = Strings::functions( $word );
-		if ( empty( $func ) ) {
+		$f = Strings::functions( $word );
+		if ( empty( $f ) ) {
 			return $word; // unknown encoding, abort.
 		}
 
 		// Check word length.
-		$word_length = $func['strlen']( $word );
+		$word_length = $f['strlen']( $word );
 		if ( $word_length < $min_length ) {
 			return $word;
 		}
 
 		// Trie lookup requires a lowercase search term.
-		$the_key = $func['strtolower']( $word );
+		$the_key = $f['strtolower']( $word );
 
 		// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
 		// Note: This is different than uppercase words, where we are looking for title case.
-		if ( ! $hyphenate_title_case && $func['substr']( $the_key, 0, 1 ) !== $func['substr']( $word, 0, 1 ) ) {
+		if ( ! $hyphenate_title_case && $f['substr']( $the_key, 0, 1 ) !== $f['substr']( $word, 0, 1 ) ) {
 			return $word;
 		}
 
@@ -267,11 +267,11 @@ class Hyphenator {
 
 		// Lookup word pattern if there is no exception.
 		if ( ! isset( $word_pattern ) ) {
-			$word_pattern = $this->lookup_word_pattern( $the_key, $func['strlen'], $func['str_split'] );
+			$word_pattern = $this->lookup_word_pattern( $the_key, $f['strlen'], $f['str_split'] );
 		}
 
 		// Add hyphen character based on $word_pattern.
-		$word_parts      = $func['str_split']( $word, 1 );
+		$word_parts      = $f['str_split']( $word, 1 );
 		$hyphenated_word = '';
 
 		for ( $i = 0; $i < $word_length; $i++ ) {
@@ -366,14 +366,14 @@ class Hyphenator {
 	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
 	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
-		$func = Strings::functions( $exception );
-		if ( empty( $func ) ) {
+		$f = Strings::functions( $exception );
+		if ( empty( $f ) ) {
 			return null; // unknown encoding, abort.
 		}
 
 		// Set the word_pattern - this method keeps any contextually important capitalization.
-		$lowercase_hyphened_word_parts  = $func['str_split']( $exception, 1 );
-		$lowercase_hyphened_word_length = $func['strlen']( $exception );
+		$lowercase_hyphened_word_parts  = $f['str_split']( $exception, 1 );
+		$lowercase_hyphened_word_length = $f['strlen']( $exception );
 
 		$word_pattern = [];
 		$index        = 0;
