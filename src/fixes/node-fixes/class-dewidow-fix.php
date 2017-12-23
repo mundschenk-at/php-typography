@@ -125,7 +125,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 			if (
 				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
-				'' === $widow['space_before'] || strstr( U::NO_BREAK_SPACE, $widow['space_before'] ) ||
+				'' === $widow['space_before'] || false !== \strpos( $widow['space_before'], U::NO_BREAK_SPACE ) ||
 
 				// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
 				$func['strlen']( $widow['neighbor'] ) > $max_pull || $func['strlen']( $widow['widow'] ) > $max_length ||
