@@ -34,6 +34,7 @@ use PHP_Typography\Settings;
  * @usesDefaultClass \PHP_Typography\Fixes\Node_Fixes\Smart_Marks_Fix
  *
  * @uses ::__construct
+ * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  * @uses PHP_Typography\DOM
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
@@ -52,6 +53,18 @@ class Smart_Marks_Fix_Test extends Node_Fix_Testcase {
 		parent::setUp();
 
 		$this->fix = new Node_Fixes\Smart_Marks_Fix();
+	}
+
+	/**
+	 * Tests the constructor.
+	 *
+	 * @covers ::__construct
+	 */
+	public function test_constructor() {
+		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Smart_Marks_Fix::class, [ false ] );
+
+		$this->assertAttributeInternalType( 'array', 'marks', $this->fix );
+		$this->assertAttributeInternalType( 'array', 'replacements', $this->fix );
 	}
 
 	/**
