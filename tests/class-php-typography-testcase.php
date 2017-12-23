@@ -357,8 +357,8 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( Strings::uchr( 171 ) . Strings::uchr( 160 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 160 ) . Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 171, 160 ), $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( Strings::uchr( 160, 187 ), $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':

@@ -86,7 +86,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	/**
 	 * Tests initialization.
 	 *
-	 * @covers ::init
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
@@ -244,9 +243,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests primary_quote_style.
 	 *
 	 * @covers ::primary_quote_style
+	 *
+	 * @uses ::set_smart_quotes_primary
 	 */
 	public function test_primary_quote_style() {
 		$s = $this->settings;
+		$s->set_smart_quotes_primary();
 
 		$this->assertInstanceOf( Quotes::class, $s->primary_quote_style(), 'Primary quote style is not an instance of Quotes.' );
 	}
@@ -255,9 +257,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests secondary_quote_style.
 	 *
 	 * @covers ::secondary_quote_style
+	 *
+	 * @uses ::set_smart_quotes_secondary
 	 */
 	public function test_secondary_quote_style() {
 		$s = $this->settings;
+		$s->set_smart_quotes_secondary();
 
 		$this->assertInstanceOf( Quotes::class, $s->secondary_quote_style(), 'Secondary quote style is not an instance of Quotes.' );
 	}
@@ -266,9 +271,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests dash_style.
 	 *
 	 * @covers ::dash_style
+	 *
+	 * @uses ::set_smart_dashes_style
 	 */
 	public function test_dash_style() {
 		$s = $this->settings;
+		$s->set_smart_dashes_style();
 
 		$this->assertInstanceOf( Dashes::class, $s->dash_style(), 'Dash style is not an instance of Dashes.' );
 	}
@@ -429,10 +437,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_quote_style
 	 * @covers ::get_style
 	 *
+	 * @uses ::set_true_no_break_narrow_space
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_primary() {
 		$s = $this->settings;
+		$s->set_true_no_break_narrow_space();
 
 		$quote_styles = [
 			'doubleCurled',
@@ -505,10 +515,13 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_quote_style
 	 * @covers ::get_style
 	 *
+	 * @uses ::set_true_no_break_narrow_space
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
-		$s            = $this->settings;
+		$s = $this->settings;
+		$s->set_true_no_break_narrow_space();
+
 		$quote_styles = [
 			'doubleCurled',
 			'doubleCurledReversed',
@@ -590,7 +603,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::get_dash_style
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
@@ -1424,6 +1436,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_get_hash() {
 		$s = $this->settings;
+
+		// Finish initialization.
+		$s->set_smart_quotes_primary();
+		$s->set_smart_quotes_secondary();
+		$s->set_smart_dashes_style();
 
 		$s->set_smart_quotes( true );
 		$hash1 = $s->get_hash( 10 );
