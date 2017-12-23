@@ -131,7 +131,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 				$func['strlen']( $widow['neighbor'] ) > $max_pull || $func['strlen']( $widow['widow'] ) > $max_length ||
 
 				// Never replace thin and hair spaces with &nbsp;.
-				U::THIN_SPACE === $widow['space_between'] || U::HAIR_SPACE === $widow['space_between'] || U::NO_BREAK_NARROW_SPACE === $widow['space_between']
+				self::is_narrow_space( $widow['space_between'] )
 			) {
 				return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, $narrow_space );
 			}
@@ -150,6 +150,19 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 */
 	protected static function strip_breaking_characters( $string ) {
 		return str_replace( [ U::ZERO_WIDTH_SPACE, U::SOFT_HYPHEN ], '', $string );
+	}
+
+	/**
+	 * Is the given string one of the narrow space characters?
+	 *
+	 * @since 6.0.0
+	 *
+	 * @param  string $string The whitespace to test.
+	 *
+	 * @return bool
+	 */
+	protected static function is_narrow_space( $string ) {
+		return U::THIN_SPACE === $string || U::HAIR_SPACE === $string || U::NO_BREAK_NARROW_SPACE === $string;
 	}
 
 	/**
