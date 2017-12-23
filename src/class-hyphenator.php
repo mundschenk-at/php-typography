@@ -256,7 +256,7 @@ class Hyphenator {
 
 		// If this is a capitalized word, and settings do not allow hyphenation of such, abort!
 		// Note: This is different than uppercase words, where we are looking for title case.
-		if ( ! $hyphenate_title_case && $f['substr']( $the_key, 0, 1 ) !== $f['substr']( $word, 0, 1 ) ) {
+		if ( ! $hyphenate_title_case && $the_key !== $word ) {
 			return $word;
 		}
 
