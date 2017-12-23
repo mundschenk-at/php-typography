@@ -78,12 +78,7 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) ) {
-			return;
-		}
-
-		if ( '' !== DOM::get_prev_chr( $textnode ) ) {
-			// This is not the first textnode, abort.
+		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) || null !== DOM::get_previous_textnode( $textnode ) ) {
 			return;
 		}
 
