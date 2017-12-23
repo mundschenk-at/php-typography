@@ -156,17 +156,16 @@ class PHP_Typography {
 		// Query some nodes in the DOM.
 		$xpath          = new \DOMXPath( $dom );
 		$body_node      = $xpath->query( '/html/body' )->item( 0 );
-		$all_textnodes  = $xpath->query( '//text()', $body_node );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
-		foreach ( $all_textnodes as $textnode ) {
-			if ( self::arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ) {
-				continue;
-			}
-
-			// We won't be doing anything with spaces, so we can jump ship if that is all we have.
-			if ( $textnode->isWhitespaceInElementContent() ) {
+		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) {
+			if (
+				// One of the ancestors should be ignored.
+				self::arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ||
+				// The node contains only whitespace.
+				$textnode->isWhitespaceInElementContent()
+			) {
 				continue;
 			}
 
