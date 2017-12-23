@@ -255,6 +255,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * Test get_block_parent.
 	 *
 	 * @covers ::get_block_parent
+	 * @covers ::is_block_tag
 	 *
 	 * @dataProvider provide_get_block_parent_data
 	 *
@@ -288,6 +289,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_block_parent_name
 	 *
 	 * @uses ::get_block_parent
+	 * @uses ::is_block_tag
 	 *
 	 * @dataProvider provide_get_block_parent_data
 	 *
@@ -312,6 +314,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_adjacent_chr
 	 * @covers ::get_previous_textnode
 	 * @covers ::get_adjacent_textnode
+	 * @covers ::is_block_tag
 	 *
 	 * @uses ::get_last_textnode
 	 * @uses ::get_edge_textnode
@@ -336,6 +339,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_previous_textnode
 	 * @covers ::get_adjacent_textnode
+	 * @covers ::is_block_tag
 	 */
 	public function test_get_previous_textnode_null() {
 		$node = DOM::get_previous_textnode( null );
@@ -349,6 +353,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_adjacent_chr
 	 * @covers ::get_next_textnode
 	 * @covers ::get_adjacent_textnode
+	 * @covers ::is_block_tag
 	 *
 	 * @uses ::get_first_textnode
 	 * @uses ::get_edge_textnode
@@ -373,6 +378,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_next_textnode
 	 * @covers ::get_adjacent_textnode
+	 * @covers ::is_block_tag
 	 */
 	public function test_get_next_textnode_null() {
 		$node = DOM::get_next_textnode( null );
@@ -385,6 +391,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_first_textnode
 	 * @covers ::get_edge_textnode
+	 * @covers ::is_block_tag
 	 */
 	public function test_get_first_textnode() {
 		$html  = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
@@ -427,6 +434,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_first_textnode
 	 * @covers ::get_edge_textnode
+	 * @covers ::is_block_tag
 	 */
 	public function test_get_first_textnode_only_block_level() {
 		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
@@ -443,6 +451,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_last_textnode
 	 * @covers ::get_edge_textnode
+	 * @covers ::is_block_tag
 	 *
 	 * @uses ::get_first_textnode
 	 */
@@ -489,6 +498,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 *
 	 * @covers ::get_last_textnode
 	 * @covers ::get_edge_textnode
+	 * @covers ::is_block_tag
 	 */
 	public function test_get_last_textnode_only_block_level() {
 		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
