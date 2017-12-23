@@ -115,7 +115,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 		}
 
 		// Do what we have to do.
-		return preg_replace_callback( self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END, function( array $widow ) use ( $func, $max_pull, $max_length, $word_number, $narrow_space ) {
+		return \preg_replace_callback( self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END, function( array $widow ) use ( $func, $max_pull, $max_length, $word_number, $narrow_space ) {
 
 			// If we are here, we know that widows are being protected in some fashion
 			// with that, we will assert that widows should never be hyphenated or wrapped
@@ -149,7 +149,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * @return string
 	 */
 	protected static function strip_breaking_characters( $string ) {
-		return str_replace( [ U::ZERO_WIDTH_SPACE, U::SOFT_HYPHEN ], '', $string );
+		return \str_replace( [ U::ZERO_WIDTH_SPACE, U::SOFT_HYPHEN ], '', $string );
 	}
 
 	/**
@@ -175,7 +175,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * @return string
 	 */
 	protected static function make_space_nonbreaking( $string, $narrow_space, $u ) {
-		return preg_replace(
+		return \preg_replace(
 			[
 				'/\s*' . U::THIN_SPACE . '\s*/u',
 				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',

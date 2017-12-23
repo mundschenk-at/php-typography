@@ -131,11 +131,11 @@ class Hyphenator {
 			}
 
 			$exception                    = $f['strtolower']( $exception );
-			$exception_keys[ $exception ] = preg_replace( "#-#{$f['u']}", '', $exception );
+			$exception_keys[ $exception ] = \preg_replace( "#-#{$f['u']}", '', $exception );
 		}
 
 		// Update exceptions.
-		$this->custom_exceptions      = array_flip( $exception_keys );
+		$this->custom_exceptions      = \array_flip( $exception_keys );
 		$this->custom_exceptions_hash = $new_hash;
 
 		// Force remerging of patgen and custom exception patterns.
@@ -150,7 +150,7 @@ class Hyphenator {
 	 * @return string
 	 */
 	protected static function get_object_hash( $object ) {
-		return md5( json_encode( $object ), false );
+		return \md5( \json_encode( $object ), false );
 	}
 
 	/**
@@ -166,13 +166,13 @@ class Hyphenator {
 		}
 
 		$success            = false;
-		$language_file_name = dirname( __FILE__ ) . '/lang/' . $lang . '.json';
+		$language_file_name = \dirname( __FILE__ ) . '/lang/' . $lang . '.json';
 
-		if ( file_exists( $language_file_name ) ) {
-			$raw_language_file = file_get_contents( $language_file_name );
+		if ( \file_exists( $language_file_name ) ) {
+			$raw_language_file = \file_get_contents( $language_file_name );
 
 			if ( false !== $raw_language_file ) {
-				$language_file = json_decode( $raw_language_file, true );
+				$language_file = \json_decode( $raw_language_file, true );
 
 				if ( false !== $language_file ) {
 					$this->language           = $lang;

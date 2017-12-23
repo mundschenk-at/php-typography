@@ -147,21 +147,21 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
-			$node_data = preg_replace( self::SPACING, '$1' . $settings->no_break_narrow_space() . '$2', $node_data );
+			$node_data = \preg_replace( self::SPACING, '$1' . $settings->no_break_narrow_space() . '$2', $node_data );
 		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
-			$node_data = preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
+			$node_data = \preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
 		}
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
 			// Escape sequences we don't want fractionified.
-			$node_data = preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
-			$node_data = preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
+			$node_data = \preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
+			$node_data = \preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
 
 			// Replace fractions.
-			$node_data = preg_replace( self::FRACTION_MATCHING, $this->replacement, $node_data );
+			$node_data = \preg_replace( self::FRACTION_MATCHING, $this->replacement, $node_data );
 
 			// Unescape escaped sequences.
-			$node_data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
+			$node_data = \str_replace( RE::ESCAPE_MARKER, '', $node_data );
 		}
 
 		// Restore textnode content.

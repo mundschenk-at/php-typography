@@ -100,7 +100,7 @@ final class Token {
 				throw new \UnexpectedValueException( "Invalid type $type." );
 		}
 
-		if ( ! is_string( $value ) ) {
+		if ( ! \is_string( $value ) ) {
 			throw new \UnexpectedValueException( 'Value has to be a string.' );
 		} else {
 			$this->value = $value;
@@ -117,7 +117,7 @@ final class Token {
 	 * @return mixed
 	 */
 	public function __get( $property ) {
-		if ( property_exists( $this, $property ) ) {
+		if ( \property_exists( $this, $property ) ) {
 			return $this->$property;
 		}
 	}

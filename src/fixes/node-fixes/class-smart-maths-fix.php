@@ -196,8 +196,8 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// First, let's find math equations.
-		$node_data = preg_replace_callback( self::MATH_EQUATION, function( array $matches ) {
-			return str_replace(
+		$node_data = \preg_replace_callback( self::MATH_EQUATION, function( array $matches ) {
+			return \str_replace(
 				[
 					'-',
 					'/',
@@ -214,21 +214,21 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		}, $node_data );
 
 		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
-		$node_data = preg_replace( self::REVERT_RANGE, '$1-$2', $node_data );
+		$node_data = \preg_replace( self::REVERT_RANGE, '$1-$2', $node_data );
 
 		// Revert fractions to basic slash.
 		// We'll leave styling fractions to smart_fractions.
-		$node_data = preg_replace( self::REVERT_FRACTION, '$1/$2', $node_data );
+		$node_data = \preg_replace( self::REVERT_FRACTION, '$1/$2', $node_data );
 
 		// Revert date back to original formats.
 		// YYYY-MM-DD.
-		$node_data = preg_replace( self::REVERT_DATE_YYYY_MM_DD,         '$1-$2-$3',     $node_data );
+		$node_data = \preg_replace( self::REVERT_DATE_YYYY_MM_DD,         '$1-$2-$3',     $node_data );
 		// MM-DD-YYYY or DD-MM-YYYY.
-		$node_data = preg_replace( self::REVERT_DATE_MM_DD_YYYY,         '$1$3-$2$4-$5', $node_data );
+		$node_data = \preg_replace( self::REVERT_DATE_MM_DD_YYYY,         '$1$3-$2$4-$5', $node_data );
 		// YYYY-MM or YYYY-DDD next.
-		$node_data = preg_replace( self::REVERT_DATE_YYYY_MM,            '$1-$2',        $node_data );
+		$node_data = \preg_replace( self::REVERT_DATE_YYYY_MM,            '$1-$2',        $node_data );
 		// MM/DD/YYYY or DD/MM/YYYY.
-		$node_data = preg_replace( self::REVERT_DATE_MM_DD_YYYY_SLASHED, '$1$3/$2$4/$5', $node_data );
+		$node_data = \preg_replace( self::REVERT_DATE_MM_DD_YYYY_SLASHED, '$1$3/$2$4/$5', $node_data );
 
 		// Restore textnode content.
 		$textnode->data = $node_data;

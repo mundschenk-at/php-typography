@@ -97,8 +97,8 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 		// Test for and parse urls.
 		foreach ( $tokens as $index => $token ) {
 			$value = $token->value;
-			if ( preg_match( $this->email_pattern, $value, $email_match ) ) {
-				$tokens[ $index ] = $token->with_value( preg_replace( self::REPLACE_EMAILS, '$1' . U::ZERO_WIDTH_SPACE, $value ) );
+			if ( \preg_match( $this->email_pattern, $value, $email_match ) ) {
+				$tokens[ $index ] = $token->with_value( \preg_replace( self::REPLACE_EMAILS, '$1' . U::ZERO_WIDTH_SPACE, $value ) );
 			}
 		}
 

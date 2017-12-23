@@ -54,8 +54,8 @@ class Smart_Ellipses_Fix extends Abstract_Node_Fix {
 		// Cache textnode content.
 		$node_data = $textnode->data;
 
-		$node_data = str_replace( [ '....', '. . . .' ], '.' . U::ELLIPSIS, $node_data );
-		$node_data = str_replace( [ '...', '. . .' ],          U::ELLIPSIS, $node_data );
+		$node_data = \str_replace( [ '....', '. . . .' ], '.' . U::ELLIPSIS, $node_data );
+		$node_data = \str_replace( [ '...', '. . .' ],          U::ELLIPSIS, $node_data );
 
 		// Restore textnode content.
 		$textnode->data = $node_data;

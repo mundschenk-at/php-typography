@@ -138,7 +138,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		if ( isset( $settings['ignoreTags'] ) && $is_title && ( in_array( 'h1', $settings['ignoreTags'], true ) || in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
+		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', $settings['ignoreTags'], true ) || \in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
 
@@ -190,7 +190,7 @@ class PHP_Typography {
 	 */
 	protected static function arrays_intersect( array $array1, array $array2 ) {
 		foreach ( $array1 as $value ) {
-			if ( isset( $array2[ spl_object_hash( $value ) ] ) ) {
+			if ( isset( $array2[ \spl_object_hash( $value ) ] ) ) {
 				return true;
 			}
 		}
@@ -213,20 +213,20 @@ class PHP_Typography {
 	 */
 	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings, array $body_classes = [] ) {
 		// Silence some parsing errors for invalid HTML.
-		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
-		$xml_error_handling = libxml_use_internal_errors( true );
+		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
+		$xml_error_handling = \libxml_use_internal_errors( true );
 
 		// Inject <body> classes.
-		$body = empty( $body_classes ) ? 'body' : 'body class="' . implode( ' ', $body_classes ) . '"';
+		$body = empty( $body_classes ) ? 'body' : 'body class="' . \implode( ' ', $body_classes ) . '"';
 
 		// Do the actual parsing.
 		$dom           = $parser->loadHTML( "<!DOCTYPE html><html><{$body}>{$html}</body></html>" );
 		$dom->encoding = 'UTF-8';
 
 		// Restore original error handling.
-		libxml_clear_errors();
-		libxml_use_internal_errors( $xml_error_handling );
-		restore_error_handler();
+		\libxml_clear_errors();
+		\libxml_use_internal_errors( $xml_error_handling );
+		\restore_error_handler();
 
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
@@ -254,12 +254,12 @@ class PHP_Typography {
 	 * @return boolean Returns true if the error was handled, false otherwise.
 	 */
 	public function handle_parsing_errors( $errno, $errstr, $errfile ) {
-		if ( ! ( error_reporting() & $errno ) ) { // @codingStandardsIgnoreLine.
+		if ( ! ( \error_reporting() & $errno ) ) { // @codingStandardsIgnoreLine.
 			return true; // not interesting.
 		}
 
 		// Ignore warnings from parser & let PHP handle the rest.
-		return $errno & E_USER_WARNING && 0 === substr_compare( $errfile, 'DOMTreeBuilder.php', -18 );
+		return $errno & E_USER_WARNING && 0 === \substr_compare( $errfile, 'DOMTreeBuilder.php', -18 );
 	}
 
 	/**
@@ -275,17 +275,17 @@ class PHP_Typography {
 		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
-			$query_parts[] = '//' . implode( ' | //', $settings['ignoreTags'] );
+			$query_parts[] = '//' . \implode( ' | //', $settings['ignoreTags'] );
 		}
 		if ( ! empty( $settings['ignoreClasses'] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $settings['ignoreIDs'] ) ) {
-			$query_parts[] = '//*[@id=\'' . implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
+			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {
-			$ignore_query = implode( ' | ', $query_parts );
+			$ignore_query = \implode( ' | ', $query_parts );
 
 			$nodelist = $xpath->query( $ignore_query, $initial_node );
 			if ( false !== $nodelist ) {
@@ -312,7 +312,7 @@ class PHP_Typography {
 			return $node; // abort early to save cycles.
 		}
 
-		set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
+		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
 
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
@@ -330,7 +330,7 @@ class PHP_Typography {
 			}
 		}
 
-		restore_error_handler();
+		\restore_error_handler();
 
 		return $result;
 	}
@@ -404,29 +404,29 @@ class PHP_Typography {
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
 		$languages             = [];
-		$handle                = opendir( $path );
+		$handle                = \opendir( $path );
 
 		// Read all files in directory.
-		$file = readdir( $handle );
+		$file = \readdir( $handle );
 		while ( $file ) {
 			// We only want the JSON files.
-			if ( '.json' === substr( $file, -5 ) ) {
-				$file_content = file_get_contents( $path . $file );
-				if ( preg_match( $language_name_pattern, $file_content, $matches ) ) {
-					$language_name = substr( $matches[1], 1, -1 );
-					$language_code = substr( $file, 0, -5 );
+			if ( '.json' === \substr( $file, -5 ) ) {
+				$file_content = \file_get_contents( $path . $file );
+				if ( \preg_match( $language_name_pattern, $file_content, $matches ) ) {
+					$language_name = \substr( $matches[1], 1, -1 );
+					$language_code = \substr( $file, 0, -5 );
 
 					$languages[ $language_code ] = $language_name;
 				}
 			}
 
 			// Read next file.
-			$file = readdir( $handle );
+			$file = \readdir( $handle );
 		}
-		closedir( $handle );
+		\closedir( $handle );
 
 		// Sort translated language names according to current locale.
-		asort( $languages );
+		\asort( $languages );
 
 		return $languages;
 	}

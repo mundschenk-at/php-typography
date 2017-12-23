@@ -58,16 +58,16 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$node_data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
+		$node_data = \preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
 
 		// Replace marks.
-		$node_data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,       $node_data );
-		$node_data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $node_data );
-		$node_data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK, $node_data );
-		$node_data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $node_data );
-		$node_data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $node_data );
+		$node_data = \str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,       $node_data );
+		$node_data = \str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $node_data );
+		$node_data = \str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK, $node_data );
+		$node_data = \str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $node_data );
+		$node_data = \str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $node_data );
 
 		// Un-escape escaped sequences & resetore textnode content.
-		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
+		$textnode->data = \str_replace( RE::ESCAPE_MARKER, '', $node_data );
 	}
 }

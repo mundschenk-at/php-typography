@@ -120,9 +120,9 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 		// Cache $textnode->data for this fix.
 		$node_data = $textnode->data;
 
-		$node_data = preg_replace( self::EM_DASH_SPACING,             $this->em_dash_replacement,            $node_data );
-		$node_data = preg_replace( $this->parenthetical_dash_spacing, $this->parenthetical_dash_replacement, $node_data );
-		$node_data = preg_replace( $this->interval_dash_spacing,      $this->interval_dash_replacement,      $node_data );
+		$node_data = \preg_replace( self::EM_DASH_SPACING,             $this->em_dash_replacement,            $node_data );
+		$node_data = \preg_replace( $this->parenthetical_dash_spacing, $this->parenthetical_dash_replacement, $node_data );
+		$node_data = \preg_replace( $this->interval_dash_spacing,      $this->interval_dash_replacement,      $node_data );
 
 		// Restore textnode content.
 		$textnode->data = $node_data;

@@ -76,11 +76,11 @@ abstract class DOM {
 	 */
 	public static function block_tags( $reset = false ) {
 		if ( empty( self::$block_tags ) || $reset ) {
-			self::$block_tags = array_merge(
-				array_flip( array_filter( array_keys( Elements::$html5 ), function( $tag ) {
+			self::$block_tags = \array_merge(
+				\array_flip( \array_filter( \array_keys( Elements::$html5 ), function( $tag ) {
 					return Elements::isA( $tag, Elements::BLOCK_TAG );
 				} ) ),
-				array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
+				\array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
 			);
 		}
 
@@ -100,8 +100,8 @@ abstract class DOM {
 	 */
 	public static function inappropriate_tags( $reset = false ) {
 		if ( empty( self::$inappropriate_tags ) || $reset ) {
-			self::$inappropriate_tags = array_flip( array_merge(
-				array_filter( array_keys( Elements::$html5 ), function( $tag ) {
+			self::$inappropriate_tags = \array_flip( \array_merge(
+				\array_filter( \array_keys( Elements::$html5 ), function( $tag ) {
 					return Elements::isA( $tag, Elements::VOID_TAG )
 						|| Elements::isA( $tag, Elements::TEXT_RAW )
 						|| Elements::isA( $tag, Elements::TEXT_RCDATA );
@@ -124,7 +124,7 @@ abstract class DOM {
 		$out = [];
 
 		foreach ( $list as $node ) {
-			$out[ spl_object_hash( $node ) ] = $node;
+			$out[ \spl_object_hash( $node ) ] = $node;
 		}
 
 		return $out;
@@ -168,12 +168,12 @@ abstract class DOM {
 		}
 
 		// Ensure we always have an array of classnames.
-		if ( ! is_array( $classnames ) ) {
+		if ( ! \is_array( $classnames ) ) {
 			$classnames = [ $classnames ];
 		}
 
 		if ( $tag->hasAttribute( 'class' ) ) {
-			$tag_classes = array_flip( explode( ' ', $tag->getAttribute( 'class' ) ) );
+			$tag_classes = \array_flip( \explode( ' ', $tag->getAttribute( 'class' ) ) );
 
 			foreach ( $classnames as $classname ) {
 				if ( isset( $tag_classes[ $classname ] ) ) {
@@ -227,7 +227,7 @@ abstract class DOM {
 			$func = Strings::functions( $textnode->data );
 
 			if ( ! empty( $func ) ) {
-				return preg_replace( '/\p{C}/Su', '', $func['substr']( $textnode->data, $position, $length ) );
+				return \preg_replace( '/\p{C}/Su', '', $func['substr']( $textnode->data, $position, $length ) );
 			}
 		}
 
