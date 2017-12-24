@@ -57,14 +57,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 	const NUMBERS_BEFORE_PRIME = '\b(?:\d+\/)?\d{1,3}';
 
-	const DOUBLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=\W|\Z)/";
-	const DOUBLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")''(?=-\w)/";
-	const DOUBLE_PRIME_1_GLYPH          = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=\W|\Z)/';
-	const DOUBLE_PRIME_1_GLYPH_COMPOUND = '/(' . self::NUMBERS_BEFORE_PRIME . ')"(?=-\w)/';
-	const SINGLE_PRIME                  = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z)/";
-	const SINGLE_PRIME_COMPOUND         = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=-\w)/";
-	const SINGLE_DOUBLE_PRIME           = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)''(?=\W|\Z)/";
-	const SINGLE_DOUBLE_PRIME_1_GLYPH   = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)\"(?=\W|\Z)/";
+	const DOUBLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")(?:''|\")(?=\W|\Z|-\w)/";
+	const SINGLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z|-\w)/";
+	const SINGLE_DOUBLE_PRIME = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)(?:''|\")(?=\W|\Z)/";
 
 	const SINGLE_QUOTED_NUMBERS      = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/";
 	const DOUBLE_QUOTED_NUMBERS      = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/';
@@ -178,15 +173,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( [ '<<', '>>' ], [ U::GUILLEMET_OPEN, U::GUILLEMET_CLOSE ],  $node_data );
 
 		// Primes.
-		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'],           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
-		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME_1_GLYPH . $f['u'],   '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
-		$node_data = \preg_replace( self::DOUBLE_PRIME . $f['u'],                  '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
-		$node_data = \preg_replace( self::SINGLE_PRIME . $f['u'],                  '$1' . U::SINGLE_PRIME,                            $node_data );
-		$node_data = \preg_replace( self::SINGLE_PRIME_COMPOUND . $f['u'],         '$1' . U::SINGLE_PRIME,                            $node_data );
-		$node_data = \preg_replace( self::DOUBLE_PRIME_COMPOUND . $f['u'],         '$1' . U::DOUBLE_PRIME,                            $node_data );
-		$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH . $f['u'],          '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
-		$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND . $f['u'], '$1' . U::DOUBLE_PRIME,                            $node_data );
-		//$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND . $f['u'], '$1' . U::DOUBLE_PRIME,                            $node_data );
+		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'], '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
+		$node_data = \preg_replace( self::DOUBLE_PRIME . $f['u'],        '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
+		$node_data = \preg_replace( self::SINGLE_PRIME . $f['u'],        '$1' . U::SINGLE_PRIME,                            $node_data );
 
 		// Backticks & comma quotes.
 		$node_data = \str_replace(
