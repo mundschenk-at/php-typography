@@ -175,8 +175,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \preg_replace( self::DOUBLE_QUOTED_NUMBERS . $f['u'], "{$double_open}\$1{$double_close}", $node_data );
 
 		// Guillemets.
-		$node_data = \str_replace( '<<', U::GUILLEMET_OPEN,  $node_data );
-		$node_data = \str_replace( '>>', U::GUILLEMET_CLOSE, $node_data );
+		$node_data = \str_replace( [ '<<', '>>' ], [ U::GUILLEMET_OPEN, U::GUILLEMET_CLOSE ],  $node_data );
 
 		// Primes.
 		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'],           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
@@ -187,35 +186,50 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \preg_replace( self::DOUBLE_PRIME_COMPOUND . $f['u'],         '$1' . U::DOUBLE_PRIME,                            $node_data );
 		$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH . $f['u'],          '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
 		$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND . $f['u'], '$1' . U::DOUBLE_PRIME,                            $node_data );
+		//$node_data = \preg_replace( self::DOUBLE_PRIME_1_GLYPH_COMPOUND . $f['u'], '$1' . U::DOUBLE_PRIME,                            $node_data );
 
-		// Backticks.
-		$node_data = \str_replace( '``', $double_open,  $node_data );
-		$node_data = \str_replace( '`',  $single_open,  $node_data );
-		$node_data = \str_replace( "''", $double_close, $node_data );
-
-		// Comma quotes.
-		$node_data = \str_replace( ',,', U::DOUBLE_LOW_9_QUOTE, $node_data );
+		// Backticks & comma quotes.
+		$node_data = \str_replace(
+			[ '``', '`', "''", ',,' ],
+			[ $double_open, $single_open, $double_close, U::DOUBLE_LOW_9_QUOTE ],
+			$node_data
+		);
 		$node_data = \preg_replace( self::COMMA_QUOTE . $f['u'], U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
 
 		// Apostrophes.
-		$node_data = \preg_replace( self::APOSTROPHE_WORDS . $f['u'],   U::APOSTROPHE,        $node_data );
-		$node_data = \preg_replace( self::APOSTROPHE_DECADES . $f['u'], U::APOSTROPHE . '$1', $node_data ); // decades: '98.
+		$node_data = \preg_replace(
+			[ self::APOSTROPHE_WORDS . $f['u'], self::APOSTROPHE_DECADES . $f['u'] ],
+			[ U::APOSTROPHE, U::APOSTROPHE . '$1' ],
+			$node_data
+		);
 		$node_data = \str_replace( $this->apostrophe_exception_matches, $this->apostrophe_exception_replacements, $node_data );
 
 		// Quotes.
 		$node_data = \str_replace( $this->brackets_matches, $this->brackets_replacements, $node_data );
-		$node_data = \preg_replace( self::SINGLE_QUOTE_OPEN . $f['u'],          $single_open,  $node_data );
-		$node_data = \preg_replace( self::SINGLE_QUOTE_CLOSE . $f['u'],         $single_close, $node_data );
-		$node_data = \preg_replace( self::SINGLE_QUOTE_OPEN_SPECIAL . $f['u'],  $single_open,  $node_data ); // like _'¿hola?'_.
-		$node_data = \preg_replace( self::SINGLE_QUOTE_CLOSE_SPECIAL . $f['u'], $single_close, $node_data );
-		$node_data = \preg_replace( self::DOUBLE_QUOTE_OPEN . $f['u'],          $double_open,  $node_data );
-		$node_data = \preg_replace( self::DOUBLE_QUOTE_CLOSE . $f['u'],         $double_close, $node_data );
-		$node_data = \preg_replace( self::DOUBLE_QUOTE_OPEN_SPECIAL . $f['u'],  $double_open,  $node_data );
-		$node_data = \preg_replace( self::DOUBLE_QUOTE_CLOSE_SPECIAL . $f['u'], $double_close, $node_data );
+		$node_data = \preg_replace(
+			[
+				self::SINGLE_QUOTE_OPEN . $f['u'],
+				self::SINGLE_QUOTE_CLOSE . $f['u'],
+				self::SINGLE_QUOTE_OPEN_SPECIAL . $f['u'], // like _'¿hola?'_.
+				self::SINGLE_QUOTE_CLOSE_SPECIAL . $f['u'],
+				self::DOUBLE_QUOTE_OPEN . $f['u'],
+				self::DOUBLE_QUOTE_CLOSE . $f['u'],
+				self::DOUBLE_QUOTE_OPEN_SPECIAL . $f['u'],
+				self::DOUBLE_QUOTE_CLOSE_SPECIAL . $f['u'],
+			], [
+				$single_open,
+				$single_close,
+				$single_open,
+				$single_close,
+				$double_open,
+				$double_close,
+				$double_open,
+				$double_close,
+			], $node_data
+		);
 
 		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
-		$node_data = \str_replace( "'", $single_close, $node_data );
-		$node_data = \str_replace( '"', $double_close, $node_data );
+		$node_data = \str_replace( [ "'", '"' ], [ $single_close, $double_close ], $node_data );
 
 		// Check if adjacent characters where replaced with multi-byte replacements.
 		$quotes          = [ $double_open, $double_close, $single_open, $single_close ];
