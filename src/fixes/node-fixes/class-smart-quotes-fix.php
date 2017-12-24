@@ -175,10 +175,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \preg_replace( self::DOUBLE_QUOTED_NUMBERS . $f['u'], "{$double_open}\$1{$double_close}", $node_data );
 
 		// Guillemets.
-		$node_data = \str_replace( '<<',       U::GUILLEMET_OPEN,  $node_data );
-		$node_data = \str_replace( '&lt;&lt;', U::GUILLEMET_OPEN,  $node_data );
-		$node_data = \str_replace( '>>',       U::GUILLEMET_CLOSE, $node_data );
-		$node_data = \str_replace( '&gt;&gt;', U::GUILLEMET_CLOSE, $node_data );
+		$node_data = \str_replace( '<<', U::GUILLEMET_OPEN,  $node_data );
+		$node_data = \str_replace( '>>', U::GUILLEMET_CLOSE, $node_data );
 
 		// Primes.
 		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'],           '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
