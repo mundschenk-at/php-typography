@@ -180,6 +180,31 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 			)
 		/Sxu';
 
+	const REVERT_MATCHES = [
+		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
+		self::REVERT_RANGE,
+		// Revert fractions to basic slash.
+		// We'll leave styling fractions to smart_fractions.
+		self::REVERT_FRACTION,
+		// Revert date back to original formats.
+		// YYYY-MM-DD.
+		self::REVERT_DATE_YYYY_MM_DD,
+		// MM-DD-YYYY or DD-MM-YYYY.
+		self::REVERT_DATE_MM_DD_YYYY,
+		// YYYY-MM or YYYY-DDD next.
+		self::REVERT_DATE_YYYY_MM,
+		self::REVERT_DATE_MM_DD_YYYY_SLASHED,
+	];
+
+	const REVERT_REPLACEMENTS = [
+		'$1-$2',
+		'$1/$2',
+		'$1-$2-$3',
+		'$1$3-$2$4-$5',
+		'$1-$2',
+		'$1$3/$2$4/$5',
+	];
+
 	/**
 	 * Apply the fix to a given textnode.
 	 *
@@ -213,24 +238,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 			);
 		}, $node_data );
 
-		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
-		$node_data = \preg_replace( self::REVERT_RANGE, '$1-$2', $node_data );
-
-		// Revert fractions to basic slash.
-		// We'll leave styling fractions to smart_fractions.
-		$node_data = \preg_replace( self::REVERT_FRACTION, '$1/$2', $node_data );
-
-		// Revert date back to original formats.
-		// YYYY-MM-DD.
-		$node_data = \preg_replace( self::REVERT_DATE_YYYY_MM_DD,         '$1-$2-$3',     $node_data );
-		// MM-DD-YYYY or DD-MM-YYYY.
-		$node_data = \preg_replace( self::REVERT_DATE_MM_DD_YYYY,         '$1$3-$2$4-$5', $node_data );
-		// YYYY-MM or YYYY-DDD next.
-		$node_data = \preg_replace( self::REVERT_DATE_YYYY_MM,            '$1-$2',        $node_data );
-		// MM/DD/YYYY or DD/MM/YYYY.
-		$node_data = \preg_replace( self::REVERT_DATE_MM_DD_YYYY_SLASHED, '$1$3/$2$4/$5', $node_data );
-
-		// Restore textnode content.
-		$textnode->data = $node_data;
+		// Revert some non-desired changes and restore textnode content.
+		$textnode->data = \preg_replace( self::REVERT_MATCHES, self::REVERT_REPLACEMENTS, $node_data );
 	}
 }
