@@ -42,7 +42,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
 	const SETTING     = 'unitSpacing';
 	const REPLACEMENT = '$1' . U::NO_BREAK_NARROW_SPACE . '$2';
-	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')\b/x';
+	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')\b/Sx';
 
 	const _STANDARD_UNITS = '
 		### Temporal units

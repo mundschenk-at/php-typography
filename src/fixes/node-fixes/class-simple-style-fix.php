@@ -91,6 +91,6 @@ abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex, '<span class="' . $this->css_class . '">$1</span>', $textnode->data );
+		$textnode->data = \preg_replace( $this->regex, '<span class="' . $this->css_class . '">$1</span>', $textnode->data );
 	}
 }

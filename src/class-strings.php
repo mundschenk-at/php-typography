@@ -142,7 +142,7 @@ abstract class Strings {
 		// Deal with an array of character codes.
 		$json = '"';
 		foreach ( $codes as $code ) {
-			$json .= sprintf( '\u%04x', $code );
+			$json .= \sprintf( '\u%04x', $code );
 		}
 		$json .= '"';
 

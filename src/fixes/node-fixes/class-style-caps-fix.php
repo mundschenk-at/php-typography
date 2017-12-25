@@ -90,9 +90,7 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 			)
 		)
 		(?![\w\-_' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']) # negative lookahead assertion
-	/xu';
-
-	const SETTINGS_SWITCH = 'styleCaps';
+	/Sxu';
 
 	/**
 	 * Creates a new node fix with a class.
@@ -101,6 +99,6 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 	 * @param bool   $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $css_class, $feed_compatible = false ) {
-		parent::__construct( self::REGEX, self::SETTINGS_SWITCH, $css_class, $feed_compatible );
+		parent::__construct( self::REGEX, 'styleCaps', $css_class, $feed_compatible );
 	}
 }

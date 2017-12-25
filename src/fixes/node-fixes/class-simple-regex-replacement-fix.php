@@ -89,6 +89,6 @@ abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = preg_replace( $this->regex, $this->replacement, $textnode->data );
+		$textnode->data = \preg_replace( $this->regex, $this->replacement, $textnode->data );
 	}
 }

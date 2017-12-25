@@ -301,12 +301,12 @@ class Text_Parser {
 	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
 	public function load( $raw_text ) {
-		if ( ! is_string( $raw_text ) ) {
+		if ( ! \is_string( $raw_text ) ) {
 			return false; // we have an error, abort.
 		}
 
 		// Abort if a simple string exceeds 500 characters (security concern).
-		if ( preg_match( self::_RE_MAX_STRING_LENGTH, $raw_text ) ) {
+		if ( \preg_match( self::_RE_MAX_STRING_LENGTH, $raw_text ) ) {
 			return false;
 		}
 
@@ -318,7 +318,7 @@ class Text_Parser {
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
+		$this->text = self::tokenize( \preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
 
 		// The token array should never be empty.
 		return ! empty( $this->text );
@@ -336,11 +336,11 @@ class Text_Parser {
 		$index  = 0;
 
 		foreach ( $parts as $part ) {
-			if ( preg_match( self::_RE_SPACE, $part ) ) {
+			if ( \preg_match( self::_RE_SPACE, $part ) ) {
 				$tokens[ $index ] = new Token( $part, Token::SPACE );
-			} elseif ( preg_match( self::_RE_PUNCTUATION, $part ) ) {
+			} elseif ( \preg_match( self::_RE_PUNCTUATION, $part ) ) {
 				$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
-			} elseif ( preg_match( self::_RE_WORD, $part ) ) {
+			} elseif ( \preg_match( self::_RE_WORD, $part ) ) {
 				// Make sure that things like email addresses and URLs are not broken up
 				// into words and punctuation not preceeded by an 'other'.
 				self::parse_ambiguous_token( Token::WORD, $part, $tokens, $index );
@@ -530,7 +530,7 @@ class Text_Parser {
 	 */
 	protected function conforms_to_letters_policy( Token $token, $policy ) {
 		return $this->check_policy( $token, $policy, self::ALLOW_ALL_LETTERS, self::REQUIRE_ALL_LETTERS, self::NO_ALL_LETTERS, function( $value ) {
-			return preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
+			return \preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
 		} );
 	}
 
@@ -556,7 +556,7 @@ class Text_Parser {
 	 */
 	protected function conforms_to_compounds_policy( Token $token, $policy ) {
 		return $this->check_policy( $token, $policy, self::ALLOW_COMPOUNDS, self::NO_COMPOUNDS, self::REQUIRE_COMPOUNDS, function( $value ) {
-			return preg_replace( '/-/S', '', $value );
+			return \preg_replace( '/-/S', '', $value );
 		} );
 	}
 

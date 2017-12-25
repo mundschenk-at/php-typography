@@ -62,8 +62,8 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	public function __construct( $feed_compatible = false ) {
 		parent::__construct( Token_Fix::MIXED_WORDS, $feed_compatible );
 
-		$this->hyphens_array             = array_unique( [ '-', U::HYPHEN ] );
-		$this->remove_ending_space_regex = '/(' . implode( '|', $this->hyphens_array ) . ')' . U::ZERO_WIDTH_SPACE . '$/';
+		$this->hyphens_array             = \array_unique( [ '-', U::HYPHEN ] );
+		$this->remove_ending_space_regex = '/(' . \implode( '|', $this->hyphens_array ) . ')' . U::ZERO_WIDTH_SPACE . '$/';
 	}
 
 	/**
@@ -83,16 +83,16 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 				$value = $text_token->value;
 
 				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
-					$value = str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
-					$value = str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
-					$value = str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
+					$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
+					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
+					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
 
-					$value = preg_replace( $this->remove_ending_space_regex, '$1', $value );
+					$value = \preg_replace( $this->remove_ending_space_regex, '$1', $value );
 				}
 
 				if ( ! empty( $settings['smartDashes'] ) ) {
 					// Handled here because we need to know we are inside a word and not a URL.
-					$value = str_replace( '-', U::HYPHEN, $value );
+					$value = \str_replace( '-', U::HYPHEN, $value );
 				}
 
 				$tokens[ $index ] = $text_token->with_value( $value );

@@ -26,7 +26,6 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\DOM;
 use PHP_Typography\RE;
 use PHP_Typography\Settings;
 use PHP_Typography\U;
@@ -41,6 +40,49 @@ use PHP_Typography\U;
 class Smart_Marks_Fix extends Abstract_Node_Fix {
 
 	const ESCAPE_501C = '/\b(501\()(c)(\)\((?:[1-9]|[1-2][0-9])\))/S';
+
+	const MARKS = [
+		'(c)'  => U::COPYRIGHT,
+		'(C)'  => U::COPYRIGHT,
+		'(r)'  => U::REGISTERED_MARK,
+		'(R)'  => U::REGISTERED_MARK,
+		'(p)'  => U::SOUND_COPY_MARK,
+		'(P)'  => U::SOUND_COPY_MARK,
+		'(sm)' => U::SERVICE_MARK,
+		'(SM)' => U::SERVICE_MARK,
+		'(tm)' => U::TRADE_MARK,
+		'(TM)' => U::TRADE_MARK,
+	];
+
+	/**
+	 * An array of marks to match.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @var array
+	 */
+	private $marks;
+
+	/**
+	 * An array of replacement marks.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @var array
+	 */
+	private $replacements;
+
+	/**
+	 * Creates a new fix instance.
+	 *
+	 * @param bool $feed_compatible Optional. Default false.
+	 */
+	public function __construct( $feed_compatible = false ) {
+		parent::__construct( $feed_compatible );
+
+		$this->marks        = \array_keys( self::MARKS );
+		$this->replacements = \array_values( self::MARKS );
+	}
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -58,16 +100,12 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$node_data = preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
+		$node_data = \preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
 
 		// Replace marks.
-		$node_data = str_replace( [ '(c)', '(C)' ],   U::COPYRIGHT,       $node_data );
-		$node_data = str_replace( [ '(r)', '(R)' ],   U::REGISTERED_MARK, $node_data );
-		$node_data = str_replace( [ '(p)', '(P)' ],   U::SOUND_COPY_MARK, $node_data );
-		$node_data = str_replace( [ '(sm)', '(SM)' ], U::SERVICE_MARK,    $node_data );
-		$node_data = str_replace( [ '(tm)', '(TM)' ], U::TRADE_MARK,      $node_data );
+		$node_data = \str_replace( $this->marks, $this->replacements, $node_data );
 
 		// Un-escape escaped sequences & resetore textnode content.
-		$textnode->data = str_replace( RE::ESCAPE_MARKER, '', $node_data );
+		$textnode->data = \str_replace( RE::ESCAPE_MARKER, '', $node_data );
 	}
 }

@@ -70,7 +70,7 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 		$f                  = Strings::functions( $node_data );
 
 		// Replace spaces.
-		$node_data = preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );
+		$node_data = \preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );
 
 		// If we have adjacent characters remove them from the text.
 		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );

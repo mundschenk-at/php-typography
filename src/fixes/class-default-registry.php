@@ -80,7 +80,7 @@ class Default_Registry extends Registry {
 				$arguments = [];
 
 				if ( ! empty( $params['classes'] ) ) {
-					$arguments += array_map( function( $index ) use ( $css_classes ) {
+					$arguments += \array_map( function( $index ) use ( $css_classes ) {
 						return $css_classes[ $index ];
 					}, $params['classes'] );
 				}

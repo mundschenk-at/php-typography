@@ -529,10 +529,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		$this->data['diacriticLanguage'] = $lang;
-		$language_file_name              = dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
+		$language_file_name              = \dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
 
-		if ( file_exists( $language_file_name ) ) {
-			$diacritics_file              = json_decode( file_get_contents( $language_file_name ), true );
+		if ( \file_exists( $language_file_name ) ) {
+			$diacritics_file              = \json_decode( \file_get_contents( $language_file_name ), true );
 			$this->data['diacriticWords'] = $diacritics_file['diacritic_words'];
 		} else {
 			unset( $this->data['diacriticWords'] );
@@ -548,13 +548,13 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *                                          or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
 	 */
 	public function set_diacritic_custom_replacements( $custom_replacements = [] ) {
-		if ( ! is_array( $custom_replacements ) ) {
+		if ( ! \is_array( $custom_replacements ) ) {
 			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
 		$this->data['diacriticCustomReplacements'] = self::array_map_assoc( function( $key, $replacement ) {
-			$key         = strip_tags( trim( $key ) );
-			$replacement = strip_tags( trim( $replacement ) );
+			$key         = \strip_tags( \trim( $key ) );
+			$replacement = \strip_tags( \trim( $replacement ) );
 
 			if ( ! empty( $key ) && ! empty( $replacement ) ) {
 				return [ $key => $replacement ];
@@ -577,17 +577,17 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		return self::array_map_assoc( function( $key, $replacement ) {
 
 			// Account for single and double quotes in keys ...
-			if ( preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
+			if ( \preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
 				$key = $match[2];
 			}
 
 			// ... and values.
-			if ( preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
+			if ( \preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
 				$replacement = $match[2];
 			}
 
 			return [ $key => $replacement ];
-		}, preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
+		}, \preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
 	}
 
 	/**
@@ -765,9 +765,9 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		// Update components & regex pattern.
 		foreach ( $units as $index => $unit ) {
 			// Escape special chars.
-			$units[ $index ] = preg_replace( '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#', '\\\\$1', $unit );
+			$units[ $index ] = \preg_replace( '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#', '\\\\$1', $unit );
 		}
-		$this->custom_units  = implode( '|', $units );
+		$this->custom_units  = \implode( '|', $units );
 		$this->custom_units .= ( $this->custom_units ) ? '|' : '';
 	}
 
@@ -921,12 +921,12 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) {
 		// Make array if handed a list of tags as a string.
-		if ( ! is_array( $tags ) ) {
-			$tags = preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
+		if ( ! \is_array( $tags ) ) {
+			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
-		$this->data['initialQuoteTags'] = array_change_key_case( array_flip( $tags ), CASE_LOWER );
+		$this->data['initialQuoteTags'] = \array_change_key_case( \array_flip( $tags ), CASE_LOWER );
 	}
 
 	/**
@@ -1041,10 +1041,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
 	public function get_hash( $max_length = 16, $raw_output = true ) {
-		$hash = md5( json_encode( $this ), $raw_output );
+		$hash = \md5( \json_encode( $this ), $raw_output );
 
-		if ( $max_length < strlen( $hash ) && $max_length > 0 ) {
-			$hash = substr( $hash, 0, $max_length );
+		if ( $max_length < \strlen( $hash ) && $max_length > 0 ) {
+			$hash = \substr( $hash, 0, $max_length );
 		}
 
 		return $hash;
