@@ -5,9 +5,11 @@
 *   _Feature_: CSS classes for the virtual `<body>` node can now be set when processing strings.
 *   _Change_: "French punctuation spacing" is now off by default.
 *   _Change_: The deprecated class `Hyphenator_Cache` has been removed.
-*   _Change_: The deprecated properties `Settings::inappropriate_tags` and
-              `Settings::self_closing_tags` have been removed.
+*   _Change_: The deprecated properties `Settings::inappropriate_tags` and `Settings::self_closing_tags` have been removed.
 *   _Bugfix_: Numbers are treated like characters for the purpose of wrapping emails.
+
+## 5.2.3 - December 02, 2017
+*   _Bugfix_: Sometimes, the French double quotes style generated spurious ».
 
 ## 5.2.2 - November 25, 2017
 *   _Bugfix_: Remove some ambiguous diacritics replacements from the German language file.
