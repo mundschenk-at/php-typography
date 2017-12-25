@@ -57,19 +57,19 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 	const NUMBERS_BEFORE_PRIME = '\b(?:\d+\/)?\d{1,3}';
 
-	const DOUBLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")(?:''|\")(?=\W|\Z|-\w)/";
-	const SINGLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z|-\w)/";
-	const SINGLE_DOUBLE_PRIME = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)(?:''|\")(?=\W|\Z)/";
+	const DOUBLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")(?:''|\")(?=\W|\Z|-\w)/S";
+	const SINGLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z|-\w)/S";
+	const SINGLE_DOUBLE_PRIME = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)(?:''|\")(?=\W|\Z)/S";
 
-	const SINGLE_QUOTED_NUMBERS = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/";
-	const DOUBLE_QUOTED_NUMBERS = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/';
-	const COMMA_QUOTE           = '/(?<=\s|\A),(?=\S)/';
-	const APOSTROPHE_WORDS      = "/(?<=\w)'(?=\w)/";
-	const APOSTROPHE_DECADES    = "/'(\d\d\b)/";
-	const SINGLE_QUOTE_OPEN     = "/(?: '(?=\w) )  | (?: (?<=\s|\A)'(?=\S) )/x"; // Alternative is for expressions like _'¿hola?'_.
-	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/x";
-	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/x';
-	const DOUBLE_QUOTE_CLOSE    = '/(?: (?<=\w)" ) | (?: (?<=\S)"(?=\s|\Z) )/x';
+	const SINGLE_QUOTED_NUMBERS = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/S";
+	const DOUBLE_QUOTED_NUMBERS = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/S';
+	const COMMA_QUOTE           = '/(?<=\s|\A),(?=\S)/S';
+	const APOSTROPHE_WORDS      = "/(?<=\w)'(?=\w)/S";
+	const APOSTROPHE_DECADES    = "/'(\d\d\b)/S";
+	const SINGLE_QUOTE_OPEN     = "/(?: '(?=\w) )  | (?: (?<=\s|\A)'(?=\S) )/Sx"; // Alternative is for expressions like _'¿hola?'_.
+	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/Sx";
+	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/Sx';
+	const DOUBLE_QUOTE_CLOSE    = '/(?: (?<=\w)" ) | (?: (?<=\S)"(?=\s|\Z) )/Sx';
 
 
 	/**
