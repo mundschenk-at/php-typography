@@ -1,5 +1,11 @@
 # PHP-Typography
 
+[![Build Status](https://travis-ci.org/mundschenk-at/php-typography.svg?branch=master)](https://travis-ci.org/mundschenk-at/php-typography)
+[![Latest Stable Version](https://poser.pugx.org/mundschenk-at/php-typography/v/stable)](https://packagist.org/packages/mundschenk-at/php-typography)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
+[![License](https://poser.pugx.org/mundschenk-at/php-typography/license)](https://packagist.org/packages/mundschenk-at/php-typography)
+
 A PHP library for improving your web typography:
 
 *   Hyphenation — over 50 languages supported
@@ -20,12 +26,6 @@ A PHP library for improving your web typography:
     -   uppercase words,
     -   numbers,
     -   initial quotes & guillemets.
-
-[![Build Status](https://travis-ci.org/mundschenk-at/php-typography.svg?branch=master)](https://travis-ci.org/mundschenk-at/php-typography)
-[![Latest Stable Version](https://poser.pugx.org/mundschenk-at/php-typography/v/stable)](https://packagist.org/packages/mundschenk-at/php-typography)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
-[![License](https://poser.pugx.org/mundschenk-at/php-typography/license)](https://packagist.org/packages/mundschenk-at/php-typography)
 
 ## Requirements
 

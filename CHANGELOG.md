@@ -1,5 +1,14 @@
 # Change History
 
+## 6.0.0 - December 25, 2017
+*   _Feature_: New `Registry` class introduced to allow for custom fixes collections.
+*   _Feature_: CSS classes for the virtual `<body>` node can now be set when processing strings.
+*   _Change_: "French punctuation spacing" is now off by default.
+*   _Change_: The deprecated class `Hyphenator_Cache` has been removed.
+*   _Change_: The deprecated properties `Settings::inappropriate_tags` and
+              `Settings::self_closing_tags` have been removed.
+*   _Bugfix_: Numbers are treated like characters for the purpose of wrapping emails.
+
 ## 5.2.2 - November 25, 2017
 *   _Bugfix_: Remove some ambiguous diacritics replacements from the German language file.
 
