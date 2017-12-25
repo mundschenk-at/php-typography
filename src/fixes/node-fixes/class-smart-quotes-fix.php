@@ -61,19 +61,15 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	const SINGLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(?=\W|\Z|-\w)/";
 	const SINGLE_DOUBLE_PRIME = '/(' . self::NUMBERS_BEFORE_PRIME . ")'(\s*)(\b(?:\d+\/)?\d+)(?:''|\")(?=\W|\Z)/";
 
-	const SINGLE_QUOTED_NUMBERS      = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/";
-	const DOUBLE_QUOTED_NUMBERS      = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/';
-	const COMMA_QUOTE                = '/(?<=\s|\A),(?=\S)/';
-	const APOSTROPHE_WORDS           = "/(?<=[\w])'(?=[\w])/";
-	const APOSTROPHE_DECADES         = "/'(\d\d\b)/";
-	const SINGLE_QUOTE_OPEN          = "/'(?=[\w])/";
-	const SINGLE_QUOTE_CLOSE         = "/(?<=[\w])'/";
-	const SINGLE_QUOTE_OPEN_SPECIAL  = "/(?<=\s|\A)'(?=\S)/"; // like _'¿hola?'_.
-	const SINGLE_QUOTE_CLOSE_SPECIAL = "/(?<=\S)'(?=\s|\Z)/";
-	const DOUBLE_QUOTE_OPEN          = '/"(?=[\w])/';
-	const DOUBLE_QUOTE_CLOSE         = '/(?<=[\w])"/';
-	const DOUBLE_QUOTE_OPEN_SPECIAL  = '/(?<=\s|\A)"(?=\S)/';
-	const DOUBLE_QUOTE_CLOSE_SPECIAL = '/(?<=\S)"(?=\s|\Z)/';
+	const SINGLE_QUOTED_NUMBERS = "/(?<=\W|\A)'([^\"]*\d+)'(?=\W|\Z)/";
+	const DOUBLE_QUOTED_NUMBERS = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/';
+	const COMMA_QUOTE           = '/(?<=\s|\A),(?=\S)/';
+	const APOSTROPHE_WORDS      = "/(?<=\w)'(?=\w)/";
+	const APOSTROPHE_DECADES    = "/'(\d\d\b)/";
+	const SINGLE_QUOTE_OPEN     = "/(?: '(?=\w) )  | (?: (?<=\s|\A)'(?=\S) )/x"; // Alternative is for expressions like _'¿hola?'_.
+	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/x";
+	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/x';
+	const DOUBLE_QUOTE_CLOSE    = '/(?: (?<=\w)" ) | (?: (?<=\S)"(?=\s|\Z) )/x';
 
 
 	/**
@@ -166,16 +162,33 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
-		$node_data = \preg_replace( self::SINGLE_QUOTED_NUMBERS . $f['u'], "{$single_open}\$1{$single_close}", $node_data );
-		$node_data = \preg_replace( self::DOUBLE_QUOTED_NUMBERS . $f['u'], "{$double_open}\$1{$double_close}", $node_data );
+		$node_data = \preg_replace(
+			[
+				self::SINGLE_QUOTED_NUMBERS . $f['u'],
+				self::DOUBLE_QUOTED_NUMBERS . $f['u'],
+			],
+			[
+				"{$single_open}\$1{$single_close}",
+				"{$double_open}\$1{$double_close}",
+			], $node_data
+		);
 
 		// Guillemets.
 		$node_data = \str_replace( [ '<<', '>>' ], [ U::GUILLEMET_OPEN, U::GUILLEMET_CLOSE ],  $node_data );
 
 		// Primes.
-		$node_data = \preg_replace( self::SINGLE_DOUBLE_PRIME . $f['u'], '$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, $node_data );
-		$node_data = \preg_replace( self::DOUBLE_PRIME . $f['u'],        '$1' . U::DOUBLE_PRIME,                            $node_data ); // should not interfere with regular quote matching.
-		$node_data = \preg_replace( self::SINGLE_PRIME . $f['u'],        '$1' . U::SINGLE_PRIME,                            $node_data );
+		$node_data = \preg_replace(
+			[
+				self::SINGLE_DOUBLE_PRIME . $f['u'],
+				self::DOUBLE_PRIME . $f['u'], // should not interfere with regular quote matching.
+				self::SINGLE_PRIME . $f['u'],
+			],
+			[
+				'$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME,
+				'$1' . U::DOUBLE_PRIME,
+				'$1' . U::SINGLE_PRIME,
+			], $node_data
+		);
 
 		// Backticks & comma quotes.
 		$node_data = \str_replace(
@@ -199,19 +212,11 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			[
 				self::SINGLE_QUOTE_OPEN . $f['u'],
 				self::SINGLE_QUOTE_CLOSE . $f['u'],
-				self::SINGLE_QUOTE_OPEN_SPECIAL . $f['u'], // like _'¿hola?'_.
-				self::SINGLE_QUOTE_CLOSE_SPECIAL . $f['u'],
 				self::DOUBLE_QUOTE_OPEN . $f['u'],
 				self::DOUBLE_QUOTE_CLOSE . $f['u'],
-				self::DOUBLE_QUOTE_OPEN_SPECIAL . $f['u'],
-				self::DOUBLE_QUOTE_CLOSE_SPECIAL . $f['u'],
 			], [
 				$single_open,
 				$single_close,
-				$single_open,
-				$single_close,
-				$double_open,
-				$double_close,
 				$double_open,
 				$double_close,
 			], $node_data
