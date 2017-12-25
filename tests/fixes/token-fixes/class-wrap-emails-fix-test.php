@@ -79,7 +79,7 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 		return [
 			[ 'code@example.org',         'code@&#8203;example.&#8203;org' ],
 			[ 'some.name@sub.domain.org', 'some.&#8203;name@&#8203;sub.&#8203;domain.&#8203;org' ],
-			[ 'funny123@summer1.org',     'funny1&#8203;2&#8203;3&#8203;@&#8203;summer1&#8203;.&#8203;org' ],
+			[ 'funny123@summer1.org',     'funny123@&#8203;summer1.&#8203;org' ],
 		];
 	}
 
