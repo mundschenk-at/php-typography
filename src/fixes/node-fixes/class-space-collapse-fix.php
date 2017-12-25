@@ -61,19 +61,25 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 
 		// Cache textnode content.
 		$node_data = $textnode->data;
-		$f         = Strings::functions( $node_data );
 
-		// Normal spacing.
-		$node_data = \preg_replace( self::COLLAPSE_NORMAL_SPACES . $f['u'], ' ', $node_data );
-
-		// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
-		$node_data = \preg_replace( self::COLLAPSE_NON_BREAKABLE_SPACES, U::NO_BREAK_SPACE, $node_data );
-
-		// For any other spaceing, replace with the first occurance of an unusual space character.
-		$node_data = \preg_replace( self::COLLAPSE_OTHER_SPACES, '$1', $node_data );
+		// Replace spaces.
+		$node_data = \preg_replace(
+			[
+				// Normal spacing.
+				self::COLLAPSE_NORMAL_SPACES,
+				// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
+				self::COLLAPSE_NON_BREAKABLE_SPACES,
+				// For any other spaceing, replace with the first occurance of an unusual space character.
+				self::COLLAPSE_OTHER_SPACES,
+			], [
+				' ',
+				U::NO_BREAK_SPACE,
+				'$1',
+			], $node_data
+		);
 
 		// Remove all spacing at beginning of block level elements.
-		if ( '' === DOM::get_prev_chr( $textnode ) ) { // we have the first text in a block level element.
+		if ( null === DOM::get_previous_textnode( $textnode ) ) {
 			$node_data = \preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $node_data );
 		}
 
