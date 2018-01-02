@@ -22,6 +22,12 @@ build:
     tests:
         override:
             - phpcs-run -p src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php
+    nodes:
+        analysis:
+            project_setup:
+                override: true
+            tests:
+                override: [php-scrutinizer-run]
 
 tools:
     php_code_sniffer: false
