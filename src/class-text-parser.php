@@ -274,20 +274,6 @@ class Text_Parser {
 	private $text = [];
 
 	/**
-	 * An array of various regex components (not complete patterns).
-	 *
-	 * @var array $components
-	 */
-	private $components = [];
-
-	/**
-	 * An array of regex patterns.
-	 *
-	 * @var array $regex
-	 */
-	private $regex = [];
-
-	/**
 	 * Creates a new parser object.
 	 */
 	public function __construct() {
