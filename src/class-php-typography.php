@@ -99,7 +99,7 @@ class PHP_Typography {
 	 */
 	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+			$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
 		}, $settings, $is_title, $body_classes );
 	}
 
@@ -119,7 +119,7 @@ class PHP_Typography {
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+			$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
 		}, $settings, $is_title, $body_classes );
 	}
 
