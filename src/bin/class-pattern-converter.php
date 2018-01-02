@@ -126,7 +126,7 @@ class Pattern_Converter {
 		// Do some error checking.
 		$count     = count( $result );
 		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
-		$sequence  = implode( $result );
+		$sequence  = implode( '', $result );
 
 		if ( $count !== $count_seg + 1 ) {
 			throw new \RangeException( "Invalid segment length $count for pattern $pattern (result sequence $sequence)." );

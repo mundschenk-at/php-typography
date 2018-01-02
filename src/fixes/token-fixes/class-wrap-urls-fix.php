@@ -145,7 +145,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				}
 
 				// Lastly let's recombine.
-				$domain = \implode( $domain_parts );
+				$domain = \implode( '', $domain_parts );
 
 				// Break up the URL path to individual characters.
 				$path_parts = \str_split( $url_match['path'], 1 );
