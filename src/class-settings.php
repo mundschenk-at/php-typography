@@ -460,7 +460,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 *
-	 * @return mixed An instance of $expected_class.
+	 * @return object An instance of $expected_class.
 	 */
 	protected function get_style( $style, $expected_class, callable $get_style, $description ) {
 		if ( $style instanceof $expected_class ) {
@@ -469,7 +469,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			$object = $get_style( $style, $this );
 		}
 
-		if ( ! $object instanceof $expected_class ) {
+		if ( ! \is_object( $object ) || ! $object instanceof $expected_class ) {
 			throw new \DomainException( "Invalid $description style $style." );
 		}
 
