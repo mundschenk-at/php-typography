@@ -575,7 +575,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
 		return self::array_map_assoc( function( $key, $replacement ) {
-
 			// Account for single and double quotes in keys ...
 			if ( \preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
 				$key = $match[2];
@@ -587,7 +586,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			}
 
 			return [ $key => $replacement ];
-		}, \preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
+		}, /** RE correct. @scrutinizer ignore-type */ \preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
 	}
 
 	/**
@@ -926,7 +925,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
-		$this->data['initialQuoteTags'] = \array_change_key_case( \array_flip( $tags ), CASE_LOWER );
+		$this->data['initialQuoteTags'] = \array_change_key_case( \array_flip( /** Array. @scrutinizer ignore-type */ $tags ), CASE_LOWER );
 	}
 
 	/**

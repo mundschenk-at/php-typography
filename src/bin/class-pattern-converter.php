@@ -257,7 +257,8 @@ class Pattern_Converter {
 	 * @return array
 	 */
 	private static function split_at_whitespace( $line ) {
-		return preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
+		// We can safely cast to an array here, as long as $line convertible to a string.
+		return (array) \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
 	}
 
 	/**
