@@ -404,7 +404,12 @@ class PHP_Typography {
 	private static function get_language_plugin_list( $path ) {
 		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
 		$languages             = [];
-		$handle                = \opendir( $path );
+
+		// Try to open the given directory.
+		$handle = \opendir( $path );
+		if ( false === $handle ) {
+			return $languages; // Abort.
+		}
 
 		// Read all files in directory.
 		$file = \readdir( $handle );
