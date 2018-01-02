@@ -286,7 +286,7 @@ abstract class DOM {
 		$adjacent = null;
 
 		/**
-		 * The iterated node.
+		 * The initial node.
 		 *
 		 * @var \DOMNode|null
 		 */
@@ -294,11 +294,21 @@ abstract class DOM {
 
 		// Iterate to find adjacent node.
 		while ( null !== $iterated_node && null === $adjacent ) {
+			/**
+			 * Let's try the next node.
+			 *
+			 * @var \DOMNode|null
+			 */
 			$adjacent = $iterate( $iterated_node );
 		}
 
 		// Last ressort.
 		if ( null === $adjacent ) {
+			/**
+			 * The parent node.
+			 *
+			 * @var \DOMNode|null
+			 */
 			$adjacent = $get_adjacent_parent( $node->parentNode );
 		}
 
