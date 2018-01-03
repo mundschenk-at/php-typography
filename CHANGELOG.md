@@ -1,5 +1,8 @@
 # Change History
 
+## 6.0.1 - January 03, 2018
+*   _Bugfix_: `Default_Registry::get_default_node_fixes` and `Default_Registry::get_default_token_fixes` were missing the `static` keyword.
+
 ## 6.0.0 - December 25, 2017
 *   _Feature_: New `Registry` class introduced to allow for custom fixes collections.
 *   _Feature_: CSS classes for the virtual `<body>` node can now be set when processing strings.
