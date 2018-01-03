@@ -274,20 +274,6 @@ class Text_Parser {
 	private $text = [];
 
 	/**
-	 * An array of various regex components (not complete patterns).
-	 *
-	 * @var array $components
-	 */
-	private $components = [];
-
-	/**
-	 * An array of regex patterns.
-	 *
-	 * @var array $regex
-	 */
-	private $regex = [];
-
-	/**
 	 * Creates a new parser object.
 	 */
 	public function __construct() {
@@ -318,7 +304,7 @@ class Text_Parser {
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( \preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
+		$this->text = self::tokenize( /** RE correct. @scrutinizer ignore-type */ \preg_split( self::_RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) );
 
 		// The token array should never be empty.
 		return ! empty( $this->text );

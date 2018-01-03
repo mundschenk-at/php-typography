@@ -126,7 +126,7 @@ class Pattern_Converter {
 		// Do some error checking.
 		$count     = count( $result );
 		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
-		$sequence  = implode( $result );
+		$sequence  = implode( '', $result );
 
 		if ( $count !== $count_seg + 1 ) {
 			throw new \RangeException( "Invalid segment length $count for pattern $pattern (result sequence $sequence)." );
@@ -257,7 +257,8 @@ class Pattern_Converter {
 	 * @return array
 	 */
 	private static function split_at_whitespace( $line ) {
-		return preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
+		// We can safely cast to an array here, as long as $line convertible to a string.
+		return (array) \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
 	}
 
 	/**

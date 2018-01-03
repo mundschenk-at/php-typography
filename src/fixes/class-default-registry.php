@@ -116,7 +116,7 @@ class Default_Registry extends Registry {
 	 *     }
 	 * }
 	 */
-	protected function get_default_node_fixes() {
+	protected static function get_default_node_fixes() {
 		return [
 			self::CHARACTERS         => [
 				// Nodify anything that requires adjacent text awareness here.
@@ -183,7 +183,7 @@ class Default_Registry extends Registry {
 	 *
 	 * @return array
 	 */
-	protected function get_default_token_fixes() {
+	protected static function get_default_token_fixes() {
 		return [
 			Token_Fixes\Wrap_Hard_Hyphens_Fix::class   => [],
 			Token_Fixes\Hyphenate_Compounds_Fix::class => [ 'cache' => true ],

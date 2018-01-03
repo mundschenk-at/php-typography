@@ -122,6 +122,9 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				$http = ( $url_match['schema'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
 
 				$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
+				if ( false === $domain_parts ) {
+					continue; // Should not happen.
+				}
 
 				// This is a hack, but it works.
 				// First, we hyphenate each part, we need it formated like a group of words.
@@ -145,7 +148,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				}
 
 				// Lastly let's recombine.
-				$domain = \implode( $domain_parts );
+				$domain = \implode( '', $domain_parts );
 
 				// Break up the URL path to individual characters.
 				$path_parts = \str_split( $url_match['path'], 1 );

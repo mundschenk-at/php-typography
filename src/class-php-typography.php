@@ -99,7 +99,7 @@ class PHP_Typography {
 	 */
 	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+			$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
 		}, $settings, $is_title, $body_classes );
 	}
 
@@ -119,7 +119,7 @@ class PHP_Typography {
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			return $this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+			$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
 		}, $settings, $is_title, $body_classes );
 	}
 
@@ -138,7 +138,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', $settings['ignoreTags'], true ) || \in_array( 'h2', $settings['ignoreTags'], true ) ) ) {
+		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) || \in_array( 'h2', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
 
@@ -275,13 +275,13 @@ class PHP_Typography {
 		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
-			$query_parts[] = '//' . \implode( ' | //', $settings['ignoreTags'] );
+			$query_parts[] = '//' . \implode( ' | //', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'] );
 		}
 		if ( ! empty( $settings['ignoreClasses'] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", /** Array. @scrutinizer ignore-type */ $settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $settings['ignoreIDs'] ) ) {
-			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
+			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', /** Array. @scrutinizer ignore-type */ $settings['ignoreIDs'] ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {
@@ -402,9 +402,13 @@ class PHP_Typography {
 	 * @return string[] An array in the form ( $language_code => $language_name ).
 	 */
 	private static function get_language_plugin_list( $path ) {
-		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-		$languages             = [];
-		$handle                = \opendir( $path );
+		$languages = [];
+
+		// Try to open the given directory.
+		$handle = \opendir( $path );
+		if ( false === $handle ) {
+			return $languages; // Abort.
+		}
 
 		// Read all files in directory.
 		$file = \readdir( $handle );
@@ -412,7 +416,7 @@ class PHP_Typography {
 			// We only want the JSON files.
 			if ( '.json' === \substr( $file, -5 ) ) {
 				$file_content = \file_get_contents( $path . $file );
-				if ( \preg_match( $language_name_pattern, $file_content, $matches ) ) {
+				if ( \preg_match( '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/', $file_content, $matches ) ) {
 					$language_name = \substr( $matches[1], 1, -1 );
 					$language_code = \substr( $file, 0, -5 );
 

@@ -58,21 +58,21 @@ final class Token {
 	 *
 	 * @var int
 	 */
-	private $type;
+	private $_type;
 
 	/**
 	 * The token value.
 	 *
 	 * @var string
 	 */
-	private $value;
+	private $_value;
 
 	/**
 	 * Ensure that properties can only be set once via the constructor.
 	 *
 	 * @var boolean
 	 */
-	private $mutable = true;
+	private $_mutable = true;
 
 	/**
 	 * Creates a new token.
@@ -84,7 +84,7 @@ final class Token {
 	 * @throws \UnexpectedValueException If the type attribute is outside the allowed range.
 	 */
 	public function __construct( $value, $type = self::WORD ) {
-		if ( false === $this->mutable ) {
+		if ( false === $this->_mutable ) {
 			throw new \BadMethodCallException( 'Constructor called twice.' );
 		}
 
@@ -93,7 +93,7 @@ final class Token {
 			case self::PUNCTUATION:
 			case self::WORD:
 			case self::OTHER:
-				$this->type = $type;
+				$this->_type = $type;
 				break;
 
 			default:
@@ -103,10 +103,10 @@ final class Token {
 		if ( ! \is_string( $value ) ) {
 			throw new \UnexpectedValueException( 'Value has to be a string.' );
 		} else {
-			$this->value = $value;
+			$this->_value = $value;
 		}
 
-		$this->mutable = false;
+		$this->_mutable = false;
 	}
 
 	/**
@@ -117,8 +117,10 @@ final class Token {
 	 * @return mixed
 	 */
 	public function __get( $property ) {
-		if ( \property_exists( $this, $property ) ) {
-			return $this->$property;
+		$real = "_$property";
+
+		if ( \property_exists( $this, $real ) ) {
+			return $this->$real;
 		}
 	}
 
@@ -156,12 +158,12 @@ final class Token {
 	 * @return Token
 	 */
 	public function with_value( $value ) {
-		if ( $this->value === $value ) {
+		if ( $this->_value === $value ) {
 			return $this;
 		}
 
-		$cloned_token        = clone $this;
-		$cloned_token->value = $value;
+		$cloned_token         = clone $this;
+		$cloned_token->_value = $value;
 
 		return $cloned_token;
 	}

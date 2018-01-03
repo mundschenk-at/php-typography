@@ -111,7 +111,8 @@ abstract class Strings {
 	 * @return array                An array of $split_length character chunks.
 	 */
 	public static function mb_str_split( $str, $split_length = 1 ) {
-		$result = \preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
+		// We can safely cast to an array here, as long as $str convertible to a string.
+		$result = (array) \preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
 
 		if ( $split_length > 1 ) {
 			$splits = [];
@@ -158,7 +159,8 @@ abstract class Strings {
 	 */
 	public static function maybe_split_parameters( $params ) {
 		if ( ! \is_array( $params ) ) {
-			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+			// We can safely cast to an array here, as long as $params convertible to a string.
+			$params = (array) \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
 		}
 
 		return $params;
