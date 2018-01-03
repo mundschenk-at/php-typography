@@ -402,8 +402,7 @@ class PHP_Typography {
 	 * @return string[] An array in the form ( $language_code => $language_name ).
 	 */
 	private static function get_language_plugin_list( $path ) {
-		$language_name_pattern = '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/';
-		$languages             = [];
+		$languages = [];
 
 		// Try to open the given directory.
 		$handle = \opendir( $path );
@@ -417,7 +416,7 @@ class PHP_Typography {
 			// We only want the JSON files.
 			if ( '.json' === \substr( $file, -5 ) ) {
 				$file_content = \file_get_contents( $path . $file );
-				if ( \preg_match( $language_name_pattern, $file_content, $matches ) ) {
+				if ( \preg_match( '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/', $file_content, $matches ) ) {
 					$language_name = \substr( $matches[1], 1, -1 );
 					$language_code = \substr( $file, 0, -5 );
 
