@@ -315,7 +315,7 @@ class Pattern_Converter {
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
 					continue; // Do nothing.
 				} else {
-					throw new \RangeException( "Error: unknown line $line\n" );
+					throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
 				}
 			}
 		}
