@@ -188,23 +188,24 @@ class Pattern_Converter {
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
+	 * @param int    $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the exception line is malformed.
 	 *
 	 * @return bool
 	 */
-	protected function match_exceptions( $line, array &$exceptions ) {
-		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
+		if ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
-		} if ( preg_match( '/^\s*((?:[\w-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			$this->match_exceptions( $matches[1], $exceptions );
+		} if ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			$this->match_exceptions( $matches[1], $exceptions, $line_no );
 			return false;
 		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
@@ -213,7 +214,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in exceptions.
 			return true;
 		} else {
-			throw new \RangeException( "Error: unknown exception line $line\n" );
+			throw new \RangeException( "Error: unknown exception $line on line $line_no\n" );
 		}
 
 		return true;
@@ -224,12 +225,13 @@ class Pattern_Converter {
 	 *
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
+	 * @param int    $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
 	 * @return bool
 	 */
-	protected function match_patterns( $line, array &$patterns ) {
+	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
 		if ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
@@ -246,7 +248,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			throw new \RangeException( 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n" );
+			throw new \RangeException( 'Error: unknown pattern ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . " on line $line_no\n" );
 		}
 
 		return true;
@@ -286,22 +288,24 @@ class Pattern_Converter {
 		$reading_patterns   = false;
 		$reading_exceptions = false;
 
-		$file = new \SplFileObject( $this->url );
+		$file    = new \SplFileObject( $this->url );
+		$line_no = 0;
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();
+			$line_no++;
 
 			if ( $reading_patterns ) {
-				$reading_patterns = $this->match_patterns( $line, $patterns );
+				$reading_patterns = $this->match_patterns( $line, $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
-				$reading_exceptions = $this->match_exceptions( $line, $exceptions );
+				$reading_exceptions = $this->match_exceptions( $line, $exceptions, $line_no );
 			} else {
 				// Not a pattern & not an exception.
 				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
 					$comments[] = $line;
 				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_patterns = $this->match_patterns( $matches[1], $patterns );
+					$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
 				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions );
+					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
 				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// Ignore this line completely.
 					continue;
