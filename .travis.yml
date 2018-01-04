@@ -8,16 +8,15 @@
 # @link http://docs.travis-ci.com/user/migrating-from-legacy/#Why-migrate-to-container-based-infrastructure%3F
 # @link http://docs.travis-ci.com/user/workers/container-based-infrastructure/#Routing-your-build-to-container-based-infrastructure
 sudo: false
-dist: trusty
 
 # Declare project language.
 # @link http://about.travis-ci.org/docs/user/languages/php/
 language: php
 
-## Cache composer stuff
+# Cache composer stuff
 cache:
-  directories:
-    - $HOME/.composer/cache
+    directories:
+        - $HOME/.composer/cache
 
 # Declare versions of PHP to use. Use one decimal max.
 # @link http://docs.travis-ci.com/user/build-configuration/
@@ -26,57 +25,54 @@ matrix:
 
     include:
         # minimum version for activating wp-Typography 5.6.0, aliased to a recent 5.6.x version
-        - php: '5.6'
-          env: SNIFF=1
+        - php:  '5.6'
+          env:  SCOPE=tests
         # aliased to a recent 7.0 version
-        - php: '7.0'
-          env: SNIFF=1
+        - php:  '7.0'
+          env:  SCOPE=tests
         # aliased to a recent 7.1 version
         - php: '7.1'
-          env: SNIFF=1
-          # aliased to a recent 7.2 version
-        - php: '7.2'
-          env:
-              - SNIFF=1
-              - COVERAGE=1
+          env:  SCOPE=tests
+        # aliased to a recent 7.2 version
+        - php:  '7.2'
+          env:  SCOPE=coverage
 
 # Use this to prepare the system to install prerequisites or dependencies.
 # e.g. sudo apt-get update.
 # Failures in this section will result in build status 'errored'.
 before_install:
-    - if [[ "$SNIFF" == "1" ]]; then composer remove phpstan/phpstan phpbench/phpbench --dev; fi
-    - if [[ "$SNIFF" == "1" ]]; then composer install; fi
-    - if [[ "$SNIFF" == "1" ]]; then phpenv rehash; fi
-    - if [[ "$COVERAGE" == "1" ]]; then composer require php-coveralls/php-coveralls --dev; fi
+    - if [[ "$SCOPE" == "tests" || "$SCOPE" == "coverage" ]]; then
+            composer remove phpstan/phpstan phpbench/phpbench --dev --no-interaction;
+            composer install --no-interaction;
+            phpenv rehash;
+      fi
+    - if [[ "$SCOPE" == "coverage" ]]; then composer require php-coveralls/php-coveralls --dev; fi
 
 # Use this to prepare your build for testing.
 # e.g. copy database configurations, environment variables, etc.
 # Failures in this section will result in build status 'errored'.
 before_script:
-    - export PHP_FILES_DIR=/tmp/php_files
-    - export PHP_FILES_LIST=$PHP_FILES_DIR/php_files_list
 
 # Run test script commands.
 # Default is specific to project language.
 # All commands must exit with code 0 on success. Anything else is considered failure.
 script:
-    # Generate list of relevant PHP files.
-    - mkdir $PHP_FILES_DIR
-    - find -L src/ -name '*.php' > $PHP_FILES_LIST
     # Search for PHP syntax errors.
-    - cat $PHP_FILES_LIST | tr '\n' '\0' | xargs -0 -n 1 -P 4 php -l;
-    # WordPress Coding Standards.
-    - if [[ "$SNIFF" == "1" ]]; then composer phpcs; fi
+    - find -L src/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
     # Unit tests.
-    - if [[ "$SNIFF" == "1" && "$COVERAGE" != "1" ]]; then composer test; fi
+    - if [[ "$SCOPE" == "tests" ]]; then composer test; fi
     # Code coverage
-    - if [[ "$COVERAGE" == "1" ]]; then mkdir -p build/logs; fi
-    - if [[ "$COVERAGE" == "1" ]]; then composer test -- --coverage-clover build/logs/clover.xml; fi
+    - if [[ "$SCOPE" == "coverage" ]]; then
+            mkdir -p build/logs;
+            composer test -- --coverage-clover build/logs/clover.xml;
+      fi
 
 after_script:
-    - if [[ "$COVERAGE" == "1" ]]; then php vendor/bin/coveralls -v; fi
-    - if [[ "$COVERAGE" == "1" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-    - if [[ "$COVERAGE" == "1" ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
+    - if [[ "$SCOPE" == "coverage" ]]; then
+            php vendor/bin/coveralls -v;
+            wget https://scrutinizer-ci.com/ocular.phar;
+            php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml;
+      fi
 
 # Receive notifications for build results.
 # @link http://docs.travis-ci.com/user/notifications/#Email-notifications
