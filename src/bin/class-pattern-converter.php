@@ -37,11 +37,13 @@ use PHP_Typography\Strings;
 class Pattern_Converter {
 
 	/**
-	 * Pattern file URL to fetch.
+	 * Pattern file URL(s) to fetch.
 	 *
-	 * @var string
+	 * @since 6.1.0
+	 *
+	 * @var string[]
 	 */
-	protected $url;
+	protected $urls;
 
 	/**
 	 * Human-readable language name.
@@ -60,11 +62,11 @@ class Pattern_Converter {
 	/**
 	 * Creates a new converter object.
 	 *
-	 * @param string $url      The TeX pattern file URL.
-	 * @param string $language A human-readable language name.
+	 * @param string|string[] $urls     The TeX pattern file URL(s).
+	 * @param string          $language A human-readable language name.
 	 */
-	public function __construct( $url, $language ) {
-		$this->url      = $url;
+	public function __construct( $urls, $language ) {
+		$this->urls     = (array) $urls;
 		$this->language = $language;
 
 		$this->word_characters = join( '', [
@@ -169,11 +171,11 @@ class Pattern_Converter {
 		}
 
 		$json_results = [
-			'language'   => $this->language,
-			'source_url' => $this->url,
-			'copyright'  => array_map( 'rtrim', $comments ),
-			'exceptions' => $json_exceptions,
-			'patterns'   => $pattern_mapping,
+			'language'    => $this->language,
+			'source_url'  => count( $this->urls ) > 1 ? $this->urls : $this->urls[0],
+			'copyright'   => array_map( 'rtrim', $comments ),
+			'exceptions'  => $json_exceptions,
+			'patterns'    => $pattern_mapping,
 		];
 
 		return json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
@@ -267,7 +269,7 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Convert the given TeX file.
+	 * Convert the given TeX files.
 	 *
 	 * @throws \RangeException Thrown when a line cannot be parsed at all.
 	 * @throws \RuntimeException Thrown when file does not exist.
@@ -275,20 +277,41 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	public function convert() {
-		if ( ! file_exists( $this->url ) && 404 === File_Operations::get_http_response_code( $this->url ) ) {
-			throw new \RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
-		}
-
 		// Results.
 		$comments   = [];
 		$patterns   = [];
 		$exceptions = [];
 
+		foreach ( $this->urls as $url ) {
+			$this->convert_single_file( $url, $patterns, $exceptions, $comments );
+		}
+
+		return $this->format_results( $patterns, $exceptions, $comments );
+	}
+
+	/**
+	 * Convert the given TeX file.
+	 *
+	 * @since 6.1.0
+	 *
+	 * @param string   $url        Pattern file URL.
+	 * @param string[] $patterns   Extracted pattern lines. Passed by reference.
+	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
+	 * @param string[] $comments   Extracted comments lines. Passed by reference.
+	 *
+	 * @throws \RangeException Thrown when a line cannot be parsed at all.
+	 * @throws \RuntimeException Thrown when file does not exist.
+	 */
+	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) {
+		if ( ! file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
+			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
+		}
+
 		// Status indicators.
 		$reading_patterns   = false;
 		$reading_exceptions = false;
 
-		$file    = new \SplFileObject( $this->url );
+		$file    = new \SplFileObject( $url );
 		$line_no = 0;
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();
@@ -319,7 +342,5 @@ class Pattern_Converter {
 				}
 			}
 		}
-
-		return $this->format_results( $patterns, $exceptions, $comments );
 	}
 }
