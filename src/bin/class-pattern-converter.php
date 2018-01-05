@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -250,10 +250,34 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			throw new \RangeException( 'Error: unknown pattern ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . " on line $line_no\n" );
+			throw new \RangeException( "Error: unknown pattern $line on line $line_no\n" );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Replace macros in the given line.
+	 *
+	 * @since 6.1.0
+	 *
+	 * @param  string   $line   The input string.
+	 * @param  string[] $macros The macros.
+	 *
+	 * @return string
+	 */
+	protected function expand_macros( $line, array $macros ) {
+		if ( 0 < preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $m ) {
+				if ( ! empty( $macros[ $m['name'] ] ) ) {
+					$expanded = preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
+					$pattern  = preg_quote( $m[0] );
+					$line     = preg_replace( "/{$pattern}/u", $expanded, $line );
+				}
+			}
+		}
+
+		return $line;
 	}
 
 	/**
@@ -311,6 +335,9 @@ class Pattern_Converter {
 		$reading_patterns   = false;
 		$reading_exceptions = false;
 
+		// Macro definitions.
+		$macros = [];
+
 		$file    = new \SplFileObject( $url );
 		$line_no = 0;
 		while ( ! $file->eof() ) {
@@ -318,9 +345,9 @@ class Pattern_Converter {
 			$line_no++;
 
 			if ( $reading_patterns ) {
-				$reading_patterns = $this->match_patterns( $line, $patterns, $line_no );
+				$reading_patterns = $this->match_patterns( $this->expand_macros( $line, $macros ), $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
-				$reading_exceptions = $this->match_exceptions( $line, $exceptions, $line_no );
+				$reading_exceptions = $this->match_exceptions( $this->expand_macros( $line, $macros ), $exceptions, $line_no );
 			} else {
 				// Not a pattern & not an exception.
 				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
@@ -332,6 +359,12 @@ class Pattern_Converter {
 				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// Ignore this line completely.
 					continue;
+				} elseif ( preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
+					// Add a macro definition.
+					$macros[ $matches[1] ] = $matches[2];
+				} elseif ( preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
+					// Add a macro definition and expand any contained macros.
+					$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
 				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
 					// Treat other commands as comments unless we are matching exceptions or patterns.
 					$comments[] = $line;
