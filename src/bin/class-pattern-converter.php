@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,11 +37,13 @@ use PHP_Typography\Strings;
 class Pattern_Converter {
 
 	/**
-	 * Pattern file URL to fetch.
+	 * Pattern file URL(s) to fetch.
 	 *
-	 * @var string
+	 * @since 6.1.0
+	 *
+	 * @var string[]
 	 */
-	protected $url;
+	protected $urls;
 
 	/**
 	 * Human-readable language name.
@@ -60,25 +62,28 @@ class Pattern_Converter {
 	/**
 	 * Creates a new converter object.
 	 *
-	 * @param string $url      The TeX pattern file URL.
-	 * @param string $language A human-readable language name.
+	 * @param string|string[] $urls     The TeX pattern file URL(s).
+	 * @param string          $language A human-readable language name.
 	 */
-	public function __construct( $url, $language ) {
-		$this->url      = $url;
+	public function __construct( $urls, $language ) {
+		$this->urls     = (array) $urls;
 		$this->language = $language;
 
 		$this->word_characters = join( '', [
 			"\w.'ʼ᾽ʼ᾿’",
 			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
+			'\p{Mn}',
 			'\p{Bengali}',
+			'\p{Cyrillic}' . Strings::uchr( 7296, 7297, 7298, 7299, 7300, 7301, 7302, 7303, 7304, 65070, 65071 ),
+			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
+			'\p{Ethiopic}',
 			'\p{Gujarati}',
 			'\p{Gurmukhi}',
 			'\p{Kannada}',
+			'\p{Malayalam}',
 			'\p{Oriya}',
 			'\p{Tamil}',
 			'\p{Telugu}',
-			'\p{Malayalam}',
 			'\p{Thai}',
 			'-',
 		] );
@@ -166,11 +171,11 @@ class Pattern_Converter {
 		}
 
 		$json_results = [
-			'language'   => $this->language,
-			'source_url' => $this->url,
-			'copyright'  => array_map( 'rtrim', $comments ),
-			'exceptions' => $json_exceptions,
-			'patterns'   => $pattern_mapping,
+			'language'    => $this->language,
+			'source_url'  => count( $this->urls ) > 1 ? $this->urls : $this->urls[0],
+			'copyright'   => array_map( 'rtrim', $comments ),
+			'exceptions'  => $json_exceptions,
+			'patterns'    => $pattern_mapping,
 		];
 
 		return json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
@@ -185,23 +190,24 @@ class Pattern_Converter {
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
+	 * @param int    $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the exception line is malformed.
 	 *
 	 * @return bool
 	 */
-	protected function match_exceptions( $line, array &$exceptions ) {
-		if ( preg_match( '/^\s*([\w-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
+		if ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
-		} if ( preg_match( '/^\s*((?:[\w-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			$this->match_exceptions( $matches[1], $exceptions );
+		} if ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+			$this->match_exceptions( $matches[1], $exceptions, $line_no );
 			return false;
 		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([\w-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[\w-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
@@ -210,7 +216,7 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in exceptions.
 			return true;
 		} else {
-			throw new \RangeException( "Error: unknown exception line $line\n" );
+			throw new \RangeException( "Error: unknown exception $line on line $line_no\n" );
 		}
 
 		return true;
@@ -221,12 +227,13 @@ class Pattern_Converter {
 	 *
 	 * @param string $line     A line from the TeX pattern file.
 	 * @param array  $patterns An array of patterns.
+	 * @param int    $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
 	 * @return bool
 	 */
-	protected function match_patterns( $line, array &$patterns ) {
+	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
 		if ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
@@ -243,10 +250,34 @@ class Pattern_Converter {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
-			throw new \RangeException( 'Error: unknown pattern line ' . htmlentities( $line, ENT_NOQUOTES | ENT_HTML5 ) . "\n" );
+			throw new \RangeException( "Error: unknown pattern $line on line $line_no\n" );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Replace macros in the given line.
+	 *
+	 * @since 6.1.0
+	 *
+	 * @param  string   $line   The input string.
+	 * @param  string[] $macros The macros.
+	 *
+	 * @return string
+	 */
+	protected function expand_macros( $line, array $macros ) {
+		if ( 0 < preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $m ) {
+				if ( ! empty( $macros[ $m['name'] ] ) ) {
+					$expanded = preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
+					$pattern  = preg_quote( $m[0] );
+					$line     = preg_replace( "/{$pattern}/u", $expanded, $line );
+				}
+			}
+		}
+
+		return $line;
 	}
 
 	/**
@@ -262,7 +293,7 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Convert the given TeX file.
+	 * Convert the given TeX files.
 	 *
 	 * @throws \RangeException Thrown when a line cannot be parsed at all.
 	 * @throws \RuntimeException Thrown when file does not exist.
@@ -270,49 +301,79 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	public function convert() {
-		if ( ! file_exists( $this->url ) && 404 === File_Operations::get_http_response_code( $this->url ) ) {
-			throw new \RuntimeException( "Error: unknown pattern file '{$this->url}'\n" );
-		}
-
 		// Results.
 		$comments   = [];
 		$patterns   = [];
 		$exceptions = [];
 
+		foreach ( $this->urls as $url ) {
+			$this->convert_single_file( $url, $patterns, $exceptions, $comments );
+		}
+
+		return $this->format_results( $patterns, $exceptions, $comments );
+	}
+
+	/**
+	 * Convert the given TeX file.
+	 *
+	 * @since 6.1.0
+	 *
+	 * @param string   $url        Pattern file URL.
+	 * @param string[] $patterns   Extracted pattern lines. Passed by reference.
+	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
+	 * @param string[] $comments   Extracted comments lines. Passed by reference.
+	 *
+	 * @throws \RangeException Thrown when a line cannot be parsed at all.
+	 * @throws \RuntimeException Thrown when file does not exist.
+	 */
+	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) {
+		if ( ! file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
+			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
+		}
+
 		// Status indicators.
 		$reading_patterns   = false;
 		$reading_exceptions = false;
 
-		$file = new \SplFileObject( $this->url );
+		// Macro definitions.
+		$macros = [];
+
+		$file    = new \SplFileObject( $url );
+		$line_no = 0;
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();
+			$line_no++;
 
 			if ( $reading_patterns ) {
-				$reading_patterns = $this->match_patterns( $line, $patterns );
+				$reading_patterns = $this->match_patterns( $this->expand_macros( $line, $macros ), $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
-				$reading_exceptions = $this->match_exceptions( $line, $exceptions );
+				$reading_exceptions = $this->match_exceptions( $this->expand_macros( $line, $macros ), $exceptions, $line_no );
 			} else {
 				// Not a pattern & not an exception.
 				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
 					$comments[] = $line;
 				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_patterns = $this->match_patterns( $matches[1], $patterns );
+					$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
 				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions );
+					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
 				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// Ignore this line completely.
 					continue;
+				} elseif ( preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
+					// Add a macro definition.
+					$macros[ $matches[1] ] = $matches[2];
+				} elseif ( preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
+					// Add a macro definition and expand any contained macros.
+					$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
 				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
 					// Treat other commands as comments unless we are matching exceptions or patterns.
 					$comments[] = $line;
 				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
 					continue; // Do nothing.
 				} else {
-					throw new \RangeException( "Error: unknown line $line\n" );
+					throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
 				}
 			}
 		}
-
-		return $this->format_results( $patterns, $exceptions, $comments );
 	}
 }

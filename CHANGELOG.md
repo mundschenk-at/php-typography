@@ -1,5 +1,23 @@
 # Change History
 
+## 6.1.0 - January 05, 2018
+*   _Feature_: New hyphenation languages
+    -   Assamese,
+    -   Belarusian,
+    -   Bengali,
+    -   Church Slavonic,
+    -   Esperanto,
+    -   Friulan,
+    -   Gujarati,
+    -   Kannada,
+    -   Kurmanji,
+    -   Malayalam,
+    -   Norwegian (Bokmål)
+    -   Norwegian (Nynorsk)    
+    -   Piedmontese,
+    -   Romansh,
+    -   Upper Sorbian.
+
 ## 6.0.1 - January 03, 2018
 *   _Bugfix_: `Default_Registry::get_default_node_fixes` and `Default_Registry::get_default_token_fixes` were missing the `static` keyword.
 
