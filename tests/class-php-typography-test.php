@@ -548,7 +548,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $this->s;
 		$s->set_defaults();
 
-		$this->assertSame( $html, $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
+		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
 		}, $s ) ) );
 	}
 
@@ -644,7 +644,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = new Settings( true );
 		$s->set_tags_to_ignore( [ 'h1', 'h2' ] );
 
-		$this->assertSame( $html, $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
+		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
 		}, $s, true ) ) );
 	}
 
