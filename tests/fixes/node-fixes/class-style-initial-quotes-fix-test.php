@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,6 +93,7 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @uses ::apply
 	 * @uses ::is_single_quote
 	 * @uses ::is_double_quote
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_style_initial_quotes_data
 	 *
@@ -117,6 +118,7 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @uses ::apply
 	 * @uses ::is_single_quote
 	 * @uses ::is_double_quote
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_style_initial_quotes_data
 	 *

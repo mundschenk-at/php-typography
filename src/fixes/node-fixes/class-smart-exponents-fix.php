@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -27,8 +27,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\Settings;
 use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
 
 /**
  * Applies smart exponents (if enabled).
@@ -40,16 +41,12 @@ use PHP_Typography\DOM;
  */
 class Smart_Exponents_Fix extends Simple_Regex_Replacement_Fix {
 
-	const SETTING     = 'smartExponents';
-	const REPLACEMENT = '$1<sup>$2</sup>';
-	const REGEX       = '/\b(\d+)\^(\w+)\b/u';
-
 	/**
 	 * Creates a new fix object.
 	 *
 	 * @param bool $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $feed_compatible = false ) {
-		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
+		parent::__construct( '/\b(\d+)\^(\w+)\b/u', RE::escape_tags( '$1<sup>$2</sup>' ), 'smartExponents', $feed_compatible );
 	}
 }

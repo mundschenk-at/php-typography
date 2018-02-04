@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes;
+use PHP_Typography\RE;
 use PHP_Typography\Settings;
 use PHP_Typography\U;
 
@@ -60,10 +61,11 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
+	 * @uses PHP_Typography\RE::escape_tags
 	 */
 	public function test_array_constructor() {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( 'foo', 'bar' );
-		$this->assertAttributeEquals( '<sup class="foo">$1</sup>' . U::FRACTION_SLASH . '<sub class="bar">$2</sub>$3', 'replacement',   $this->fix, 'The replacement should contain the classes "foo" and "bar".' );
+		$this->assertAttributeEquals( RE::escape_tags( '<sup class="foo">$1</sup>' . U::FRACTION_SLASH . '<sub class="bar">$2</sub>$3' ), 'replacement',   $this->fix, 'The replacement should contain the classes "foo" and "bar".' );
 	}
 
 	/**
@@ -173,6 +175,8 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
 	 * @dataProvider provide_smart_fractions_data
 	 *
 	 * @param string $input       HTML input.
@@ -194,6 +198,8 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_smart_fractions_with_spacing_data
 	 *
@@ -217,6 +223,8 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
 	 * @dataProvider provide_smart_fractions_only_spacing_data
 	 *
 	 * @param string $input       HTML input.
@@ -239,6 +247,8 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_smart_fractions_data
 	 *

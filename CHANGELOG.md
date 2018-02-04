@@ -1,5 +1,8 @@
 # Change History
 
+## 6.1.1 - February 04, 2018
+*   _Bugfix_: < and > where silently dropped when replacing nodes due to HTML injection.
+
 ## 6.1.0 - January 05, 2018
 *   _Feature_: New hyphenation languages
     -   Assamese,

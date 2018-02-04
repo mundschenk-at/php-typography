@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes;
+use PHP_Typography\RE;
 use PHP_Typography\Settings;
 
 /**
@@ -60,12 +61,14 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::__construct
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
 	 * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
 	 */
 	public function test_array_constructor() {
 		$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( 'foo' );
 
-		$this->assertAttributeEquals( '$1<sup class="foo">$2</sup>', 'replacement', $this->fix, 'The replacement CSS class should be "foo".' );
+		$this->assertAttributeEquals( RE::escape_tags( '$1<sup class="foo">$2</sup>' ), 'replacement', $this->fix, 'The replacement CSS class should be "foo".' );
 	}
 
 	/**
@@ -91,6 +94,8 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
 	 * @dataProvider provide_smart_ordinal_suffix
 	 *
 	 * @param string $input     HTML input.
@@ -111,6 +116,8 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_smart_ordinal_suffix
 	 *

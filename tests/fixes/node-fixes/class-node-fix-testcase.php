@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,10 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Tests\PHP_Typography_Testcase;
-use PHP_Typography\Settings;
+
 use PHP_Typography\Fixes\Node_Fix;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
@@ -96,6 +98,6 @@ abstract class Node_Fix_Testcase extends PHP_Typography_Testcase {
 		}
 
 		$this->fix->apply( $node, $this->s, $is_title );
-		$this->assertSame( $this->clean_html( $result ), $this->clean_html( $node->data ) );
+		$this->assertSame( $this->clean_html( $result ), $this->clean_html( str_replace( [ RE::ESCAPED_HTML_OPEN, RE::ESCAPED_HTML_CLOSE ], [ '<', '>' ], $node->data ) ) );
 	}
 }

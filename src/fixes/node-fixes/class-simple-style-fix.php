@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,8 +26,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\Settings;
 use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
 
 /**
  * An abstract base class for adding simple wrapping spans to style certain elements.
@@ -91,6 +92,6 @@ abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( $this->regex, '<span class="' . $this->css_class . '">$1</span>', $textnode->data );
+		$textnode->data = \preg_replace( $this->regex, RE::escape_tags( "<span class=\"{$this->css_class}\">\$1</span>" ), $textnode->data );
 	}
 }

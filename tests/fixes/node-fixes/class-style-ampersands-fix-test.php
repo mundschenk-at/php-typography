@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply
 	 * @covers ::__construct
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -96,6 +97,7 @@ class Style_Ampersands_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply
 	 * @covers ::__construct
 	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *

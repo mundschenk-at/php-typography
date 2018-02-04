@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -169,11 +169,19 @@ class PHP_Typography {
 				continue;
 			}
 
+			// Store original content.
+			$original = $textnode->data;
+
 			// Apply fixes.
 			$fixer( $textnode, $settings, $is_title );
 
 			// Until now, we've only been working on a textnode: HTMLify result.
-			$this->replace_node_with_html( $textnode, $textnode->data );
+			$new = $textnode->data;
+
+			// Replace original node (if anthing was changed).
+			if ( $new !== $original ) {
+				$this->replace_node_with_html( $textnode, $new );
+			}
 		}
 
 		return $html5_parser->saveHTML( $body_node->childNodes );
@@ -311,6 +319,9 @@ class PHP_Typography {
 		if ( empty( $parent ) ) {
 			return $node; // abort early to save cycles.
 		}
+
+		// Encode bare < > & and decode escaped HTML tag.
+		$content = RE::unescape_tags( htmlspecialchars( $content, ENT_NOQUOTES | ENT_HTML5, 'UTF-8', false ) );
 
 		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
 

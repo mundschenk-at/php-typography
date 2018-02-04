@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -463,6 +463,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '<section id="main"><!-- comment --></section>', '<section id="main"><!-- comment --></section>', true ],
 			[ '<section id="main"><!-- comment --><div></div></section>', '<section id="main"><!-- comment --><div></div></section>', true ],
 			[ 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ333', 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ<span class="numbers">333</span>', false ], // Unicode characters in regular expressions.
+			[ '&lt;<a href="http://example.org">test</a>&gt;', '<<a href="http://example.org">test</a>>', false ],
+			[ '3 &lt; 4 &gt; 5', '<span class="numbers">3</span> < <span class="numbers">4</span> >&nbsp;<span class="numbers">5</span>', false ],
 		];
 	}
 
@@ -548,7 +550,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $this->s;
 		$s->set_defaults();
 
-		$this->assertSame( $html, $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
+		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
 		}, $s ) ) );
 	}
 
@@ -644,7 +646,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = new Settings( true );
 		$s->set_tags_to_ignore( [ 'h1', 'h2' ] );
 
-		$this->assertSame( $html, $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
+		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
 		}, $s, true ) ) );
 	}
 
