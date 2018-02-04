@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	 * Tests the constructor.
 	 *
 	 * @covers ::__construct
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
 	 */
 	public function test_constructor() {
 		$this->fix = new Node_Fixes\Style_Hanging_Punctuation_Fix( 'alpha', 'beta', 'gamma', 'delta' );
@@ -105,6 +107,7 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply_internal
 	 *
 	 * @uses ::apply
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_style_hanging_punctuation_data
 	 *
@@ -125,6 +128,7 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::apply_internal
 	 *
 	 * @uses ::apply
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_style_hanging_punctuation_data
 	 *

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		// Replace fractions.
 		$numerator_css     = empty( $css_numerator ) ? '' : ' class="' . $css_numerator . '"';
 		$denominator_css   = empty( $css_denominator ) ? '' : ' class="' . $css_denominator . '"';
-		$this->replacement = "<sup{$numerator_css}>\$1</sup>" . U::FRACTION_SLASH . "<sub{$denominator_css}>\$2</sub>\$3";
+		$this->replacement = RE::escape_tags( "<sup{$numerator_css}>\$1</sup>" . U::FRACTION_SLASH . "<sub{$denominator_css}>\$2</sub>\$3" );
 	}
 
 	/**
@@ -166,6 +166,5 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 
 		// Restore textnode content.
 		$textnode->data = $node_data;
-
 	}
 }

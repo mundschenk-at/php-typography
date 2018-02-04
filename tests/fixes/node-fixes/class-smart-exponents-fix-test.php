@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ class Smart_Exponents_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_smart_exponents_data
 	 *
@@ -91,6 +92,7 @@ class Smart_Exponents_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\Fixes\Node_Fixes\Simple_Regex_Replacement_Fix::apply
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_smart_exponents_data
 	 *

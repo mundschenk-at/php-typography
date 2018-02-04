@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -88,6 +88,7 @@ class Simple_Style_Fix_Test extends Node_Fix_Testcase {
 	 * @uses ::apply
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\RE::escape_tags
 	 *
 	 * @dataProvider provide_apply_internal_data
 	 *

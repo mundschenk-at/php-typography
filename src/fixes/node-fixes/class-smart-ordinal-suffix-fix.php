@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,9 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\Settings;
 use PHP_Typography\DOM;
+use PHP_Typography\RE;
+use PHP_Typography\Settings;
 
 /**
  * Applies smart ordinal suffix (if enabled).
@@ -58,7 +59,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 		parent::__construct( $feed_compatible );
 
 		$ordinal_class     = empty( $css_class ) ? '' : ' class="' . $css_class . '"';
-		$this->replacement = "\$1<sup{$ordinal_class}>\$2</sup>";
+		$this->replacement = RE::escape_tags( "\$1<sup{$ordinal_class}>\$2</sup>" );
 	}
 
 	/**
@@ -73,6 +74,6 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( "/\b(\d+)(st|nd|rd|th)\b/S", $this->replacement, $textnode->data );
+		$textnode->data = \preg_replace( '/\b(\d+)(st|nd|rd|th)\b/S', $this->replacement, $textnode->data );
 	}
 }

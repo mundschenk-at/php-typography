@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -91,6 +91,10 @@ abstract class RE {
 	// Marker for strings that should not be replaced.
 	const ESCAPE_MARKER = '_E_S_C_A_P_E_D_';
 
+	// Inserted HTML tags.
+	const ESCAPED_HTML_OPEN  = '_B_E_G_I_N_H_T_M_L_';
+	const ESCAPED_HTML_CLOSE = '_E_N_D_H_T_M_L_';
+
 	/**
 	 * A pattern matching top-level domains.
 	 *
@@ -139,5 +143,27 @@ abstract class RE {
 		}
 
 		return self::$top_level_domains_pattern;
+	}
+
+	/**
+	 * Replace < and > with escape markers.
+	 *
+	 * @param  string $tags A string containing HTML markup (all other < and > must be entity encoded).
+	 *
+	 * @return string
+	 */
+	public static function escape_tags( $tags ) {
+		return str_replace( [ '<', '>' ], [ self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE ], $tags );
+	}
+
+	/**
+	 * Replace tag escape markers with < and >.
+	 *
+	 * @param  string $tags A string containing escaped HTML markup.
+	 *
+	 * @return string
+	 */
+	public static function unescape_tags( $tags ) {
+		return str_replace( [ self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE ], [ '<', '>' ], $tags );
 	}
 }

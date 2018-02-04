@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use PHP_Typography\DOM;
+use PHP_Typography\RE;
 use PHP_Typography\Settings;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
@@ -97,7 +98,7 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 			$block_level_parent = $is_title ? 'h2' : DOM::get_block_parent_name( $textnode );
 
 			if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
-				$textnode->data = '<span class="' . $span_class . '">' . $first_character . '</span>' . $f['substr']( $node_data, 1, $f['strlen']( $node_data ) );
+				$textnode->data = RE::escape_tags( '<span class="' . $span_class . '">' ) . $first_character . RE::escape_tags( '</span>' ) . $f['substr']( $node_data, 1, $f['strlen']( $node_data ) );
 			}
 		}
 	}

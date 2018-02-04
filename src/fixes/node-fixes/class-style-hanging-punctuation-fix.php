@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use PHP_Typography\DOM;
+use PHP_Typography\RE;
 use PHP_Typography\Settings;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
@@ -68,6 +69,13 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	 */
 	protected $pull_double_class;
 
+	/**
+	 * An array of replacment arrays (indexed by the "$block" flag).
+	 *
+	 * @var array
+	 */
+	protected $replacements;
+
 
 	// Hanging punctuation.
 	const _DOUBLE_HANGING_PUNCTUATION =
@@ -107,6 +115,21 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		$this->push_double_class = $push_double_class;
 		$this->pull_single_class = $pull_single_class;
 		$this->pull_double_class = $pull_double_class;
+
+		$this->replacements = [
+			false => [
+				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
+				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
+				RE::escape_tags( '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
+				RE::escape_tags( '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			],
+			true  => [
+				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
+				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
+				RE::escape_tags( '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
+				RE::escape_tags( '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			],
+		];
 	}
 
 	/**
@@ -139,12 +162,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 				self::STYLE_SINGLE . $f['u'],
 				self::STYLE_INITIAL_DOUBLE . $f['u'],
 				self::STYLE_INITIAL_SINGLE . $f['u'],
-			], [
-				'$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3',
-				'$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3',
-				( ! $block ? ( '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE ) : '' ) . '<span class="' . $this->pull_double_class . '">$1</span>$2',
-				( ! $block ? ( '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE ) : '' ) . '<span class="' . $this->pull_single_class . '">$1</span>$2',
-			], $node_data
+			], $this->replacements[ $block ], $node_data
 		);
 
 		// Remove any added characters.
