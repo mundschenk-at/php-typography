@@ -1,5 +1,8 @@
 # Change History
 
+## 6.2.0 - unreleased
+*   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
+
 ## 6.1.2 - February 25, 2018
 *   _Bugfix_: The `Quotes` class was missing from the signature of `Settings::set_smart_quotes_*`.
 
