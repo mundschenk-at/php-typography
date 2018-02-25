@@ -1,5 +1,8 @@
 # Change History
 
+## 6.1.2 - February 25, 2018
+*   _Bugfix_: The `Quotes` class was missing from the signature of `Settings::set_smart_quotes_*`.
+
 ## 6.1.1 - February 04, 2018
 *   _Bugfix_: < and > where silently dropped when replacing nodes due to HTML injection.
 
