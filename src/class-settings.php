@@ -29,6 +29,7 @@ namespace PHP_Typography;
 
 use PHP_Typography\Settings\Dash_Style;
 use PHP_Typography\Settings\Quote_Style;
+use PHP_Typography\Settings\Quotes;
 
 /**
  * Store settings for the PHP_Typography class.
@@ -49,14 +50,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Primary quote style.
 	 *
-	 * @var Settings\Quotes
+	 * @var Quotes
 	 */
 	protected $primary_quote_style;
 
 	/**
 	 * Secondary quote style.
 	 *
-	 * @var Settings\Quotes
+	 * @var Quotes
 	 */
 	protected $secondary_quote_style;
 
@@ -208,7 +209,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Retrieves the primary (double) quote style.
 	 *
-	 * @return Settings\Quotes
+	 * @return Quotes
 	 */
 	public function primary_quote_style() {
 		return $this->primary_quote_style;
@@ -217,7 +218,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Retrieves the secondary (single) quote style.
 	 *
-	 * @return Settings\Quotes
+	 * @return Quotes
 	 */
 	public function secondary_quote_style() {
 		return $this->secondary_quote_style;
@@ -401,7 +402,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
 	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
 	 *
-	 * @param string $style Defaults to 'doubleCurled.
+	 * @param  Quotes|string $style Optional. A Quotes instance or a quote style constant. Defaults to 'doubleCurled'.
 	 *
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
@@ -429,7 +430,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * "cornerBrackets" => "&#x300c;foo&#x300d;",
 	 * "whiteCornerBracket" => "&#x300e;foo&#x300f;"
 	 *
-	 * @param string $style Defaults to 'singleCurled'.
+	 * @param  Quotes|string $style Optional. A Quotes instance or a quote style constant. Defaults to 'singleCurled'.
 	 *
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
@@ -440,14 +441,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Retrieves a Quotes instance from a given style.
 	 *
-	 * @param  Settings\Quotes|string $style A Quotes instance or a quote style constant.
+	 * @param  Quotes|string $style A Quotes instance or a quote style constant.
 	 *
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 *
-	 * @return Settings\Quotes
+	 * @return Quotes
 	 */
 	protected function get_quote_style( $style ) {
-		return $this->get_style( $style, Settings\Quotes::class, [ Quote_Style::class, 'get_styled_quotes' ], 'quote' );
+		return $this->get_style( $style, Quotes::class, [ Quote_Style::class, 'get_styled_quotes' ], 'quote' );
 	}
 
 	/**
