@@ -49,7 +49,7 @@ interface U {
 	const HAIR_SPACE                 = "\xe2\x80\x8a";
 	const ZERO_WIDTH_SPACE           = "\xe2\x80\x8b";
 	const HYPHEN_MINUS               = '-';
-	const HYPHEN                     = self::HYPHEN_MINUS; // "\xe2\x80\x90"; // should be Strings::_uchr(8208), but IE6 chokes.
+	const HYPHEN                     = self::HYPHEN_MINUS; // Should be "\xe2\x80\x90" (\u8208), but IE6 chokes.
 	const NO_BREAK_HYPHEN            = "\xe2\x80\x91";
 	const EN_DASH                    = "\xe2\x80\x93";
 	const EM_DASH                    = "\xe2\x80\x94";
