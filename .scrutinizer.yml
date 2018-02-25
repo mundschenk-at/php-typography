@@ -18,16 +18,20 @@ build:
         memcached: false
         neo4j: false
         php:
-            version: 7.1
-    tests:
+            version: 7.2
+
+    dependencies:
         override:
-            - phpcs-run -p src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php
+            - composer install --ignore-platform-reqs --no-interaction
+
     nodes:
         analysis:
             project_setup:
                 override: true
             tests:
-                override: [php-scrutinizer-run --disable-security-analysis]
+                override:
+                  - phpcs-run -p src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php
+                  - php-scrutinizer-run --disable-security-analysis
 
 tools:
     php_code_sniffer: false
