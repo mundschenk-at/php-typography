@@ -89,6 +89,8 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 			[ '3/44"',                             '3/44&Prime;' ],
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
 			[ 'Some "word")',                      'Some &ldquo;word&rdquo;)' ],
+			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
+			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
 		];
 	}
 
