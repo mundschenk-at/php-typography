@@ -64,6 +64,7 @@ class Space_Collapse_Fix_Test extends Node_Fix_Testcase {
 		return [
 			[ 'A  new hope&nbsp;  arises.', 'A new hope&nbsp;arises.' ],
 			[ 'A &thinsp;new hope &nbsp;  arises.', 'A&thinsp;new hope&nbsp;arises.' ],
+			[ 'Årø Bilsenter', 'Årø Bilsenter' ],
 		];
 	}
 

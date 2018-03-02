@@ -42,7 +42,7 @@ use PHP_Typography\U;
  */
 class Space_Collapse_Fix extends Abstract_Node_Fix {
 
-	const COLLAPSE_NORMAL_SPACES            = '/[' . RE::NORMAL_SPACES . ']+/Sx';
+	const COLLAPSE_NORMAL_SPACES            = '/[' . RE::NORMAL_SPACES . ']+/Sxu';
 	const COLLAPSE_NON_BREAKABLE_SPACES     = '/(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*' . U::NO_BREAK_SPACE . '(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/Sxu';
 	const COLLAPSE_OTHER_SPACES             = '/(?:[' . RE::NORMAL_SPACES . '])*(' . RE::HTML_SPACES . ')(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')*/Sxu';
 	const COLLAPSE_SPACES_AT_START_OF_BLOCK = '/\A(?:[' . RE::NORMAL_SPACES . ']|' . RE::HTML_SPACES . ')+/Sxu';

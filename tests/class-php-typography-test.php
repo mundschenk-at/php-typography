@@ -465,6 +465,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ333', 'ช่วยฉัน/ผมหน่อยได้ไหม คะ/ครับ<span class="numbers">333</span>', false ], // Unicode characters in regular expressions.
 			[ '&lt;<a href="http://example.org">test</a>&gt;', '<<a href="http://example.org">test</a>>', false ],
 			[ '3 &lt; 4 &gt; 5', '<span class="numbers">3</span> < <span class="numbers">4</span> >&nbsp;<span class="numbers">5</span>', false ],
+			[ 'Årø Bilsenter', '&Aring;r&oslash; Bilsen&shy;ter', false ],
 		];
 	}
 
