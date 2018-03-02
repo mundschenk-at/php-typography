@@ -1,5 +1,8 @@
 # Change History
 
+## 6.1.3 - March 02, 2081
+*   _Bugfix_: In rare cases, UTF-8 characters were broken by a missing 'u' flag in a regular expression.
+
 ## 6.1.2 - February 25, 2018
 *   _Bugfix_: The `Quotes` class was missing from the signature of `Settings::set_smart_quotes_*`.
 
