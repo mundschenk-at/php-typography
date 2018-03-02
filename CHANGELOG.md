@@ -1,5 +1,8 @@
 # Change History
 
+## 6.2.0 - unreleased
+*   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
+
 ## 6.1.3 - March 02, 2081
 *   _Bugfix_: In rare cases, UTF-8 characters were broken by a missing 'u' flag in a regular expression.
 

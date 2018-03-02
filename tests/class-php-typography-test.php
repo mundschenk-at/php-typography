@@ -791,6 +791,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ "2/4'",                              '2/4&prime;' ],
 			[ '3/44"',                             '3/44&Prime;' ],
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
+			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
+			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
 		];
 	}
 
@@ -811,6 +813,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary();
 		$this->s->set_smart_quotes_secondary();
+		$this->s->set_true_no_break_narrow_space();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
