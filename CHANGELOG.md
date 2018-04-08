@@ -1,5 +1,8 @@
 # Change History
 
+## 6.2.0 - unreleased
+*   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
+
 ## 6.1.4 - April 08, 2018
 *   _Bugfix_: Smart fractions were not matched correctly if the were followed by a comma (i.e. `1/4,`).
 
