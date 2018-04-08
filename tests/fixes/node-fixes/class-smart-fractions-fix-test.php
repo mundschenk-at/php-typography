@@ -99,6 +99,42 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 				'num',
 				'denom',
 			],
+			[
+				'1/4.',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>.',
+				'num',
+				'denom',
+			],
+			[
+				'1/4,',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>,',
+				'num',
+				'denom',
+			],
+			[
+				'1/4;',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>;',
+				'num',
+				'denom',
+			],
+			[
+				'1/4:',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>:',
+				'num',
+				'denom',
+			],
+			[
+				'1/4?',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>?',
+				'num',
+				'denom',
+			],
+			[
+				'1/4!',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">4</sub>!',
+				'num',
+				'denom',
+			],
 		];
 	}
 

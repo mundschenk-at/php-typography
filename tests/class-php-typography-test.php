@@ -1353,6 +1353,30 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				'num',
 				'denom',
 			],
+			[
+				'3 1/4 works',
+				'3 <sup class="num">1</sup>&frasl;<sub class="denom">4</sub> works',
+				'num',
+				'denom',
+			],
+			[
+				'3 1/4" works',
+				'3 <sup class="num">1</sup>&frasl;<sub class="denom">4</sub>&Prime; works',
+				'num',
+				'denom',
+			],
+			[
+				'3 1/4". works',
+				'3 <sup class="num">1</sup>&frasl;<sub class="denom">4</sub>&Prime;. works',
+				'num',
+				'denom',
+			],
+			[
+				'3 1/4", works',
+				'3 <sup class="num">1</sup>&frasl;<sub class="denom">4</sub>&Prime;, works',
+				'num',
+				'denom',
+			],
 		];
 	}
 
