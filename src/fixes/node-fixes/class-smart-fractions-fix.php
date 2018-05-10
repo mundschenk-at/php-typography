@@ -54,7 +54,19 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		# strip out any zero-width spaces inserted by wrap_hard_hyphens
 		(?:\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
 
-		(\d+)
+		(
+			# lookahead assertion: do not make fractions from x:x if x > 1
+			(?:
+				# ignore x:x where x > 1
+				(?!\1(?:[^0-9]|\Z)) |
+
+				# but allow 1:1
+				(?=\1)(?=1(?:[^0-9]|\Z))
+			)
+
+			# Any numbers, except those above
+			\d+
+		)
 		(
 			# handle fractions followed by prime symbols
 			(?:' . U::SINGLE_PRIME . '|' . U::DOUBLE_PRIME . ')?
