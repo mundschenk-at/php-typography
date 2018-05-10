@@ -1,5 +1,9 @@
 # Change History
 
+## 6.1.5 - May 10, 2018
+*   _Bugfix_: 50/50 (and x/x except 1/1) are not treated as fractions anymore.
+*   _Bugfix_: The French spacing rules were not applied to closing guillemets followed by a comma.
+
 ## 6.1.4 - April 08, 2018
 *   _Bugfix_: Smart fractions were not matched correctly if the were followed by a comma (i.e. `1/4,`).
 
@@ -25,7 +29,7 @@
     -   Kurmanji,
     -   Malayalam,
     -   Norwegian (Bokmål)
-    -   Norwegian (Nynorsk)    
+    -   Norwegian (Nynorsk)
     -   Piedmontese,
     -   Romansh,
     -   Upper Sorbian.
