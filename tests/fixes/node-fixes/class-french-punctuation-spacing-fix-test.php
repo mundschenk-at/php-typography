@@ -74,6 +74,7 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 			[ 'Les « courants de bord ouest » du Pacifique ? Eh bien : ils sont "fabuleux".', 'Les &laquo;&#8239;courants de bord ouest&#8239;&raquo; du Pacifique&#8239;? Eh bien&nbsp;: ils sont "fabuleux".' ],
 			[ '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;' ],
 			[ 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?' ],
+			[ '«Pourquoi», c’est une bonne question', '«&#8239;Pourquoi&#8239;», c’est une bonne question' ],
 		];
 	}
 
