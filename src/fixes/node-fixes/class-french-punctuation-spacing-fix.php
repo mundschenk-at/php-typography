@@ -49,7 +49,7 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!;])(\s|\Z)/u';
 	const INSERT_FULL_SPACE                 = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
 	const INSERT_SPACE_AFTER_OPENING_QUOTE  = '/(\s|\A)(«)(\s?)(\w+)/u';
-	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.?!:]|\Z)/u';
+	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.,?!:]|\Z)/u';
 
 	/**
 	 * Apply the fix to a given textnode.
