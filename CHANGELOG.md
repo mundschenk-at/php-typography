@@ -31,7 +31,7 @@
     -   Kurmanji,
     -   Malayalam,
     -   Norwegian (Bokmål)
-    -   Norwegian (Nynorsk)    
+    -   Norwegian (Nynorsk)
     -   Piedmontese,
     -   Romansh,
     -   Upper Sorbian.
