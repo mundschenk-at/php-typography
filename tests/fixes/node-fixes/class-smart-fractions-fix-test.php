@@ -169,6 +169,12 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 				'num',
 				'denom',
 			],
+			[
+				'1/1, 10/10, 9/9, 50/50',
+				'<sup class="num">1</sup>&frasl;<sub class="denom">1</sub>, 10/10, 9/9, 50/50',
+				'num',
+				'denom',
+			],
 		];
 	}
 

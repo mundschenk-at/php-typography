@@ -3,6 +3,9 @@
 ## 6.2.0 - unreleased
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
 
+## 6.1.5 - May 10, 2018
+*   _Bugfix_: 50/50 (and x/x except 1/1) are not treated as fractions anymore.
+
 ## 6.1.4 - April 08, 2018
 *   _Bugfix_: Smart fractions were not matched correctly if the were followed by a comma (i.e. `1/4,`).
 
@@ -28,7 +31,7 @@
     -   Kurmanji,
     -   Malayalam,
     -   Norwegian (Bokmål)
-    -   Norwegian (Nynorsk)    
+    -   Norwegian (Nynorsk)
     -   Piedmontese,
     -   Romansh,
     -   Upper Sorbian.
