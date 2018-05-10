@@ -3,6 +3,9 @@
 ## 6.2.0 - unreleased
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
 
+## 6.1.5 - May 10, 2018
+*   _Bugfix_: The French spacing rules were not applied to closing guillemets followed by a comma.
+
 ## 6.1.4 - April 08, 2018
 *   _Bugfix_: Smart fractions were not matched correctly if the were followed by a comma (i.e. `1/4,`).
 
