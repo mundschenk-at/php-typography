@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2022 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_url_wrap( true );
 		$this->s->set_min_after_url_wrap( $min_after );
 
-		$this->assertFixResultSame( $input, $result );
+		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
 	}
 
 	/**
@@ -127,6 +127,6 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_url_wrap( false );
 		$this->s->set_min_after_url_wrap( $min_after );
 
-		$this->assertFixResultSame( $input, $input );
+		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
 	}
 }

@@ -91,7 +91,7 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 		foreach ( $this->token_fixes as $fix ) {
 			$t = $fix->target();
 
-			$tokens[ $t ] = $fix->apply( $tokens[ $t ], $settings, $is_title, $textnode );
+			$tokens[ $t ] = $fix->apply( $tokens[ $t ], $textnode, $settings, $is_title );
 		}
 
 		// Apply updates to our text.

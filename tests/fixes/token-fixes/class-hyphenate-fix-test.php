@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2022 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -263,16 +263,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
-		$parent = new \DOMElement( $parent_tag, $input );
-
-		/**
-		 * Always a \DOMText.
-		 *
-		 * @var \DOMText
-		 */
-		$textnode = $parent->firstChild;
-
-		$this->assertFixResultSame( $input, $result, false, $textnode );
+		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( $parent_tag, $input ) );
 	}
 
 	/**
@@ -306,6 +297,6 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
-		$this->assertFixResultSame( $input, $input );
+		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
 	}
 }
