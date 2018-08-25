@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 		foreach ( $this->token_fixes as $fix ) {
 			$t = $fix->target();
 
-			$tokens[ $t ] = $fix->apply( $tokens[ $t ], $settings, $is_title, $textnode );
+			$tokens[ $t ] = $fix->apply( $tokens[ $t ], $textnode, $settings, $is_title );
 		}
 
 		// Apply updates to our text.

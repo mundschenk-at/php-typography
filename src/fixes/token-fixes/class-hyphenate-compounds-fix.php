@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,16 +54,18 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 	}
 
 	/**
-	 * Apply the tweak to a given textnode.
+	 * Apply the fix to a given set of tokens
 	 *
-	 * @param Token[]       $tokens   Required.
-	 * @param Settings      $settings Required.
-	 * @param bool          $is_title Optional. Default false.
-	 * @param \DOMText|null $textnode Optional. Default null.
+	 * @since 7.0.0 The parameter order has been re-arranged to mirror Node_Fix.
 	 *
-	 * @return Token[] An array of tokens.
+	 * @param Token[]  $tokens   The set of tokens.
+	 * @param \DOMText $textnode The context DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 *
+	 * @return Token[]           The fixed set of tokens.
 	 */
-	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( empty( $settings['hyphenateCompounds'] ) ) {
 			return $tokens; // abort.
 		}
@@ -75,7 +77,7 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 				$component_words[] = new Text_Parser\Token( $word_part, Text_Parser\Token::WORD );
 			}
 
-			$tokens[ $key ] = $word_token->with_value( \array_reduce( parent::apply( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
+			$tokens[ $key ] = $word_token->with_value( \array_reduce( parent::apply( $component_words, $textnode, $settings, $is_title ), function( $carry, $item ) {
 				return $carry . $item->value;
 			} ) );
 		}

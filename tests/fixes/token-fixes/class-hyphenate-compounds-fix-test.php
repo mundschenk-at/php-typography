@@ -114,7 +114,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
-		$this->assertFixResultSame( $input, $result );
+		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
 	}
 
 	/**
@@ -148,6 +148,6 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
-		$this->assertFixResultSame( $input, $input );
+		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
 	}
 }
