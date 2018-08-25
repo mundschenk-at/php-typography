@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,13 +58,15 @@ abstract class Abstract_Node_Fix implements Node_Fix {
 	/**
 	 * Apply the fix to a given textnode.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @since 7.0.0 All parameters are now required.
+	 *
+	 * @param \DOMText $textnode The DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
 	 *
 	 * @return void
 	 */
-	abstract public function apply( \DOMText $textnode, Settings $settings, $is_title = false );
+	abstract public function apply( \DOMText $textnode, Settings $settings, $is_title );
 
 	/**
 	 * Determines whether the fix should be applied to (RSS) feeds.
