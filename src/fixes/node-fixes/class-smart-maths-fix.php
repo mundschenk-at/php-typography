@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -229,10 +229,10 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 					'x',
 					'*',
 				], [
-					U::MINUS,
+					U::MINUS, // @codeCoverageIgnoreStart
 					U::DIVISION,
 					U::MULTIPLICATION,
-					U::MULTIPLICATION,
+					U::MULTIPLICATION, // @codeCoverageIgnoreEnd
 				],
 				$matches[0]
 			);
