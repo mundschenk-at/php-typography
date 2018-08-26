@@ -587,6 +587,26 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests set_smart_quotes_exceptions.
+	 *
+	 * @covers ::set_smart_quotes_exceptions
+	 */
+	public function test_set_smart_quotes_exceptions() {
+		$this->settings->set_smart_quotes_exceptions();
+
+		$exceptions = $this->settings['smartQuotesExceptions'];
+		$this->assertCount( 2, $exceptions );
+		$this->assertGreaterThan( 1, count( $exceptions['patterns'] ) );
+		$this->assertEquals( count( $exceptions['patterns'] ), count( $exceptions['replacements'] ) );
+
+		$this->settings->set_smart_quotes_exceptions( [ 'Yfoo' => 'Xfoo' ] );
+		$exceptions = $this->settings['smartQuotesExceptions'];
+		$this->assertCount( 2, $exceptions );
+		$this->assertEquals( [ 'Yfoo' ], $exceptions['patterns'] );
+		$this->assertEquals( [ 'Xfoo' ], $exceptions['replacements'] );
+	}
+
+	/**
 	 * Test set_smart_dashes.
 	 *
 	 * @covers ::set_smart_dashes
