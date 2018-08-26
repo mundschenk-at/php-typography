@@ -2,6 +2,7 @@
 
 ## 6.2.0 - unreleased
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
+*   _Feature_: The list of "apostrophe exceptions" (like `'tain't`, `'til`) can now be adjusted.
 *   _Change_: Significantly updated hyphenation patterns for:
     -   Bulgarian
     -   German
