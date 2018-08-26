@@ -255,6 +255,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_smart_quotes();
 		$this->set_smart_quotes_primary();
 		$this->set_smart_quotes_secondary();
+		$this->set_smart_quotes_exceptions();
 		$this->set_smart_dashes();
 		$this->set_smart_dashes_style();
 		$this->set_smart_ellipses();
@@ -449,6 +450,32 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	protected function get_quote_style( $style ) {
 		return $this->get_style( $style, Quotes::class, [ Quote_Style::class, 'get_styled_quotes' ], 'quote' );
+	}
+
+	/**
+	 * Sets the list of exceptional words for smart quotes replacement. Mainly,
+	 * this is used for contractions beginning with an apostrophe.
+	 *
+	 * @param string[] $exceptions Optional. An array of replacements indexed by the ”non-smart" form.
+	 *                             Default a list of English words beginning with an apostrophy.
+	 */
+	public function set_smart_quotes_exceptions( $exceptions = [
+		"'tain't"   => U::APOSTROPHE . 'tain' . U::APOSTROPHE . 't',
+		"'twere"    => U::APOSTROPHE . 'twere',
+		"'twas"     => U::APOSTROPHE . 'twas',
+		"'tis"      => U::APOSTROPHE . 'tis',
+		"'til"      => U::APOSTROPHE . 'til',
+		"'bout"     => U::APOSTROPHE . 'bout',
+		"'nuff"     => U::APOSTROPHE . 'nuff',
+		"'round"    => U::APOSTROPHE . 'round',
+		"'cause"    => U::APOSTROPHE . 'cause',
+		"'splainin" => U::APOSTROPHE . 'splainin',
+		"'em'"      => U::APOSTROPHE . 'em',
+	] ) {
+		$this->data['smartQuotesExceptions'] = [
+			'patterns'     => \array_keys( $exceptions ),
+			'replacements' => \array_values( $exceptions ),
+		];
 	}
 
 	/**

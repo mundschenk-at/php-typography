@@ -42,19 +42,6 @@ use PHP_Typography\U;
  */
 class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
-	const APOSTROPHE_EXCEPTIONS = [
-		"'tain" . U::APOSTROPHE . 't' => U::APOSTROPHE . 'tain' . U::APOSTROPHE . 't',
-		"'twere"                      => U::APOSTROPHE . 'twere',
-		"'twas"                       => U::APOSTROPHE . 'twas',
-		"'tis"                        => U::APOSTROPHE . 'tis',
-		"'til"                        => U::APOSTROPHE . 'til',
-		"'bout"                       => U::APOSTROPHE . 'bout',
-		"'nuff"                       => U::APOSTROPHE . 'nuff',
-		"'round"                      => U::APOSTROPHE . 'round',
-		"'cause"                      => U::APOSTROPHE . 'cause',
-		"'splainin"                   => U::APOSTROPHE . 'splainin',
-	];
-
 	const NUMBERS_BEFORE_PRIME = '\b(?:\d+\/)?\d{1,3}';
 
 	const DOUBLE_PRIME        = '/(' . self::NUMBERS_BEFORE_PRIME . ")(?:''|\")(?=\W|\Z|-\w)/S";
@@ -70,21 +57,6 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/Sx";
 	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/Sx';
 	const DOUBLE_QUOTE_CLOSE    = '/(?: (?<=\w)" ) | (?: (?<=\S)"(?=\s|\Z) )/Sx';
-
-
-	/**
-	 * Apostrophe exceptions matching array.
-	 *
-	 * @var array
-	 */
-	protected $apostrophe_exception_matches;
-
-	/**
-	 * Apostrophe exceptions replacement array.
-	 *
-	 * @var array
-	 */
-	protected $apostrophe_exception_replacements;
 
 	/**
 	 * Cached primary quote style.
@@ -113,18 +85,6 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	 * @var array
 	 */
 	protected $brackets_replacements;
-
-	/**
-	 * Creates a new fix instance.
-	 *
-	 * @param bool $feed_compatible Optional. Default false.
-	 */
-	public function __construct( $feed_compatible = false ) {
-		parent::__construct( $feed_compatible );
-
-		$this->apostrophe_exception_matches      = \array_keys( self::APOSTROPHE_EXCEPTIONS );
-		$this->apostrophe_exception_replacements = \array_values( self::APOSTROPHE_EXCEPTIONS );
-	}
 
 	/**
 	 * Apply the fix to a given textnode.
@@ -160,6 +120,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			$this->cached_primary_quotes   = $double;
 			$this->cached_secondary_quotes = $single;
 		}
+
+		// Handle excpetions first.
+		$node_data = \str_replace( $settings['smartQuotesExceptions']['patterns'], $settings['smartQuotesExceptions']['replacements'], $node_data );
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
 		$node_data = \preg_replace(
@@ -204,7 +167,6 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			[ U::APOSTROPHE, U::APOSTROPHE . '$1' ],
 			$node_data
 		);
-		$node_data = \str_replace( $this->apostrophe_exception_matches, $this->apostrophe_exception_replacements, $node_data );
 
 		// Quotes.
 		$node_data = \str_replace( $this->brackets_matches, $this->brackets_replacements, $node_data );

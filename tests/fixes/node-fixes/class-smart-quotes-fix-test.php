@@ -58,18 +58,6 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 	}
 
 	/**
-	 * Tests the constructor.
-	 *
-	 * @covers ::__construct
-	 */
-	public function test_constructor() {
-		$this->fix = new Smart_Quotes_Fix();
-
-		$this->assertAttributeInternalType( 'array', 'apostrophe_exception_matches',      $this->fix );
-		$this->assertAttributeInternalType( 'array', 'apostrophe_exception_replacements', $this->fix );
-	}
-
-	/**
 	 * Provide data for testing smart_quotes.
 	 *
 	 * @return array
