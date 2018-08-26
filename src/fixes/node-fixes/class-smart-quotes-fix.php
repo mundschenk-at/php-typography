@@ -234,7 +234,19 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		);
 
 		// Check if adjacent characters where replaced with multi-byte replacements.
-		$quotes          = [ $double_open, $double_close, $single_open, $single_close ];
+		$quotes          = [
+			$double_open,
+			$double_close,
+			$single_open,
+			$single_close,
+			U::GUILLEMET_OPEN,
+			U::GUILLEMET_CLOSE,
+			U::DOUBLE_PRIME,
+			U::SINGLE_PRIME,
+			U::APOSTROPHE,
+			U::DOUBLE_LOW_9_QUOTE,
+			U::SINGLE_LOW_9_QUOTE,
+		];
 		$previous_length = self::calc_adjacent_length( $f['strlen']( $previous_character ), $previous_character, $node_data, $quotes, $f['substr'], $f['strlen'], false );
 		$next_length     = self::calc_adjacent_length( $f['strlen']( $next_character ), $next_character, $node_data, $quotes, $f['substr'], $f['strlen'], true );
 
@@ -259,7 +271,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	 * @return int
 	 */
 	private static function calc_adjacent_length( $current_length, $adjacent_character, $haystack, array $needles, callable $substr, callable $strlen, $reverse = false ) {
-		if ( $current_length > 0 && $adjacent_character !== $substr( $haystack, $reverse ? -$current_length : $current_length ) ) {
+		if ( $current_length > 0 && $adjacent_character !== $substr( $haystack, $reverse ? -$current_length : 0, $current_length ) ) {
 			foreach ( $needles as $needle ) {
 				$len = $strlen( $needle );
 

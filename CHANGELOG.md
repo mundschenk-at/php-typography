@@ -9,6 +9,7 @@
     -   German (Swiss Tradtional)
     -   Latin (Liturgical)
     -   Thai
+*   _Bugfix_: Smart quotes replacement could result in invalid unicode sequences in rare cases.
 
 ## 6.1.5 - May 10, 2018
 *   _Bugfix_: The French spacing rules were not applied to closing guillemets followed by a comma.
