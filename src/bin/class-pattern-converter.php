@@ -271,7 +271,7 @@ class Pattern_Converter {
 			foreach ( $matches as $m ) {
 				if ( ! empty( $macros[ $m['name'] ] ) ) {
 					$expanded = preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
-					$pattern  = preg_quote( $m[0] );
+					$pattern  = preg_quote( $m[0], '/' );
 					$line     = preg_replace( "/{$pattern}/u", $expanded, $line );
 				}
 			}

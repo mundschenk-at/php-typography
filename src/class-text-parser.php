@@ -358,16 +358,16 @@ class Text_Parser {
 			$old_part         = $tokens[ $index ]->value;
 			$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
-		} // Not preceeded by a non-space + punctuation.
-		elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+		} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+			// Not preceeded by a non-space + punctuation.
 			$old_part             = $tokens[ $index - 1 ]->value;
 			$older_part           = $tokens[ $index - 2 ]->value;
 			$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
 			unset( $tokens[ $index - 1 ] );
 			$index = $index - 2;
 
-		} // All good.
-		else {
+		} else {
+			// All good.
 			$tokens[ $index ] = new Token( $part, $expected_type );
 		}
 	}
