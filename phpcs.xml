@@ -9,17 +9,12 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
-		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
+		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped" />
 		<exclude name="WordPress.WP.AlternativeFunctions" />
-		<exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped" />
+		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
 	</rule>
-	<rule ref="WordPress-VIP">
-		<exclude name="WordPress.VIP.RestrictedFunctions.file_get_contents_file_get_contents" />
-		<exclude name="WordPress.VIP.FileSystemWritesDisallow" />
-	</rule>
-	<rule ref="Squiz.Commenting.LongConditionClosingComment">
-		<exclude name="Squiz.Commenting.LongConditionClosingComment" />
+	<rule ref="WordPress-Extra">
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
