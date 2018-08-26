@@ -424,6 +424,24 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test get_language_plugin_list (called with an invalid path).
+	 *
+	 * @covers ::get_language_plugin_list
+	 */
+	public function test_get_language_plugin_list_incorrect_path() {
+		// PHP < 7.0 raises an error instead of throwing an "exception".
+		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
+			$this->expectException( \PHPUnit_Framework_Error_Warning::class );
+		} else {
+			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+		}
+
+		$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
+
+		$this->assertEmpty( @$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+	}
+
+	/**
 	 * Provide data for testing the complete processing.
 	 *
 	 * @return array
