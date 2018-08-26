@@ -2,6 +2,13 @@
 
 ## 6.2.0 - unreleased
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
+*   _Change_: Significantly updated hyphenation patterns for:
+    -   Bulgarian
+    -   German
+    -   German (Traditional)
+    -   German (Swiss Tradtional)
+    -   Latin (Liturgical)
+    -   Thai
 
 ## 6.1.5 - May 10, 2018
 *   _Bugfix_: The French spacing rules were not applied to closing guillemets followed by a comma.
@@ -65,7 +72,7 @@
 
 ## 5.1.0 - September 10, 2017
 
-*   _Feature_: New hyphenation language "Swiss-German (Traditional)" added.
+*   _Feature_: New hyphenation language "German (Swiss Traditional)" added.
 *   _Feature_: Dewidowing can now be applied to the final 1–3 words.
 *   _Change_: Started adding some benchmarks.
 *   _Change_: Updated HTML5 parser (html5-php) to 2.3.0:
