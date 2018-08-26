@@ -418,7 +418,8 @@ class PHP_Typography {
 		// Try to open the given directory.
 		$handle = \opendir( $path );
 		if ( false === $handle ) {
-			return $languages; // Abort.
+			// Abort.
+			return $languages; // @codeCoverageIgnore
 		}
 
 		// Read all files in directory.

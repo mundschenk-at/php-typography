@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -177,14 +177,14 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	protected static function make_space_nonbreaking( $string, $narrow_space, $u ) {
 		return \preg_replace(
 			[
-				'/\s*' . U::THIN_SPACE . '\s*/u',
+				'/\s*' . U::THIN_SPACE . '\s*/u', // @codeCoverageIgnoreStart
 				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
 				"/\\s+/$u",
 				'/' . self::MASKED_NARROW_SPACE . "/$u",
 			], [
 				self::MASKED_NARROW_SPACE,
 				self::MASKED_NARROW_SPACE,
-				U::NO_BREAK_SPACE,
+				U::NO_BREAK_SPACE, // @codeCoverageIgnoreEnd
 				$narrow_space,
 			], $string
 		);

@@ -126,6 +126,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		for ( $year = 1900; $year < 2100; ++$year ) {
 			$year_regex[] = "(?: ( $year ) (\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?) ( ' . ( $year + 1 ) . ' ) )';
 		}
+		// @codeCoverageIgnoreStart
 		$this->escape_consecutive_years = '/
 			# lookbehind assertion: makes sure we are not messing up a url
 			(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
@@ -135,7 +136,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 				# makes sure we are not messing up a url
 				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|\")
 			)
-		/Sxu';
+		/Sxu'; // @codeCoverageIgnoreEnd
 
 		// Replace fractions.
 		$numerator_css     = empty( $css_numerator ) ? '' : ' class="' . $css_numerator . '"';

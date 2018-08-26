@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,5 +93,23 @@ class RE_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $default, $invalid_result );
 		$this->assertNotSame( $valid_result, $invalid_result );
 		$this->assertNotEmpty( $valid_result );
+	}
+
+	/**
+	 * Tests escape_tags/unescape tags.
+	 *
+	 * @covers ::escape_tags
+	 * @covers ::unescape_tags
+	 */
+	public function test_escape_tags() {
+		$tags = '<a><real>tag soup</a>';
+
+		$escaped = RE::escape_tags( $tags );
+		$this->assertNotSame( $escaped, $tags );
+		$this->assertSame( $tags, RE::unescape_tags( $escaped ) );
+
+		// Multiple applications should not matter.
+		$this->assertSame( $escaped, RE::escape_tags( $escaped ) );
+		$this->assertSame( $tags, RE::unescape_tags( $tags ) );
 	}
 }

@@ -147,9 +147,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 				self::SINGLE_PRIME . $f['u'],
 			],
 			[
-				'$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME,
+				'$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, // @codeCoverageIgnoreStart
 				'$1' . U::DOUBLE_PRIME,
-				'$1' . U::SINGLE_PRIME,
+				'$1' . U::SINGLE_PRIME, // @codeCoverageIgnoreEnd
 			], $node_data
 		);
 
@@ -201,13 +201,13 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			$double_close,
 			$single_open,
 			$single_close,
-			U::GUILLEMET_OPEN,
+			U::GUILLEMET_OPEN, // @codeCoverageIgnoreStart
 			U::GUILLEMET_CLOSE,
 			U::DOUBLE_PRIME,
 			U::SINGLE_PRIME,
 			U::APOSTROPHE,
 			U::DOUBLE_LOW_9_QUOTE,
-			U::SINGLE_LOW_9_QUOTE,
+			U::SINGLE_LOW_9_QUOTE, // @codeCoverageIgnoreEnd
 		];
 		$previous_length = self::calc_adjacent_length( $f['strlen']( $previous_character ), $previous_character, $node_data, $quotes, $f['substr'], $f['strlen'], false );
 		$next_length     = self::calc_adjacent_length( $f['strlen']( $next_character ), $next_character, $node_data, $quotes, $f['substr'], $f['strlen'], true );

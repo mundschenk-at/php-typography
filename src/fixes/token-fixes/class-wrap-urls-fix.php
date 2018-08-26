@@ -123,7 +123,8 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 
 				$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 				if ( false === $domain_parts ) {
-					continue; // Should not happen.
+					// Should not happen.
+					continue;  // @codeCoverageIgnore
 				}
 
 				// This is a hack, but it works.
