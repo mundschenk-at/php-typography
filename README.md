@@ -58,6 +58,10 @@ $hyphenated_html = $typo->process( $html_snippet, $settings );
 
 ```
 
+## Roadmap
+
+Please have a look at [ROADMAP](ROADMAP.md) file for upcoming releases.
+
 ## License
 
 PHP-Typography is licensed under the GNU General Public License 2 or later - see the [LICENSE](LICENSE) file for details.

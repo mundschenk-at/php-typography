@@ -1934,8 +1934,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
-	 * @uses ::set_smart_quotes
-	 * @uses ::set_smart_quotes_primary
 	 *
 	 * @dataProvider provide_french_punctuation_spacing_data
 	 *

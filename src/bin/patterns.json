@@ -62,7 +62,7 @@
 	},
   {
     "short" : "de-CH-1901",
-    "name"  : "Swiss German (Traditional)",
+    "name"  : "German (Swiss Traditional)",
     "url"   : "http://mirrors.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-de-ch-1901.tex"
   },
 	{
