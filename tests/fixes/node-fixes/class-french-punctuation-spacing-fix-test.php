@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,6 +75,9 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 			[ '« Hello, this is a sentence. »', '&laquo;&#8239;Hello, this is a sentence.&#8239;&raquo;' ],
 			[ 'À «programmer»?', '&Agrave; &laquo;&#8239;programmer&#8239;&raquo;&#8239;?' ],
 			[ '«Pourquoi», c’est une bonne question', '«&#8239;Pourquoi&#8239;», c’est une bonne question' ],
+			[ '(sans franchir la case «carte de crédit»)', '(sans franchir la case &laquo;&#8239;carte de cr&eacute;dit&#8239;&raquo;)' ],
+			[ '(«sans» franchir la case carte de crédit)', '(&laquo;&#8239;sans&#8239;&raquo; franchir la case carte de cr&eacute;dit)' ],
+			[ '[«sans» franchir la case «carte de crédit»]', '[&laquo;&#8239;sans&#8239;&raquo; franchir la case &laquo;&#8239;carte de cr&eacute;dit&#8239;&raquo;]' ],
 		];
 	}
 
