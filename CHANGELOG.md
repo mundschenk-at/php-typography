@@ -1,5 +1,9 @@
 # Change History
 
+## 6.2.1 - August 27, 2018
+*   _Bugfix_: French punctuation is now correctly applied to quotes preceeded or
+    followed by round and square brackets.  
+
 ## 6.2.0 - August 26, 2018
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
 *   _Feature_: The list of "apostrophe exceptions" (like `'tain't`, `'til`) can now be adjusted.

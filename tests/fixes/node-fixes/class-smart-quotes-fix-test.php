@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,6 +93,12 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 				'("Some" word',
 				'(&raquo;Some&laquo; word',
 				Quote_Style::DOUBLE_GUILLEMETS_REVERSED,
+				Quote_Style::SINGLE_GUILLEMETS_REVERSED,
+			],
+			[
+				'(sans franchir la case "carte de crédit")',
+				'(sans franchir la case &laquo;&nbsp;carte de cr&eacute;dit&nbsp;&raquo;)',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
 				Quote_Style::SINGLE_GUILLEMETS_REVERSED,
 			],
 			[

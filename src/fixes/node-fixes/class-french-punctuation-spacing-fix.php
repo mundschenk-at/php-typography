@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2016-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 	// Regular expressions with mandatary Unicode modifier.
 	const INSERT_NARROW_SPACE               = '/(\w+(?:\s?»)?)(\s?)([?!;])(\s|\Z)/u';
 	const INSERT_FULL_SPACE                 = '/(\w+(?:\s?»)?)(\s?)(:)(\s|\Z)/u';
-	const INSERT_SPACE_AFTER_OPENING_QUOTE  = '/(\s|\A)(«)(\s?)(\w+)/u';
-	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.,?!:]|\Z)/u';
+	const INSERT_SPACE_AFTER_OPENING_QUOTE  = '/(\s|\A|[\(\[])(«)(\s?)(\w+)/u';
+	const INSERT_SPACE_BEFORE_CLOSING_QUOTE = '/(\w+[.?!]?)(\s?)(»)(\s|[.,?!:\)\]]|\Z)/u';
 
 	/**
 	 * Apply the fix to a given textnode.
