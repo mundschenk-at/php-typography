@@ -1,8 +1,11 @@
 # Change History
 
+## 6.2.2 - August 30, 2018
+*   _Bugfix_: Smart diacritics won't try to "correct" the spelling of `Uber` anymore.
+
 ## 6.2.1 - August 27, 2018
 *   _Bugfix_: French punctuation is now correctly applied to quotes preceeded or
-    followed by round and square brackets.  
+    followed by round and square brackets.
 
 ## 6.2.0 - August 26, 2018
 *   _Feature_: A narrow no-break space is now inserted between adjacent primary and secondary quotes.
