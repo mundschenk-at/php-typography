@@ -72,6 +72,7 @@ use \Mockery as m;
  * @uses PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix
  * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_Emails_Fix
  * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_Hard_Hyphens_Fix
+ * @uses PHP_Typography\Fixes\Token_Fixes\Smart_Dashes_Hyphen_Fix
  * @uses PHP_Typography\Fixes\Token_Fixes\Wrap_URLs_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Dash_Spacing_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Dewidow_Fix
@@ -1651,6 +1652,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				'20.&ndash;30.',
 				'20.&ndash;30.',
 			],
+			[
+				"We just don't know - really--, but you-know-who",
+				"We just don't know &mdash; really&ndash;, but you&#8208;know&#8208;who",
+				"We just don't know &ndash; really&ndash;, but you&#8208;know&#8208;who",
+			],
 		];
 	}
 
@@ -1712,10 +1718,12 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_dash_spacing( true );
 
 		$this->s->set_smart_dashes_style( 'traditionalUS' );
-		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
+		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 
 		$this->s->set_smart_dashes_style( 'international' );
-		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
+		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 	}
 
 	/**
@@ -2005,8 +2013,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_wrap_hard_hyphens_data() {
 		return [
-			[ 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ],
-			[ 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-' ],
+			[ 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word', 'This&#8208;&#8203;is&#8208;&#8203;a&#8208;&#8203;hyphenated&#8208;&#8203;word' ],
+			[ 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-', 'This&#8208;&#8203;is&#8208;&#8203;a&#8208;&#8203;hyphenated&#8208;' ],
 
 		];
 	}
@@ -2044,10 +2052,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_wrap_hard_hyphens_data
 	 *
-	 * @param string $input  HTML input.
-	 * @param string $result Expected result.
+	 * @param string $input   HTML input.
+	 * @param string $ignored Ignored.
+	 * @param string $result  Expected result.
 	 */
-	public function test_wrap_hard_hyphens_with_smart_dashes( $input, $result ) {
+	public function test_wrap_hard_hyphens_with_smart_dashes( $input, $ignored, $result ) {
 		$this->typo->process( '', $this->s );
 		$this->s->set_wrap_hard_hyphens( true );
 		$this->s->set_smart_dashes( true );

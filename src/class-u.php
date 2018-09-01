@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ interface U {
 	const HAIR_SPACE                 = "\xe2\x80\x8a";
 	const ZERO_WIDTH_SPACE           = "\xe2\x80\x8b";
 	const HYPHEN_MINUS               = '-';
-	const HYPHEN                     = self::HYPHEN_MINUS; // Should be "\xe2\x80\x90" (\u8208), but IE6 chokes.
+	const HYPHEN                     = "\xe2\x80\x90";
 	const NO_BREAK_HYPHEN            = "\xe2\x80\x91";
 	const EN_DASH                    = "\xe2\x80\x93";
 	const EM_DASH                    = "\xe2\x80\x94";

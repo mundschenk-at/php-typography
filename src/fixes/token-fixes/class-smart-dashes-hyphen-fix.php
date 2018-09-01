@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,27 +32,13 @@ use PHP_Typography\Text_Parser\Token;
 use PHP_Typography\U;
 
 /**
- * Wraps hard hypens with zero-width spaces (if enabled).
+ * Replaces hyphen-minus with proper hyphen.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
- * @since 5.0.0
+ * @since 6.3.0
  */
-class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
-
-	/**
-	 * An array of "hyphen-like" characters.
-	 *
-	 * @var array
-	 */
-	protected $hyphens_array;
-
-	/**
-	 * The regular expression to strip the space from hyphen-like characters at the end of a string.
-	 *
-	 * @var string
-	 */
-	protected $remove_ending_space_regex;
+class Smart_Dashes_Hyphen_Fix extends Abstract_Token_Fix {
 
 	/**
 	 * Creates a new fix instance.
@@ -61,9 +47,6 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	 */
 	public function __construct( $feed_compatible = false ) {
 		parent::__construct( Token_Fix::MIXED_WORDS, $feed_compatible );
-
-		$this->hyphens_array             = \array_unique( [ '-', U::HYPHEN ] );
-		$this->remove_ending_space_regex = '/(' . \implode( '|', $this->hyphens_array ) . ')' . U::ZERO_WIDTH_SPACE . '$/';
 	}
 
 	/**
@@ -77,20 +60,10 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
-		if ( ! empty( $settings['hyphenHardWrap'] ) ) {
-
+		if ( ! empty( $settings['smartDashes'] ) ) {
 			foreach ( $tokens as $index => $text_token ) {
-				$value = $text_token->value;
-
-				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
-					$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
-					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
-					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
-
-					$value = \preg_replace( $this->remove_ending_space_regex, '$1', $value );
-				}
-
-				$tokens[ $index ] = $text_token->with_value( $value );
+				// Handled here because we need to know we are inside a word and not a URL.
+				$tokens[ $index ] = $text_token->with_value( \str_replace( '-', U::HYPHEN, $text_token->value ) );
 			}
 		}
 

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@ use PHP_Typography\Fixes\Token_Fixes;
 use PHP_Typography\Settings;
 
 /**
- * Wrap_Hard_Hyphens_Fix unit test.
+ * Smart_Dashes_Hyphen_Fix unit test.
  *
- * @coversDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_Hard_Hyphens_Fix
- * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Wrap_Hard_Hyphens_Fix
+ * @coversDefaultClass \PHP_Typography\Fixes\Token_Fixes\Smart_Dashes_Hyphen_Fix
+ * @usesDefaultClass \PHP_Typography\Fixes\Token_Fixes\Smart_Dashes_Hyphen_Fix
  *
  * @uses ::__construct
  * @uses PHP_Typography\DOM
@@ -45,7 +45,7 @@ use PHP_Typography\Settings;
  * @uses PHP_Typography\Fixes\Token_Fixes\Abstract_Token_Fix
  * @uses PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix
  */
-class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
+class Smart_Dashes_Hyphen_Fix_Test extends Token_Fix_Testcase {
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -54,7 +54,7 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	protected function setUp() { // @codingStandardsIgnoreLine
 		parent::setUp();
 
-		$this->fix = new Token_Fixes\Wrap_Hard_Hyphens_Fix();
+		$this->fix = new Token_Fixes\Smart_Dashes_Hyphen_Fix();
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$fix = new Token_Fixes\Wrap_Hard_Hyphens_Fix( true );
+		$fix = new Token_Fixes\Smart_Dashes_Hyphen_Fix( true );
 
 		$this->assertAttributeEquals( Token_Fix::MIXED_WORDS, 'target', $fix, 'The fixer should be targetting MIXED_WORDS tokens.' );
 		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
@@ -76,9 +76,9 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	 */
 	public function provide_wrap_hard_hyphens_data() {
 		return [
-			[ 'This-is-a-hyphenated-word', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-&#8203;word' ],
-			[ 'This-is-a-hyphenated-', 'This-&#8203;is-&#8203;a-&#8203;hyphenated-' ],
-
+			[ 'This-is-a-hyphenated-word', 'This&#8208;is&#8208;a&#8208;hyphenated&#8208;word' ],
+			[ 'This-is-a-hyphenated-', 'This&#8208;is&#8208;a&#8208;hyphenated&#8208;' ],
+			[ '-is-a-hyphenated', '&#8208;is&#8208;a&#8208;hyphenated' ],
 		];
 	}
 
@@ -96,8 +96,9 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->s->set_wrap_hard_hyphens( true );
+		$this->s->set_smart_dashes( true );
 
+		// Need to add new test data for the smart dashes/hard hyphens combo.
 		$this->assertFixResultSame( $input, $result );
 	}
 
@@ -115,7 +116,7 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->s->set_wrap_hard_hyphens( false );
+		$this->s->set_smart_dashes( false );
 
 		$this->assertFixResultSame( $input, $input );
 	}
