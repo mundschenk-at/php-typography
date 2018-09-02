@@ -77,25 +77,19 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			# makes sure we are not messing up a url
 			(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|,|\!|\?|\)|\;|\:|\'|")
 		)
-		/xu';
+		/Sxu';
 
 	const ESCAPE_DATE_MM_YYYY = '/
-		# lookbehind assertion: makes sure we are not messing up a url
-		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
+			# capture valid one- or two-digit months
+			( \b (?: 0?[1-9] | 1[0-2] ) )
 
-			(\d\d?)
+			# capture any zero-width spaces inserted by wrap_hard_hyphens
+			(\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
 
-		# capture any zero-width spaces inserted by wrap_hard_hyphens
-		(\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
-			(
-				# handle 4-decimal years in the 20th and 21st centuries
-				(?:19\d\d)|(?:20\d\d)
-			)
-			(
-				# makes sure we are not messing up a url
-				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|")
-			)
-		/xu';
+			# handle 4-decimal years
+			( [12][0-9]{3}\b )
+
+		/Sxu';
 
 	/**
 	 * Regular expression matching consecutive years in the format YYYY/YYYY+1.
@@ -126,17 +120,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		for ( $year = 1900; $year < 2100; ++$year ) {
 			$year_regex[] = "(?: ( $year ) (\s?\/\s?" . U::ZERO_WIDTH_SPACE . '?) ( ' . ( $year + 1 ) . ' ) )';
 		}
-		// @codeCoverageIgnoreStart
-		$this->escape_consecutive_years = '/
-			# lookbehind assertion: makes sure we are not messing up a url
-			(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
-
-			(?| ' . implode( '|', $year_regex ) . ' )
-			(
-				# makes sure we are not messing up a url
-				(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|\!|\?|\)|\;|\:|\'|\")
-			)
-		/Sxu'; // @codeCoverageIgnoreEnd
+		$this->escape_consecutive_years = '/\b (?| ' . implode( '|', $year_regex ) . ' ) \b/Sxu';
 
 		// Replace fractions.
 		$numerator_css     = empty( $css_numerator ) ? '' : ' class="' . $css_numerator . '"';
@@ -167,8 +151,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
 			// Escape sequences we don't want fractionified.
-			$node_data = \preg_replace( $this->escape_consecutive_years, '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
-			$node_data = \preg_replace( self::ESCAPE_DATE_MM_YYYY,       '$1' . RE::ESCAPE_MARKER . '$2$3$4', $node_data );
+			$node_data = \preg_replace( [ $this->escape_consecutive_years, self::ESCAPE_DATE_MM_YYYY ], '$1' . RE::ESCAPE_MARKER . '$2$3', $node_data );
 
 			// Replace fractions.
 			$node_data = \preg_replace( self::FRACTION_MATCHING, $this->replacement, $node_data );
