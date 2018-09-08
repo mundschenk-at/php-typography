@@ -1,5 +1,9 @@
 # Change History
 
+## 6.3.0 - September 8, 2018
+*   _Feature_: The comma comman can now be used as a decimal separator (e.g. `1,5`, in addition to `1.5`).
+*   _Bugfix_: Smart maths properly handles 2-digit years in dates.
+
 ## 6.2.2 - August 30, 2018
 *   _Bugfix_: Smart diacritics won't try to "correct" the spelling of `Uber` anymore.
 
