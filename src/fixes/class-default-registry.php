@@ -186,6 +186,7 @@ class Default_Registry extends Registry {
 	protected static function get_default_token_fixes() {
 		return [
 			Token_Fixes\Wrap_Hard_Hyphens_Fix::class   => [],
+			Token_Fixes\Smart_Dashes_Hyphen_Fix::class => [],
 			Token_Fixes\Hyphenate_Compounds_Fix::class => [ 'cache' => true ],
 			Token_Fixes\Hyphenate_Fix::class           => [ 'cache' => true ],
 			Token_Fixes\Wrap_URLs_Fix::class           => [ 'cache' => true ],
