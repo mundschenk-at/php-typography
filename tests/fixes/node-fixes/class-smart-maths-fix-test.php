@@ -64,6 +64,9 @@ class Smart_Maths_Fix_Test extends Node_Fix_Testcase {
 		return [
 			[ 'xx 7-3=4 xx',      'xx 7&minus;3=4 xx' ],
 			[ 'xx 3*3=5/2 xx',    'xx 3&times;3=5&divide;2 xx' ],
+			[ 'xx 3.5-1.5=2 xx',  'xx 3.5&minus;1.5=2 xx' ],
+			[ 'xx 3-1.5=2 xx',    'xx 3&minus;1.5=2 xx' ],
+			[ '(i.e. pp. 46-50)', '(i.e. pp. 46-50)' ],
 			[ 'xx 0815-4711 xx',  'xx 0815-4711 xx' ],
 			[ 'xx 1/2 xx',        'xx 1/2 xx' ],
 			[ 'xx 2001-13-12 xx', 'xx 2001&minus;13&minus;12 xx' ],   // not a valid date.
