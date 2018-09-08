@@ -135,6 +135,18 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 				'num',
 				'denom',
 			],
+			[
+				'1/2018',
+				'1/2018',
+				'',
+				'',
+			],
+			[
+				'99/2018',
+				'<sup>99</sup>&frasl;<sub>2018</sub>',
+				'',
+				'',
+			],
 		];
 	}
 

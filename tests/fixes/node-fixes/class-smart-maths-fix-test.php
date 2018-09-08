@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2018 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,19 +64,35 @@ class Smart_Maths_Fix_Test extends Node_Fix_Testcase {
 		return [
 			[ 'xx 7-3=4 xx',      'xx 7&minus;3=4 xx' ],
 			[ 'xx 3*3=5/2 xx',    'xx 3&times;3=5&divide;2 xx' ],
+			[ 'xx 3.5-1.5=2 xx',  'xx 3.5&minus;1.5=2 xx' ],
+			[ 'xx 3,5-1,5=2 xx',  'xx 3,5&minus;1,5=2 xx' ],
+			[ 'xx 3-1.5=2 xx',    'xx 3&minus;1.5=2 xx' ],
+			[ 'xx 3-1,5=2 xx',    'xx 3&minus;1,5=2 xx' ],
+			[ '(i.e. pp. 46-50)', '(i.e. pp. 46-50)' ],
 			[ 'xx 0815-4711 xx',  'xx 0815-4711 xx' ],
 			[ 'xx 1/2 xx',        'xx 1/2 xx' ],
 			[ 'xx 2001-13-12 xx', 'xx 2001&minus;13&minus;12 xx' ],   // not a valid date.
 			[ 'xx 2001-12-13 xx', 'xx 2001-12-13 xx' ],
+			[ 'xx 2001-12-3 xx',  'xx 2001-12-3 xx' ],
 			[ 'xx 2001-13-13 xx', 'xx 2001&minus;13&minus;13 xx' ],   // not a valid date.
 			[ 'xx 13-12-2002 xx', 'xx 13-12-2002 xx' ],
 			[ 'xx 13-13-2002 xx', 'xx 13&minus;13&minus;2002 xx' ],   // not a valid date.
 			[ 'xx 2001-12 xx',    'xx 2001-12 xx' ],
-			[ 'xx 2001-13 xx',    'xx 2001-13 xx' ],                  // apparently a valid day count.
+			[ 'xx 2001-13 xx',    'xx 2001-13 xx' ],                  // Parsed as interval.
 			[ 'xx 2001-100 xx',   'xx 2001-100 xx' ],
 			[ 'xx 12/13/2010 xx', 'xx 12/13/2010 xx' ],
 			[ 'xx 13/12/2010 xx', 'xx 13/12/2010 xx' ],
 			[ 'xx 13/13/2010 xx', 'xx 13&divide;13&divide;2010 xx' ], // not a valid date.
+			[ 'xx 12/10/89 xx',      'xx 12/10/89 xx' ],
+			[ 'xx&nbsp;12/10/89 xx', 'xx&nbsp;12/10/89 xx' ],
+			[ 'xx 12/10/89&nbsp;xx', 'xx 12/10/89&nbsp;xx' ],
+			[ 'xx 13/12/89 xx',      'xx 13/12/89 xx' ],
+			[ 'xx 13/12/89 xx',      'xx 13/12/89 xx' ],
+			[ 'xx 13/13/89 xx',      'xx 13&divide;13&divide;89 xx' ], // not a valid date.
+			[ 'xx.13/13/89 xx',      'xx.13/13/89 xx' ],
+			[ 'xx 1/1/89 xx',        'xx 1/1/89 xx' ],
+			[ 'xx 18/12/1 xx',       'xx 18/12/1 xx' ],
+			[ 'xx 1/99/89 xx',       'xx 1&divide;99&divide;89 xx' ],  // not a valid date.
 		];
 	}
 
