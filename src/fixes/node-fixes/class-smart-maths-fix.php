@@ -41,18 +41,18 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 	// First, let's find math equations.
 	const MATH_EQUATION = "/
 		(?<=\A|\s)										# lookbehind assertion: proceeded by beginning of string or space
-		[\.,\'\"\¿\¡" . U::ELLIPSIS . U::SINGLE_QUOTE_OPEN . U::DOUBLE_QUOTE_OPEN . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . U::SINGLE_LOW_9_QUOTE . U::DOUBLE_LOW_9_QUOTE . ']*
-														# allowed proceeding punctuation
-		[\-\(' . U::MINUS . ']*                  # optionally proceeded by dash, minus sign or open parenthesis
+		[\.,\'\"\¿\¡' . U::ELLIPSIS . U::SINGLE_QUOTE_OPEN . U::DOUBLE_QUOTE_OPEN . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . U::SINGLE_LOW_9_QUOTE . U::DOUBLE_LOW_9_QUOTE . ']*
+														# allowed preceding punctuation
+		[\-\(' . U::MINUS . ']*                         # optionally preceded by dash, minus sign or open parenthesis
 		[0-9]+                                          # must begin with a number
 		(\.[0-9]+)?                                     # optionally allow decimal values after first integer
 		(                                               # followed by a math symbol and a number
 			[\/\*x\-+=\^' . U::MINUS . U::MULTIPLICATION . U::DIVISION . ']
 														# allowed math symbols
-			[\-\(' . U::MINUS . ']*              # opptionally preceeded by dash, minus sign or open parenthesis
+			[\-\(' . U::MINUS . ']*                     # optionally preceded by dash, minus sign or open parenthesis
 			[0-9]+                                      # must begin with a number
 			(\.[0-9]+)?                                 # optionally allow decimal values after first integer
-			[\-\(\)' . U::MINUS . "]*			# opptionally preceeded by dash, minus sign or parenthesis
+			[\-\(\)' . U::MINUS . "]*                   # optionally followed by dash, minus sign or parenthesis
 		)+
 		[\.,;:\'\"\?\!" . U::ELLIPSIS . U::SINGLE_QUOTE_CLOSE . U::DOUBLE_QUOTE_CLOSE . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . ']*
 														# allowed trailing punctuation
