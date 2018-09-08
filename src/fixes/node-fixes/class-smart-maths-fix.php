@@ -54,7 +54,8 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 	const YEAR_2_OR_4_DIGITS  = '(?:' . self::YEAR_2_DIGITS . '|' . self::YEAR_4_DIGITS . ')';
 
 	// Maths components.
-	const DECIMAL_NUMBER = '[0-9]+(?:\.[0-9]+)?';
+	const DECIMAL_SEPARATOR = '[\.,]';
+	const DECIMAL_NUMBER    = '[0-9]+(?:' . self::DECIMAL_SEPARATOR . '[0-9]+)?';
 
 	// First, let's find math equations.
 	const MATH_EQUATION = '/
@@ -82,7 +83,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		(\d+)' . U::MINUS . '(\d+)
 
 		' . self::FINAL_LOOKAHEAD . '                   # lookahead assertion: most punctuation marks are allowd
-		(?!\.[0-9]+)                                    # negative lookahead assertion: but not decimal numbers
+		(?!' . self::DECIMAL_SEPARATOR . '[0-9]+)                                    # negative lookahead assertion: but not decimal numbers
 	/Sxu';
 
 	// Revert fractions to basic slash.
