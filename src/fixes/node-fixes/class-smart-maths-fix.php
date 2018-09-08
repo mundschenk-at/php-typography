@@ -38,9 +38,24 @@ use PHP_Typography\U;
  * @since 5.0.0
  */
 class Smart_Maths_Fix extends Abstract_Node_Fix {
+	// Lookbehind assertion: preceded by beginning of string or space.
+	const INITIAL_LOOKBEHIND = '(?<=\s|\A)'; // Needs u modifier.
+
+	// Lookahead assertion: followed by end of string, space, or certain allowed punctuation marks.
+	const FINAL_LOOKAHEAD = '(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!)'; // Needs u modifier.
+
+	// Common date components.
+	const DAY_2_DIGITS        = '(?:0[1-9]|[12][0-9]|3[01])';
+	const DAY_1_OR_2_DIGITS   = '(?:0?[1-9]|[12][0-9]|3[01])';
+	const MONTH_2_DIGITS      = '(?:0[1-9]|1[0-2])';
+	const MONTH_1_OR_2_DIGITS = '(?:0?[1-9]|1[0-2])';
+	const YEAR_2_DIGITS       = '[0-9]{2}';
+	const YEAR_4_DIGITS       = '[12][0-9]{3}';
+	const YEAR_2_OR_4_DIGITS  = '(?:' . self::YEAR_2_DIGITS . '|' . self::YEAR_4_DIGITS . ')';
+
 	// First, let's find math equations.
-	const MATH_EQUATION = "/
-		(?<=\A|\s)										# lookbehind assertion: proceeded by beginning of string or space
+	const MATH_EQUATION = '/
+		' . self::INITIAL_LOOKBEHIND . '
 		[\.,\'\"\¿\¡' . U::ELLIPSIS . U::SINGLE_QUOTE_OPEN . U::DOUBLE_QUOTE_OPEN . U::GUILLEMET_OPEN . U::GUILLEMET_CLOSE . U::SINGLE_LOW_9_QUOTE . U::DOUBLE_LOW_9_QUOTE . ']*
 														# allowed preceding punctuation
 		[\-\(' . U::MINUS . ']*                         # optionally preceded by dash, minus sign or open parenthesis
@@ -61,124 +76,83 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 
 	// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
 	const REVERT_RANGE = '/
-			(
-				(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-				\d+
-			)
-			[\-' . U::MINUS . "]
-			(
-				\d+
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
+		' . self::INITIAL_LOOKBEHIND . '
+
+		(\d+)' . U::MINUS . '(\d+)
+
+		' . self::FINAL_LOOKAHEAD . '
+	/Sxu';
+
 	// Revert fractions to basic slash.
 	const REVERT_FRACTION = "/
-			(
-				(?<=\s|\A|\'|\"|" . U::NO_BREAK_SPACE . ')
-				\d+
+		(?<=\s|\A|\'|\"|" . U::NO_BREAK_SPACE . ')
+		(
+			\d+
+		)
+		' . U::DIVISION . '
+		(
+			\d+
+			(?:st|nd|rd|th)?
+		)
+		' . self::FINAL_LOOKAHEAD . '
+	/Sxu';
+
+	// MM-DD-YYYY, or DD-MM-YYYY, or YYYY-MM-DD.
+	const REVERT_DASHED_DATE = '/
+		' . self::INITIAL_LOOKBEHIND . '
+		(?|
+			# DD-MM-YYYY and MM-DD-YYYY
+			(?|
+				(' . self::MONTH_1_OR_2_DIGITS . ')' . U::MINUS . '(' . self::DAY_1_OR_2_DIGITS . ')
+			|
+				(' . self::DAY_1_OR_2_DIGITS . ')' . U::MINUS . '(' . self::MONTH_1_OR_2_DIGITS . ')
 			)
-			' . U::DIVISION . "
-			(
-				\d+
-				(?:st|nd|rd|th)?
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
-	// YYYY-MM-DD.
-	const REVERT_DATE_YYYY_MM_DD = '/
-			(
-				(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-				[12][0-9]{3}
-			)
-			[\-' . U::MINUS . ']
-			(
-				(?:[0]?[1-9]|[1][0-2])
-			)
-			[\-' . U::MINUS . "]
-			(
-				(?:[0]?[1-9]|[12][0-9]|[3][0-1])
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
-	// MM-DD-YYYY or DD-MM-YYYY.
-	const REVERT_DATE_MM_DD_YYYY = '/
-			(?:
-				(?:
-					(
-						(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-						(?:[0]?[1-9]|[1][0-2])
-					)
-					[\-' . U::MINUS . ']
-					(
-						(?:[0]?[1-9]|[12][0-9]|[3][0-1])
-					)
-				)
-				|
-				(?:
-					(
-						(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-						(?:[0]?[1-9]|[12][0-9]|[3][0-1])
-					)
-					[\-' . U::MINUS . ']
-					(
-						(?:[0]?[1-9]|[1][0-2])
-					)
-				)
-			)
-			[\-' . U::MINUS . "]
-			(
-				[12][0-9]{3}
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
+			' . U::MINUS . '(' . self::YEAR_4_DIGITS . ')
+		|
+			# YYYY-MM-DD
+			(' . self::YEAR_4_DIGITS . ')' . U::MINUS . '(' . self::MONTH_1_OR_2_DIGITS . ')' . U::MINUS . '(' . self::DAY_1_OR_2_DIGITS . ')
+		)
+		' . self::FINAL_LOOKAHEAD . '
+	/Sxu';
+
 	// YYYY-MM or YYYY-DDD next.
 	const REVERT_DATE_YYYY_MM = '/
-			(
-				(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-				[12][0-9]{3}
-			)
-			[\-' . U::MINUS . "]
-			(
-				(?:
-					(?:[0][1-9]|[1][0-2])
-					|
-					(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
-				)
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
+		' . self::INITIAL_LOOKBEHIND . '
+		(
+			' . self::YEAR_4_DIGITS . '
+		)
+		' . U::MINUS . '
+		(
+			' . self::MONTH_2_DIGITS . '
+			|
+			# Day from 001-366.
+			(?:0[0-9][1-9]|[12][0-9]{2}|3[0-5][0-9]|36[0-6])
+		)
+		' . self::FINAL_LOOKAHEAD . '
+	/Sxu';
 
-	// MM/DD/YYYY or DD/MM/YYYY.
-	const REVERT_DATE_MM_DD_YYYY_SLASHED = '/
-			(?:
-				(?:
-					(
-						(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-						(?:[0][1-9]|[1][0-2])
-					)
-					[\/' . U::DIVISION . ']
-					(
-						(?:[0][1-9]|[12][0-9]|[3][0-1])
-					)
-				)
-				|
-				(?:
-					(
-						(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
-						(?:[0][1-9]|[12][0-9]|[3][0-1])
-					)
-					[\/' . U::DIVISION . ']
-					(
-						(?:[0][1-9]|[1][0-2])
-					)
-				)
-			)
-			[\/' . U::DIVISION . "]
-			(
-				[12][0-9]{3}
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
-			)
-		/Sxu';
+	// 2-digit slashed day and month in any order (DD/MM or MM/DD).
+	// Both DD and MM are captured.
+	const SLASHED_DAY_MONTH = '
+		(?|
+			(' . self::MONTH_1_OR_2_DIGITS . ')' . U::DIVISION . '(' . self::DAY_1_OR_2_DIGITS . ')
+		|
+			(' . self::DAY_1_OR_2_DIGITS . ')' . U::DIVISION . '(' . self::MONTH_1_OR_2_DIGITS . ')
+		)'; // Needs xu modifiers.
+
+	// MM/DD/YY, or DD/MM/YY, or YY/MM/DD, or YY/DD/MM, or
+	// MM/DD/YYYY, or DD/MM/YYYY, or YYYY/MM/DD, or YYYY/DD/MM.
+	const REVERT_SLASHED_DATE = '/
+		' . self::INITIAL_LOOKBEHIND . '
+
+		(?|
+			(?:' . self::SLASHED_DAY_MONTH . ')' . U::DIVISION . '(' . self::YEAR_2_OR_4_DIGITS . ' )
+		|
+			(' . self::YEAR_2_OR_4_DIGITS . ')' . U::DIVISION . '(?:' . self::SLASHED_DAY_MONTH . ' )
+		)
+
+		' . self::FINAL_LOOKAHEAD . '
+	/Sxu';
 
 	const REVERT_MATCHES = [
 		// Revert 4-4 to plain minus-hyphen so as to not mess with ranges of numbers (i.e. pp. 46-50).
@@ -187,22 +161,21 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		// We'll leave styling fractions to smart_fractions.
 		self::REVERT_FRACTION,
 		// Revert date back to original formats.
-		// YYYY-MM-DD.
-		self::REVERT_DATE_YYYY_MM_DD,
-		// MM-DD-YYYY or DD-MM-YYYY.
-		self::REVERT_DATE_MM_DD_YYYY,
+		// MM-DD-YYYY, DD-MM-YYYY, YYYY-MM-DD.
+		self::REVERT_DASHED_DATE,
 		// YYYY-MM or YYYY-DDD next.
 		self::REVERT_DATE_YYYY_MM,
-		self::REVERT_DATE_MM_DD_YYYY_SLASHED,
+		// DD/MM/YY, DD/MM/YYYY, MM/DD/YY, MM/DD/YYYY,
+		// YY/MM/DD, YYYY/MM/DD, YY/DD/MM, YYYY/DD/MM.
+		self::REVERT_SLASHED_DATE,
 	];
 
 	const REVERT_REPLACEMENTS = [
 		'$1-$2',
 		'$1/$2',
 		'$1-$2-$3',
-		'$1$3-$2$4-$5',
 		'$1-$2',
-		'$1$3/$2$4/$5',
+		'$1/$2/$3',
 	];
 
 	/**
