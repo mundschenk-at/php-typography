@@ -57,7 +57,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
 		### Metric units (with prefixes)
 		(?:p|µ|[mcdhkMGT])?
-		(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω|Ohm|&Omega;|&\#0*937;|&\#[xX]0*3[Aa]9;)|
+		(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω)|
 		(?:nano|micro|milli|centi|deci|deka|hecto|kilo|mega|giga|tera)?
 		(?:liters?|meters?|grams?|newtons?|pascals?|watts?|joules?|amperes?)|
 
