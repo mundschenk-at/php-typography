@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2018 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,14 +47,6 @@ use PHP_Typography\Settings;
  * @uses PHP_Typography\Strings
  */
 class Style_Numbers_Fix_Test extends Node_Fix_Testcase {
-
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-		parent::setUp();
-	}
 
 	/**
 	 * Provide data for testing style_numbers.

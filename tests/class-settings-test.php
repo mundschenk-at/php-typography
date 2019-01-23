@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2016-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() {
+		parent::setUp();
+
 		$this->settings = new \PHP_Typography\Settings( false );
 	}
 
@@ -320,9 +322,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$this->assertEmpty( $s['parserErrorsHandler'] );
 
 		// Valid handler.
-		$s->set_parser_errors_handler( function( $errors ) {
-			return [];
-		} );
+		$s->set_parser_errors_handler(
+			function( $errors ) {
+				return [];
+			}
+		);
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
 	}
@@ -339,9 +343,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$this->assertEmpty( $s['parserErrorsHandler'] );
 
 		// Valid handler.
-		$s->set_parser_errors_handler( function( $errors ) {
-			return [];
-		} );
+		$s->set_parser_errors_handler(
+			function( $errors ) {
+				return [];
+			}
+		);
 		$this->assertInternalType( 'callable', $s['parserErrorsHandler'] );
 		$old_handler = $s['parserErrorsHandler'];
 

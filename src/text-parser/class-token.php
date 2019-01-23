@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,21 +58,21 @@ final class Token {
 	 *
 	 * @var int
 	 */
-	private $_type;
+	private $type;
 
 	/**
 	 * The token value.
 	 *
 	 * @var string
 	 */
-	private $_value;
+	private $value;
 
 	/**
 	 * Ensure that properties can only be set once via the constructor.
 	 *
 	 * @var boolean
 	 */
-	private $_mutable = true;
+	private $mutable = true;
 
 	/**
 	 * Creates a new token.
@@ -84,7 +84,7 @@ final class Token {
 	 * @throws \UnexpectedValueException If the type attribute is outside the allowed range.
 	 */
 	public function __construct( $value, $type = self::WORD ) {
-		if ( false === $this->_mutable ) {
+		if ( false === $this->mutable ) {
 			throw new \BadMethodCallException( 'Constructor called twice.' );
 		}
 
@@ -93,7 +93,7 @@ final class Token {
 			case self::PUNCTUATION:
 			case self::WORD:
 			case self::OTHER:
-				$this->_type = $type;
+				$this->type = $type;
 				break;
 
 			default:
@@ -103,10 +103,10 @@ final class Token {
 		if ( ! \is_string( $value ) ) {
 			throw new \UnexpectedValueException( 'Value has to be a string.' );
 		} else {
-			$this->_value = $value;
+			$this->value = $value;
 		}
 
-		$this->_mutable = false;
+		$this->mutable = false;
 	}
 
 	/**
@@ -117,10 +117,8 @@ final class Token {
 	 * @return mixed
 	 */
 	public function __get( $property ) {
-		$real = "_$property";
-
-		if ( \property_exists( $this, $real ) ) {
-			return $this->$real;
+		if ( \property_exists( $this, $property ) ) {
+			return $this->$property;
 		}
 	}
 
@@ -158,12 +156,12 @@ final class Token {
 	 * @return Token
 	 */
 	public function with_value( $value ) {
-		if ( $this->_value === $value ) {
+		if ( $this->value === $value ) {
 			return $this;
 		}
 
-		$cloned_token         = clone $this;
-		$cloned_token->_value = $value;
+		$cloned_token        = clone $this;
+		$cloned_token->value = $value;
 
 		return $cloned_token;
 	}

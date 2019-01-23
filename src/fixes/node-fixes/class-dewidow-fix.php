@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -115,30 +115,32 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 		}
 
 		// Do what we have to do.
-		return \preg_replace_callback( self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END, function( array $widow ) use ( $func, $max_pull, $max_length, $word_number, $narrow_space ) {
+		return \preg_replace_callback(
+			self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END,
+			function( array $widow ) use ( $func, $max_pull, $max_length, $word_number, $narrow_space ) {
 
-			// If we are here, we know that widows are being protected in some fashion
-			// with that, we will assert that widows should never be hyphenated or wrapped
-			// as such, we will strip soft hyphens and zero-width-spaces.
-			$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
-			$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $narrow_space, $func['u'] ) );
+				// If we are here, we know that widows are being protected in some fashion
+				// with that, we will assert that widows should never be hyphenated or wrapped
+				// as such, we will strip soft hyphens and zero-width-spaces.
+				$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
+				$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $narrow_space, $func['u'] ) );
 
-			if (
-				// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
-				'' === $widow['space_before'] || false !== \strpos( $widow['space_before'], U::NO_BREAK_SPACE ) ||
+				if (
+					// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
+					'' === $widow['space_before'] || false !== \strpos( $widow['space_before'], U::NO_BREAK_SPACE ) ||
+					// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
+					$func['strlen']( $widow['neighbor'] ) > $max_pull || $func['strlen']( $widow['widow'] ) > $max_length ||
+					// Never replace thin and hair spaces with &nbsp;.
+					self::is_narrow_space( $widow['space_between'] )
+				) {
+					return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, $narrow_space );
+				}
 
-				// Eject if widows neighbor length exceeds the max allowed or widow length exceeds max allowed.
-				$func['strlen']( $widow['neighbor'] ) > $max_pull || $func['strlen']( $widow['widow'] ) > $max_length ||
-
-				// Never replace thin and hair spaces with &nbsp;.
-				self::is_narrow_space( $widow['space_between'] )
-			) {
-				return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, $narrow_space );
-			}
-
-			// Let's protect some widows!
-			return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $narrow_space, $func['u'] ) . $widow['trailing'];
-		}, $text );
+				// Let's protect some widows!
+				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $narrow_space, $func['u'] ) . $widow['trailing'];
+			},
+			$text
+		);
 	}
 
 	/**
@@ -181,12 +183,14 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
 				"/\\s+/$u",
 				'/' . self::MASKED_NARROW_SPACE . "/$u",
-			], [
+			],
+			[
 				self::MASKED_NARROW_SPACE,
 				self::MASKED_NARROW_SPACE,
 				U::NO_BREAK_SPACE, // @codeCoverageIgnoreEnd
 				$narrow_space,
-			], $string
+			],
+			$string
 		);
 	}
 }

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,22 +36,6 @@ use PHP_Typography\Hyphenator\Trie_Node;
 class Trie_Node_Test extends PHP_Typography_Testcase {
 
 	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
-	}
-
-
-
-	/**
 	 * Tests build_trie.
 	 *
 	 * @covers ::build_trie
@@ -63,16 +47,18 @@ class Trie_Node_Test extends PHP_Typography_Testcase {
 	 * @return Trie_Node
 	 */
 	public function test_build_trie() {
-		$trie = Trie_Node::build_trie( [
-			'_aba'  => '00010',
-			'_abl'  => '00030',
-			'_abo'  => '00002',
-			'_abol' => '000300',
-			'_abor' => '000100',
-			'_abs'  => '00032',
-			'_abu'  => '00030',
-			'_aden' => '000030',
-		] );
+		$trie = Trie_Node::build_trie(
+			[
+				'_aba'  => '00010',
+				'_abl'  => '00030',
+				'_abo'  => '00002',
+				'_abol' => '000300',
+				'_abor' => '000100',
+				'_abs'  => '00032',
+				'_abu'  => '00030',
+				'_aden' => '000030',
+			]
+		);
 
 		$this->assertInstanceOf( Trie_Node::class, $trie );
 

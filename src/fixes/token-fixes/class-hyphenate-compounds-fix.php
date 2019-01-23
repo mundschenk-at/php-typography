@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,9 +75,14 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 				$component_words[] = new Text_Parser\Token( $word_part, Text_Parser\Token::WORD );
 			}
 
-			$tokens[ $key ] = $word_token->with_value( \array_reduce( parent::apply( $component_words, $settings, $is_title, $textnode ), function( $carry, $item ) {
-				return $carry . $item->value;
-			} ) );
+			$tokens[ $key ] = $word_token->with_value(
+				\array_reduce(
+					parent::apply( $component_words, $settings, $is_title, $textnode ),
+					function( $carry, $item ) {
+						return $carry . $item->value;
+					}
+				)
+			);
 		}
 
 		return $tokens;

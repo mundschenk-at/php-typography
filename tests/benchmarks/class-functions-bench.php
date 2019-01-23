@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -288,9 +288,12 @@ class Functions_Bench {
 	 * @param  array $params The parameters.
 	 */
 	public function bench_arrays_array_map_assoc( $params ) {
-		self::array_manipulate( function( $key, $value ) {
-			return [ $value, $key ];
-		}, $params['array'] );
+		self::array_manipulate(
+			function( $key, $value ) {
+				return [ $value, $key ];
+			},
+			$params['array']
+		);
 	}
 
 	/**
@@ -302,8 +305,11 @@ class Functions_Bench {
 	 * @param  array $params The parameters.
 	 */
 	public function bench_array_manipulate( $params ) {
-		self::array_map_assoc( function( $key, $value ) {
-			return [ $value => $key ];
-		}, $params['array'] );
+		self::array_map_assoc(
+			function( $key, $value ) {
+				return [ $value => $key ];
+			},
+			$params['array']
+		);
 	}
 }

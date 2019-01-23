@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2018 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -69,24 +69,27 @@ class Pattern_Converter {
 		$this->urls     = (array) $urls;
 		$this->language = $language;
 
-		$this->word_characters = join( '', [
-			"\w.'ʼ᾽ʼ᾿’",
-			Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-			'\p{Mn}',
-			'\p{Bengali}',
-			'\p{Cyrillic}' . Strings::uchr( 7296, 7297, 7298, 7299, 7300, 7301, 7302, 7303, 7304, 65070, 65071 ),
-			'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
-			'\p{Ethiopic}',
-			'\p{Gujarati}',
-			'\p{Gurmukhi}',
-			'\p{Kannada}',
-			'\p{Malayalam}',
-			'\p{Oriya}',
-			'\p{Tamil}',
-			'\p{Telugu}',
-			'\p{Thai}',
-			'-',
-		] );
+		$this->word_characters = \join(
+			'',
+			[
+				"\w.'ʼ᾽ʼ᾿’",
+				Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
+				'\p{Mn}',
+				'\p{Bengali}',
+				'\p{Cyrillic}' . Strings::uchr( 7296, 7297, 7298, 7299, 7300, 7301, 7302, 7303, 7304, 65070, 65071 ),
+				'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
+				'\p{Ethiopic}',
+				'\p{Gujarati}',
+				'\p{Gurmukhi}',
+				'\p{Kannada}',
+				'\p{Malayalam}',
+				'\p{Oriya}',
+				'\p{Tamil}',
+				'\p{Telugu}',
+				'\p{Thai}',
+				'-',
+			]
+		);
 	}
 
 	/**

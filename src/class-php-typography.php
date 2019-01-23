@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -98,9 +98,15 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
-		}, $settings, $is_title, $body_classes );
+		return $this->process_textnodes(
+			$html,
+			function( $html, $settings, $is_title ) {
+				$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+			},
+			$settings,
+			$is_title,
+			$body_classes
+		);
 	}
 
 	/**
@@ -118,9 +124,15 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
-		}, $settings, $is_title, $body_classes );
+		return $this->process_textnodes(
+			$html,
+			function( $html, $settings, $is_title ) {
+				$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+			},
+			$settings,
+			$is_title,
+			$body_classes
+		);
 	}
 
 	/**
@@ -221,7 +233,7 @@ class PHP_Typography {
 	 */
 	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings, array $body_classes = [] ) {
 		// Silence some parsing errors for invalid HTML.
-		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine
+		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		$xml_error_handling = \libxml_use_internal_errors( true );
 
 		// Inject <body> classes.
@@ -262,7 +274,7 @@ class PHP_Typography {
 	 * @return boolean Returns true if the error was handled, false otherwise.
 	 */
 	public function handle_parsing_errors( $errno, $errstr, $errfile ) {
-		if ( ! ( \error_reporting() & $errno ) ) { // @codingStandardsIgnoreLine.
+		if ( ! ( \error_reporting() & $errno ) ) { // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting,WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
 			return true; // not interesting.
 		}
 
@@ -321,9 +333,9 @@ class PHP_Typography {
 		}
 
 		// Encode bare < > & and decode escaped HTML tag.
-		$content = RE::unescape_tags( htmlspecialchars( $content, ENT_NOQUOTES | ENT_HTML5, 'UTF-8', false ) );
+		$content = RE::unescape_tags( \htmlspecialchars( $content, ENT_NOQUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8', true ) );
 
-		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
+		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
@@ -370,9 +382,7 @@ class PHP_Typography {
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( [
-				'disable_html_ns' => true,
-			] );
+			$this->html5_parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		}
 
 		return $this->html5_parser;

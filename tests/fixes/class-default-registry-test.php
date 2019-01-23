@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,15 +43,6 @@ use \Mockery as m;
  * @preserveGlobalState disabled
  */
 class Default_Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
 
 	/**
 	 * Tests constructor.

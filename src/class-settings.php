@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -580,16 +580,19 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$this->data['diacriticCustomReplacements'] = self::array_map_assoc( function( $key, $replacement ) {
-			$key         = \strip_tags( \trim( $key ) );
-			$replacement = \strip_tags( \trim( $replacement ) );
+		$this->data['diacriticCustomReplacements'] = self::array_map_assoc(
+			function( $key, $replacement ) {
+				$key         = \strip_tags( \trim( $key ) );
+				$replacement = \strip_tags( \trim( $replacement ) );
 
-			if ( ! empty( $key ) && ! empty( $replacement ) ) {
-				return [ $key => $replacement ];
-			} else {
-				return [];
-			}
-		}, $custom_replacements );
+				if ( ! empty( $key ) && ! empty( $replacement ) ) {
+					return [ $key => $replacement ];
+				} else {
+					return [];
+				}
+			},
+			$custom_replacements
+		);
 
 		$this->update_diacritics_replacement_arrays();
 	}
@@ -602,19 +605,23 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return array
 	 */
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
-		return self::array_map_assoc( function( $key, $replacement ) {
-			// Account for single and double quotes in keys ...
-			if ( \preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
-				$key = $match[2];
-			}
+		return self::array_map_assoc(
+			function( $key, $replacement ) {
+				// Account for single and double quotes in keys ...
+				if ( \preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
+					$key = $match[2];
+				}
 
-			// ... and values.
-			if ( \preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
-				$replacement = $match[2];
-			}
+				// ... and values.
+				if ( \preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
+					$replacement = $match[2];
+				}
 
-			return [ $key => $replacement ];
-		}, /** RE correct. @scrutinizer ignore-type */ \preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) );
+				return [ $key => $replacement ];
+			},
+			/** RE correct. @scrutinizer ignore-type */
+			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY )
+		);
 	}
 
 	/**

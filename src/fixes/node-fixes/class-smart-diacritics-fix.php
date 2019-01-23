@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,13 +58,17 @@ class Smart_Diacritics_Fix extends Abstract_Node_Fix {
 
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
 			$replacements   = $settings['diacriticReplacement']['replacements'];
-			$textnode->data = \preg_replace_callback( $settings['diacriticReplacement']['patterns'], function( $match ) use ( $replacements ) {
-				if ( isset( $replacements[ $match[0] ] ) ) {
-					return $replacements[ $match[0] ];
-				} else {
-					return $match[0];
-				}
-			}, $textnode->data );
+			$textnode->data = \preg_replace_callback(
+				$settings['diacriticReplacement']['patterns'],
+				function( $match ) use ( $replacements ) {
+					if ( isset( $replacements[ $match[0] ] ) ) {
+						return $replacements[ $match[0] ];
+					} else {
+						return $match[0];
+					}
+				},
+				$textnode->data
+			);
 		}
 	}
 }
