@@ -62,6 +62,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() {
+		parent::setUp();
+
 		$this->settings = new \PHP_Typography\Settings( false );
 	}
 

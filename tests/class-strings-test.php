@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,20 +33,6 @@ use PHP_Typography\Strings;
  * @usesDefaultClass \PHP_Typography\Strings
  */
 class Strings_Test extends \PHPUnit\Framework\TestCase {
-
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
-	}
 
 	/**
 	 * Reports an error identified by $message if the given function array contains a non-callable.

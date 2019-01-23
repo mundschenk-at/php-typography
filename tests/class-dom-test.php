@@ -45,15 +45,10 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-		$this->parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
-	}
+	protected function setUp() {
+		parent::setUp();
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
+		$this->parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 	}
 
 	/**

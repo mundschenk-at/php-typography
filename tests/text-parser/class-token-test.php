@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,20 +34,6 @@ use PHP_Typography\Text_Parser\Token;
  * @usesDefaultClass \PHP_Typography\Text_Parser\Token
  */
 class Token_Test extends PHP_Typography_Testcase {
-
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
-	}
 
 	/**
 	 * Provide value pairs for testing the Token constructor.

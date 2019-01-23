@@ -50,14 +50,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() {
+		parent::setUp();
+		
 		$this->parser = new \PHP_Typography\Text_Parser();
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
 	}
 
 	/**

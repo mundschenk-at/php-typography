@@ -36,22 +36,6 @@ use PHP_Typography\Hyphenator\Trie_Node;
 class Trie_Node_Test extends PHP_Typography_Testcase {
 
 	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
-	}
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() { // @codingStandardsIgnoreLine
-	}
-
-
-
-	/**
 	 * Tests build_trie.
 	 *
 	 * @covers ::build_trie

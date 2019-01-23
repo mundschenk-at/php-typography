@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2016-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,15 +47,9 @@ class Cache_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() {
-		$this->c = new \PHP_Typography\Hyphenator\Cache();
-	}
+		parent::setUp();
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
-		$this->c = null;
+		$this->c = new \PHP_Typography\Hyphenator\Cache();
 	}
 
 	/**

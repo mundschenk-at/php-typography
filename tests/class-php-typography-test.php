@@ -113,7 +113,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() { // @codingStandardsIgnoreLine
+	protected function setUp() {
+		parent::setUp();
+
 		$this->typo = new PHP_Typography();
 		$this->s    = new Settings( false );
 	}
