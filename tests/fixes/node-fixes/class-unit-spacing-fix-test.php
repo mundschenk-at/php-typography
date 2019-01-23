@@ -67,6 +67,13 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 			[ '3 km/h', '3&#8239;km/h' ],
 			[ '5 sg 44 kg', '5 sg 44&#8239;kg' ],
 			[ '100 &deg;C', '100&#8239;&deg;C' ],
+			[ '10 &euro;', '10&#8239;&euro;' ],
+			[ '10 €', '10&#8239;&euro;' ],
+			[ '1 ¢', '1&#8239;&cent;' ],
+			[ '1 $', '1&#8239;$' ],
+			[ '5 nanoamperes', '5&#8239;nanoamperes' ],
+			[ '1 Ω', '1&#8239;&Omega;' ],
+			[ '1 &Omega;', '1&#8239;&Omega;' ],
 		];
 	}
 

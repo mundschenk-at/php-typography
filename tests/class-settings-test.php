@@ -954,8 +954,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Tests set_units.
 	 *
 	 * @covers ::set_units
-	 * @covers ::update_unit_pattern
 	 *
+	 * @uses ::update_unit_pattern
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_units() {
@@ -976,6 +976,40 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $units_as_array as $unit ) {
 			$this->assertContains( $unit, $this->settings['units'] );
 		}
+	}
+
+	/**
+	 * Provides data for testing update_unit_pattern.
+	 *
+	 * @return array
+	 */
+	public function provide_update_unit_pattern_data() {
+		return [
+			[
+				[ 'km/h', 'T$' ],
+				'km\/h|T\$|',
+			],
+			[
+				[ '¥', 'm[a]', 'n.', 'm^2' ],
+				'¥|m\[a\]|n\.|m\^2|',
+			],
+		];
+	}
+
+	/**
+	 * Tests update_unit_pattern.
+	 *
+	 * @covers ::update_unit_pattern
+	 *
+	 * @dataProvider provide_update_unit_pattern_data
+	 *
+	 * @param  string[] $units An array of units.
+	 * @param  string   $regex The resulting regular expression.
+	 */
+	public function test_update_unit_pattern( array $units, $regex ) {
+		$result = $this->invokeMethod( $this->settings, 'update_unit_pattern', [ $units ] );
+
+		$this->assertSame( $regex, $result );
 	}
 
 	/**

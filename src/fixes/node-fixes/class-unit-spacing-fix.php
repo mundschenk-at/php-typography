@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
 	const SETTING     = 'unitSpacing';
 	const REPLACEMENT = '$1' . U::NO_BREAK_NARROW_SPACE . '$2';
-	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')\b/Sx';
+	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
 	const _STANDARD_UNITS = '
 		### Temporal units
@@ -57,7 +57,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
 		### Metric units (with prefixes)
 		(?:p|µ|[mcdhkMGT])?
-		(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω|Ohm|&Omega;|&\#0*937;|&\#[xX]0*3[Aa]9;)|
+		(?:[mgstAKNJWCVFSTHBL]|mol|cd|rad|Hz|Pa|Wb|lm|lx|Bq|Gy|Sv|kat|Ω)|
 		(?:nano|micro|milli|centi|deci|deka|hecto|kilo|mega|giga|tera)?
 		(?:liters?|meters?|grams?|newtons?|pascals?|watts?|joules?|amperes?)|
 
@@ -65,12 +65,15 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		[kKMGT]?(?:[oBb]|[oBb]ps|flops)|
 
 		### Money
-		¢|M?(?:£|¥|€|$)|
+		¢|M?(?:£|¥|€|\$)|
 
 		### Other units
 		°[CF]? |
 		%|pi|M?px|em|en|[NSEOW]|[NS][EOW]|mbar
-	'; // required modifiers: x (multiline pattern).
+	'; // required modifiers: x (multiline pattern), u (unicode).
+
+	// (?=\p{^L})|\z) is used instead of \b because otherwise the special symbols ($, € etc.) would not match properly (they are not word characters).
+	const WORD_BOUNDARY = '(?:(?=\p{^L})|\z)';
 
 	/**
 	 * Creates a new fix object.
@@ -93,7 +96,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		$this->replacement = "\$1{$settings->no_break_narrow_space()}\$2";
 
 		// Update regex with custom units.
-		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')\b/Sx';
+		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
 		parent::apply( $textnode, $settings, $is_title );
 	}
