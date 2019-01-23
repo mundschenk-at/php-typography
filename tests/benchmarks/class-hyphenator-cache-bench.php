@@ -62,7 +62,7 @@ class Hyphenator_Cache_Bench {
 	 */
 	public function init() {
 		$this->hyphenator = new Hyphenator( 'de' );
-		$this->serialized = serialize( $this->hyphenator ); // @codingStandardsIgnoreLine
+		$this->serialized = serialize( $this->hyphenator ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$this->compressed = base64_encode( gzcompress( $this->serialized ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
@@ -77,34 +77,34 @@ class Hyphenator_Cache_Bench {
 	 * Benchmark new object creation.
 	 */
 	public function bench_serialized_hyphenator() {
-		$de_hyphen = unserialize( $this->serialized ); // @codingStandardsIgnoreLine
+		$de_hyphen = unserialize( $this->serialized ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 
 	/**
 	 * Benchmark new object creation.
 	 */
 	public function bench_compressed_serialized_hyphenator() {
-		$de_hyphen = unserialize( gzuncompress( base64_decode( $this->compressed ) ) ); // @codingStandardsIgnoreLine
+		$de_hyphen = unserialize( gzuncompress( base64_decode( $this->compressed ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 
 	/**
 	 * Benchmark new object creation.
 	 */
 	public function bench_unserialize_serialized_hyphenator() {
-		$de_hyphen = unserialize( serialize( $this->hyphenator ) ); // @codingStandardsIgnoreLine
+		$de_hyphen = unserialize( serialize( $this->hyphenator ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 
 	/**
 	 * Benchmark new object creation.
 	 */
 	public function bench_compressed_unserialize_serialized_hyphenator() {
-		$de_hyphen = unserialize( gzuncompress( base64_decode( base64_encode( gzcompress( serialize( $this->hyphenator ) ) ) ) ) ); // @codingStandardsIgnoreLine
+		$de_hyphen = unserialize( gzuncompress( base64_decode( base64_encode( gzcompress( serialize( $this->hyphenator ) ) ) ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 
 	/**
 	 * Benchmark new object creation.
 	 */
 	public function bench_gzencoded_unserialize_serialized_hyphenator() {
-		$de_hyphen = unserialize( gzdecode( base64_decode( base64_encode( gzencode( serialize( $this->hyphenator ) ) ) ) ) ); // @codingStandardsIgnoreLine
+		$de_hyphen = unserialize( gzdecode( base64_decode( base64_encode( gzencode( serialize( $this->hyphenator ) ) ) ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 }

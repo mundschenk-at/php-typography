@@ -151,7 +151,7 @@ abstract class DOM {
 	public static function get_ancestors( \DOMNode $node ) {
 		$result = [];
 
-		while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // @codingStandardsIgnoreLine.
+		while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 			$result[] = $node;
 		}
 
@@ -169,7 +169,7 @@ abstract class DOM {
 	 */
 	public static function has_class( \DOMNode $tag, $classnames ) {
 		if ( $tag instanceof \DOMText ) {
-			$tag = $tag->parentNode; // @codingStandardsIgnoreLine.
+			$tag = $tag->parentNode;
 		}
 
 		// Bail if we are not working with a tag or if there is no classname.

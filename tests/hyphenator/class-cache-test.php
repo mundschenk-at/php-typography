@@ -66,7 +66,7 @@ class Cache_Test extends PHP_Typography_Testcase {
 		$this->c->set_hyphenator( 'de', $this->createMock( \PHP_Typography\Hyphenator::class ) );
 		$this->assertTrue( $this->c->has_changed() );
 
-		$new_c = unserialize( serialize( $this->c ) ); // @codingStandardsIgnoreLine
+		$new_c = unserialize( serialize( $this->c ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize,WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator\Cache::class, $new_c );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $new_c->get_hyphenator( 'de' ) );
 		$this->assertFalse( $new_c->has_changed() );

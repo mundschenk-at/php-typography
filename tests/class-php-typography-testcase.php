@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,14 +47,14 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 */
 	protected function clean_html( $html ) {
 		// Convert everything except Latin and Cyrillic and Thai.
-		static $convmap = [
+		static $convmap = [ // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 			// Simple Latin characters.
-			0x80,   0x03ff,   0, 0xffffff, // @codingStandardsIgnoreLine.
+			0x80,   0x03ff,   0, 0xffffff,
 			// Cyrillic characters.
-			0x0514, 0x0dff, 0, 0xffffff, // @codingStandardsIgnoreLine.
+			0x0514, 0x0dff,   0, 0xffffff,
 			// Thai characters.
-			0x0e7f, 0x10ffff, 0, 0xffffff, // @codingStandardsIgnoreLine.
-		];
+			0x0e7f, 0x10ffff, 0, 0xffffff,
+		]; // phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 
 		return str_replace( [ '&lt;', '&gt;' ], [ '<', '>' ], mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
 	}
