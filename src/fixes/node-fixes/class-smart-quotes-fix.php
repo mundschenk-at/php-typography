@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -115,7 +115,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$single_open  = RE::ESCAPE_MARKER . $single->open() . RE::ESCAPE_MARKER;
 		$single_close = RE::ESCAPE_MARKER . $single->close() . RE::ESCAPE_MARKER;
 
-		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // WPCS: loose comparison ok.
+		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison -- object value comparison.
 			$this->update_smart_quotes_brackets( $double_open, $double_close, $single_open, $single_close );
 			$this->cached_primary_quotes   = $double;
 			$this->cached_secondary_quotes = $single;
@@ -133,7 +133,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			[
 				"{$single_open}\$1{$single_close}",
 				"{$double_open}\$1{$double_close}",
-			], $node_data
+			],
+			$node_data
 		);
 
 		// Guillemets.
@@ -150,7 +151,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 				'$1' . U::SINGLE_PRIME . '$2$3' . U::DOUBLE_PRIME, // @codeCoverageIgnoreStart
 				'$1' . U::DOUBLE_PRIME,
 				'$1' . U::SINGLE_PRIME, // @codeCoverageIgnoreEnd
-			], $node_data
+			],
+			$node_data
 		);
 
 		// Backticks & comma quotes.
@@ -176,12 +178,14 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 				self::SINGLE_QUOTE_CLOSE . $f['u'],
 				self::DOUBLE_QUOTE_OPEN . $f['u'],
 				self::DOUBLE_QUOTE_CLOSE . $f['u'],
-			], [
+			],
+			[
 				$single_open,
 				$single_close,
 				$double_open,
 				$double_close,
-			], $node_data
+			],
+			$node_data
 		);
 
 		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.

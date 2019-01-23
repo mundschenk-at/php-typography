@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2018 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -197,22 +197,27 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// First, let's find math equations.
-		$node_data = \preg_replace_callback( self::MATH_EQUATION, function( array $matches ) {
-			return \str_replace(
-				[
-					'-',
-					'/',
-					'x',
-					'*',
-				], [
-					U::MINUS, // @codeCoverageIgnoreStart
-					U::DIVISION,
-					U::MULTIPLICATION,
-					U::MULTIPLICATION, // @codeCoverageIgnoreEnd
-				],
-				$matches[0]
-			);
-		}, $node_data );
+		$node_data = \preg_replace_callback(
+			self::MATH_EQUATION,
+			function( array $matches ) {
+				return \str_replace(
+					[
+						'-',
+						'/',
+						'x',
+						'*',
+					],
+					[
+						U::MINUS, // @codeCoverageIgnoreStart
+						U::DIVISION,
+						U::MULTIPLICATION,
+						U::MULTIPLICATION, // @codeCoverageIgnoreEnd
+					],
+					$matches[0]
+				);
+			},
+			$node_data
+		);
 
 		// Revert some non-desired changes and restore textnode content.
 		$textnode->data = \preg_replace( self::REVERT_MATCHES, self::REVERT_REPLACEMENTS, $node_data );

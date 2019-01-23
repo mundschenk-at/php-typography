@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2018 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -162,7 +162,9 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 				self::STYLE_SINGLE . $f['u'],
 				self::STYLE_INITIAL_DOUBLE . $f['u'],
 				self::STYLE_INITIAL_SINGLE . $f['u'],
-			], $this->replacements[ $block ], $node_data
+			],
+			$this->replacements[ $block ],
+			$node_data
 		);
 
 		// Remove any added characters.

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,10 +46,13 @@ abstract class File_Operations {
 	public static function get_http_response_code( $url ) {
 
 		$curl = curl_init();
-		curl_setopt_array( $curl, [
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_URL            => $url,
-		] );
+		curl_setopt_array(
+			$curl,
+			[
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_URL            => $url,
+			]
+		);
 		curl_exec( $curl );
 		$response_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		curl_close( $curl );

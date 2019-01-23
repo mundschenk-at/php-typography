@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -71,11 +71,13 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 				self::COLLAPSE_NON_BREAKABLE_SPACES,
 				// For any other spaceing, replace with the first occurance of an unusual space character.
 				self::COLLAPSE_OTHER_SPACES,
-			], [ // @codeCoverageIgnoreStart
+			],
+			[ // @codeCoverageIgnoreStart
 				' ',
 				U::NO_BREAK_SPACE,
-				'$1', // @codeCoverageIgnoreEnd
-			], $node_data
+				'$1',
+			], // @codeCoverageIgnoreEnd
+			$node_data
 		);
 
 		// Remove all spacing at beginning of block level elements.

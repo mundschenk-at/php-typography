@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -137,7 +137,7 @@ abstract class Strings {
 
 		// Single character code.
 		if ( \is_scalar( $codes ) ) {
-			$codes = \func_get_args();
+			$codes = \func_get_args(); // phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 		}
 
 		// Deal with an array of character codes.

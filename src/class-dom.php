@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -77,9 +77,14 @@ abstract class DOM {
 	public static function block_tags( $reset = false ) {
 		if ( empty( self::$block_tags ) || $reset ) {
 			self::$block_tags = \array_merge(
-				\array_flip( \array_filter( \array_keys( Elements::$html5 ), function( $tag ) {
-					return Elements::isA( $tag, Elements::BLOCK_TAG );
-				} ) ),
+				\array_flip(
+					\array_filter(
+						\array_keys( Elements::$html5 ),
+						function( $tag ) {
+							return Elements::isA( $tag, Elements::BLOCK_TAG );
+						}
+					)
+				),
 				\array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
 			);
 		}
@@ -100,14 +105,19 @@ abstract class DOM {
 	 */
 	public static function inappropriate_tags( $reset = false ) {
 		if ( empty( self::$inappropriate_tags ) || $reset ) {
-			self::$inappropriate_tags = \array_flip( \array_merge(
-				\array_filter( \array_keys( Elements::$html5 ), function( $tag ) {
-					return Elements::isA( $tag, Elements::VOID_TAG )
-						|| Elements::isA( $tag, Elements::TEXT_RAW )
-						|| Elements::isA( $tag, Elements::TEXT_RCDATA );
-				} ),
-				self::ADDITIONAL_INAPPROPRIATE_TAGS
-			) );
+			self::$inappropriate_tags = \array_flip(
+				\array_merge(
+					\array_filter(
+						\array_keys( Elements::$html5 ),
+						function( $tag ) {
+							return Elements::isA( $tag, Elements::VOID_TAG )
+								|| Elements::isA( $tag, Elements::TEXT_RAW )
+								|| Elements::isA( $tag, Elements::TEXT_RCDATA );
+						}
+					),
+					self::ADDITIONAL_INAPPROPRIATE_TAGS
+				)
+			);
 		}
 
 		return self::$inappropriate_tags;
@@ -242,10 +252,14 @@ abstract class DOM {
 	 * @return \DOMText|null Null if $node is a block-level element or no text sibling exists.
 	 */
 	public static function get_previous_textnode( \DOMNode $node = null ) {
-		return self::get_adjacent_textnode( function( &$another_node = null ) {
-			$another_node = $another_node->previousSibling;
-			return self::get_last_textnode( $another_node );
-		}, [ __CLASS__, __FUNCTION__ ], $node );
+		return self::get_adjacent_textnode(
+			function( &$another_node = null ) {
+				$another_node = $another_node->previousSibling;
+				return self::get_last_textnode( $another_node );
+			},
+			[ __CLASS__, __FUNCTION__ ],
+			$node
+		);
 	}
 
 	/**
@@ -256,10 +270,14 @@ abstract class DOM {
 	 * @return \DOMText|null Null if $node is a block-level element or no text sibling exists.
 	 */
 	public static function get_next_textnode( \DOMNode $node = null ) {
-		return self::get_adjacent_textnode( function( &$another_node = null ) {
-			$another_node = $another_node->nextSibling;
-			return self::get_first_textnode( $another_node );
-		}, [ __CLASS__, __FUNCTION__ ], $node );
+		return self::get_adjacent_textnode(
+			function( &$another_node = null ) {
+				$another_node = $another_node->nextSibling;
+				return self::get_first_textnode( $another_node );
+			},
+			[ __CLASS__, __FUNCTION__ ],
+			$node
+		);
 	}
 
 	/**

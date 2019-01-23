@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class Hyphenator_Cache_Bench {
 	public function init() {
 		$this->hyphenator = new Hyphenator( 'de' );
 		$this->serialized = serialize( $this->hyphenator ); // @codingStandardsIgnoreLine
-		$this->compressed = base64_encode( gzcompress( $this->serialized ) );
+		$this->compressed = base64_encode( gzcompress( $this->serialized ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	/**

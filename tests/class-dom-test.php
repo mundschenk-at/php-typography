@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,9 +46,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * This method is called before a test is executed.
 	 */
 	protected function setUp() { // @codingStandardsIgnoreLine
-		$this->parser = new \Masterminds\HTML5( [
-			'disable_html_ns' => true,
-		] );
+		$this->parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 	}
 
 	/**
@@ -131,9 +129,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @covers ::nodelist_to_array
 	 */
 	public function test_nodelist_to_array() {
-		$parser = new \Masterminds\HTML5( [
-			'disable_html_ns' => true,
-		] );
+		$parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		$dom    = $parser->loadHTML( '<body><p>blabla</p><ul><li>foo</li><li>bar</li></ul></body>' );
 		$xpath  = new \DOMXPath( $dom );
 
@@ -172,9 +168,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @param  string $xpath_query XPath query.
 	 */
 	public function test_get_ancestors( $html, $xpath_query ) {
-		$parser = new \Masterminds\HTML5( [
-			'disable_html_ns' => true,
-		] );
+		$parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		$dom    = $parser->loadHTML( '<body>' . $html . '</body>' );
 		$xpath  = new \DOMXPath( $dom );
 
@@ -221,9 +215,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * @param  bool   $result      Expected result.
 	 */
 	public function test_has_class( $html, $xpath_query, $classnames, $result ) {
-		$parser = new \Masterminds\HTML5( [
-			'disable_html_ns' => true,
-		] );
+		$parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		$dom    = $parser->loadHTML( '<body>' . $html . '</body>' );
 		$xpath  = new \DOMXPath( $dom );
 

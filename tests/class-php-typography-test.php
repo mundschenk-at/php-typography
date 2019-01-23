@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2018 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -164,24 +164,26 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		];
 
 		// Default tags.
-		$s->set_tags_to_ignore( [
-			'code',
-			'head',
-			'kbd',
-			'object',
-			'option',
-			'pre',
-			'samp',
-			'script',
-			'noscript',
-			'noembed',
-			'select',
-			'style',
-			'textarea',
-			'title',
-			'var',
-			'math',
-		] );
+		$s->set_tags_to_ignore(
+			[
+				'code',
+				'head',
+				'kbd',
+				'object',
+				'option',
+				'pre',
+				'samp',
+				'script',
+				'noscript',
+				'noembed',
+				'select',
+				'style',
+				'textarea',
+				'title',
+				'var',
+				'math',
+			]
+		);
 
 		// Inspect settings.
 		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
@@ -439,7 +441,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
 
-		$this->assertEmpty( @$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$this->assertEmpty( @$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 	}
 
 	/**
@@ -576,8 +578,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $this->s;
 		$s->set_defaults();
 
-		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
-		}, $s ) ) );
+		$this->assertSame(
+			$this->clean_html( $html ),
+			$this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {}, $s ) )
+		);
 	}
 
 	/**
@@ -614,9 +618,18 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = $this->s;
 		$s->set_defaults();
 
-		$this->assertSame( $html, $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
-			return 'XXX';
-		}, $s ) ) );
+		$this->assertSame(
+			$html,
+			$this->clean_html(
+				$this->typo->process_textnodes(
+					$html,
+					function ( $node ) {
+						return 'XXX';
+					},
+					$s
+				)
+			)
+		);
 	}
 
 
@@ -672,8 +685,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$s = new Settings( true );
 		$s->set_tags_to_ignore( [ 'h1', 'h2' ] );
 
-		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {
-		}, $s, true ) ) );
+		$this->assertSame(
+			$this->clean_html( $html ),
+			$this->clean_html( $this->typo->process_textnodes( $html, function ( $node ) {}, $s, true ) )
+		);
 	}
 
 
@@ -1326,10 +1341,12 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( [
-			'numerator'   => $num_css_class,
-			'denominator' => $denom_css_class,
-		] );
+		$typo = new PHP_Typography_CSS_Classes(
+			[
+				'numerator'   => $num_css_class,
+				'denominator' => $denom_css_class,
+			]
+		);
 		$this->s->set_smart_fractions( true );
 		$this->s->set_true_no_break_narrow_space( true );
 
@@ -1358,10 +1375,12 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_off( $input, $result, $result_spacing, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( [
-			'numerator'   => $num_css_class,
-			'denominator' => $denom_css_class,
-		] );
+		$typo = new PHP_Typography_CSS_Classes(
+			[
+				'numerator'   => $num_css_class,
+				'denominator' => $denom_css_class,
+			]
+		);
 		$this->s->set_smart_fractions( false );
 		$this->s->set_fraction_spacing( false );
 
@@ -1424,10 +1443,12 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $denom_css_class CSS class for denominator.
 	 */
 	public function test_smart_fractions_with_smart_quotes( $input, $result, $num_css_class, $denom_css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( [
-			'numerator'   => $num_css_class,
-			'denominator' => $denom_css_class,
-		] );
+		$typo = new PHP_Typography_CSS_Classes(
+			[
+				'numerator'   => $num_css_class,
+				'denominator' => $denom_css_class,
+			]
+		);
 		$this->s->set_smart_fractions( true );
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary();
@@ -1510,9 +1531,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( [
-			'ordinal' => $css_class,
-		] );
+		$typo = new PHP_Typography_CSS_Classes( [ 'ordinal' => $css_class ] );
 		$this->s->set_smart_ordinal_suffix( true );
 
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input, $this->s ) ) );
@@ -1534,9 +1553,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @param string $css_class CSS class for ordinal suffix.
 	 */
 	public function test_smart_ordinal_suffix_off( $input, $result, $css_class ) {
-		$typo = new PHP_Typography_CSS_Classes( [
-			'ordinal' => $css_class,
-		] );
+		$typo = new PHP_Typography_CSS_Classes( [ 'ordinal' => $css_class ] );
 		$this->s->set_smart_ordinal_suffix( false );
 
 		$this->assertSame( $input, $this->clean_html( $typo->process( $input, $this->s ) ) );
@@ -3022,13 +3039,15 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertNull( $dom );
 
 		// With error handler.
-		$s->set_parser_errors_handler(function ( $errors ) {
-			foreach ( $errors as $error ) {
-				echo $error; // WPCS: XSS ok.
-			}
+		$s->set_parser_errors_handler(
+			function ( $errors ) {
+				foreach ( $errors as $error ) {
+					echo $error;
+				}
 
-			return [];
-		});
+				return [];
+			}
+		);
 
 		$this->expectOutputString( $error_msg );
 		$dom = $this->typo->parse_html( $this->typo->get_html5_parser(), $html, $s );

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -98,9 +98,15 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
-		}, $settings, $is_title, $body_classes );
+		return $this->process_textnodes(
+			$html,
+			function( $html, $settings, $is_title ) {
+				$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
+			},
+			$settings,
+			$is_title,
+			$body_classes
+		);
 	}
 
 	/**
@@ -118,9 +124,15 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		return $this->process_textnodes( $html, function( $html, $settings, $is_title ) {
-			$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
-		}, $settings, $is_title, $body_classes );
+		return $this->process_textnodes(
+			$html,
+			function( $html, $settings, $is_title ) {
+				$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
+			},
+			$settings,
+			$is_title,
+			$body_classes
+		);
 	}
 
 	/**
@@ -370,9 +382,7 @@ class PHP_Typography {
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
 		if ( ! isset( $this->html5_parser ) ) {
-			$this->html5_parser = new \Masterminds\HTML5( [
-				'disable_html_ns' => true,
-			] );
+			$this->html5_parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		}
 
 		return $this->html5_parser;

@@ -3,7 +3,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ foreach ( $patterns_list['list'] as $pattern ) {
 
 	$converter = new Pattern_Converter( $url, $language );
 
-	echo "Parsing $language TeX file and converting it to lang/$filename ..."; // phpcs: XSS ok.
+	echo "Parsing $language TeX file and converting it to lang/$filename ...";
 
 	try {
 		$json_pattern = $converter->convert();

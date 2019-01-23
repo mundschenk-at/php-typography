@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2017 Peter Putzer.
+ *  Copyright 2015-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -103,15 +103,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$tokens = $parser->get_all();
 
 		$this->assertCount( 13, $tokens );
-		$this->assertArraySubset( [
-			0 => new Token( 'Quoth', Token::WORD ),
-		], $tokens );
-		$this->assertArraySubset( [
-			5 => new Token( ',', Token::PUNCTUATION ),
-		], $tokens );
-		$this->assertArraySubset( [
-			11 => new Token( 'Äöüß', Token::WORD ),
-		], $tokens );
+		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
+		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
+		$this->assertArraySubset( [ 11 => new Token( 'Äöüß', Token::WORD ) ], $tokens );
 
 		return $parser;
 	}
@@ -136,15 +130,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 19, $tokens );
 
-		$this->assertArraySubset( [
-			0 => new Token( 'Quoth', Token::WORD ),
-		], $tokens );
-		$this->assertArraySubset( [
-			5 => new Token( ',', Token::PUNCTUATION ),
-		], $tokens );
-		$this->assertArraySubset( [
-			17 => new Token( 'someone@example.org', Token::OTHER ),
-		], $tokens );
+		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
+		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
+		$this->assertArraySubset( [ 17 => new Token( 'someone@example.org', Token::OTHER ) ], $tokens );
 
 		return $parser;
 	}
@@ -169,27 +157,13 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 33, $tokens );
 
-		$this->assertArraySubset( [
-			0 => new Token( 'Quoth', Token::WORD ),
-		], $tokens );
-		$this->assertArraySubset( [
-			5 => new Token( ',', Token::PUNCTUATION ),
-		], $tokens );
-		$this->assertArraySubset( [
-			15 => new Token( 'http://example.org', Token::OTHER ),
-		], $tokens );
-		$this->assertArraySubset( [
-			19 => new Token( 'foo:WordPress', Token::OTHER ),
-		], $tokens );
-		$this->assertArraySubset( [
-			23 => new Token( 'foo:W@rdPress', Token::OTHER ),
-		], $tokens );
-		$this->assertArraySubset( [
-			27 => new Token( '@example', Token::OTHER ),
-		], $tokens );
-		$this->assertArraySubset( [
-			31 => new Token( '@:@:@:risk', Token::OTHER ),
-		], $tokens );
+		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
+		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
+		$this->assertArraySubset( [ 15 => new Token( 'http://example.org', Token::OTHER ) ], $tokens );
+		$this->assertArraySubset( [ 19 => new Token( 'foo:WordPress', Token::OTHER ) ], $tokens );
+		$this->assertArraySubset( [ 23 => new Token( 'foo:W@rdPress', Token::OTHER ) ], $tokens );
+		$this->assertArraySubset( [ 27 => new Token( '@example', Token::OTHER ) ], $tokens );
+		$this->assertArraySubset( [ 31 => new Token( '@:@:@:risk', Token::OTHER ) ], $tokens );
 
 		return $parser;
 	}
@@ -214,15 +188,9 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 10, $tokens );
 
-		$this->assertArraySubset( [
-			0 => new Token( 'Some', Token::WORD ),
-		], $tokens );
-		$this->assertArraySubset( [
-			2 => new Token( "don't", Token::OTHER ),
-		], $tokens );
-		$this->assertArraySubset( [
-			8 => new Token( 'captain-owner', Token::WORD ),
-		], $tokens );
+		$this->assertArraySubset( [ 0 => new Token( 'Some', Token::WORD ) ], $tokens );
+		$this->assertArraySubset( [ 2 => new Token( "don't", Token::OTHER ) ], $tokens );
+		$this->assertArraySubset( [ 8 => new Token( 'captain-owner', Token::WORD ) ], $tokens );
 
 		return $parser;
 	}

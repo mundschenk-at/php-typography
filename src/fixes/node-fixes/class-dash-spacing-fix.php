@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -112,7 +112,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 		// Various special characters and regular expressions.
 		$s = $settings->dash_style();
 
-		if ( $s != $this->cached_dash_style ) { // WPCS: loose comparison ok.
+		if ( $s != $this->cached_dash_style ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison -- object value comparison.
 			$this->update_dash_spacing_regex( $s->parenthetical_dash(), $s->parenthetical_space(), $s->interval_dash(), $s->interval_space() );
 			$this->cached_dash_style = $s;
 		}

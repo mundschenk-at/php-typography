@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2012-2013 Marie Hogebrandt.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
@@ -515,9 +515,16 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_letters_policy( Token $token, $policy ) {
-		return $this->check_policy( $token, $policy, self::ALLOW_ALL_LETTERS, self::REQUIRE_ALL_LETTERS, self::NO_ALL_LETTERS, function( $value ) {
-			return \preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
-		} );
+		return $this->check_policy(
+			$token,
+			$policy,
+			self::ALLOW_ALL_LETTERS,
+			self::REQUIRE_ALL_LETTERS,
+			self::NO_ALL_LETTERS,
+			function( $value ) {
+				return \preg_replace( self::_RE_HTML_LETTER_CONNECTORS, '', $value );
+			}
+		);
 	}
 
 	/**
@@ -529,7 +536,14 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_caps_policy( Token $token, $policy ) {
-		return $this->check_policy( $token, $policy, self::ALLOW_ALL_CAPS, self::REQUIRE_ALL_CAPS, self::NO_ALL_CAPS, $this->current_strtoupper );
+		return $this->check_policy(
+			$token,
+			$policy,
+			self::ALLOW_ALL_CAPS,
+			self::REQUIRE_ALL_CAPS,
+			self::NO_ALL_CAPS,
+			$this->current_strtoupper
+		);
 	}
 
 	/**
@@ -541,9 +555,16 @@ class Text_Parser {
 	 * @return bool
 	 */
 	protected function conforms_to_compounds_policy( Token $token, $policy ) {
-		return $this->check_policy( $token, $policy, self::ALLOW_COMPOUNDS, self::NO_COMPOUNDS, self::REQUIRE_COMPOUNDS, function( $value ) {
-			return \preg_replace( '/-/S', '', $value );
-		} );
+		return $this->check_policy(
+			$token,
+			$policy,
+			self::ALLOW_COMPOUNDS,
+			self::NO_COMPOUNDS,
+			self::REQUIRE_COMPOUNDS,
+			function( $value ) {
+				return \preg_replace( '/-/S', '', $value );
+			}
+		);
 	}
 
 	/**

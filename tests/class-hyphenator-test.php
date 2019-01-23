@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2017 Peter Putzer.
+ *  Copyright 2016-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -124,9 +124,11 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	public function test_set_language_with_custom_exceptions() {
 		$h = $this->h;
 
-		$h->set_custom_exceptions( [
-			'KINGdesk' => 'KING-desk',
-		] );
+		$h->set_custom_exceptions(
+			[
+				'KINGdesk' => 'KING-desk',
+			]
+		);
 		$h->set_language( 'en-US' );
 		$this->invokeMethod( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
@@ -495,13 +497,8 @@ class Hyphenator_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_convert_hyphenation_exception_to_pattern() {
 		$h = $this->h;
-		$this->assertSame( [
-			4 => 9,
-		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
-
-		$this->assertSame( [
-			2 => 9,
-		], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );
+		$this->assertSame( [ 4 => 9 ], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
+		$this->assertSame( [ 2 => 9 ], $this->invokeMethod( $h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );
 	}
 
 	/**
