@@ -787,22 +787,28 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_units( $units = [] ) {
 		$this->data['units'] = Strings::maybe_split_parameters( $units );
-		$this->update_unit_pattern( $this->data['units'] );
+		$this->custom_units  = $this->update_unit_pattern( $this->data['units'] );
 	}
 
 	/**
-	 * Update components and pattern for matching both standard and custom units.
+	 * Update pattern for matching custom units.
+	 *
+	 * @since 6.4.0 Visibility changed to protected, return value added.
 	 *
 	 * @param array $units An array of unit names.
+	 *
+	 * @return string
 	 */
-	private function update_unit_pattern( array $units ) {
-		// Update components & regex pattern.
+	protected function update_unit_pattern( array $units ) {
+		// Update unit regex pattern.
 		foreach ( $units as $index => $unit ) {
-			// Escape special chars.
-			$units[ $index ] = \preg_replace( '#([\[\\\^\$\.\|\?\*\+\(\)\{\}])#', '\\\\$1', $unit );
+			$units[ $index ] = \preg_quote( $unit, '/' );
 		}
-		$this->custom_units  = \implode( '|', $units );
-		$this->custom_units .= ( $this->custom_units ) ? '|' : '';
+
+		$custom_units  = \implode( '|', $units );
+		$custom_units .= ! empty( $custom_units ) ? '|' : '';
+
+		return $custom_units;
 	}
 
 	/**
