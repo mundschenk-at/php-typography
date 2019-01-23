@@ -65,7 +65,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		[kKMGT]?(?:[oBb]|[oBb]ps|flops)|
 
 		### Money
-		¢|M?(?:£|¥|€|$)|
+		¢|M?(?:£|¥|€|\$)|
 
 		### Other units
 		°[CF]? |
