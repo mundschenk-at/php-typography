@@ -333,7 +333,7 @@ class PHP_Typography {
 		}
 
 		// Encode bare < > & and decode escaped HTML tag.
-		$content = RE::unescape_tags( htmlspecialchars( $content, ENT_NOQUOTES | ENT_HTML5, 'UTF-8', false ) );
+		$content = RE::unescape_tags( htmlspecialchars( $content, ENT_NOQUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8', true ) );
 
 		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // @codingStandardsIgnoreLine.
 

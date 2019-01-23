@@ -1570,6 +1570,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Works with strange characters like ä too. But not Ä or does it?', 'Works with strange characters like &auml;&nbsp;too. But not &Auml;&nbsp;or does it?' ],
 			[ 'Should work even here: <span>a word</span> does not want to be alone.', 'Should work even here: <span>a&nbsp;word</span> does not want to be alone.' ],
 			[ 'And here:<span> </span>a word does not want to be alone.', 'And here:<span> </span>a&nbsp;word does not want to be alone.' ],
+			[ 'He is a robot, am I&amp;nbsp;too?', 'He is a&nbsp;robot, am I&amp;nbsp;too?' ],
 		];
 	}
 
