@@ -1,5 +1,12 @@
 # Change History
 
+## 6.4.0 - January 24, 2019
+*   _Feature_: French (1<sup>ère</sup>) and "Latin" (1<sup>o</sup>) ordinal numbers are now supported by the smart ordinals feature (also with Roman numerals, e.g. XIX<sup>ème</sup>).
+*   _Bugfix_: Unit spacing was not applied to monetary symbols ($, €, etc.).
+
+## 6.3.1 - January 23, 2019
+*   _Bugfix_: Certain entities (e.g. `&amp;`) were not encoded correctly when modifying a node.
+
 ## 6.3.0 - September 8, 2018
 *   _Feature_: The comma can now be used as a decimal separator (e.g. `1,5`, in addition to `1.5`).
 *   _Change_: PHP-Typography now uses the Unicode hyphen character (`‐`) instead of the hyphen-minus (`-`).
