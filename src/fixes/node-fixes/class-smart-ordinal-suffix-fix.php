@@ -42,6 +42,14 @@ use PHP_Typography\Settings;
  */
 class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 
+	const RE_ARABIC_ORDINALS = '/\b(\d+)(' . self::ENGLISH_SUFFIXES . '|' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')\b/Su';
+	const ENGLISH_SUFFIXES   = 'st|nd|rd|th';
+	const FRENCH_SUFFIXES    = 'er|re|e|ère|d|nd|nde|e|de|me|ème|è';
+	const LATIN_SUFFIXES     = 'o';
+	const RE_ROMAN_ORDINALS  = '/\b(' . self::ROMAN_NUMERALS . ')(' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')\b/Sxu';
+	const ROMAN_NUMERALS     = '(?=[MDCLXVI])M*(?:C[MD]|D?C*)(?:X[CL]|L?X*)(?:I[XV]|V?I*)';
+
+
 	/**
 	 * The replacement expression (depends on CSS class).
 	 *
@@ -74,6 +82,6 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( '/\b(\d+)(st|nd|rd|th)\b/S', $this->replacement, $textnode->data );
+		$textnode->data = \preg_replace( [ self::RE_ARABIC_ORDINALS, self::RE_ROMAN_ORDINALS ], $this->replacement, $textnode->data );
 	}
 }
