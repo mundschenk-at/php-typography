@@ -1,7 +1,10 @@
 # Change History
 
+## 6.4.2 - January 27, 2019
+*   _Bugfix_: The Unicode hyphen character (`‐`) is recognized as a valid word combiner.
+
 ## 6.4.1 - January 27, 2019
-*   _Bugfix_: Parts of hyphenated words should not be detected as Roman numerals anymore. 
+*   _Bugfix_: Parts of hyphenated words should not be detected as Roman numerals anymore.
 
 ## 6.4.0 - January 24, 2019
 *   _Feature_: French (1<sup>ère</sup>) and "Latin" (1<sup>o</sup>) ordinal numbers are now supported by the smart ordinals feature (also with Roman numerals, e.g. XIX<sup>ème</sup>).
