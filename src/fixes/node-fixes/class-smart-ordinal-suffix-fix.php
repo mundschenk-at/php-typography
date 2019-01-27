@@ -30,6 +30,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 use PHP_Typography\DOM;
 use PHP_Typography\RE;
 use PHP_Typography\Settings;
+use PHP_Typography\U;
 
 /**
  * Applies smart ordinal suffix (if enabled).
@@ -42,13 +43,16 @@ use PHP_Typography\Settings;
  */
 class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 
-	const RE_ARABIC_ORDINALS = '/\b(\d+)(' . self::ENGLISH_SUFFIXES . '|' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')\b/Su';
+	const RE_ARABIC_ORDINALS = '/' . self::WORD_BOUNDARY_START . '(\d+)(' . self::ENGLISH_SUFFIXES . '|' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')' . self::WORD_BOUNDARY_END . '/Su';
 	const ENGLISH_SUFFIXES   = 'st|nd|rd|th';
 	const FRENCH_SUFFIXES    = 'er|re|e|ère|d|nd|nde|e|de|me|ème|è';
 	const LATIN_SUFFIXES     = 'o';
-	const RE_ROMAN_ORDINALS  = '/\b(' . self::ROMAN_NUMERALS . ')(' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')\b/Sxu';
+	const RE_ROMAN_ORDINALS  = '/' . self::WORD_BOUNDARY_START . '(' . self::ROMAN_NUMERALS . ')(' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')' . self::WORD_BOUNDARY_END . '/Sxu';
 	const ROMAN_NUMERALS     = '(?=[MDCLXVI])M*(?:C[MD]|D?C*)(?:X[CL]|L?X*)(?:I[XV]|V?I*)';
 
+	// Zero-width spaces and soft hyphens should not be treated as word boundaries.
+	const WORD_BOUNDARY_START = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
+	const WORD_BOUNDARY_END   = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
 
 	/**
 	 * The replacement expression (depends on CSS class).
