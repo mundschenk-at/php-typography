@@ -71,26 +71,28 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 	// Servers with PCRE compiled without "--enable-unicode-properties" fail at \p{Lu} by returning an empty string (this leaving the screen void of text
 	// thus are testing this alternative.
 	const REGEX = '/
-		(?<![\w\-_' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']) # negative lookbehind assertion
+		(?<![\w' . self::COMBINING_MARKS . ']) # negative lookbehind assertion
 		(
 			(?:							# CASE 1: " 9A "
 				[0-9]+					# starts with at least one number
-				(?:\-|_|' . U::ZERO_WIDTH_SPACE . '|' . U::SOFT_HYPHEN . ')*
+				(?:[' . self::COMBINING_MARKS . '])*
 						                # may contain hyphens, underscores, zero width spaces, or soft hyphens,
 				[A-ZÀ-ÖØ-Ý]				# but must contain at least one capital letter
-				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . U::ZERO_WIDTH_SPACE . '|' . U::SOFT_HYPHEN . ')*
+				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|[' . self::COMBINING_MARKS . '])*
 										# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 			)
 			|
 			(?:							# CASE 2: " A9 "
 				[A-ZÀ-ÖØ-Ý]				# starts with capital letter
 				(?:[A-ZÀ-ÖØ-Ý]|[0-9])	# must be followed a number or capital letter
-				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|\-|_|' . U::ZERO_WIDTH_SPACE . '|' . U::SOFT_HYPHEN . ')*
+				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|[' . self::COMBINING_MARKS . '])*
 										# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 			)
 		)
-		(?![\w\-_' . U::ZERO_WIDTH_SPACE . U::SOFT_HYPHEN . ']) # negative lookahead assertion
+		(?![\w' . self::COMBINING_MARKS . ']) # negative lookahead assertion
 	/Sxu';
+
+	const COMBINING_MARKS = '\-_' . U::HYPHEN . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE; // Needs to be part of character class.
 
 	/**
 	 * Creates a new node fix with a class.

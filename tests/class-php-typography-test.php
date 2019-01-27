@@ -496,6 +496,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '<p>Line One <br>Line Two,<br><span>Line Three.</span></p>', '<p>Line One <br>Line Two,<br><span>Line Three.</span></p>', false ],
 			[ '3/4 of 10/12/89', '<sup class="numerator"><span class="numbers">3</span></sup>&frasl;<sub class="denominator"><span class="numbers">4</span></sub> of <span class="numbers">10</span>/<span class="numbers">12</span>/<span class="numbers">89</span>', false ],
 			[ 'Certain HTML entities', 'Cer&shy;tain <span class="caps">HTML</span> entities', false ],
+			[ 'during WP-CLI commands', 'dur&shy;ing <span class="caps">WP-CLI</span> commands', false ],
 		];
 	}
 
