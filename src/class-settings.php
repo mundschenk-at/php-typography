@@ -607,17 +607,15 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
 		return self::array_map_assoc(
 			function( $key, $replacement ) {
-				// Account for single and double quotes in keys ...
-				if ( \preg_match( '/("|\')((?:(?!\1).)+)(?:\1\s*=>)/', $replacement, $match ) ) {
-					$key = $match[2];
+				// Account for single and double quotes in keys in and values, discard everything else.
+				if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
+					$key         = $match['key'];
+					$replacement = $match['replacement'];
+
+					return [ $key => $replacement ];
 				}
 
-				// ... and values.
-				if ( \preg_match( '/(?:=>\s*("|\'))((?:(?!\1).)+)(?:\1)/', $replacement, $match ) ) {
-					$replacement = $match[2];
-				}
-
-				return [ $key => $replacement ];
+				return [];
 			},
 			/** RE correct. @scrutinizer ignore-type */
 			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY )
