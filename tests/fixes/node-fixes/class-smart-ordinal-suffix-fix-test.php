@@ -76,24 +76,39 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @return array
 	 */
-	public function provide_smart_ordinal_suffix() {
+	public function provide_smart_ordinal_suffix_data() {
 		return [
 			[ 'in the 1st instance',          'in the 1<sup>st</sup> instance', '' ],
 			[ 'in the 2nd degree',            'in the 2<sup>nd</sup> degree',   '' ],
 			[ 'a 3rd party',                  'a 3<sup>rd</sup> party',         '' ],
 			[ '12th Night',                   '12<sup>th</sup> Night',          '' ],
-			[ 'la IIIIre heure',              'la IIII<sup>re</sup> heure',     '' ],
-			[ 'François Ier',                 'Fran&ccedil;ois I<sup>er</sup>', '' ],
-			[ 'MDCCLXXVIo',                   'MDCCLXXVI<sup>o</sup>',          '' ],
-			[ 'Certain HTML entities',        'Certain HTML entities',          '' ], // Negative test.
-			[ 'Cer&shy;tain HTML entities',   'Cer&shy;tain HTML entities',          '' ], // Negative test.
-			[ 'Cer&#8203;tain HTML entities', 'Cer&#8203;tain HTML entities',          '' ], // Negative test.
 			[ 'in the 1st instance, we',      'in the 1<sup class="ordinal">st</sup> instance, we',  'ordinal' ],
 			[ 'murder in the 2nd degree',     'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ],
 			[ 'a 3rd party',                  'a 3<sup class="ordinal">rd</sup> party',              'ordinal' ],
 			[ 'the 12th Night',               'the 12<sup class="ordinal">th</sup> Night',           'ordinal' ],
 			[ 'la 1ère guerre',               'la 1<sup class="ordinal">&egrave;re</sup> guerre',    'ordinal' ],
 			[ 'la 1re guerre mondiale',       'la 1<sup class="ordinal">re</sup> guerre mondiale',   'ordinal' ],
+		];
+	}
+
+	/**
+	 * Provide data for testing ordinal suffixes.
+	 *
+	 * @return array
+	 */
+	public function provide_smart_ordinal_suffix_roman_numeral_data() {
+		return [
+			[ 'la IIIIre heure',              'la IIII<sup>re</sup> heure',     '' ],
+			[ 'la IVre heure',                'la IV<sup>re</sup> heure',       '' ],
+			[ 'François Ier',                 'Fran&ccedil;ois I<sup>er</sup>', '' ],
+			[ 'MDCCLXXVIo',                   'MDCCLXXVI<sup>o</sup>',          '' ],
+			[ 'Certain HTML entities',        'Certain HTML entities',          '' ], // Negative test.
+			[ 'Cer&shy;tain HTML entities',   'Cer&shy;tain HTML entities',     '' ], // Negative test.
+			[ 'Cer&#8203;tain HTML entities', 'Cer&#8203;tain HTML entities',   '' ], // Negative test.
+			[ 'Le Président',                 'Le Président',                   '' ], // Negative test.
+			[ 'Ce livre est très bon.',       'Ce livre est très bon.',         '' ], // Negative test.
+			[ 'De geologische structuur',     'De geologische structuur',       '' ], // Negative test.
+			[ 'Me? I like ice cream.',        'Me? I like ice cream.',          '' ], // Negative test.
 			[ 'le XIXe siècle',               'le XIX<sup class="ordinal">e</sup> si&egrave;cle',    'ordinal' ],
 		];
 	}
@@ -105,7 +120,7 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @uses PHP_Typography\RE::escape_tags
 	 *
-	 * @dataProvider provide_smart_ordinal_suffix
+	 * @dataProvider provide_smart_ordinal_suffix_data
 	 *
 	 * @param string $input     HTML input.
 	 * @param string $result    Expected result.
@@ -128,7 +143,55 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @uses PHP_Typography\RE::escape_tags
 	 *
-	 * @dataProvider provide_smart_ordinal_suffix
+	 * @dataProvider provide_smart_ordinal_suffix_roman_numeral_data
+	 *
+	 * @param string $input     HTML input.
+	 * @param string $result    Expected result.
+	 * @param string $css_class Optional.
+	 */
+	public function test_apply_roman_numerals_on( $input, $result, $css_class ) {
+		$this->s->set_smart_ordinal_suffix( true );
+		$this->s->set_smart_ordinal_suffix_match_roman_numerals( true );
+
+		if ( ! empty( $css_class ) ) {
+			$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( $css_class );
+		}
+
+		$this->assertFixResultSame( $input, $result );
+	}
+
+	/**
+	 * Test apply.
+	 *
+	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
+	 * @dataProvider provide_smart_ordinal_suffix_roman_numeral_data
+	 *
+	 * @param string $input     HTML input.
+	 * @param string $result    Expected result.
+	 * @param string $css_class Optional.
+	 */
+	public function test_apply_roman_numerals_off( $input, $result, $css_class ) {
+		$this->s->set_smart_ordinal_suffix( true );
+
+		if ( ! empty( $css_class ) ) {
+			$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( $css_class );
+		}
+
+		$this->assertFixResultSame( $input, $input );
+	}
+
+	/**
+	 * Test apply.
+	 *
+	 * @covers ::apply
+	 *
+	 * @uses PHP_Typography\RE::escape_tags
+	 *
+	 * @dataProvider provide_smart_ordinal_suffix_data
+	 * @dataProvider provide_smart_ordinal_suffix_roman_numeral_data
 	 *
 	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
@@ -136,6 +199,7 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_apply_off( $input, $result, $css_class ) {
 		$this->s->set_smart_ordinal_suffix( false );
+		$this->s->set_smart_ordinal_suffix_match_roman_numerals( true );
 
 		if ( ! empty( $css_class ) ) {
 			$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( $css_class );
