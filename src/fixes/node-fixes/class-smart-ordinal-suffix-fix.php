@@ -43,15 +43,45 @@ use PHP_Typography\U;
  */
 class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 
-	const RE_ARABIC_ORDINALS = '/' . self::WORD_BOUNDARY_START . '(\d+)(' . self::ENGLISH_SUFFIXES . '|' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')' . self::WORD_BOUNDARY_END . '/Su';
-	const ENGLISH_SUFFIXES   = 'st|nd|rd|th';
-	const FRENCH_SUFFIXES    = 'er|re|e|ère|d|nd|nde|e|de|me|ème|è';
-	const LATIN_SUFFIXES     = 'o';
-	const RE_ROMAN_ORDINALS  = '/' . self::WORD_BOUNDARY_START . '(' . self::ROMAN_NUMERALS . ')(' . self::FRENCH_SUFFIXES . '|' . self::LATIN_SUFFIXES . ')' . self::WORD_BOUNDARY_END . '/Sxu';
-	const ROMAN_NUMERALS     = '(?=[MDCLXVI])M*(?:C[MD]|D?C*)(?:X[CL]|L?X*)(?:I[XV]|V?I*)';
+	// Possible suffixes.
+	const ENGLISH_SUFFIXES = 'st|nd|rd|th';
+	const FRENCH_SUFFIXES  = 'er|re|e|ère|d|nd|nde|de|me|ème|è';
+	const LATIN_SUFFIXES   = 'o';
+
+	// Ordinals with arabic numerals.
+	const RE_ARABIC_ORDINALS = '/' .
+		self::WORD_BOUNDARY_START . '
+		(\d+)
+		(' .
+			self::ENGLISH_SUFFIXES . '|' .
+			self::FRENCH_SUFFIXES . '|' .
+			self::LATIN_SUFFIXES . '
+		)' .
+		self::WORD_BOUNDARY_END . '
+	/Sxu';
+
+	// Ordinals with Roman numerals.
+	const RE_ROMAN_ORDINALS = '/' .
+		self::WORD_BOUNDARY_START . '
+		(
+			# Prevent single letter numbers other than I, V, and X.
+			(?=(?:I|V|X|' . self::ROMAN_NUMERALS . '{2,}))
+
+			# Otherwise, allow all valid Roman numbers.
+			(?=' . self::ROMAN_NUMERALS . ')M*(?:C[MD]|D?C*)(?:X[CL]|L?X*)(?:I[XV]|V?I*)
+		)
+		(' .
+			self::FRENCH_SUFFIXES . '|' .
+			self::LATIN_SUFFIXES . '
+		)' .
+		self::WORD_BOUNDARY_END . '
+	/Sxu';
+
+	// Additional character classes.
+	const ROMAN_NUMERALS = '[MDCLXVI]';
 
 	// Zero-width spaces and soft hyphens should not be treated as word boundaries.
-	const WORD_BOUNDARY_START = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
+	const WORD_BOUNDARY_START = '\b(?<![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
 	const WORD_BOUNDARY_END   = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
 
 	/**
@@ -86,6 +116,14 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( [ self::RE_ARABIC_ORDINALS, self::RE_ROMAN_ORDINALS ], $this->replacement, $textnode->data );
+		// Always match Arabic numbers.
+		$patterns = [ self::RE_ARABIC_ORDINALS ];
+
+		// Only match Roman numbers if explicitely enabled.
+		if ( ! empty( $settings['smartOrdinalSuffixRomanNumerals'] ) ) {
+			$patterns[] = self::RE_ROMAN_ORDINALS;
+		}
+
+		$textnode->data = \preg_replace( $patterns, $this->replacement, $textnode->data );
 	}
 }

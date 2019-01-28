@@ -264,6 +264,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_diacritic_custom_replacements();
 		$this->set_smart_marks();
 		$this->set_smart_ordinal_suffix();
+		$this->set_smart_ordinal_suffix_match_roman_numerals();
 		$this->set_smart_math();
 		$this->set_smart_fractions();
 		$this->set_smart_exponents();
@@ -729,6 +730,17 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_smart_ordinal_suffix( $on = true ) {
 		$this->data['smartOrdinalSuffix'] = $on;
+	}
+
+	/**
+	 * Enables/disables replacement of XXe with XX<sup>e</sup>.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param bool $on Optional. Default false.
+	 */
+	public function set_smart_ordinal_suffix_match_roman_numerals( $on = false ) {
+		$this->data['smartOrdinalSuffixRomanNumerals'] = $on;
 	}
 
 	/**
