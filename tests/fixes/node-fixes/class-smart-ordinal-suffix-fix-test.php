@@ -83,11 +83,16 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 			[ 'a 3rd party',                  'a 3<sup>rd</sup> party',         '' ],
 			[ '12th Night',                   '12<sup>th</sup> Night',          '' ],
 			[ 'la IIIIre heure',              'la IIII<sup>re</sup> heure',     '' ],
+			[ 'la IVre heure',                'la IV<sup>re</sup> heure',       '' ],
 			[ 'François Ier',                 'Fran&ccedil;ois I<sup>er</sup>', '' ],
 			[ 'MDCCLXXVIo',                   'MDCCLXXVI<sup>o</sup>',          '' ],
 			[ 'Certain HTML entities',        'Certain HTML entities',          '' ], // Negative test.
-			[ 'Cer&shy;tain HTML entities',   'Cer&shy;tain HTML entities',          '' ], // Negative test.
-			[ 'Cer&#8203;tain HTML entities', 'Cer&#8203;tain HTML entities',          '' ], // Negative test.
+			[ 'Cer&shy;tain HTML entities',   'Cer&shy;tain HTML entities',     '' ], // Negative test.
+			[ 'Cer&#8203;tain HTML entities', 'Cer&#8203;tain HTML entities',   '' ], // Negative test.
+			[ 'Le Président',                 'Le Président',                   '' ], // Negative test.
+			[ 'Ce livre est très bon.',       'Ce livre est très bon.',         '' ], // Negative test.
+			[ 'De geologische structuur',     'De geologische structuur',       '' ], // Negative test.
+			[ 'Me? I like ice cream.',        'Me? I like ice cream.',          '' ], // Negative test.
 			[ 'in the 1st instance, we',      'in the 1<sup class="ordinal">st</sup> instance, we',  'ordinal' ],
 			[ 'murder in the 2nd degree',     'murder in the 2<sup class="ordinal">nd</sup> degree', 'ordinal' ],
 			[ 'a 3rd party',                  'a 3<sup class="ordinal">rd</sup> party',              'ordinal' ],
