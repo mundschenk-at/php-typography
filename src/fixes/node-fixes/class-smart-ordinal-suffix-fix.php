@@ -51,7 +51,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 	const ROMAN_NUMERALS     = '(?=[MDCLXVI])M*(?:C[MD]|D?C*)(?:X[CL]|L?X*)(?:I[XV]|V?I*)';
 
 	// Zero-width spaces and soft hyphens should not be treated as word boundaries.
-	const WORD_BOUNDARY_START = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
+	const WORD_BOUNDARY_START = '\b(?<![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
 	const WORD_BOUNDARY_END   = '\b(?![' . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE . '])';
 
 	/**
