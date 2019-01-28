@@ -886,6 +886,19 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Tests set_smart_ordinal_suffix_match_roman_numerals.
+	 *
+	 * @covers ::set_smart_ordinal_suffix_match_roman_numerals
+	 */
+	public function test_set_smart_ordinal_suffix_match_roman_numerals() {
+		$this->settings->set_smart_ordinal_suffix_match_roman_numerals( true );
+		$this->assertTrue( $this->settings['smartOrdinalSuffixRomanNumerals'] );
+
+		$this->settings->set_smart_ordinal_suffix_match_roman_numerals( false );
+		$this->assertFalse( $this->settings['smartOrdinalSuffixRomanNumerals'] );
+	}
+
+	/**
 	 * Tests set_single_character_word_spacing.
 	 *
 	 * @covers ::set_single_character_word_spacing

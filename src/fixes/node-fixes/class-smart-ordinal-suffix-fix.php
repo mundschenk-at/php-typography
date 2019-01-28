@@ -116,6 +116,14 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( [ self::RE_ARABIC_ORDINALS, self::RE_ROMAN_ORDINALS ], $this->replacement, $textnode->data );
+		// Always match Arabic numbers.
+		$patterns = [ self::RE_ARABIC_ORDINALS ];
+
+		// Only match Roman numbers if explicitely enabled.
+		if ( ! empty( $settings['smartOrdinalSuffixRomanNumerals'] ) ) {
+			$patterns[] = self::RE_ROMAN_ORDINALS;
+		}
+
+		$textnode->data = \preg_replace( $patterns, $this->replacement, $textnode->data );
 	}
 }
