@@ -652,6 +652,13 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$this->assertSame( ' ', $dashes->parenthetical_space() );
 		$this->assertSame( U::HAIR_SPACE, $dashes->interval_space() );
 
+		$s->set_smart_dashes_style( 'internationalNoHairSpaces' );
+		$dashes = $s->dash_style();
+
+		$this->assertSame( U::EN_DASH, $dashes->parenthetical_dash() );
+		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
+		$this->assertSame( ' ', $dashes->parenthetical_space() );
+		$this->assertSame( '', $dashes->interval_space() );
 	}
 
 	/**

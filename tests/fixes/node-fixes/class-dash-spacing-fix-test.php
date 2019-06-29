@@ -71,6 +71,11 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 				'international',
 			],
 			[
+				'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&ndash;2008',
+				'Ein &ndash; mehr oder weniger &ndash; guter Gedanke, 1908&ndash;2008',
+				'internationalNoHairSpaces',
+			],
+			[
 				"We just don't know &mdash; really&mdash;, but you know, &ndash;",
 				"We just don't know&thinsp;&mdash;&thinsp;really&thinsp;&mdash;&thinsp;, but you know, &ndash;",
 				'traditionalUS',
@@ -81,6 +86,11 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 				'international',
 			],
 			[
+				"We just don't know &mdash; really&mdash;, but you know, &ndash;",
+				"We just don't know&mdash;really&mdash;, but you know, &ndash;",
+				'internationalNoHairSpaces',
+			],
+			[
 				'Auch 3.&ndash;8. März sollte die &mdash; richtigen &mdash; Gedankenstriche verwenden.',
 				'Auch 3.&thinsp;&ndash;&thinsp;8. M&auml;rz sollte die&thinsp;&mdash;&thinsp;richtigen&thinsp;&mdash;&thinsp;Gedankenstriche verwenden.',
 				'traditionalUS',
@@ -89,6 +99,11 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 				'Auch 3.&ndash;8. März sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
 				'Auch 3.&#8202;&ndash;&#8202;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
 				'international',
+			],
+			[
+				'Auch 3.&ndash;8. März sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
+				'Auch 3.&ndash;8. M&auml;rz sollte die &ndash; richtigen &ndash; Gedankenstriche verwenden.',
+				'internationalNoHairSpaces',
 			],
 		];
 	}
@@ -144,6 +159,9 @@ class Dash_Spacing_Fix_Test extends Node_Fix_Testcase {
 		$this->assertFixResultSame( $input, $input );
 
 		$this->s->set_smart_dashes_style( 'international' );
+		$this->assertFixResultSame( $input, $input );
+
+		$this->s->set_smart_dashes_style( 'internationalNoHairSpaces' );
 		$this->assertFixResultSame( $input, $input );
 	}
 
