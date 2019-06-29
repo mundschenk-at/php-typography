@@ -79,6 +79,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 			[ 'Some "word")',                      'Some &ldquo;word&rdquo;)' ],
 			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
 			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
+			[ 'from the early \'60s, American',    'from the early ’60s, American' ],
 		];
 	}
 

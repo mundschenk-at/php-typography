@@ -497,6 +497,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '3/4 of 10/12/89', '<sup class="numerator"><span class="numbers">3</span></sup>&frasl;<sub class="denominator"><span class="numbers">4</span></sub> of <span class="numbers">10</span>/<span class="numbers">12</span>/<span class="numbers">89</span>', false ],
 			[ 'Certain HTML entities', 'Cer&shy;tain <span class="caps">HTML</span> entities', false ],
 			[ 'during WP-CLI commands', 'dur&shy;ing <span class="caps">WP-CLI</span> commands', false ],
+			[ 'from the early \'60s, American engagement', 'from the ear&shy;ly <span class="push-single"></span>&#8203;<span class="pull-single">&rsquo;</span><span class="numbers">60</span>s, Amer&shy;i&shy;can engagement', 'from the early &rsquo;60s, American engagement' ],
 		];
 	}
 

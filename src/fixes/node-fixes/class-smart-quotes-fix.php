@@ -52,7 +52,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	const DOUBLE_QUOTED_NUMBERS = '/(?<=\W|\A)"([^"]*\d+)"(?=\W|\Z)/S';
 	const COMMA_QUOTE           = '/(?<=\s|\A),(?=\S)/S';
 	const APOSTROPHE_WORDS      = "/(?<=\w)'(?=\w)/S";
-	const APOSTROPHE_DECADES    = "/'(\d\d\b)/S";
+	const APOSTROPHE_DECADES    = "/'(\d\d(s|er)?\b)/S"; // Allow both English '80s and German '80er.
 	const SINGLE_QUOTE_OPEN     = "/(?: '(?=\w) )  | (?: (?<=\s|\A)'(?=\S) )/Sx"; // Alternative is for expressions like _'¿hola?'_.
 	const SINGLE_QUOTE_CLOSE    = "/(?: (?<=\w)' ) | (?: (?<=\S)'(?=\s|\Z) )/Sx";
 	const DOUBLE_QUOTE_OPEN     = '/(?: "(?=\w) )  | (?: (?<=\s|\A)"(?=\S) )/Sx';
