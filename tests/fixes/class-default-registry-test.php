@@ -61,6 +61,7 @@ class Default_Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcas
 				m::mock( 'alias:' . \PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix::class, Node_Fix::class ),
 				m::mock( 'alias:' . \PHP_Typography\Fixes\Node_Fixes\Smart_Dashes_Fix::class, Node_Fix::class ),
 				m::mock( 'alias:' . \PHP_Typography\Fixes\Node_Fixes\Smart_Ellipses_Fix::class, Node_Fix::class ),
+				m::mock( 'alias:' . \PHP_Typography\Fixes\Node_Fixes\Smart_Marks_Fix::class, Node_Fix::class ),
 				m::mock( 'alias:' . \PHP_Typography\Fixes\Node_Fixes\Smart_Area_Units_Fix::class, Node_Fix::class ),
 			],
 			Registry::SPACING_PRE_WORDS  => [
