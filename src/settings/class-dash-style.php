@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,22 +49,33 @@ abstract class Dash_Style {
 	const INTERNATIONAL = 'international';
 
 	/**
+	 * "International" dash style (using en dashes), Duden-style (without hair spaces).
+	 */
+	const INTERNATIONAL_NO_HAIR_SPACES = 'internationalNoHairSpaces';
+
+	/**
 	 * Available dash styles.
 	 *
 	 * @var array
 	 */
 	private static $styles = [
-		self::TRADITIONAL_US => [
+		self::TRADITIONAL_US               => [
 			self::_PARENTHETICAL       => U::EM_DASH,
 			self::_PARENTHETICAL_SPACE => U::THIN_SPACE,
 			self::_INTERVAL            => U::EN_DASH,
 			self::_INTERVAL_SPACE      => U::THIN_SPACE,
 		],
-		self::INTERNATIONAL  => [
+		self::INTERNATIONAL                => [
 			self::_PARENTHETICAL       => U::EN_DASH,
 			self::_PARENTHETICAL_SPACE => ' ',
 			self::_INTERVAL            => U::EN_DASH,
 			self::_INTERVAL_SPACE      => U::HAIR_SPACE,
+		],
+		self::INTERNATIONAL_NO_HAIR_SPACES => [
+			self::_PARENTHETICAL       => U::EN_DASH,
+			self::_PARENTHETICAL_SPACE => ' ',
+			self::_INTERVAL            => U::EN_DASH,
+			self::_INTERVAL_SPACE      => '',
 		],
 	];
 

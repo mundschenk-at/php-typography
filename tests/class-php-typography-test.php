@@ -456,6 +456,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '3*3=3^2', '<span class="numbers">3</span>&times;<span class="numbers">3</span>=<span class="numbers">3</span><sup><span class="numbers">2</span></sup>', false ], // smart math.
 			[ '"Hey there!"', '<span class="pull-double">&ldquo;</span>Hey there!&rdquo;', '&ldquo;Hey there!&rdquo;' ], // smart quotes.
 			[ 'Hey - there', 'Hey&thinsp;&mdash;&thinsp;there', 'Hey &mdash; there' ], // smart dashes.
+			[ 'open 10-5', 'open <span class="numbers">10</span>&thinsp;&ndash;&thinsp;<span class="numbers">5</span>', 'open 10&ndash;5' ], // More smart dashes.
 			[ 'Hey...', 'Hey&hellip;', true ], // smart ellipses.
 			[ '(c)', '&copy;', true ], // smart marks.
 			[ 'creme', 'cr&egrave;me', false ], // diacritics.
@@ -988,6 +989,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 
 		$this->s->set_smart_dashes_style( 'international' );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
+
+		$this->s->set_smart_dashes_style( 'internationalNoHairSpaces' );
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 	}
 
@@ -1745,6 +1749,10 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 
 		$this->s->set_smart_dashes_style( 'international' );
+		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
+		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
+
+		$this->s->set_smart_dashes_style( 'internationalNoHairSpaces' );
 		$result = \str_replace( U::HYPHEN, U::HYPHEN_MINUS, $this->typo->process( $input, $this->s ) );
 		$this->assertSame( $this->clean_html( $input ), $this->clean_html( $result ) );
 	}
