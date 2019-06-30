@@ -841,6 +841,19 @@ class Settings_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test set_smart_area_units.
+	 *
+	 * @covers ::set_smart_area_units
+	 */
+	public function test_set_smart_area_units() {
+		$this->settings->set_smart_area_units( true );
+		$this->assertTrue( $this->settings['smartAreaVolumeUnits'] );
+
+		$this->settings->set_smart_area_units( false );
+		$this->assertFalse( $this->settings['smartAreaVolumeUnits'] );
+	}
+
+	/**
 	 * Tests set_smart_math.
 	 *
 	 * @covers ::set_smart_math
