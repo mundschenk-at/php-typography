@@ -268,6 +268,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_smart_math();
 		$this->set_smart_fractions();
 		$this->set_smart_exponents();
+		$this->set_smart_area_units();
 
 		// Smart spacing.
 		$this->set_single_character_word_spacing();
@@ -741,6 +742,15 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_smart_ordinal_suffix_match_roman_numerals( $on = false ) {
 		$this->data['smartOrdinalSuffixRomanNumerals'] = $on;
+	}
+
+	/**
+	 * Enables/disables replacement of m2 with m³ and m3 with m³.
+	 *
+	 * @param bool $on Optional. Default true.
+	 */
+	public function set_smart_area_units( $on = true ) {
+		$this->data['smartAreaVolumeUnits'] = $on;
 	}
 
 	/**
