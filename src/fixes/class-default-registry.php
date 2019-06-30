@@ -129,6 +129,7 @@ class Default_Registry extends Registry {
 				Node_Fixes\Smart_Dashes_Fix::class     => [ 'feed' => true ],
 				Node_Fixes\Smart_Ellipses_Fix::class   => [ 'feed' => true ],
 				Node_Fixes\Smart_Marks_Fix::class      => [ 'feed' => true ],
+				Node_Fixes\Smart_Area_Units_Fix::class => [ 'feed' => true ],
 			],
 
 			self::SPACING_PRE_WORDS  => [

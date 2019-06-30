@@ -88,6 +88,7 @@ use \Mockery as m;
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Maths_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Space_Collapse_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Smart_Area_Units_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Numbers_Fix
