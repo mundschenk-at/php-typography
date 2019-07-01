@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2018 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -74,4 +74,5 @@ interface U {
 	const RIGHT_CORNER_BRACKET       = "\xe3\x80\x8d";
 	const LEFT_WHITE_CORNER_BRACKET  = "\xe3\x80\x8e";
 	const RIGHT_WHITE_CORNER_BRACKET = "\xe3\x80\x8f";
+
 }

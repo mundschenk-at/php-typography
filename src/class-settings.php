@@ -37,11 +37,14 @@ use PHP_Typography\Settings\Quotes;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 4.0.0
+ * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  */
 class Settings implements \ArrayAccess, \JsonSerializable {
 
 	/**
 	 * The current no-break narrow space character.
+	 *
+	 * @deprecated 6.5.0
 	 *
 	 * @var string
 	 */
@@ -83,18 +86,47 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	protected $dash_style;
 
 	/**
+	 * The Unicode character mapping (some characters still have compatibility issues).
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var string[]
+	 */
+	protected $unicode_mapping;
+
+	/**
+	 * An array containing just remapped characters (for optimization).
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var string[]
+	 */
+	protected $remapped_characters;
+
+	/**
 	 * Sets up a new Settings object.
 	 *
 	 * @since 6.0.0 If $set_defaults is `false`, the settings object is not fully
 	 *              initialized unless `set_smart_quotes_primary`,
 	 *              `set_smart_quotes_secondary`, `set_smart_dashes_style` and
 	 *              `set_true_no_break_narrow_space` are called explicitly.
+	 * @since 6.5.0 A (partial) character mapping can be given to remap certain
+	 *              characters.
 	 *
-	 * @param bool $set_defaults If true, set default values for various properties. Defaults to true.
+	 * @param bool     $set_defaults Optional. If true, set default values for various properties. Default true.
+	 * @param string[] $mapping      Optional. Unicode characters to remap. The default maps the narrow no-break space to the normal NO-BREAK SPACE and the apostrophe to the RIGHT SINGLE QUOTATION MARK.
 	 */
-	public function __construct( $set_defaults = true ) {
+	public function __construct( $set_defaults = true, array $mapping = [ U::NO_BREAK_NARROW_SPACE => U::NO_BREAK_SPACE, U::APOSTROPHE => U::SINGLE_QUOTE_CLOSE ] ) { // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing
 		if ( $set_defaults ) {
 			$this->set_defaults();
+		}
+
+		// Merge default character mapping with given mapping.
+		$this->unicode_mapping = $mapping;
+
+		// Keep backwards compatibility.
+		if ( isset( $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ] ) ) {
+			$this->no_break_narrow_space = $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ];
 		}
 	}
 
@@ -187,7 +219,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		return \array_merge(
 			$this->data,
 			[
-				'no_break_narrow_space' => $this->no_break_narrow_space,
+				'unicode_mapping'       => $this->unicode_mapping,
 				'primary_quotes'        => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
 				'secondary_quotes'      => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
 				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
@@ -197,8 +229,57 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
+	 * Remaps a unicode character to another one.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param  string $char     The remapped character.
+	 * @param  string $new_char The character to actually use.
+	 */
+	public function remap_character( $char, $new_char ) {
+		if ( $char !== $new_char ) {
+			$this->unicode_mapping[ $char ] = $new_char;
+		} else {
+			unset( $this->unicode_mapping[ $char ] );
+		}
+
+		// Compatibility with the old way of setting the no-break narrow space.
+		if ( U::NO_BREAK_NARROW_SPACE === $char ) {
+			$this->no_break_narrow_space = $new_char;
+		}
+	}
+
+	/**
+	 * Remaps one or more strings.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param  string|string[] $input The input string(s).
+	 *
+	 * @return string|string[]
+	 */
+	public function apply_character_mapping( $input ) {
+
+		// Nothing for us to do.
+		if ( empty( $input ) || empty( $this->unicode_mapping ) ) {
+			return $input;
+		}
+
+		$native_array = \is_array( $input );
+		$data         = (array) $input;
+
+		foreach ( $data as $key => $string ) {
+			$data[ $key ] = \strtr( $string, $this->unicode_mapping );
+		}
+
+		return $native_array ? $data : $data[0];
+	}
+
+	/**
 	 * Retrieves the current non-breaking narrow space character (either the
 	 * regular non-breaking space &nbsp; or the the true non-breaking narrow space &#8239;).
+	 *
+	 * @deprecated 6.5.0 Use U::NO_BREAK_NARROW_SPACE instead and let Settings::apply_character_mapping() do the rest.
 	 *
 	 * @return string
 	 */
@@ -335,14 +416,16 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
 	 *
+	 * @deprecated 6.5.0 Use ::remap_character() instead.
+	 *
 	 * @param bool $on Optional. Default false.
 	 */
 	public function set_true_no_break_narrow_space( $on = false ) {
 
 		if ( $on ) {
-			$this->no_break_narrow_space = U::NO_BREAK_NARROW_SPACE;
+			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 		} else {
-			$this->no_break_narrow_space = U::NO_BREAK_SPACE;
+			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_SPACE );
 		}
 	}
 
