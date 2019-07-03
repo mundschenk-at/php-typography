@@ -55,7 +55,7 @@ interface U {
 	const EM_DASH                    = "\xe2\x80\x94";
 	const SINGLE_QUOTE_OPEN          = "\xe2\x80\x98";
 	const SINGLE_QUOTE_CLOSE         = "\xe2\x80\x99";
-	const APOSTROPHE                 = "\xe2\x80\x99"; // defined seperate from SINGLE_QUOTE_CLOSE to preserve semantics.
+	const APOSTROPHE                 = "\xca\xbc"; // This is the "MODIFIER LETTER APOSTROPHE".
 	const SINGLE_LOW_9_QUOTE         = "\xe2\x80\x9a";
 	const DOUBLE_QUOTE_OPEN          = "\xe2\x80\x9c";
 	const DOUBLE_QUOTE_CLOSE         = "\xe2\x80\x9d";
