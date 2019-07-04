@@ -118,6 +118,8 @@ abstract class Dash_Style {
 	/**
 	 * Creates a new Dashes object in the given style.
 	 *
+	 * @since 6.5.0 The $settings parameter has been deprecated.
+	 *
 	 * @param string   $style    The dash style.
 	 * @param Settings $settings The current settings.
 	 *
