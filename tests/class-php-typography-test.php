@@ -592,6 +592,35 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	}
 
 	/**
+	 * Test process_textnodes.
+	 *
+	 * @covers ::process_textnodes
+	 *
+	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
+	 */
+	public function test_process_textnodes_with_result() {
+		$s = $this->s;
+		$s->set_defaults();
+
+		// We don't really care about the result, so we make sotmhing up.
+		$this->assertSame(
+			'fake result',
+			$this->typo->process_textnodes(
+				'some input',
+				function ( $node ) {
+					$node->data = 'fake result';
+				},
+				$s
+			)
+		);
+	}
+
+	/**
 	 * Provide invalid data for testing process_textnodes.
 	 *
 	 * @return array
