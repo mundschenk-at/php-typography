@@ -183,13 +183,11 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	protected static function make_space_nonbreaking( $string, $deprecated, $u ) {
 		return \preg_replace(
 			[
-				'/\s*' . U::THIN_SPACE . '\s*/u', // FIXME: Can be changed to single regex.
-				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
-				"/\\s+/$u",
-				'/' . self::MASKED_NARROW_SPACE . "/$u",
+				'/\s*(?:' . U::THIN_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')\s*/Su',
+				"/\\s+/S$u",
+				'/' . self::MASKED_NARROW_SPACE . "/S$u",
 			],
 			[
-				self::MASKED_NARROW_SPACE,
 				self::MASKED_NARROW_SPACE,
 				U::NO_BREAK_SPACE,
 				U::NO_BREAK_NARROW_SPACE,

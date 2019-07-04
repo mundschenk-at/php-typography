@@ -70,9 +70,19 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		$node_data          = "{$previous_character}{$textnode->data}"; // $next_character is not included on purpose.
 		$f                  = Strings::functions( "{$node_data}{$next_character}" ); // Include $next_character for determining encodiing.
 
-		$node_data = \preg_replace( self::INSERT_SPACE_BEFORE_CLOSING_QUOTE, '$1' . U::NO_BREAK_NARROW_SPACE . '$3$4', $node_data );
-		$node_data = \preg_replace( self::INSERT_NARROW_SPACE,               '$1' . U::NO_BREAK_NARROW_SPACE . '$3$4', $node_data );
-		$node_data = \preg_replace( self::INSERT_FULL_SPACE,                 '$1' . U::NO_BREAK_SPACE . '$3$4',      $node_data );
+		$node_data = \preg_replace(
+			[
+				self::INSERT_SPACE_BEFORE_CLOSING_QUOTE,
+				self::INSERT_NARROW_SPACE,
+				self::INSERT_FULL_SPACE,
+			],
+			[
+				'$1' . U::NO_BREAK_NARROW_SPACE . '$3$4',
+				'$1' . U::NO_BREAK_NARROW_SPACE . '$3$4',
+				'$1' . U::NO_BREAK_SPACE . '$3$4',
+			],
+			$node_data
+		);
 
 		// The next rule depends on the following characters as well.
 		$node_data = \preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . U::NO_BREAK_NARROW_SPACE . '$4', "{$node_data}{$next_character}" );

@@ -150,11 +150,23 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		}
 
 		if ( ! empty( $settings['smartFractions'] ) ) {
-			// Escape sequences we don't want fractionified.
-			$node_data = \preg_replace( [ $this->escape_consecutive_years, self::ESCAPE_DATE_MM_YYYY ], '$1' . RE::ESCAPE_MARKER . '$2$3', $node_data );
+			$node_data = \preg_replace(
+				[
+					// Escape sequences we don't want fractionified.
+					$this->escape_consecutive_years,
+					self::ESCAPE_DATE_MM_YYYY,
 
-			// Replace fractions.
-			$node_data = \preg_replace( self::FRACTION_MATCHING, $this->replacement, $node_data );
+					// Replace fractions.
+					self::FRACTION_MATCHING,
+				],
+				[
+					'$1' . RE::ESCAPE_MARKER . '$2$3',
+					'$1' . RE::ESCAPE_MARKER . '$2$3',
+
+					$this->replacement,
+				],
+				$node_data
+			);
 
 			// Unescape escaped sequences.
 			$node_data = \str_replace( RE::ESCAPE_MARKER, '', $node_data );
