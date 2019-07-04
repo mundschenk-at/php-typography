@@ -92,9 +92,6 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		// Update replacement with current non-breaking narrow space.
-		$this->replacement = "\$1{$settings->no_break_narrow_space()}\$2";
-
 		// Update regex with custom units.
 		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 

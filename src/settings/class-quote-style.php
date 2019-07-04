@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -101,6 +101,10 @@ abstract class Quote_Style {
 			self::_OPEN  => U::GUILLEMET_CLOSE,
 			self::_CLOSE => U::GUILLEMET_OPEN,
 		],
+		self::DOUBLE_GUILLEMETS_FRENCH   => [
+			self::_OPEN  => U::GUILLEMET_OPEN . U::NO_BREAK_NARROW_SPACE,
+			self::_CLOSE => U::NO_BREAK_NARROW_SPACE . U::GUILLEMET_CLOSE,
+		],
 		self::SINGLE_GUILLEMETS          => [
 			self::_OPEN  => U::SINGLE_ANGLE_QUOTE_OPEN,
 			self::_CLOSE => U::SINGLE_ANGLE_QUOTE_CLOSE,
@@ -148,12 +152,6 @@ abstract class Quote_Style {
 	public static function get_styled_quotes( $style, Settings $settings ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Quotes( self::$styles[ $style ][ self::_OPEN ], self::$styles[ $style ][ self::_CLOSE ] );
-		}
-
-		if ( self::DOUBLE_GUILLEMETS_FRENCH === $style ) {
-			$space = $settings->no_break_narrow_space();
-
-			return new Simple_Quotes( U::GUILLEMET_OPEN . $space, $space . U::GUILLEMET_CLOSE );
 		}
 
 		return null;
