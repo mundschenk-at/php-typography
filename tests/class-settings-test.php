@@ -791,6 +791,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 				[],
 				[],
 			],
+			[
+				'foobar',
+				[],
+				[],
+			],
 		];
 	}
 
