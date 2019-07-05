@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -107,7 +107,6 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_apply( $input, $result ) {
 		$this->s->set_french_punctuation_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
 
 		$this->assertFixResultSame( $input, $result );
 	}
@@ -126,7 +125,6 @@ class French_Punctuation_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_apply_with_siblings( $html, $result ) {
 		$this->s->set_french_punctuation_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
 
 		$this->assertFixResultSame( $html, $result, 'foo', 'bar' );
 	}

@@ -894,7 +894,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary( $primary );
 		$this->s->set_smart_quotes_secondary( $secondary );
-		$this->s->set_true_no_break_narrow_space();
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_SPACE );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -1358,7 +1358,7 @@ class PHP_Typography_Test extends Testcase {
 			]
 		);
 		$this->s->set_smart_fractions( true );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 
 		$this->s->set_fraction_spacing( false );
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input, $this->s ) ) );
@@ -1463,7 +1463,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_smart_quotes( true );
 		$this->s->set_smart_quotes_primary();
 		$this->s->set_smart_quotes_secondary();
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 		$this->s->set_fraction_spacing( false );
 
 		$this->assertSame( $result, $this->clean_html( $typo->process( $input, $this->s ) ) );
@@ -1849,7 +1849,7 @@ class PHP_Typography_Test extends Testcase {
 	 */
 	public function test_unit_spacing( $input, $result ) {
 		$this->s->set_unit_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input, $this->s ) ) );
 	}
@@ -1902,7 +1902,7 @@ class PHP_Typography_Test extends Testcase {
 	 */
 	public function test_unit_spacing_dewidow( $input, $result ) {
 		$this->s->set_unit_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 		$this->s->set_dewidow( true );
 		$this->s->set_max_dewidow_pull( 10 );
 		$this->s->set_max_dewidow_length( 3 );
@@ -2016,7 +2016,7 @@ class PHP_Typography_Test extends Testcase {
 	 */
 	public function test_french_punctuation_spacing( $input, $result, $use_french_quotes ) {
 		$this->s->set_french_punctuation_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
+		$this->s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
 
 		if ( $use_french_quotes ) {
 			$this->s->set_smart_quotes_primary( 'doubleGuillemetsFrench' );

@@ -38,6 +38,7 @@ use PHP_Typography\Settings\Quotes;
  *
  * @since 4.0.0
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
+ * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
  *
  * @implements \ArrayAccess<string,mixed>
  */
@@ -107,15 +108,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	// Parser error handling.
 	const PARSER_ERRORS_IGNORE  = 'parserErrorsIgnore';
 	const PARSER_ERRORS_HANDLER = 'parserErrorsHandler';
-
-	/**
-	 * The current no-break narrow space character.
-	 *
-	 * @deprecated 6.5.0
-	 *
-	 * @var string
-	 */
-	protected $no_break_narrow_space;
 
 	/**
 	 * Primary quote style.
@@ -190,11 +182,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 		// Merge default character mapping with given mapping.
 		$this->unicode_mapping = $mapping;
-
-		// Keep backwards compatibility.
-		if ( isset( $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ] ) ) {
-			$this->no_break_narrow_space = $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ];
-		}
 	}
 
 	/**
@@ -313,11 +300,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		} else {
 			unset( $this->unicode_mapping[ $char ] );
 		}
-
-		// Compatibility with the old way of setting the no-break narrow space.
-		if ( U::NO_BREAK_NARROW_SPACE === $char ) {
-			$this->no_break_narrow_space = $new_char;
-		}
 	}
 
 	/**
@@ -346,18 +328,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		return $native_array ? $data : $data[0]; // @phpstan-ignore-line -- Ignore generics/array clash
-	}
-
-	/**
-	 * Retrieves the current non-breaking narrow space character (either the
-	 * regular non-breaking space &nbsp; or the the true non-breaking narrow space &#8239;).
-	 *
-	 * @deprecated 6.5.0 Use U::NO_BREAK_NARROW_SPACE instead and let Settings::apply_character_mapping() do the rest.
-	 *
-	 * @return string
-	 */
-	public function no_break_narrow_space() {
-		return $this->no_break_narrow_space;
 	}
 
 	/**
@@ -440,7 +410,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_email_wrap();
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
-		$this->set_true_no_break_narrow_space();
 
 		// Character styling.
 		$this->set_style_ampersands();
@@ -484,22 +453,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_parser_errors_handler( callable $handler = null ): void {
 		$this->data[ self::PARSER_ERRORS_HANDLER ] = $handler;
-	}
-
-	/**
-	 * Enable usage of true "no-break narrow space" (&#8239;) instead of the normal no-break space (&nbsp;).
-	 *
-	 * @deprecated 6.5.0 Use ::remap_character() instead.
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_true_no_break_narrow_space( $on = false ): void {
-
-		if ( $on ) {
-			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_NARROW_SPACE );
-		} else {
-			$this->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_SPACE );
-		}
 	}
 
 	/**
