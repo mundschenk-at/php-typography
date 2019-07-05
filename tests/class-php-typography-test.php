@@ -927,7 +927,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
-	public function test_smart_quotes_french() {
+	public function test_smart_quotes_french_should_not_apply() {
 		$html   = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 		$result = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 
