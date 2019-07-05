@@ -75,15 +75,15 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 		$tokens      = [];
 
 		// Set up parameters for word categories.
-		$mixed_caps       = empty( $settings['hyphenateAllCaps'] ) ? Text_Parser::ALLOW_ALL_CAPS : Text_Parser::NO_ALL_CAPS;
-		$letter_caps      = empty( $settings['hyphenateAllCaps'] ) ? Text_Parser::NO_ALL_CAPS : Text_Parser::ALLOW_ALL_CAPS;
-		$mixed_compounds  = empty( $settings['hyphenateCompounds'] ) ? Text_Parser::ALLOW_COMPOUNDS : Text_Parser::NO_COMPOUNDS;
-		$letter_compounds = empty( $settings['hyphenateCompounds'] ) ? Text_Parser::NO_COMPOUNDS : Text_Parser::ALLOW_COMPOUNDS;
+		$mixed_caps       = empty( $settings[ Settings::HYPHENATE_ALL_CAPS ] ) ? Text_Parser::ALLOW_ALL_CAPS : Text_Parser::NO_ALL_CAPS;
+		$letter_caps      = empty( $settings[ Settings::HYPHENATE_ALL_CAPS ] ) ? Text_Parser::NO_ALL_CAPS : Text_Parser::ALLOW_ALL_CAPS;
+		$mixed_compounds  = empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ? Text_Parser::ALLOW_COMPOUNDS : Text_Parser::NO_COMPOUNDS;
+		$letter_compounds = empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ? Text_Parser::NO_COMPOUNDS : Text_Parser::ALLOW_COMPOUNDS;
 
 		// Break text down for a bit more granularity.
 		$text_parser->load( $textnode->data );
 		$tokens[ Token_Fix::MIXED_WORDS ]    = $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
-		$tokens[ Token_Fix::COMPOUND_WORDS ] = ! empty( $settings['hyphenateCompounds'] ) ? $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $letter_caps, Text_Parser::REQUIRE_COMPOUNDS ) : [];
+		$tokens[ Token_Fix::COMPOUND_WORDS ] = ! empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ? $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $letter_caps, Text_Parser::REQUIRE_COMPOUNDS ) : [];
 		$tokens[ Token_Fix::WORDS ]          = $text_parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
 		$tokens[ Token_Fix::OTHER ]          = $text_parser->get_other();
 

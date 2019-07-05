@@ -77,12 +77,12 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
-		if ( ! empty( $settings['hyphenHardWrap'] ) ) {
+		if ( ! empty( $settings[ Settings::HYPHEN_HARD_WRAP ] ) ) {
 
 			foreach ( $tokens as $index => $text_token ) {
 				$value = $text_token->value;
 
-				if ( isset( $settings['hyphenHardWrap'] ) && $settings['hyphenHardWrap'] ) {
+				if ( isset( $settings[ Settings::HYPHEN_HARD_WRAP ] ) && $settings[ Settings::HYPHEN_HARD_WRAP ] ) {
 					$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
 					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
 					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );

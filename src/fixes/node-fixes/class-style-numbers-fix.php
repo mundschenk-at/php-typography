@@ -50,6 +50,6 @@ class Style_Numbers_Fix extends Simple_Style_Fix {
 	 * @param bool   $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $css_class, $feed_compatible = false ) {
-		parent::__construct( '/([0-9]+)/S', 'styleNumbers', $css_class, $feed_compatible );
+		parent::__construct( '/([0-9]+)/S', Settings::STYLE_NUMBERS, $css_class, $feed_compatible );
 	}
 }

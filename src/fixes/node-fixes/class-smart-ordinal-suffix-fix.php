@@ -112,7 +112,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartOrdinalSuffix'] ) ) {
+		if ( empty( $settings[ Settings::SMART_ORDINAL_SUFFIX ] ) ) {
 			return;
 		}
 
@@ -120,7 +120,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 		$patterns = [ self::RE_ARABIC_ORDINALS ];
 
 		// Only match Roman numbers if explicitely enabled.
-		if ( ! empty( $settings['smartOrdinalSuffixRomanNumerals'] ) ) {
+		if ( ! empty( $settings[ Settings::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] ) ) {
 			$patterns[] = self::RE_ROMAN_ORDINALS;
 		}
 

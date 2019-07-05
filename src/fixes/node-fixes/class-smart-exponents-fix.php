@@ -47,6 +47,6 @@ class Smart_Exponents_Fix extends Simple_Regex_Replacement_Fix {
 	 * @param bool $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $feed_compatible = false ) {
-		parent::__construct( '/\b(\d+)\^(\w+)\b/u', RE::escape_tags( '$1<sup>$2</sup>' ), 'smartExponents', $feed_compatible );
+		parent::__construct( '/\b(\d+)\^(\w+)\b/u', RE::escape_tags( '$1<sup>$2</sup>' ), Settings::SMART_EXPONENTS, $feed_compatible );
 	}
 }

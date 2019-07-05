@@ -250,12 +250,12 @@ class PHP_Typography {
 
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $settings['parserErrorsHandler'] ) && ! empty( $errors ) ) {
-			$errors = $settings['parserErrorsHandler']( $errors );
+		if ( ! empty( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && ! empty( $errors ) ) {
+			$errors = $settings[ Settings::PARSER_ERRORS_HANDLER ]( $errors );
 		}
 
 		// Return null if there are still unhandled parsing errors.
-		if ( ! empty( $errors ) && ! $settings['parserErrorsIgnore'] ) {
+		if ( ! empty( $errors ) && ! $settings[ Settings::PARSER_ERRORS_IGNORE ] ) {
 			$dom = null;
 		}
 

@@ -142,7 +142,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['styleHangingPunctuation'] ) ) {
+		if ( empty( $settings[ Settings::STYLE_HANGING_PUNCTUATION ] ) ) {
 			return;
 		}
 

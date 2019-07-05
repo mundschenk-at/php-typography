@@ -91,7 +91,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
-		if ( empty( $settings['hyphenation'] ) ) {
+		if ( empty( $settings[ Settings::HYPHENATION ] ) ) {
 			return $tokens; // abort.
 		}
 
@@ -104,11 +104,11 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 			}
 		}
 
-		if ( empty( $settings['hyphenateTitle'] ) && ( $is_title || $is_heading ) ) {
+		if ( empty( $settings[ Settings::HYPHENATE_HEADINGS ] ) && ( $is_title || $is_heading ) ) {
 			return $tokens; // abort.
 		}
 
-		// Call functionality as seperate function so it can be run without test for setting['hyphenation'] - such as with url wrapping.
+		// Call functionality as seperate function so it can be run without test for setting[ Settings::HYPHENATION ] - such as with url wrapping.
 		return $this->do_hyphenate( $tokens, $settings );
 	}
 
@@ -122,11 +122,11 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @return Token[] The hyphenated text tokens.
 	 */
 	protected function do_hyphenate( array $tokens, Settings $settings, $hyphen = U::SOFT_HYPHEN ) {
-		if ( empty( $settings['hyphenMinLength'] ) || empty( $settings['hyphenMinBefore'] ) ) {
+		if ( empty( $settings[ Settings::HYPHENATION_MIN_LENGTH ] ) || empty( $settings[ Settings::HYPHENATION_MIN_BEFORE ] ) ) {
 			return $tokens;
 		}
 
-		return $this->get_hyphenator( $settings )->hyphenate( $tokens, $hyphen, ! empty( $settings['hyphenateTitleCase'] ), $settings['hyphenMinLength'], $settings['hyphenMinBefore'], $settings['hyphenMinAfter'] );
+		return $this->get_hyphenator( $settings )->hyphenate( $tokens, $hyphen, ! empty( $settings[ Settings::HYPHENATE_TITLE_CASE ] ), $settings[ Settings::HYPHENATION_MIN_LENGTH ], $settings[ Settings::HYPHENATION_MIN_BEFORE ], $settings[ Settings::HYPHENATION_MIN_AFTER ] );
 	}
 
 	/**
@@ -137,8 +137,8 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @return Hyphenator
 	 */
 	public function get_hyphenator( Settings $settings ) {
-		$lang       = $settings['hyphenLanguage'];
-		$exceptions = (array) $settings['hyphenationCustomExceptions'];
+		$lang       = $settings[ Settings::HYPHENATION_LANGUAGE ];
+		$exceptions = (array) $settings[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ];
 		$hyphenator = $this->cache->get_hyphenator( $lang );
 
 		if ( null === $hyphenator ) {
