@@ -607,7 +607,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		if ( $style instanceof $expected_class ) {
 			$object = $style;
 		} else {
-			$object = $get_style( $style, $this );
+			$object = $get_style( $style );
 		}
 
 		if ( ! \is_object( $object ) || ! $object instanceof $expected_class ) {
