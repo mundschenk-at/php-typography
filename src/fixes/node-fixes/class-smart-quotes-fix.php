@@ -192,10 +192,9 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( [ "'", '"' ], [ $single_close, $double_close ], $node_data );
 
 		// Add a thin non-breaking space between secondary and primary quotes.
-		$no_break  = $settings->no_break_narrow_space();
 		$node_data = \str_replace(
 			[ "{$double_open}{$single_open}", "{$single_close}{$double_close}" ],
-			[ "{$double_open}{$no_break}{$single_open}", "{$single_close}{$no_break}{$double_close}" ],
+			[ $double_open . U::NO_BREAK_NARROW_SPACE . $single_open, $single_close . U::NO_BREAK_NARROW_SPACE . $double_close ],
 			$node_data
 		);
 

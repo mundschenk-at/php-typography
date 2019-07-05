@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -133,20 +133,40 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( '---', U::EM_DASH, $node_data );
 		$node_data = \preg_replace( self::PARENTHETICAL_DOUBLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $node_data );
 		$node_data = \str_replace( '--', U::EN_DASH, $node_data );
-		$node_data = \preg_replace( self::PARENTHETICAL_SINGLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $node_data );
 
-		$node_data = \preg_replace( self::EN_DASH_WORDS ,        '$1' . U::EN_DASH . '$2',         $node_data );
-		$node_data = \preg_replace( self::EN_DASH_NUMBERS,       "\$1{$s->interval_dash()}\$3",    $node_data );
-		$node_data = \preg_replace( self::EN_DASH_PHONE_NUMBERS, '$1' . U::NO_BREAK_HYPHEN . '$2', $node_data ); // phone numbers.
-		$node_data = \str_replace( 'xn' . U::EN_DASH,            'xn--',                           $node_data ); // revert messed-up punycode.
+		$node_data = \preg_replace(
+			[
+				self::PARENTHETICAL_SINGLE_DASH,
+				self::EN_DASH_WORDS,
+				self::EN_DASH_NUMBERS,
+				self::EN_DASH_PHONE_NUMBERS,
+			],
+			[
+				"\$1{$s->parenthetical_dash()}\$2",
+				'$1' . U::EN_DASH . '$2',
+				"\$1{$s->interval_dash()}\$3",
+				'$1' . U::NO_BREAK_HYPHEN . '$2',
+			],
+			$node_data
+		);
 
-		// Revert dates back to original formats
-		// YYYY-MM-DD.
-		$node_data = \preg_replace( self::DATE_YYYY_MM_DD, '$1-$2-$3',     $node_data );
-		// MM-DD-YYYY or DD-MM-YYYY.
-		$node_data = \preg_replace( self::DATE_MM_DD_YYYY, '$1$3-$2$4-$5', $node_data );
-		// YYYY-MM or YYYY-DDDD next.
-		$node_data = \preg_replace( self::DATE_YYYY_MM,    '$1-$2',        $node_data );
+		// Revert messed-up punycode.
+		$node_data = \str_replace( 'xn' . U::EN_DASH, 'xn--', $node_data );
+
+		// Revert dates back to original formats.
+		$node_data = \preg_replace(
+			[
+				self::DATE_YYYY_MM_DD, // YYYY-MM-DD.
+				self::DATE_MM_DD_YYYY, // MM-DD-YYYY or DD-MM-YYYY.
+				self::DATE_YYYY_MM, // YYYY-MM or YYYY-DDDD.
+			],
+			[
+				'$1-$2-$3',
+				'$1$3-$2$4-$5',
+				'$1-$2',
+			],
+			$node_data
+		);
 
 		// Restore textnode content.
 		$textnode->data = $node_data;

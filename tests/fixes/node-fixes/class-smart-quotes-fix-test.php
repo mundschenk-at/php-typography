@@ -77,9 +77,9 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 			[ '3/44"',                             '3/44&Prime;' ],
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
 			[ 'Some "word")',                      'Some &ldquo;word&rdquo;)' ],
-			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
-			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
-			[ 'from the early \'60s, American',    'from the early ’60s, American' ],
+			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&#8239;&rdquo;, she said' ],
+			[ '"\'This\' is it?"',                 '&ldquo;&#8239;&lsquo;This&rsquo; is it?&rdquo;' ],
+			[ 'from the early \'60s, American',    'from the early &#700;60s, American' ],
 		];
 	}
 
@@ -98,7 +98,7 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 			],
 			[
 				'(sans franchir la case "carte de crédit")',
-				'(sans franchir la case &laquo;&nbsp;carte de cr&eacute;dit&nbsp;&raquo;)',
+				'(sans franchir la case &laquo;&#8239;carte de cr&eacute;dit&#8239;&raquo;)',
 				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
 				Quote_Style::SINGLE_GUILLEMETS_REVERSED,
 			],

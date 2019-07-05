@@ -93,23 +93,25 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings['dewidowMaxPull'], $settings['dewidowMaxLength'], $settings['dewidowWordNumber'], $settings->no_break_narrow_space() );
+			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings['dewidowMaxPull'], $settings['dewidowMaxLength'], $settings['dewidowWordNumber'], U::NO_BREAK_NARROW_SPACE );
 		}
 	}
 
 	/**
 	 * Dewidow a given text fragment.
 	 *
+	 * @since 6.5.0 Parameter $narrow_space has been deprecated.
+	 *
 	 * @param  string $text         The text fragment to dewidow.
 	 * @param  array  $func         An array of string functions.
 	 * @param  int    $max_pull     Maximum number of characters pulled from previous line.
 	 * @param  int    $max_length   Maximum widow length.
 	 * @param  int    $word_number  Maximum number of words allowed in widow.
-	 * @param  string $narrow_space The narrow no-break space character.
+	 * @param  string $deprecated   Ignored.
 	 *
 	 * @return string
 	 */
-	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number, $narrow_space ) {
+	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number, $deprecated ) {
 		if ( $word_number < 1 ) {
 			return $text; // We are done.
 		}
@@ -117,13 +119,13 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 		// Do what we have to do.
 		return \preg_replace_callback(
 			self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END,
-			function( array $widow ) use ( $func, $max_pull, $max_length, $word_number, $narrow_space ) {
+			function( array $widow ) use ( $func, $max_pull, $max_length, $word_number ) {
 
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped
 				// as such, we will strip soft hyphens and zero-width-spaces.
 				$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
-				$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $narrow_space, $func['u'] ) );
+				$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], U::NO_BREAK_NARROW_SPACE, $func['u'] ) );
 
 				if (
 					// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
@@ -133,11 +135,11 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 					// Never replace thin and hair spaces with &nbsp;.
 					self::is_narrow_space( $widow['space_between'] )
 				) {
-					return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, $narrow_space );
+					return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, U::NO_BREAK_NARROW_SPACE );
 				}
 
 				// Let's protect some widows!
-				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $narrow_space, $func['u'] ) . $widow['trailing'];
+				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], U::NO_BREAK_NARROW_SPACE, $func['u'] ) . $widow['trailing'];
 			},
 			$text
 		);
@@ -170,25 +172,25 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	/**
 	 * Strip zero-width space and soft hyphens from the given string.
 	 *
-	 * @param  string $string       Required.
-	 * @param  string $narrow_space The narrow no-break space character.
-	 * @param  string $u            Either 'u' or the empty string.
+	 * @since 6.5.0 Parameter $narrow_space has been deprecated.
+	 *
+	 * @param  string $string     Required.
+	 * @param  string $deprecated Ignored.
+	 * @param  string $u          Either 'u' or the empty string.
 	 *
 	 * @return string
 	 */
-	protected static function make_space_nonbreaking( $string, $narrow_space, $u ) {
+	protected static function make_space_nonbreaking( $string, $deprecated, $u ) {
 		return \preg_replace(
 			[
-				'/\s*' . U::THIN_SPACE . '\s*/u', // @codeCoverageIgnoreStart
-				'/\s*' . U::NO_BREAK_NARROW_SPACE . '\s*/u',
-				"/\\s+/$u",
-				'/' . self::MASKED_NARROW_SPACE . "/$u",
+				'/\s*(?:' . U::THIN_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')\s*/Su',
+				"/\\s+/S$u",
+				'/' . self::MASKED_NARROW_SPACE . "/S$u",
 			],
 			[
 				self::MASKED_NARROW_SPACE,
-				self::MASKED_NARROW_SPACE,
-				U::NO_BREAK_SPACE, // @codeCoverageIgnoreEnd
-				$narrow_space,
+				U::NO_BREAK_SPACE,
+				U::NO_BREAK_NARROW_SPACE,
 			],
 			$string
 		);

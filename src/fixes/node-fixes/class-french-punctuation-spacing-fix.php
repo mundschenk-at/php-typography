@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2018 Peter Putzer.
+ *  Copyright 2016-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,9 +63,6 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		// Use the proper non-breaking narrow space.
-		$no_break_narrow_space = $settings->no_break_narrow_space();
-
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$previous_character = DOM::get_prev_chr( $textnode );
@@ -73,12 +70,22 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		$node_data          = "{$previous_character}{$textnode->data}"; // $next_character is not included on purpose.
 		$f                  = Strings::functions( "{$node_data}{$next_character}" ); // Include $next_character for determining encodiing.
 
-		$node_data = \preg_replace( self::INSERT_SPACE_BEFORE_CLOSING_QUOTE, '$1' . $no_break_narrow_space . '$3$4', $node_data );
-		$node_data = \preg_replace( self::INSERT_NARROW_SPACE,               '$1' . $no_break_narrow_space . '$3$4', $node_data );
-		$node_data = \preg_replace( self::INSERT_FULL_SPACE,                 '$1' . U::NO_BREAK_SPACE . '$3$4',      $node_data );
+		$node_data = \preg_replace(
+			[
+				self::INSERT_SPACE_BEFORE_CLOSING_QUOTE,
+				self::INSERT_NARROW_SPACE,
+				self::INSERT_FULL_SPACE,
+			],
+			[
+				'$1' . U::NO_BREAK_NARROW_SPACE . '$3$4',
+				'$1' . U::NO_BREAK_NARROW_SPACE . '$3$4',
+				'$1' . U::NO_BREAK_SPACE . '$3$4',
+			],
+			$node_data
+		);
 
 		// The next rule depends on the following characters as well.
-		$node_data = \preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . $no_break_narrow_space . '$4', "{$node_data}{$next_character}" );
+		$node_data = \preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . U::NO_BREAK_NARROW_SPACE . '$4', "{$node_data}{$next_character}" );
 
 		// If we have adjacent characters remove them from the text.
 		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );

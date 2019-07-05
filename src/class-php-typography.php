@@ -192,7 +192,7 @@ class PHP_Typography {
 
 			// Replace original node (if anthing was changed).
 			if ( $new !== $original ) {
-				$this->replace_node_with_html( $textnode, $new );
+				$this->replace_node_with_html( $textnode, $settings->apply_character_mapping( $new ) );
 			}
 		}
 

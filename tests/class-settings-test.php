@@ -791,6 +791,11 @@ class Settings_Test extends PHP_Typography_Testcase {
 				[],
 				[],
 			],
+			[
+				'foobar',
+				[],
+				[],
+			],
 		];
 	}
 
@@ -1585,6 +1590,65 @@ class Settings_Test extends PHP_Typography_Testcase {
 
 		$s->set_true_no_break_narrow_space( true ); // defaults to false.
 		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_NARROW_SPACE );
+	}
+
+	/**
+	 * Tests apply_character_mapping.
+	 *
+	 * @covers ::remap_character
+	 */
+	public function test_remap_character() {
+		$mapping = [
+			'a' => 'A',
+			'r' => 'z',
+		];
+
+		$s = new Settings( false, $mapping );
+		$this->assertAttributeSame( $mapping, 'unicode_mapping', $s );
+
+		$s->remap_character( 'a', 'a' );
+		$this->assertAttributeSame( [ 'r' => 'z' ], 'unicode_mapping', $s );
+
+		$s->remap_character( U::NO_BREAK_NARROW_SPACE, 'x' );
+		$this->assertAttributeCount( 2, 'unicode_mapping', $s );
+		$this->assertAttributeContains( 'x', 'unicode_mapping', $s );
+		$this->assertAttributeSame( 'x', 'no_break_narrow_space', $s );
+	}
+
+
+	/**
+	 * Provides data for testing apply_character_mapping.
+	 *
+	 * @return array
+	 */
+	public function provide_apply_character_mapping_data() {
+		return [
+			[ 'foobar', 'foobAz' ],
+			[ [ 'foobar' ], [ 'foobAz' ] ],
+			[ [ 'foobar', 'fugazi' ], [ 'foobAz', 'fugAzi' ] ],
+			[ '', '' ],
+		];
+	}
+
+	/**
+	 * Tests apply_character_mapping.
+	 *
+	 * @covers ::apply_character_mapping
+	 *
+	 * @dataProvider provide_apply_character_mapping_data
+	 *
+	 * @param  string|string[] $input  The input.
+	 * @param  string|string[] $result The expected result.
+	 */
+	public function test_apply_character_mapping( $input, $result ) {
+		$mapping = [
+			'a' => 'A',
+			'r' => 'z',
+		];
+
+		$s = new Settings( false, $mapping );
+
+		$this->assertSame( $result, $s->apply_character_mapping( $input ) );
 	}
 
 	/**
