@@ -42,11 +42,11 @@ use PHP_Typography\U;
 class Smart_Dashes_Fix extends Abstract_Node_Fix {
 
 	// Standard dashes.
-	const PARENTHETICAL_DOUBLE_DASH = '/(\s|' . RE::HTML_SPACES . ')--(\s|' . RE::HTML_SPACES . ')/xui'; // ' -- '.
-	const PARENTHETICAL_SINGLE_DASH = '/(\s|' . RE::HTML_SPACES . ')-(\s|' . RE::HTML_SPACES . ')/xui';  // ' - '.
-	const EN_DASH_WORDS             = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|' . U::NO_BREAK_SPACE . ')/u';
-	const EN_DASH_NUMBERS           = "/(\b\d+(\.?))\-(\d+\\2)/";
-	const EN_DASH_PHONE_NUMBERS     = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/";
+	const PARENTHETICAL_DOUBLE_DASH = '/(\s|' . RE::HTML_SPACES . ')--(\s|' . RE::HTML_SPACES . ')/Sxui'; // ' -- '.
+	const PARENTHETICAL_SINGLE_DASH = '/(\s|' . RE::HTML_SPACES . ')-(\s|' . RE::HTML_SPACES . ')/Sxui';  // ' - '.
+	const EN_DASH_WORDS             = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|' . U::NO_BREAK_SPACE . ')/Su';
+	const EN_DASH_NUMBERS           = "/(\b\d+(\.?))\-(\d+\\2)/S";
+	const EN_DASH_PHONE_NUMBERS     = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/S";
 
 	// Date handling.
 	const DATE_YYYY_MM_DD = '/
