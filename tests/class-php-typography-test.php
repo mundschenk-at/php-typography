@@ -500,6 +500,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Certain HTML entities', 'Cer&shy;tain <span class="caps">HTML</span> entities', false ],
 			[ 'during WP-CLI commands', 'dur&shy;ing <span class="caps">WP-CLI</span> commands', false ],
 			[ 'from the early \'60s, American engagement', 'from the ear&shy;ly <span class="push-single"></span>&#8203;<span class="pull-single">&rsquo;</span><span class="numbers">60</span>s, Amer&shy;i&shy;can engagement', 'from the early &rsquo;60s, American engagement' ],
+			[ 'Warenein- und -ausgang', 'Warenein- und &#8209;aus&shy;gang', 'Warenein- und &#8209;ausgang' ],
+			[ 'Fugen-s', 'Fugen&#8209;s', true ],
+			[ 'ein-, zweimal', 'ein&#8209;, zweimal', true ],
 		];
 	}
 
@@ -1714,6 +1717,16 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 				"We just don't know &mdash; really&ndash;, but you&#8208;know&#8208;who",
 				"We just don't know &ndash; really&ndash;, but you&#8208;know&#8208;who",
 			],
+			[
+				'ein-, zweimal',
+				'ein&#8209;, zweimal',
+				'ein&#8209;, zweimal',
+			],
+			[
+				'What-?',
+				'What&#8208;?',
+				'What&#8208;?',
+			],
 		];
 	}
 
@@ -1724,10 +1737,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function provide_dash_spacing_unchanged_data() {
 		return [
-			[ 'Vor- und Nachteile, i-Tüpfelchen, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ],
-			[ 'Bananen-Milch und -Brot' ],
+			[ 'Vor- und Nachteile, 100-jährig, Fritz-Walter-Stadion, 2015-12-03, 01-01-1999, 2012-04' ],
 			[ 'pick-me-up' ],
-			[ 'You may see a yield that is two-, three-, or fourfold.' ],
+			[ 'You may see a yield that is two- or three- or fourfold.' ],
 		];
 	}
 

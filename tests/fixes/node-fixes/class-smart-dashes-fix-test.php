@@ -101,6 +101,26 @@ class Smart_Dashes_Fix_Test extends Node_Fix_Testcase {
 				'Foo-',
 				'Foo-',
 			],
+			[
+				'Warenein- und -ausgang',
+				'Warenein- und &#8209;ausgang',
+				'Warenein- und &#8209;ausgang',
+			],
+			[
+				'Fugen-s',
+				'Fugen&#8209;s',
+				'Fugen&#8209;s',
+			],
+			[
+				'ein-, zweimal',
+				'ein&#8209;, zweimal',
+				'ein&#8209;, zweimal',
+			],
+			[
+				'Just call 800-4567',
+				'Just call 800&#8209;4567',
+				'Just call 800&#8209;4567',
+			],
 		];
 	}
 

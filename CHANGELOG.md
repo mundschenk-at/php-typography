@@ -1,5 +1,9 @@
 # Change History
 
+## 6.5.0 - unreleased
+*   _Feature_: Use non-breaking hyphen for connecting one-letter-words and when
+    an elision is followed by a comma.
+
 ## 6.4.3 - January 29, 2019
 *   _Bugfix_: To prevent common false positives for single-letter Roman ordinals (especially in French and Dutch), Roman numeral matching is now only enabled when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`. In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
 
