@@ -1,8 +1,20 @@
 # Change History
 
-## 6.5.0 - unreleased
+## 6.5.0 - July 6, 2019
 *   _Feature_: Use non-breaking hyphen for connecting one-letter-words and when
     an elision is followed by a comma.
+*   _Feature_: All special unicode characters can now be remapped using the `Settings`
+    constructor or the new `Settings::remap_character()` method. By default,
+    `U::APOSTROPHE` is remapped to `U::SINGLE_QUOTE_CLOSE` and `U::NO_BREAK_NARROW_SPACE`
+    to `U::NO_BREAK_SPACE`, keeping compatibility with previous versions.
+*   _Feature_: A new dash style (`Dash_Styles::INTERNATIONAL_NO_HAIR_SPACES`) has
+    been added, following the Duden convention of not having hair spaces around
+    interval dashes.
+*   _Feature_: Metric area and volume units can now be prettified (e.g. `m2` to `m²`).
+*   _Change_: All settings keys now have named constants. Going forward, please
+    only use those.
+*   _Bugfix_: Decades in the English (`'60s`) and German (`'80er`) styles are now
+    rendered with an apostrophe.
 
 ## 6.4.3 - January 29, 2019
 *   _Bugfix_: To prevent common false positives for single-letter Roman ordinals (especially in French and Dutch), Roman numeral matching is now only enabled when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`. In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
