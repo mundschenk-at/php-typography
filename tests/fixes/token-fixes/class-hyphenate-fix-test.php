@@ -173,11 +173,11 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_get_hyphenator() {
-		$this->s[ Settings::HYPHENATION_MIN_LENGTH ]             = 2;
-		$this->s[ Settings::HYPHENATION_MIN_BEFORE ]             = 2;
-		$this->s[ Settings::HYPHENATION_MIN_AFTER ]              = 2;
+		$this->s[ Settings::HYPHENATION_MIN_LENGTH ]        = 2;
+		$this->s[ Settings::HYPHENATION_MIN_BEFORE ]        = 2;
+		$this->s[ Settings::HYPHENATION_MIN_AFTER ]         = 2;
 		$this->s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] = [ 'foo-bar' ];
-		$this->s[ Settings::HYPHENATION_LANGUAGE ]              = 'en-US';
+		$this->s[ Settings::HYPHENATION_LANGUAGE ]          = 'en-US';
 
 		$h = $this->fix->get_hyphenator( $this->s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );

@@ -145,7 +145,7 @@ abstract class Quote_Style {
 	 * Creates a new Quotes object in the given style.
 	 *
 	 * @since 6.5.0 The $settings parameter has been deprecated.
-	 * 
+	 *
 	 * @param string   $style    The quote style.
 	 * @param Settings $settings The current settings.
 	 *
