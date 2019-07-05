@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2019 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify

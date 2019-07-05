@@ -101,6 +101,6 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 	 * @param bool   $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $css_class, $feed_compatible = false ) {
-		parent::__construct( self::REGEX, 'styleCaps', $css_class, $feed_compatible );
+		parent::__construct( self::REGEX, Settings::STYLE_CAPS, $css_class, $feed_compatible );
 	}
 }

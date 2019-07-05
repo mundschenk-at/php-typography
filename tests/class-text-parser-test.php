@@ -51,7 +51,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 */
 	protected function setUp() {
 		parent::setUp();
-		
+
 		$this->parser = new \PHP_Typography\Text_Parser();
 	}
 
