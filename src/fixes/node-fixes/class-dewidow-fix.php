@@ -129,7 +129,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 				// with that, we will assert that widows should never be hyphenated or wrapped
 				// as such, we will strip soft hyphens and zero-width-spaces.
 				$widow['widow']    = self::strip_breaking_characters( $widow['widow'] );
-				$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], U::NO_BREAK_NARROW_SPACE, $func['u'] ) );
+				$widow['trailing'] = self::strip_breaking_characters( self::make_space_nonbreaking( $widow['trailing'], $func['u'] ) );
 
 				if (
 					// Eject if widows neighbor is proceeded by a no break space (the pulled text would be too long).
@@ -143,7 +143,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 				}
 
 				// Let's protect some widows!
-				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], U::NO_BREAK_NARROW_SPACE, $func['u'] ) . $widow['trailing'];
+				return $widow['space_before'] . $widow['neighbor'] . U::NO_BREAK_SPACE . self::make_space_nonbreaking( $widow['widow'], $func['u'] ) . $widow['trailing'];
 			},
 			$text
 		);
@@ -177,14 +177,14 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * Strip zero-width space and soft hyphens from the given string.
 	 *
 	 * @since 6.5.0 Parameter $narrow_space has been deprecated.
+	 * @since 7.0.0 Parameter $deprecated (formerly $narrow_space) removed.
 	 *
 	 * @param  string $string     Required.
-	 * @param  string $deprecated Ignored.
 	 * @param  string $u          Either 'u' or the empty string.
 	 *
 	 * @return string
 	 */
-	protected static function make_space_nonbreaking( $string, $deprecated, $u ) {
+	protected static function make_space_nonbreaking( $string, $u ) {
 		return (string) \preg_replace(
 			[
 				'/\s*(?:' . U::THIN_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')\s*/Su',
