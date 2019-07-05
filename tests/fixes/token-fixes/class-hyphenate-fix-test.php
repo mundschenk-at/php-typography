@@ -154,7 +154,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( false );
 
-		$this->s['hyphenMinBefore'] = 0; // invalid value.
+		$this->s[ Settings::HYPHENATION_MIN_BEFORE ] = 0; // invalid value.
 
 		$tokens     = $this->tokenize( 'Änderungsmeldung' );
 		$hyphenated = $this->invokeMethod( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
@@ -173,16 +173,16 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_get_hyphenator() {
-		$this->s['hyphenMinLength']             = 2;
-		$this->s['hyphenMinBefore']             = 2;
-		$this->s['hyphenMinAfter']              = 2;
-		$this->s['hyphenationCustomExceptions'] = [ 'foo-bar' ];
-		$this->s['hyphenLanguage']              = 'en-US';
+		$this->s[ Settings::HYPHENATION_MIN_LENGTH ]             = 2;
+		$this->s[ Settings::HYPHENATION_MIN_BEFORE ]             = 2;
+		$this->s[ Settings::HYPHENATION_MIN_AFTER ]              = 2;
+		$this->s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] = [ 'foo-bar' ];
+		$this->s[ Settings::HYPHENATION_LANGUAGE ]              = 'en-US';
 
 		$h = $this->fix->get_hyphenator( $this->s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 
-		$this->s['hyphenationCustomExceptions'] = [ 'bar-foo' ];
+		$this->s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] = [ 'bar-foo' ];
 
 		$h = $this->fix->get_hyphenator( $this->s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );

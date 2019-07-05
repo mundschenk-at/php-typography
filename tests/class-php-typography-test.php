@@ -1135,9 +1135,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_diacritic_language( $lang );
 		$s = $this->s;
 
-		$replacements = $s['diacriticReplacement'];
+		$replacements = $s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
 		unset( $replacements['replacements'][ $unset ] );
-		$s['diacriticReplacement'] = $replacements;
+		$s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $s, false ) ) );
 	}
