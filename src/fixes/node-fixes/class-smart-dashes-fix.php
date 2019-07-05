@@ -47,6 +47,18 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 	const EN_DASH_WORDS             = '/([\w])\-(' . U::THIN_SPACE . '|' . U::HAIR_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|' . U::NO_BREAK_SPACE . ')/Su';
 	const EN_DASH_NUMBERS           = "/(\b\d+(\.?))\-(\d+\\2)/S";
 	const EN_DASH_PHONE_NUMBERS     = "/(\b\d{3})" . U::EN_DASH . "(\d{4}\b)/S";
+	const NO_BREAK_HYPHEN           = "/
+		(?|
+			# Elision at the beginning of a word
+			(\s)\-(\w) |
+
+			# Single letter before the hyphen.
+			(?<!\-)\b(\w)\-(\w) |
+
+			# Single letter after the hyphen, or a comma.
+			(\w)\-(\w\b|,)(?!\-)
+		)
+		/Sux";
 
 	// Date handling.
 	const DATE_YYYY_MM_DD = '/
@@ -140,11 +152,13 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 				self::EN_DASH_WORDS,
 				self::EN_DASH_NUMBERS,
 				self::EN_DASH_PHONE_NUMBERS,
+				self::NO_BREAK_HYPHEN,
 			],
 			[
 				"\$1{$s->parenthetical_dash()}\$2",
 				'$1' . U::EN_DASH . '$2',
 				"\$1{$s->interval_dash()}\$3",
+				'$1' . U::NO_BREAK_HYPHEN . '$2',
 				'$1' . U::NO_BREAK_HYPHEN . '$2',
 			],
 			$node_data
