@@ -108,7 +108,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
-		if ( empty( $settings['urlWrap'] ) || empty( $settings['urlMinAfterWrap'] ) ) {
+		if ( empty( $settings[ Settings::URL_WRAP ] ) || empty( $settings[ Settings::URL_MIN_AFTER_WRAP ] ) ) {
 			return $tokens;
 		}
 
@@ -156,7 +156,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 				$path_count = \count( $path_parts );
 				$path       = '';
 				foreach ( $path_parts as $index => $path_part ) {
-					if ( 0 === $index || $path_count - $index < $settings['urlMinAfterWrap'] ) {
+					if ( 0 === $index || $path_count - $index < $settings[ Settings::URL_MIN_AFTER_WRAP ] ) {
 						$path .= $path_part;
 					} else {
 						$path .= U::ZERO_WIDTH_SPACE . $path_part;

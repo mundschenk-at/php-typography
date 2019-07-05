@@ -79,7 +79,7 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['styleInitialQuotes'] ) || empty( $settings['initialQuoteTags'] ) || null !== DOM::get_previous_textnode( $textnode ) ) {
+		if ( empty( $settings[ Settings::STYLE_INITIAL_QUOTES ] ) || empty( $settings[ Settings::INITIAL_QUOTE_TAGS ] ) || null !== DOM::get_previous_textnode( $textnode ) ) {
 			return;
 		}
 
@@ -97,7 +97,7 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 			// Assume page title is <h2>.
 			$block_level_parent = $is_title ? 'h2' : DOM::get_block_parent_name( $textnode );
 
-			if ( ! empty( $block_level_parent ) && isset( $settings['initialQuoteTags'][ $block_level_parent ] ) ) {
+			if ( ! empty( $block_level_parent ) && isset( $settings[ Settings::INITIAL_QUOTE_TAGS ][ $block_level_parent ] ) ) {
 				$textnode->data = RE::escape_tags( '<span class="' . $span_class . '">' ) . $first_character . RE::escape_tags( '</span>' ) . $f['substr']( $node_data, 1, $f['strlen']( $node_data ) );
 			}
 		}

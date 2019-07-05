@@ -60,7 +60,7 @@ class Smart_Dashes_Hyphen_Fix extends Abstract_Token_Fix {
 	 * @return Token[] An array of tokens.
 	 */
 	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
-		if ( ! empty( $settings['smartDashes'] ) ) {
+		if ( ! empty( $settings[ Settings::SMART_DASHES ] ) ) {
 			foreach ( $tokens as $index => $text_token ) {
 				// Handled here because we need to know we are inside a word and not a URL.
 				$tokens[ $index ] = $text_token->with_value( \str_replace( '-', U::HYPHEN, $text_token->value ) );

@@ -71,7 +71,6 @@ class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		E
 	'; // required modifiers: x (multiline pattern).
 
-	const SETTING     = 'numberedAbbreviationSpacing';
 	const REPLACEMENT = '$1' . U::NO_BREAK_SPACE . '$2';
 	const REGEX       = '/\b(' . self::_ABBREVIATIONS . ')[' . RE::NORMAL_SPACES . ']+([0-9]+)/xu';
 
@@ -81,6 +80,6 @@ class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 * @param bool $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $feed_compatible = false ) {
-		parent::__construct( self::REGEX, self::REPLACEMENT, self::SETTING, $feed_compatible );
+		parent::__construct( self::REGEX, self::REPLACEMENT, Settings::NUMBERED_ABBREVIATION_SPACING, $feed_compatible );
 	}
 }

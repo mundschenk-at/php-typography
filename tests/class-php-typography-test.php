@@ -30,6 +30,8 @@ use PHP_Typography\Settings;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
 
+use PHP_Typography\Settings\Quote_Style;
+
 use PHP_Typography\Fixes\Default_Registry;
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
@@ -872,6 +874,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ '("Some" word',                      '(&ldquo;Some&rdquo; word' ],
 			[ '"So \'this\'", she said',           '&ldquo;So &lsquo;this&rsquo;&nbsp;&rdquo;, she said' ],
 			[ '"\'This\' is it?"',                 '&ldquo;&nbsp;&lsquo;This&rsquo; is it?&rdquo;' ],
+			[ '"this is a sentence."',             '&laquo;&nbsp;this is a sentence.&nbsp;&raquo;', Quote_Style::DOUBLE_GUILLEMETS_FRENCH ],
+			[ '("Some" word',                      '(&raquo;Some&laquo; word', Quote_Style::DOUBLE_GUILLEMETS_REVERSED, Quote_Style::SINGLE_GUILLEMETS_REVERSED ],
 		];
 	}
 
@@ -885,13 +889,15 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 *
 	 * @dataProvider provide_smart_quotes_data
 	 *
-	 * @param string $html   HTML input.
-	 * @param string $result Entity-escaped result string.
+	 * @param string $html      HTML input.
+	 * @param string $result    Entity-escaped result string.
+	 * @param string $primary   Optional. The primary quote style. Default DOUBLE_CURLED.
+	 * @param string $secondary Optional. The secondary quote style. Default SINGLE_CURLED.
 	 */
-	public function test_smart_quotes( $html, $result ) {
+	public function test_smart_quotes( $html, $result, $primary = Quote_Style::DOUBLE_CURLED, $secondary = Quote_Style::SINGLE_CURLED ) {
 		$this->s->set_smart_quotes( true );
-		$this->s->set_smart_quotes_primary();
-		$this->s->set_smart_quotes_secondary();
+		$this->s->set_smart_quotes_primary( $primary );
+		$this->s->set_smart_quotes_secondary( $secondary );
 		$this->s->set_true_no_break_narrow_space();
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
@@ -927,7 +933,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
-	public function test_smart_quotes_french() {
+	public function test_smart_quotes_french_should_not_apply() {
 		$html   = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 		$result = 'attributs <code>role="group"</code> et <code>aria-labelledby</code>';
 
@@ -938,41 +944,6 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
-
-	/**
-	 * Provide data for testing smart quotes.
-	 *
-	 * @return array
-	 */
-	public function provide_smart_quotes_special_data() {
-		return [
-			[ '("Some" word', '(&raquo;Some&laquo; word', 'doubleGuillemetsReversed', 'singleGuillemetsReversed' ],
-		];
-	}
-
-	/**
-	 * Test smart_quotes.
-	 *
-	 * @coversNothing
-	 *
-	 * @uses PHP_Typography\Text_Parser
-	 * @uses PHP_Typography\Text_Parser\Token
-	 *
-	 * @dataProvider provide_smart_quotes_special_data
-	 *
-	 * @param string $html      HTML input.
-	 * @param string $result    Expected entity-escaped result.
-	 * @param string $primary   Primary quote style.
-	 * @param string $secondary Secondard  quote style.
-	 */
-	public function test_smart_quotes_special( $html, $result, $primary, $secondary ) {
-		$this->s->set_smart_quotes( true );
-		$this->s->set_smart_quotes_primary( $primary );
-		$this->s->set_smart_quotes_secondary( $secondary );
-
-		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
-	}
-
 
 	/**
 	 * Test smart_dashes.
@@ -1164,9 +1135,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 		$this->s->set_diacritic_language( $lang );
 		$s = $this->s;
 
-		$replacements = $s['diacriticReplacement'];
+		$replacements = $s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
 		unset( $replacements['replacements'][ $unset ] );
-		$s['diacriticReplacement'] = $replacements;
+		$s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $s, false ) ) );
 	}

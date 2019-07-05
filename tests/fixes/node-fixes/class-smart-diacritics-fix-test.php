@@ -95,9 +95,9 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 		$this->s->set_smart_diacritics( true );
 		$this->s->set_diacritic_language( $lang );
 
-		$replacements = $this->s['diacriticReplacement'];
+		$replacements = $this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
 		unset( $replacements['replacements'][ $unset ] );
-		$this->s['diacriticReplacement'] = $replacements;
+		$this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertFixResultSame( $html, $html );
 	}

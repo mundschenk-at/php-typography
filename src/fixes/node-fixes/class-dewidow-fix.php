@@ -87,13 +87,13 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Intervening inline tags may interfere with widow identification, but that is a sacrifice of using the parser.
 		// Intervening tags will only interfere if they separate the widow from previous or preceding whitespace.
-		if ( empty( $settings['dewidow'] ) || empty( $settings['dewidowMaxPull'] ) || empty( $settings['dewidowMaxLength'] ) ) {
+		if ( empty( $settings[ Settings::DEWIDOW ] ) || empty( $settings[ Settings::DEWIDOW_MAX_PULL ] ) || empty( $settings[ Settings::DEWIDOW_MAX_LENGTH ] ) ) {
 			return;
 		}
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings['dewidowMaxPull'], $settings['dewidowMaxLength'], $settings['dewidowWordNumber'], U::NO_BREAK_NARROW_SPACE );
+			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings[ Settings::DEWIDOW_MAX_PULL ], $settings[ Settings::DEWIDOW_MAX_LENGTH ], $settings[ Settings::DEWIDOW_WORD_NUMBER ], U::NO_BREAK_NARROW_SPACE );
 		}
 	}
 

@@ -136,20 +136,20 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['smartFractions'] ) && empty( $settings['fractionSpacing'] ) ) {
+		if ( empty( $settings[ Settings::SMART_FRACTIONS ] ) && empty( $settings[ Settings::FRACTION_SPACING ] ) ) {
 			return;
 		}
 
 		// Cache textnode content.
 		$node_data = $textnode->data;
 
-		if ( ! empty( $settings['fractionSpacing'] ) && ! empty( $settings['smartFractions'] ) ) {
+		if ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
 			$node_data = \preg_replace( self::SPACING, '$1' . U::NO_BREAK_NARROW_SPACE . '$2', $node_data );
-		} elseif ( ! empty( $settings['fractionSpacing'] ) && empty( $settings['smartFractions'] ) ) {
+		} elseif ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
 			$node_data = \preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
 		}
 
-		if ( ! empty( $settings['smartFractions'] ) ) {
+		if ( ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
 			$node_data = \preg_replace(
 				[
 					// Escape sequences we don't want fractionified.

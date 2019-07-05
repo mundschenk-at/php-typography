@@ -44,7 +44,7 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 	/*
 	// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
 	// for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
-	$this->components['styleCaps']  = '
+	$this->components[ Settings::STYLE_CAPS ]  = '
 	(?<![\w\-_'.U::ZERO_WIDTH_SPACE.U::SOFT_HYPHEN.'])
 	# negative lookbehind assertion
 	(

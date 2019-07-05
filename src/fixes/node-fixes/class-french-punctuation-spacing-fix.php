@@ -59,7 +59,7 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 	 * @param bool     $is_title Optional. Default false.
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
-		if ( empty( $settings['frenchPunctuationSpacing'] ) ) {
+		if ( empty( $settings[ Settings::FRENCH_PUNCTUATION_SPACING ] ) ) {
 			return;
 		}
 
