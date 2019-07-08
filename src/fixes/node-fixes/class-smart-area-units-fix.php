@@ -60,7 +60,7 @@ class Smart_Area_Units_Fix extends Abstract_Node_Fix {
 
 		$textnode->data = \preg_replace(
 			[ self::AREA_UNITS, self::VOLUME_UNITS ],
-			[ '$1$2$3²', '$1$2$3³' ],
+			[ '$1 $3²', '$1 $3³' ],
 			$textnode->data
 		);
 	}
