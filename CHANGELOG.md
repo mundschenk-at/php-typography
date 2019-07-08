@@ -1,5 +1,9 @@
 # Change History
 
+## 6.5.1 - July 8, 2019
+*   _Bugfix_: The smart area and volume units fix now handles missing whitespace
+    as well (e.g. `5m2` is transformed into `5 m²`).
+
 ## 6.5.0 - July 6, 2019
 *   _Feature_: Use non-breaking hyphen for connecting one-letter-words and when
     an elision is followed by a comma.

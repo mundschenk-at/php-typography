@@ -74,6 +74,9 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 			[ '5 nanoamperes', '5&#8239;nanoamperes' ],
 			[ '1 Ω', '1&#8239;&Omega;' ],
 			[ '1 &Omega;', '1&#8239;&Omega;' ],
+			[ '10 m2', '10&#8239;m2' ],
+			[ '10 m²', '10&#8239;m²' ],
+			[ '5 m³', '5&#8239;m³' ],
 		];
 	}
 

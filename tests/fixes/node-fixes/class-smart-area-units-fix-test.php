@@ -66,7 +66,9 @@ class Smart_Area_Units_Fix_Test extends Node_Fix_Testcase {
 			[ '5.3 m3', '5.3 m³' ],
 			[ '10 cm2', '10 cm²' ],
 			[ '10,20 mm2', '10,20 mm²' ],
-			[ '5 m2, das ergibt 5000000mm2', '5 m², das ergibt 5000000mm²' ],
+			[ '5 m2, das ergibt 5000000mm2', '5 m², das ergibt 5000000 mm²' ],
+			[ '3 µm2', '3 µm²' ],
+			[ '2m2', '2 m²' ],
 		];
 	}
 
