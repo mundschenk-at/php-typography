@@ -39,7 +39,7 @@ use PHP_Typography\U;
  */
 class Smart_Area_Units_Fix extends Abstract_Node_Fix {
 
-	const LENGTH_UNITS = 'mm|cm|m';
+	const LENGTH_UNITS = '(?:p|µ|[mcdhkMGT])?m'; // Just metric for now.
 	const NUMBER       = '[0-9]+(?:\.,)?[0-9]*';
 	const WHITESPACE   = '\s*';
 
