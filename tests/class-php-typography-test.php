@@ -505,6 +505,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Warenein- und -ausgang', 'Warenein- und &#8209;aus&shy;gang', 'Warenein- und &#8209;ausgang' ],
 			[ 'Fugen-s', 'Fugen&#8209;s', true ],
 			[ 'ein-, zweimal', 'ein&#8209;, zweimal', true ],
+			[ 'В зависимости от региона, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В зависимости от региона, может выращиватся на зерно и&nbsp;силос. После колосовых может выращиватся на второй посев.', false ],
 		];
 	}
 
@@ -2737,6 +2738,11 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
 			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ],
 			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ],
+			[ 'В зависимости от региона, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В за&shy;ви&shy;си&shy;мо&shy;сти от ре&shy;ги&shy;о&shy;на, мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на зер&shy;но и си&shy;лос. По&shy;сле ко&shy;ло&shy;со&shy;вых мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на вто&shy;рой по&shy;сев.', 'ru', true, true, true, false ],
+			[ 'В зависимости от Geschäftsübernahme, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В за&shy;ви&shy;си&shy;мо&shy;сти от Gesch&auml;fts&uuml;bernahme, мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на зер&shy;но и си&shy;лос. По&shy;сле ко&shy;ло&shy;со&shy;вых мо&shy;жет вы&shy;ра&shy;щи&shy;ват&shy;ся на вто&shy;рой по&shy;сев.', 'ru', true, true, true, false ],
+			[ 'Diözesankönigspaar', 'Di&ouml;&shy;ze&shy;san&shy;k&ouml;&shy;nigs&shy;paar', 'de', true, true, true, true ],
+			[ 'Schützenbruderschaften', 'Sch&uuml;t&shy;zen&shy;bru&shy;der&shy;schaf&shy;ten', 'de', true, true, true, true ],
+			[ 'Bundesjungschützentag', 'Bun&shy;des&shy;jung&shy;sch&uuml;t&shy;zen&shy;tag', 'de', true, true, true, true ],
 		];
 	}
 

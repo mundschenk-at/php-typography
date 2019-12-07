@@ -38,6 +38,9 @@ matrix:
           env:  SCOPE=tests
         # aliased to a recent 7.3 version
         - php:  '7.3'
+          env:  SCOPE=tests
+        # aliased to a recent 7.4 version
+        - php:  '7.4'
           env:  SCOPE=coverage
 
 # Use this to prepare the system to install prerequisites or dependencies.

@@ -161,13 +161,21 @@ class PHP_Typography {
 		$dom = $this->parse_html( $html5_parser, $html, $settings, $body_classes );
 
 		// Abort if there were parsing errors.
-		if ( empty( $dom ) ) {
+		if ( ! $dom instanceof \DOMDocument || ! $dom->hasChildNodes() ) {
 			return $html;
 		}
 
 		// Query some nodes in the DOM.
-		$xpath          = new \DOMXPath( $dom );
-		$body_node      = $xpath->query( '/html/body' )->item( 0 );
+		$xpath     = new \DOMXPath( $dom );
+		$body_node = $xpath->query( '/html/body' )->item( 0 );
+
+		// Abort if we could not retrieve the body node.
+		// This should be refactored to use exceptions in a future version.
+		if ( ! $body_node instanceof \DOMNode ) {
+			return $html;
+		}
+
+		// Get the list of tags that should be ignored.
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
