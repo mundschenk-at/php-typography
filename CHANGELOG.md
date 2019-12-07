@@ -1,5 +1,10 @@
 # Change History
 
+## 6.5.2 - December 7, 2019
+*   _Bugfix_: PHP 7.4 compatibility.
+*   _Bugfix_: Parsing does not break anymore when the returned more `DOMDocument`
+    is invalid.
+
 ## 6.5.1 - July 8, 2019
 *   _Bugfix_: The smart area and volume units fix now handles missing whitespace
     as well (e.g. `5m2` is transformed into `5 m²`).
