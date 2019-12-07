@@ -15,6 +15,7 @@
 		<exclude name="WordPress.WP.AlternativeFunctions" />
 		<exclude name="WordPress.Arrays.CommaAfterArrayItem.SpaceAfterComma" />
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax" />
 	</rule>
 	<rule ref="WordPress-Extra">
 	</rule>
