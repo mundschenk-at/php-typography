@@ -136,12 +136,15 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	 * Apply the fix to a given textnode.
 	 *
 	 * @since 6.0.0 The method was accidentally made public and is now protected.
+	 * @since 7.0.0 All parameters are now required.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @param \DOMText $textnode The DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 *
+	 * @return void
 	 */
-	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false ) {
+	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( empty( $settings[ Settings::STYLE_HANGING_PUNCTUATION ] ) ) {
 			return;
 		}

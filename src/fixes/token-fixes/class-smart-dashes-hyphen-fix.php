@@ -50,16 +50,18 @@ class Smart_Dashes_Hyphen_Fix extends Abstract_Token_Fix {
 	}
 
 	/**
-	 * Apply the tweak to a given textnode.
+	 * Apply the fix to a given set of tokens
 	 *
-	 * @param Token[]       $tokens   Required.
-	 * @param Settings      $settings Required.
-	 * @param bool          $is_title Optional. Default false.
-	 * @param \DOMText|null $textnode Optional. Default null.
+	 * @since 7.0.0 The parameter order has been re-arranged to mirror Node_Fix.
 	 *
-	 * @return Token[] An array of tokens.
+	 * @param Token[]  $tokens   The set of tokens.
+	 * @param \DOMText $textnode The context DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 *
+	 * @return Token[]           The fixed set of tokens.
 	 */
-	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( ! empty( $settings[ Settings::SMART_DASHES ] ) ) {
 			foreach ( $tokens as $index => $text_token ) {
 				// Handled here because we need to know we are inside a word and not a URL.

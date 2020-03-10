@@ -99,7 +99,7 @@ class Smart_Dashes_Hyphen_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_smart_dashes( true );
 
 		// Need to add new test data for the smart dashes/hard hyphens combo.
-		$this->assertFixResultSame( $input, $result );
+		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
 	}
 
 	/**
@@ -118,6 +118,6 @@ class Smart_Dashes_Hyphen_Fix_Test extends Token_Fix_Testcase {
 	public function test_apply_off( $input, $result ) {
 		$this->s->set_smart_dashes( false );
 
-		$this->assertFixResultSame( $input, $input );
+		$this->assertFixResultSame( $input, $input,false, $this->getTextnode( 'foo', $input ) );
 	}
 }

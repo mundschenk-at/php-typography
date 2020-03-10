@@ -61,34 +61,34 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function provide_dewidow_data() {
 		return [
-			[ 'bla foo b', 'bla foo&nbsp;b', 3, 2, 1, false ],
-			[ 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2, 1, false ], // don't replace thin space...
-			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2, 1, false ],   // ... or hair space.
-			[ 'bla foo bar', 'bla foo bar', 2, 2, 1, false ],
-			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1, false ],
-			[ 'bla foo bär&hellip;!', 'bla foo&nbsp;b&auml;r&hellip;!', 3, 3, 1, false ],
-			[ 'bla foo bär&shy;!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1, false ],
-			[ 'bla foo b&shy;är!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1, false ],
-			[ 'bla foo b&#8203;är!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1, false ],
-			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1, false ],
-			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2, 1, false ],
-			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2, 1, false ],
-			[ 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3, 1, false ], // &shy; not matched.
-			[ 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3, 1, false ], // &shy; not matched, but syllable after is.
-			[ 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3, 1, false ],
-			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3, 1, false ], // widow not replaced because the &nbsp; would pull too many letters from previous.
-			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 1, false ],
-			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 2, false ],
-			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 3, false ],
-			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 7, 1, false ],
-			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 2, false ],
-			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 3, false ],
-			[ 'bla bla foo bar bar', 'bla bla foo bar&nbsp;bar', 3, 11, 1, false ],
-			[ 'bla bla foo bar bar', 'bla bla foo&nbsp;bar&nbsp;bar', 3, 11, 2, false ],
-			[ 'bla bla foo bar bar', 'bla bla&nbsp;foo&nbsp;bar&nbsp;bar', 3, 11, 3, false ],
-			[ 'bla bla foo bar bar', 'bla bla foo&nbsp;bar&nbsp;bar', 3, 11, 2, true ],
-			[ 'bla bla foo bar&thinsp;bar', 'bla bla foo&nbsp;bar&#8239;bar', 3, 11, 2, true ],
-			[ 'bla bla foo bar&#8239;bar', 'bla bla foo&nbsp;bar&#8239;bar', 3, 11, 2, true ],
+			[ 'bla foo b', 'bla foo&nbsp;b', 3, 2, 1 ],
+			[ 'bla foo&thinsp;b', 'bla foo&thinsp;b', 3, 2, 1 ], // don't replace thin space...
+			[ 'bla foo&#8202;b', 'bla foo&#8202;b', 3, 2, 1 ],   // ... or hair space.
+			[ 'bla foo bar', 'bla foo bar', 2, 2, 1 ],
+			[ 'bla foo bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1 ],
+			[ 'bla foo bär&hellip;!', 'bla foo&nbsp;b&auml;r&hellip;!', 3, 3, 1 ],
+			[ 'bla foo bär&shy;!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1 ],
+			[ 'bla foo b&shy;är!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1 ],
+			[ 'bla foo b&#8203;är!', 'bla foo&nbsp;b&auml;r!', 3, 3, 1 ],
+			[ 'bla foo&nbsp;bär...', 'bla foo&nbsp;b&auml;r...', 3, 3, 1 ],
+			[ 'bla föö&#8203;bar s', 'bla f&ouml;&ouml;&#8203;bar&nbsp;s', 3, 2, 1 ],
+			[ 'bla foo&#8203;bar s', 'bla foo&#8203;bar s', 2, 2, 1 ],
+			[ 'bla foo&shy;bar', 'bla foo&shy;bar', 3, 3, 1 ], // &shy; not matched.
+			[ 'bla foo&shy;bar bar', 'bla foo&shy;bar&nbsp;bar', 3, 3, 1 ], // &shy; not matched, but syllable after is.
+			[ 'bla foo&#8203;bar bar', 'bla foo&#8203;bar&nbsp;bar', 3, 3, 1 ],
+			[ 'bla foo&nbsp;bar bar', 'bla foo&nbsp;bar bar', 3, 3, 1 ], // widow not replaced because the &nbsp; would pull too many letters from previous.
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 1 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 2 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 3, 3 ],
+			[ 'bla foo bar bar', 'bla foo bar&nbsp;bar', 3, 7, 1 ],
+			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 2 ],
+			[ 'bla foo bar bar', 'bla foo&nbsp;bar&nbsp;bar', 3, 7, 3 ],
+			[ 'bla bla foo bar bar', 'bla bla foo bar&nbsp;bar', 3, 11, 1 ],
+			[ 'bla bla foo bar bar', 'bla bla foo&nbsp;bar&nbsp;bar', 3, 11, 2 ],
+			[ 'bla bla foo bar bar', 'bla bla&nbsp;foo&nbsp;bar&nbsp;bar', 3, 11, 3 ],
+			[ 'bla bla foo bar bar', 'bla bla foo&nbsp;bar&nbsp;bar', 3, 11, 2 ],
+			[ 'bla bla foo bar&thinsp;bar', 'bla bla foo&nbsp;bar&#8239;bar', 3, 11, 2 ],
+			[ 'bla bla foo bar&#8239;bar', 'bla bla foo&nbsp;bar&#8239;bar', 3, 11, 2 ],
 		];
 	}
 
@@ -109,14 +109,12 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * @param int    $max_pull     Maximum number of pulled characters.
 	 * @param int    $max_length   Maximum word length for dewidowing.
 	 * @param int    $word_number  Maximum number of words in widow.
-	 * @param bool   $narrow_space Whether to use the NARROW NO-BREAK SPACE character.
 	 */
-	public function test_apply( $html, $result, $max_pull, $max_length, $word_number, $narrow_space ) {
+	public function test_apply( $html, $result, $max_pull, $max_length, $word_number ) {
 		$this->s->set_dewidow( true );
 		$this->s->set_max_dewidow_pull( $max_pull );
 		$this->s->set_max_dewidow_length( $max_length );
 		$this->s->set_dewidow_word_number( $word_number );
-		$this->s->set_true_no_break_narrow_space( $narrow_space );
 
 		$this->assertFixResultSame( $html, $result );
 	}

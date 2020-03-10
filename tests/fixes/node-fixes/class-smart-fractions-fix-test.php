@@ -234,7 +234,6 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
 
 		$this->s->set_smart_fractions( true );
-		$this->s->set_true_no_break_narrow_space( true );
 		$this->s->set_fraction_spacing( false );
 
 		$this->assertFixResultSame( $input, $result );
@@ -258,7 +257,6 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
 
 		$this->s->set_smart_fractions( true );
-		$this->s->set_true_no_break_narrow_space( true );
 		$this->s->set_fraction_spacing( true );
 
 		$this->assertFixResultSame( $input, $result );
@@ -282,7 +280,6 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
 
 		$this->s->set_smart_fractions( false );
-		$this->s->set_true_no_break_narrow_space( true );
 		$this->s->set_fraction_spacing( true );
 
 		$this->assertFixResultSame( $input, $result );
@@ -307,7 +304,6 @@ class Smart_Fractions_Fix_Test extends Node_Fix_Testcase {
 		$this->fix = new Node_Fixes\Smart_Fractions_Fix( $numerator, $denominator );
 
 		$this->s->set_smart_fractions( false );
-		$this->s->set_true_no_break_narrow_space( true );
 		$this->s->set_fraction_spacing( false );
 
 		$this->assertFixResultSame( $input, $input );

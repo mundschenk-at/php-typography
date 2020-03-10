@@ -48,6 +48,13 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	protected $fix;
 
 	/**
+	 * A collection of DOM nodes to prevent garbage collection.
+	 *
+	 * @var \DOMNode[]
+	 */
+	private $nodes = [];
+
+	/**
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
@@ -60,14 +67,29 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	/**
 	 * Assert that the output of the fix is the same as the expected result.
 	 *
-	 * @param string        $input    Text node value.
-	 * @param string        $result   Expected result.
-	 * @param bool          $is_title Optional. Default false.
-	 * @param \DOMText|null $textnode Optional. Default null.
+	 * @param string   $input    Text node value.
+	 * @param string   $result   Expected result.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 * @param \DOMText $textnode The context DOM node.
 	 */
-	protected function assertFixResultSame( $input, $result, $is_title = false, $textnode = null ) {
+	protected function assertFixResultSame( $input, $result, $is_title, $textnode ) {
 		$tokens        = $this->tokenize_sentence( $input );
-		$result_tokens = $this->fix->apply( $tokens, $this->s, $is_title, $textnode );
+		$result_tokens = $this->fix->apply( $tokens, $textnode, $this->s, $is_title );
 		$this->assertTokensSame( $result, $result_tokens );
+	}
+
+	/**
+	 * Creates a \DOMText node.
+	 *
+	 * @param  string $parent  The parent tag.
+	 * @param  string $content The node content.
+	 *
+	 * @return \DOMText
+	 */
+	protected function getTextnode( $parent, $content ) {
+		$element       = new \DOMElement( $parent, $content );
+		$this->nodes[] = $element;
+
+		return $element->firstChild;
 	}
 }

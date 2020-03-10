@@ -95,7 +95,6 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_apply( $input, $result ) {
 		$this->s->set_unit_spacing( true );
-		$this->s->set_true_no_break_narrow_space( true );
 
 		$this->assertFixResultSame( $input, $result );
 	}
@@ -115,7 +114,6 @@ class Unit_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 */
 	public function test_apply_off( $input, $result ) {
 		$this->s->set_unit_spacing( false );
-		$this->s->set_true_no_break_narrow_space( true );
 
 		$this->assertFixResultSame( $input, $input );
 	}

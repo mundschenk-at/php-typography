@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2018 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -98,16 +98,18 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	}
 
 	/**
-	 * Apply the tweak to a given textnode.
+	 * Apply the fix to a given set of tokens
 	 *
-	 * @param Token[]       $tokens   Required.
-	 * @param Settings      $settings Required.
-	 * @param bool          $is_title Optional. Default false.
-	 * @param \DOMText|null $textnode Optional. Default null.
+	 * @since 7.0.0 The parameter order has been re-arranged to mirror Node_Fix.
 	 *
-	 * @return Token[] An array of tokens.
+	 * @param Token[]  $tokens   The set of tokens.
+	 * @param \DOMText $textnode The context DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 *
+	 * @return Token[]           The fixed set of tokens.
 	 */
-	public function apply( array $tokens, Settings $settings, $is_title = false, \DOMText $textnode = null ) {
+	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( empty( $settings[ Settings::URL_WRAP ] ) || empty( $settings[ Settings::URL_MIN_AFTER_WRAP ] ) ) {
 			return $tokens;
 		}

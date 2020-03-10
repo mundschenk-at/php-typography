@@ -145,13 +145,13 @@ abstract class Quote_Style {
 	 * Creates a new Quotes object in the given style.
 	 *
 	 * @since 6.5.0 The $settings parameter has been deprecated.
+	 * @since 7.0.0 Deprecated parameter $settings removed.
 	 *
-	 * @param string   $style    The quote style.
-	 * @param Settings $settings The current settings.
+	 * @param string $style The quote style.
 	 *
 	 * @return Quotes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_quotes( $style, /** Currently unused. @scrutinizer ignore-unused */ Settings $settings ) {
+	public static function get_styled_quotes( $style ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Quotes( self::$styles[ $style ][ self::_OPEN ], self::$styles[ $style ][ self::_CLOSE ] );
 		}

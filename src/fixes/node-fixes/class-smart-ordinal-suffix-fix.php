@@ -107,11 +107,15 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 	/**
 	 * Apply the fix to a given textnode.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @since 7.0.0 All parameters are now required.
+	 *
+	 * @param \DOMText $textnode The DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
+	 *
+	 * @return void
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
+	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( empty( $settings[ Settings::SMART_ORDINAL_SUFFIX ] ) ) {
 			return;
 		}

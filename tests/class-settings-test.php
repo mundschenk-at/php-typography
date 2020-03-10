@@ -64,7 +64,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	protected function setUp() {
 		parent::setUp();
 
-		$this->settings = new \PHP_Typography\Settings( false );
+		$this->settings = new \PHP_Typography\Settings( false, [] );
 	}
 
 	/**
@@ -443,12 +443,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_quote_style
 	 * @covers ::get_style
 	 *
-	 * @uses ::set_true_no_break_narrow_space
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_primary() {
 		$s = $this->settings;
-		$s->set_true_no_break_narrow_space();
 
 		$quote_styles = [
 			'doubleCurled',
@@ -521,12 +519,10 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_quote_style
 	 * @covers ::get_style
 	 *
-	 * @uses ::set_true_no_break_narrow_space
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
 	public function test_set_smart_quotes_secondary() {
 		$s = $this->settings;
-		$s->set_true_no_break_narrow_space();
 
 		$quote_styles = [
 			'doubleCurled',
@@ -1560,7 +1556,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$hash5 = $s->get_hash( 10 );
 		$this->assertEquals( 10, strlen( $hash5 ) );
 
-		$s->set_true_no_break_narrow_space( true );
+		$s->remap_character( U::NO_BREAK_NARROW_SPACE, U::NO_BREAK_SPACE );
 		$hash6 = $s->get_hash( 10 );
 		$this->assertEquals( 10, strlen( $hash6 ) );
 
@@ -1572,24 +1568,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$this->assertNotEquals( $hash2, $hash3, 'Hashes after set_smart_quotes_primary are still equal.' );
 		$this->assertNotEquals( $hash3, $hash4, 'Hashes after set_smart_quotes_secondary are still equal.' );
 		$this->assertNotEquals( $hash4, $hash5, 'Hashes after set_smart_dashes_style are still equal.' );
-		$this->assertNotEquals( $hash5, $hash6, 'Hashes after set_true_no_break_narrow_space are still equal.' );
+		$this->assertNotEquals( $hash5, $hash6, 'Hashes after remapping no-break narrow space are still equal.' );
 		$this->assertNotEquals( $hash6, $hash7, 'Hashes after set_units are still equal.' );
-	}
-
-	/**
-	 * Tests set_true_no_break_narrow_space and no_break_narrow_space.
-	 *
-	 * @covers ::set_true_no_break_narrow_space
-	 * @covers ::no_break_narrow_space
-	 */
-	public function test_set_true_no_break_narrow_space() {
-		$s = $this->settings;
-
-		$s->set_true_no_break_narrow_space(); // defaults to false.
-		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_SPACE );
-
-		$s->set_true_no_break_narrow_space( true ); // defaults to false.
-		$this->assertSame( $s->no_break_narrow_space(), U::NO_BREAK_NARROW_SPACE );
 	}
 
 	/**
@@ -1612,7 +1592,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s->remap_character( U::NO_BREAK_NARROW_SPACE, 'x' );
 		$this->assertAttributeCount( 2, 'unicode_mapping', $s );
 		$this->assertAttributeContains( 'x', 'unicode_mapping', $s );
-		$this->assertAttributeSame( 'x', 'no_break_narrow_space', $s );
 	}
 
 

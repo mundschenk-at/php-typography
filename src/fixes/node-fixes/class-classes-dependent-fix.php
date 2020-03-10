@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2019 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,13 +64,15 @@ abstract class Classes_Dependent_Fix extends Abstract_Node_Fix {
 	/**
 	 * Apply the fix to a given textnode if the nodes class(es) allow it.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @since 7.0.0 All parameters are now required.
+	 *
+	 * @param \DOMText $textnode The DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
 	 *
 	 * @return void
 	 */
-	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
+	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
 		if ( ! DOM::has_class( $textnode, $this->classes_to_avoid ) ) {
 			$this->apply_internal( $textnode, $settings, $is_title );
 		}
@@ -80,12 +82,13 @@ abstract class Classes_Dependent_Fix extends Abstract_Node_Fix {
 	 * Apply the fix to a given textnode.
 	 *
 	 * @since 6.0.0 The method was accidentally made public and is now protected.
+	 * @since 7.0.0 All parameters are now required.
 	 *
-	 * @param \DOMText $textnode Required.
-	 * @param Settings $settings Required.
-	 * @param bool     $is_title Optional. Default false.
+	 * @param \DOMText $textnode The DOM node.
+	 * @param Settings $settings The settings to apply.
+	 * @param bool     $is_title Indicates if the processed tokens occur in a title/heading context.
 	 *
 	 * @return void
 	 */
-	abstract protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title = false );
+	abstract protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title );
 }
