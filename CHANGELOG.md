@@ -1,5 +1,8 @@
 # Change History
 
+## 6.5.3 - March 27, 2020
+*   _Bugfix_: Ambiguous `blase` removed from smart diacritics list for `de-DE`.`
+
 ## 6.5.2 - December 7, 2019
 *   _Bugfix_: PHP 7.4 compatibility.
 *   _Bugfix_: Parsing does not break anymore when the returned more `DOMDocument`
