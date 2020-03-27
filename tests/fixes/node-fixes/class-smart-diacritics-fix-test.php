@@ -66,7 +66,6 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'en-US' ],
 			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'en-US' ],
 			[ 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'de-DE' ],
-			[ 'Sie sind schon sehr blase geworden.', 'Sie sind schon sehr blasé geworden.', 'de-DE' ],
 		];
 	}
 
