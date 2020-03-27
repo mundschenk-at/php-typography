@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1060,6 +1060,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			[ 'no diacritics to replace, except creme', 'no diacritics to replace, except crème', 'en-US' ],
 			[ 'ne vs. seine vs einzelne', 'né vs. seine vs einzelne', 'en-US' ],
 			[ 'ne vs. sei&shy;ne vs einzelne', 'né vs. sei&shy;ne vs einzelne', 'en-US' ],
+			[ 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'Weiterhin müssen außenpolitische Experten raus aus ihrer Berliner Blase. In der genannten Umfrage', 'de-DE' ],
 		];
 	}
 
