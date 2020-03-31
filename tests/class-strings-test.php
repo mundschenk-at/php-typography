@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -144,7 +144,6 @@ class Strings_Test extends \PHPUnit\Framework\TestCase {
 			[ 'A ship', 1, [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
 			[ 'Äöüß', 1, [ 'Ä', 'ö', 'ü', 'ß' ] ],
 			[ 'Äöüß', 2, [ 'Äö', 'üß' ] ],
-			[ 'Äöüß', 0, [ 'Ä', 'ö', 'ü', 'ß' ] ],
 		];
 	}
 
