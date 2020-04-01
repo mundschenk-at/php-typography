@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2020 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -100,30 +100,25 @@ abstract class Strings {
 	}
 
 	/**
-	 * Multibyte-safe str_split function.
+	 * Multibyte-safe str_split function. Unlike regular str_split, behavior for
+	 * `$split_length` < 1 is undefined and may or may not result in an error
+	 * being raised.
 	 *
-	 * Unlike str_split, a $split_length less than 1 is ignored (and thus
-	 * equivalent to the default).
+	 * @param string $string       The input string.
+	 * @param int    $split_length Optional. Maximum length of the chunk. Default 1.
 	 *
-	 * @param string $str           Required.
-	 * @param int    $split_length  Optional. Default 1.
-	 *
-	 * @return array                An array of $split_length character chunks.
+	 * @return string[]            An array of $split_length character chunks.
 	 */
-	public static function mb_str_split( $str, $split_length = 1 ) {
-		// We can safely cast to an array here, as long as $str convertible to a string.
-		$result = (array) \preg_split( '//u', $str , -1, PREG_SPLIT_NO_EMPTY );
-
-		if ( $split_length > 1 ) {
-			$splits = [];
-			foreach ( \array_chunk( $result, $split_length ) as $chunk ) {
-				$splits[] = \join( '', $chunk );
-			}
-
-			$result = $splits;
+	public static function mb_str_split( $string, $split_length = 1 ) {
+		// Checking here is not optimal, the check should be made on instantiation
+		// when the class is refactored.
+		if ( \function_exists( 'mb_str_split' ) ) {
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound
+			return (array) \mb_str_split( $string, $split_length, 'UTF-8' );
 		}
 
-		return $result;
+		// We can safely cast to an array here, as long as $string convertible to a string.
+		return (array) \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE );
 	}
 
 	/**

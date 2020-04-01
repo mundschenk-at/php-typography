@@ -1,5 +1,8 @@
 # Change History
 
+## 6.6.0 - unreleased
+*   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
+
 ## 6.5.3 - March 27, 2020
 *   _Bugfix_: Ambiguous `blase` removed from smart diacritics list for `de-DE`.`
 
