@@ -111,7 +111,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_segment( $pattern ) {
-		return preg_replace( '/[0-9]/', '', str_replace( '.', '_', $pattern ) );
+		return \preg_replace( '/[0-9]/', '', \str_replace( '.', '_', $pattern ) );
 	}
 
 	/**
@@ -124,15 +124,15 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_sequence( $pattern ) {
-		$characters = Strings::mb_str_split( str_replace( '.', '_', $pattern ) );
+		$characters = Strings::mb_str_split( \str_replace( '.', '_', $pattern ) );
 		$result     = [];
 
 		foreach ( $characters as $index => $chr ) {
-			if ( ctype_digit( $chr ) ) {
+			if ( \ctype_digit( $chr ) ) {
 				$result[] = $chr;
 			} else {
 				// Append '0' if this is the first character or the previous character was not a number.
-				if ( ! isset( $characters[ $index - 1 ] ) || ! ctype_digit( $characters[ $index - 1 ] ) ) {
+				if ( ! isset( $characters[ $index - 1 ] ) || ! \ctype_digit( $characters[ $index - 1 ] ) ) {
 					$result[] = '0';
 				}
 
@@ -144,9 +144,9 @@ class Pattern_Converter {
 		}
 
 		// Do some error checking.
-		$count     = count( $result );
-		$count_seg = mb_strlen( $this->get_segment( $pattern ) );
-		$sequence  = implode( '', $result );
+		$count     = \count( $result );
+		$count_seg = \mb_strlen( $this->get_segment( $pattern ) );
+		$sequence  = \implode( '', $result );
 
 		if ( $count !== $count_seg + 1 ) {
 			throw new \RangeException( "Invalid segment length $count for pattern $pattern (result sequence $sequence)." );
@@ -182,18 +182,18 @@ class Pattern_Converter {
 		// Produce a nice exceptions mapping.
 		$json_exceptions = [];
 		foreach ( $exceptions as $exception ) {
-			$json_exceptions[ mb_strtolower( str_replace( '-', '', $exception ) ) ] = mb_strtolower( $exception );
+			$json_exceptions[ \mb_strtolower( \str_replace( '-', '', $exception ) ) ] = \mb_strtolower( $exception );
 		}
 
 		$json_results = [
 			'language'    => $this->language,
-			'source_url'  => count( $this->urls ) > 1 ? $this->urls : $this->urls[0],
-			'copyright'   => array_map( 'rtrim', $comments ),
+			'source_url'  => \count( $this->urls ) > 1 ? $this->urls : $this->urls[0],
+			'copyright'   => \array_map( 'rtrim', $comments ),
 			'exceptions'  => $json_exceptions,
 			'patterns'    => $pattern_mapping,
 		];
 
-		return json_encode( $json_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		return \json_encode( $json_results, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
@@ -212,22 +212,22 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
-		if ( preg_match( '/^\s*(' . $this->word_class . '+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
-		} if ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} if ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$this->match_exceptions( $matches[1], $exceptions, $line_no );
 			return false;
-		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
 			}
-		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// Ignore comments and whitespace in exceptions.
 			return true;
 		} else {
@@ -249,18 +249,18 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
-		if ( preg_match( '/^\s*(' . $this->word_class . '+)\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
-		} elseif ( preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
-		} elseif ( preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
 			// Ignore comments and whitespace in patterns.
 			return true;
 		} else {
@@ -281,12 +281,12 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function expand_macros( $line, array $macros ) {
-		if ( 0 < preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, PREG_SET_ORDER ) ) {
+		if ( 0 < \preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, \PREG_SET_ORDER ) ) {
 			foreach ( $matches as $m ) {
 				if ( ! empty( $macros[ $m['name'] ] ) ) {
-					$expanded = preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
-					$pattern  = preg_quote( $m[0], '/' );
-					$line     = preg_replace( "/{$pattern}/u", $expanded, $line );
+					$expanded = \preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
+					$pattern  = \preg_quote( $m[0], '/' );
+					$line     = \preg_replace( "/{$pattern}/u", $expanded, $line );
 				}
 			}
 		}
@@ -341,7 +341,7 @@ class Pattern_Converter {
 	 * @throws \RuntimeException Thrown when file does not exist.
 	 */
 	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) {
-		if ( ! file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
+		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
 			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
 		}
 
@@ -364,25 +364,25 @@ class Pattern_Converter {
 				$reading_exceptions = $this->match_exceptions( $this->expand_macros( $line, $macros ), $exceptions, $line_no );
 			} else {
 				// Not a pattern & not an exception.
-				if ( preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
+				if ( \preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
 					$comments[] = $line;
-				} elseif ( preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
 					$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
-				} elseif ( preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
 					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
-				} elseif ( preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
 					// Ignore this line completely.
 					continue;
-				} elseif ( preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
 					// Add a macro definition.
 					$macros[ $matches[1] ] = $matches[2];
-				} elseif ( preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
 					// Add a macro definition and expand any contained macros.
 					$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
-				} elseif ( preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
 					// Treat other commands as comments unless we are matching exceptions or patterns.
 					$comments[] = $line;
-				} elseif ( preg_match( '/^\s*$/u', $line, $matches ) ) {
+				} elseif ( \preg_match( '/^\s*$/u', $line, $matches ) ) {
 					continue; // Do nothing.
 				} else {
 					throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
