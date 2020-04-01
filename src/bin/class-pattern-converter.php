@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,11 +53,11 @@ class Pattern_Converter {
 	protected $language;
 
 	/**
-	 * Allowed word characters in PCRE syntax.
+	 * A word character class in PCRE2 syntax.
 	 *
 	 * @var string
 	 */
-	protected $word_characters;
+	protected $word_class;
 
 	/**
 	 * Creates a new converter object.
@@ -69,27 +69,39 @@ class Pattern_Converter {
 		$this->urls     = (array) $urls;
 		$this->language = $language;
 
-		$this->word_characters = \join(
-			'',
-			[
-				"\w.'ʼ᾽ʼ᾿’",
-				Strings::uchr( 8205, 8204, 768, 769, 771, 772, 775, 776, 784, 803, 805, 814, 817 ),
-				'\p{Mn}',
-				'\p{Bengali}',
-				'\p{Cyrillic}' . Strings::uchr( 7296, 7297, 7298, 7299, 7300, 7301, 7302, 7303, 7304, 65070, 65071 ),
-				'\p{Devanagari}' . Strings::uchr( 2385, 2386 ),
-				'\p{Ethiopic}',
-				'\p{Gujarati}',
-				'\p{Gurmukhi}',
-				'\p{Kannada}',
-				'\p{Malayalam}',
-				'\p{Oriya}',
-				'\p{Tamil}',
-				'\p{Telugu}',
-				'\p{Thai}',
-				'-',
-			]
-		);
+		// We need to use a non-matching group here because strangely PCRE2 does
+		// not allow the "script" classes to be used as part of a real character class.
+		$this->word_class = '(?:' .
+			\join(
+				'|',
+				[
+					'\p{Xan}',     // Alphanumeric characters.
+					"[.'ʼ᾽ʼ᾿’\-]", // Allowed punctuation.
+					'\p{S}',       // Symbols.
+					'\p{Mn}',      // Non-spacing marks (diacritics).
+
+					// Additional code points used by Non-latin scripts.
+					'\p{Bengali}',
+					'\p{Cyrillic}',
+					'\p{Devanagari}',
+					'\p{Ethiopic}',
+					'\p{Gujarati}',
+					'\p{Gurmukhi}',
+					'\p{Kannada}',
+					'\p{Malayalam}',
+					'\p{Oriya}',
+					'\p{Tamil}',
+					'\p{Telugu}',
+					'\p{Thai}',
+
+					// Very special characters.
+					'[' . Strings::uchr(
+						8204, // ZERO WIDTH NON-JOINER.
+						8205  // ZERO WIDTH JOINER.
+					) . ']',
+				]
+			)
+		. ')';
 	}
 
 	/**
@@ -200,17 +212,17 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
-		if ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( preg_match( '/^\s*(' . $this->word_class . '+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
-		} if ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} if ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$this->match_exceptions( $matches[1], $exceptions, $line_no );
 			return false;
 		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([' . $this->word_characters . '-]+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . '-]+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
@@ -237,15 +249,14 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
-		if ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( preg_match( '/^\s*(' . $this->word_class . '+)\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
-		} elseif ( preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( preg_match( '/^\s*([' . $this->word_characters . ']+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( preg_match( '/^\s*((?:[' . $this->word_characters . ']+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
-			// Sometimes there are multiple patterns on a single line.
+		} elseif ( preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
