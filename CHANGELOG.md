@@ -32,7 +32,10 @@
     rendered with an apostrophe.
 
 ## 6.4.3 - January 29, 2019
-*   _Bugfix_: To prevent common false positives for single-letter Roman ordinals (especially in French and Dutch), Roman numeral matching is now only enabled when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`. In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
+*   _Bugfix_: To prevent common false positives for single-letter Roman ordinals
+    (especially in French and Dutch), Roman numeral matching is now only enabled
+    when `Settings::set_smart_ordinal_suffix_match_roman_numerals` is set to `true`.
+    In addition, only `I`, `V`, and `X` are accepted as single-letter Roman numbers.
 
 ## 6.4.2 - January 27, 2019
 *   _Bugfix_: The Unicode hyphen character (`‐`) is recognized as a valid word combiner.
