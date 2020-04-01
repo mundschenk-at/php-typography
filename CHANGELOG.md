@@ -2,6 +2,15 @@
 
 ## 6.6.0 - unreleased
 *   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
+*   _Change_: Significantly updated hyphenation patterns for:
+    -   Amharic
+    -   Chinese pinyin (Latin)
+    -   German
+    -   German (Traditional)
+    -   German (Swiss Traditional)
+    -   Latin (Classical)
+    -   Latin (Liturgical)
+    -   Spanish
 
 ## 6.5.3 - March 27, 2020
 *   _Bugfix_: Ambiguous `blase` removed from smart diacritics list for `de-DE`.`
