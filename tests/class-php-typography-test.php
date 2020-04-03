@@ -39,7 +39,7 @@ use PHP_Typography\Fixes\Registry;
 
 use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
 
-use \Mockery as m;
+use Mockery as m;
 
 /**
  * PHP_Typography unit test.

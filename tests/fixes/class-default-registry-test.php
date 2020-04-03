@@ -31,7 +31,7 @@ use PHP_Typography\Fixes\Token_Fix;
 
 use PHP_Typography\Tests\Testcase;
 
-use \Mockery as m;
+use Mockery as m;
 
 /**
  * PHP_Typography unit test.

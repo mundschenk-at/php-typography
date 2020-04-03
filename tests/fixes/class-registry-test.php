@@ -35,7 +35,7 @@ use PHP_Typography\U;
 
 use PHP_Typography\Tests\Testcase;
 
-use \Mockery as m;
+use Mockery as m;
 
 /**
  * PHP_Typography unit test.
