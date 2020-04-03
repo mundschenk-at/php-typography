@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use PHP_Typography\Strings;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
@@ -41,9 +42,9 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 	 *
 	 * @return array
 	 */
-	protected function tokenize( $value, $type = \PHP_Typography\Text_Parser\Token::WORD ) {
+	protected function tokenize( $value, $type = Token::WORD ) {
 		return [
-			new \PHP_Typography\Text_Parser\Token( $value, $type ),
+			new Token( $value, $type ),
 		];
 	}
 
@@ -59,10 +60,26 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 		$tokens = [];
 
 		foreach ( $words as $word ) {
-			$tokens[] = new \PHP_Typography\Text_Parser\Token( $word, \PHP_Typography\Text_Parser\Token::WORD );
+			$tokens[] = new Token( $word, Token::WORD );
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Reports an error identified by $message if the token at $index does not have the $value or $type given.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param  int     $index         A token position.
+	 * @param  string  $value         A token value.
+	 * @param  int     $type          A Token type constant.
+	 * @param  Token[] $actual_tokens An array of tokens.
+	 * @param  string  $message       Optional. Default ''.
+	 */
+	protected function assert_token( $index, $value, $type, array $actual_tokens, $message = '' ) {
+		$this->assertArrayHasKey( $index, $actual_tokens, 'Token index not found' );
+		$this->assertEquals( new Token( $value, $type ), $actual_tokens[ $index ], $message );
 	}
 
 	/**
@@ -73,7 +90,7 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 	 * @param string       $message        Optional. Default ''.
 	 */
 	protected function assert_tokens_same( $expected_value, array $actual_tokens, $message = '' ) {
-		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
+		$this->assertContainsOnlyInstancesOf( Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
 		}
@@ -87,7 +104,7 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 		}
 
 		// Ensure clean HTML even when a scalar was passed.
-		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
+		$this->assertContainsOnlyInstancesOf( Token::class, $expected_value, '$expected_value has to be a string or an array of tokens.' );
 		$expected = [];
 		foreach ( $expected_value as $index => $token ) {
 			$expected[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
@@ -112,7 +129,7 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 	 * @param string       $message        Optional. Default ''.
 	 */
 	protected function assert_tokens_not_same( $expected_value, array $actual_tokens, $message = '' ) {
-		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
+		$this->assertContainsOnlyInstancesOf( Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
 		}
@@ -124,7 +141,7 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 				$expected = $this->tokenize( $expected_value );
 			}
 		} else {
-			$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, (array) $expected_value, '$expected_value has to be a string or an array of tokens.' );
+			$this->assertContainsOnlyInstancesOf( Token::class, (array) $expected_value, '$expected_value has to be a string or an array of tokens.' );
 			$expected = $expected_value;
 		}
 
