@@ -63,8 +63,8 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 		$feed_fix     = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ true ] );
 		$non_feed_fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ false ] );
 
-		$this->assertAttributeEquals( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
-		$this->assertAttributeEquals( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
+		$this->assert_attribute_same( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

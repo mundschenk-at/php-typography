@@ -72,8 +72,8 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	public function test_constructor() {
 		$fix = new Token_Fixes\Hyphenate_Fix( null, Token_Fix::COMPOUND_WORDS, true );
 
-		$this->assertAttributeEquals( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
-		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
+		$this->assert_attribute_same( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

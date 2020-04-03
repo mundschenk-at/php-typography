@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -83,8 +83,8 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 		$bound        = $this->construct_caller->bindTo( $non_feed_fix, $non_feed_fix );
 		$bound( Token_Fix::WORDS, false );
 
-		$this->assertAttributeEquals( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
-		$this->assertAttributeEquals( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
+		$this->assert_attribute_same( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

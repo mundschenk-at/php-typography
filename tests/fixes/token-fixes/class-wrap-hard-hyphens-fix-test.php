@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@ class Wrap_Hard_Hyphens_Fix_Test extends Token_Fix_Testcase {
 	public function test_constructor() {
 		$fix = new Token_Fixes\Wrap_Hard_Hyphens_Fix( true );
 
-		$this->assertAttributeEquals( Token_Fix::MIXED_WORDS, 'target', $fix, 'The fixer should be targetting MIXED_WORDS tokens.' );
-		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( Token_Fix::MIXED_WORDS, 'target', $fix, 'The fixer should be targetting MIXED_WORDS tokens.' );
+		$this->assert_attribute_same( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

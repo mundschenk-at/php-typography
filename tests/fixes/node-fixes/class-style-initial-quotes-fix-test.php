@@ -66,8 +66,8 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = new Node_Fixes\Style_Initial_Quotes_Fix( 'single', 'double' );
 
-		$this->assertAttributeEquals( 'single', 'single_quote_class', $this->fix );
-		$this->assertAttributeEquals( 'double', 'double_quote_class', $this->fix );
+		$this->assert_attribute_same( 'single', 'single_quote_class', $this->fix );
+		$this->assert_attribute_same( 'double', 'double_quote_class', $this->fix );
 	}
 
 	/**

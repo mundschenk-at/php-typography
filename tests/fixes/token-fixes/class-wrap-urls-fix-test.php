@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -67,8 +67,8 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	public function test_constructor() {
 		$fix = new Token_Fixes\Wrap_URLs_Fix( null, true );
 
-		$this->assertAttributeEquals( Token_Fix::OTHER, 'target', $fix, 'The fixer should be targetting OTHER tokens.' );
-		$this->assertAttributeEquals( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( Token_Fix::OTHER, 'target', $fix, 'The fixer should be targetting OTHER tokens.' );
+		$this->assert_attribute_same( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**

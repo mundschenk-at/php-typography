@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ class Smart_Ordinal_Suffix_Fix_Test extends Node_Fix_Testcase {
 	public function test_array_constructor() {
 		$this->fix = new Node_Fixes\Smart_Ordinal_Suffix_Fix( 'foo' );
 
-		$this->assertAttributeEquals( RE::escape_tags( '$1<sup class="foo">$2</sup>' ), 'replacement', $this->fix, 'The replacement CSS class should be "foo".' );
+		$this->assert_attribute_same( RE::escape_tags( '$1<sup class="foo">$2</sup>' ), 'replacement', $this->fix, 'The replacement CSS class should be "foo".' );
 	}
 
 	/**
