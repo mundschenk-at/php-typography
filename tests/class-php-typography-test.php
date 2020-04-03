@@ -145,8 +145,10 @@ class PHP_Typography_Test extends Testcase {
 	 * @uses PHP_Typography\Text_Parser\Token
 	 */
 	public function test_set_tags_to_ignore() {
+		// Syntax shortening.
 		$s = $this->s;
 
+		// Constants.
 		$always_ignore = [
 			'iframe',
 			'textarea',
@@ -166,30 +168,33 @@ class PHP_Typography_Test extends Testcase {
 			'math',
 		];
 
+		// Input.
+		$tags_to_ignore = [
+			'code',
+			'head',
+			'kbd',
+			'object',
+			'option',
+			'pre',
+			'samp',
+			'script',
+			'noscript',
+			'noembed',
+			'select',
+			'style',
+			'textarea',
+			'title',
+			'var',
+			'math',
+		];
+
 		// Default tags.
-		$s->set_tags_to_ignore(
-			[
-				'code',
-				'head',
-				'kbd',
-				'object',
-				'option',
-				'pre',
-				'samp',
-				'script',
-				'noscript',
-				'noembed',
-				'select',
-				'style',
-				'textarea',
-				'title',
-				'var',
-				'math',
-			]
-		);
+		$s->set_tags_to_ignore( $tags_to_ignore );
 
 		// Inspect settings.
-		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
+		foreach ( $tags_to_ignore as $tag ) {
+			$this->assertContains( $tag, $s['ignoreTags'] );
+		}
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}

@@ -370,12 +370,15 @@ class Settings_Test extends Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
-		$s             = $this->settings;
-		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
+		$s              = $this->settings;
+		$always_ignore  = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
+		$tags_to_ignore = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ];
 
 		// Default tags.
-		$s->set_tags_to_ignore( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] );
-		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
+		$s->set_tags_to_ignore( $tags_to_ignore );
+		foreach ( $tags_to_ignore as $tag ) {
+			$this->assertContains( $tag, $s['ignoreTags'] );
+		}
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}

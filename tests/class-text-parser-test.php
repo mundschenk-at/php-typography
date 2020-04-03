@@ -98,9 +98,9 @@ class Text_Parser_Test extends Testcase {
 		$tokens = $parser->get_all();
 
 		$this->assertCount( 13, $tokens );
-		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
-		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
-		$this->assertArraySubset( [ 11 => new Token( 'Äöüß', Token::WORD ) ], $tokens );
+		$this->assert_token( 0, 'Quoth', Token::WORD, $tokens );
+		$this->assert_token( 5, ',', Token::PUNCTUATION, $tokens );
+		$this->assert_token( 11, 'Äöüß', Token::WORD, $tokens );
 
 		return $parser;
 	}
@@ -125,9 +125,9 @@ class Text_Parser_Test extends Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 19, $tokens );
 
-		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
-		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
-		$this->assertArraySubset( [ 17 => new Token( 'someone@example.org', Token::OTHER ) ], $tokens );
+		$this->assert_token( 0, 'Quoth', Token::WORD, $tokens );
+		$this->assert_token( 5, ',', Token::PUNCTUATION, $tokens );
+		$this->assert_token( 17, 'someone@example.org', Token::OTHER , $tokens );
 
 		return $parser;
 	}
@@ -152,13 +152,13 @@ class Text_Parser_Test extends Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 33, $tokens );
 
-		$this->assertArraySubset( [ 0 => new Token( 'Quoth', Token::WORD ) ], $tokens );
-		$this->assertArraySubset( [ 5 => new Token( ',', Token::PUNCTUATION ) ], $tokens );
-		$this->assertArraySubset( [ 15 => new Token( 'http://example.org', Token::OTHER ) ], $tokens );
-		$this->assertArraySubset( [ 19 => new Token( 'foo:WordPress', Token::OTHER ) ], $tokens );
-		$this->assertArraySubset( [ 23 => new Token( 'foo:W@rdPress', Token::OTHER ) ], $tokens );
-		$this->assertArraySubset( [ 27 => new Token( '@example', Token::OTHER ) ], $tokens );
-		$this->assertArraySubset( [ 31 => new Token( '@:@:@:risk', Token::OTHER ) ], $tokens );
+		$this->assert_token( 0, 'Quoth', Token::WORD, $tokens );
+		$this->assert_token( 5, ',', Token::PUNCTUATION, $tokens );
+		$this->assert_token( 15, 'http://example.org', Token::OTHER, $tokens );
+		$this->assert_token( 19, 'foo:WordPress', Token::OTHER, $tokens );
+		$this->assert_token( 23, 'foo:W@rdPress', Token::OTHER, $tokens );
+		$this->assert_token( 27, '@example', Token::OTHER, $tokens );
+		$this->assert_token( 31, '@:@:@:risk', Token::OTHER, $tokens );
 
 		return $parser;
 	}
@@ -183,9 +183,9 @@ class Text_Parser_Test extends Testcase {
 		$tokens = $parser->get_all();
 		$this->assertCount( 10, $tokens );
 
-		$this->assertArraySubset( [ 0 => new Token( 'Some', Token::WORD ) ], $tokens );
-		$this->assertArraySubset( [ 2 => new Token( "don't", Token::OTHER ) ], $tokens );
-		$this->assertArraySubset( [ 8 => new Token( 'captain-owner', Token::WORD ) ], $tokens );
+		$this->assert_token( 0, 'Some', Token::WORD, $tokens );
+		$this->assert_token( 2, "don't", Token::OTHER, $tokens );
+		$this->assert_token( 8, 'captain-owner', Token::WORD, $tokens );
 
 		return $parser;
 	}
@@ -660,6 +660,6 @@ class Text_Parser_Test extends Testcase {
 			}
 		}
 
-		$this->assertArraySubset( $words, $parser->get_type( Token::WORD ) );
+		$this->assertSame( $words, $parser->get_type( Token::WORD ) );
 	}
 }
