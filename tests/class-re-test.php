@@ -44,7 +44,7 @@ class RE_Test extends Testcase {
 	public function test_top_level_domains() {
 		$result = $this->invoke_static_method( RE::class, 'top_level_domains', [] );
 
-		$this->assertInternalType( 'string', $result, 'RE::top_level_domains() should return a string.' );
+		$this->assert_is_string( $result, 'RE::top_level_domains() should return a string.' );
 		$this->assertGreaterThan( 0, strlen( $result ) );
 	}
 
@@ -61,7 +61,7 @@ class RE_Test extends Testcase {
 
 		$result = $this->invoke_static_method( RE::class, 'top_level_domains', [] );
 
-		$this->assertInternalType( 'string', $result, 'RE::top_level_domains() should return a string.' );
+		$this->assert_is_string( $result, 'RE::top_level_domains() should return a string.' );
 		$this->assertGreaterThan( 0, strlen( $result ) );
 	}
 

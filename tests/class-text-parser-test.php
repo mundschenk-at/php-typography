@@ -63,8 +63,8 @@ class Text_Parser_Test extends Testcase {
 	public function test_constructor() {
 		$parser = new Text_Parser();
 
-		$this->assertAttributeCount( 0, 'text', $parser );
-		$this->assertAttributeSame( 'strtoupper', 'current_strtoupper', $parser );
+		$this->assert_attribute_count( 0, 'text', $parser );
+		$this->assert_attribute_same( 'strtoupper', 'current_strtoupper', $parser );
 	}
 
 	/**
@@ -405,46 +405,46 @@ class Text_Parser_Test extends Testcase {
 		$parser->load( 'A few m1xed W0RDS.' );
 		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'few', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'few', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'm1xed', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::NO_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'm1xed', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'A', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'few', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 4, $tokens );
-		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'few', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'A', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'few', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'm1xed', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'W0RDS', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::ALLOW_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( new Token( 'm1xed', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'm1xed', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'W0RDS', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'A', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::ALLOW_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 2, $tokens );
-		$this->assertContains( new Token( 'A', Token::WORD ), $tokens, '', false, false, true );
-		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'A', Token::WORD ), $tokens, '' );
+		$this->assert_contains_equals( new Token( 'W0RDS', Token::WORD ), $tokens, '' );
 
 		$tokens = $parser->get_words( Text_Parser::NO_ALL_LETTERS, Text_Parser::REQUIRE_ALL_CAPS );
 		$this->assertCount( 1, $tokens );
-		$this->assertContains( new Token( 'W0RDS', Token::WORD ), $tokens, '', false, false, true );
+		$this->assert_contains_equals( new Token( 'W0RDS', Token::WORD ), $tokens, '' );
 	}
 
 	/**

@@ -78,9 +78,9 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
-		$this->assertAttributeEmpty( 'data', $second_settings );
+		$this->assert_attribute_empty( 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assertAttributeNotEmpty( 'data', $second_settings );
+		$this->assert_attribute_not_empty( 'data', $second_settings );
 	}
 
 	/**
@@ -99,14 +99,14 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assertAttributeEmpty( 'data', $s );
+		$this->assert_attribute_empty( 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assertAttributeNotEmpty( 'data', $s );
+		$this->assert_attribute_not_empty( 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assertAttributeNotEmpty( 'data', $second_settings );
+		$this->assert_attribute_not_empty( 'data', $second_settings );
 	}
 
 
@@ -289,7 +289,7 @@ class Settings_Test extends Testcase {
 	public function test_custom_units() {
 		$s = $this->settings;
 
-		$this->assertInternalType( 'string', $s->custom_units(), 'The result of custom_units() is not a string.' );
+		$this->assert_is_string( $s->custom_units(), 'The result of custom_units() is not a string.' );
 	}
 
 
@@ -325,7 +325,7 @@ class Settings_Test extends Testcase {
 				return [];
 			}
 		);
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
 	}
 
@@ -346,7 +346,7 @@ class Settings_Test extends Testcase {
 				return [];
 			}
 		);
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
 
 		// PHP < 7.0 raises an error instead of throwing an "exception".
@@ -358,7 +358,7 @@ class Settings_Test extends Testcase {
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$this->assertSame( $old_handler, $s[ Settings::PARSER_ERRORS_HANDLER ] );
 	}
 
@@ -1602,15 +1602,15 @@ class Settings_Test extends Testcase {
 		];
 
 		$s = new Settings( false, $mapping );
-		$this->assertAttributeSame( $mapping, 'unicode_mapping', $s );
+		$this->assert_attribute_same( $mapping, 'unicode_mapping', $s );
 
 		$s->remap_character( 'a', 'a' );
-		$this->assertAttributeSame( [ 'r' => 'z' ], 'unicode_mapping', $s );
+		$this->assert_attribute_same( [ 'r' => 'z' ], 'unicode_mapping', $s );
 
 		$s->remap_character( U::NO_BREAK_NARROW_SPACE, 'x' );
-		$this->assertAttributeCount( 2, 'unicode_mapping', $s );
-		$this->assertAttributeContains( 'x', 'unicode_mapping', $s );
-		$this->assertAttributeSame( 'x', 'no_break_narrow_space', $s );
+		$this->assert_attribute_count( 2, 'unicode_mapping', $s );
+		$this->assert_attribute_contains( 'x', 'unicode_mapping', $s );
+		$this->assert_attribute_same( 'x', 'no_break_narrow_space', $s );
 	}
 
 

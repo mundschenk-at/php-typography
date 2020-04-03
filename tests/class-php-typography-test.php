@@ -2960,7 +2960,7 @@ class PHP_Typography_Test extends Testcase {
 	 */
 	public function test_get_html5_parser() {
 
-		$this->assertAttributeEmpty( 'html5_parser', $this->typo );
+		$this->assert_attribute_empty( 'html5_parser', $this->typo );
 
 		$parser1 = $this->typo->get_html5_parser();
 		$this->assertInstanceOf( '\Masterminds\HTML5', $parser1 );
@@ -2969,7 +2969,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->assertInstanceOf( '\Masterminds\HTML5', $parser2 );
 
 		$this->assertSame( $parser1, $parser2 );
-		$this->assertAttributeInstanceOf( '\Masterminds\HTML5', 'html5_parser', $this->typo );
+		$this->assert_attribute_instance_of( '\Masterminds\HTML5', 'html5_parser', $this->typo );
 	}
 
 	/**

@@ -69,7 +69,7 @@ class DOM_Test extends Testcase {
 	 */
 	public function test_block_tags() {
 		$block_tags = DOM::block_tags( true );
-		$this->assertInternalType( 'array', $block_tags );
+		$this->assert_is_array( $block_tags );
 
 		$tag_names = array_keys( $block_tags );
 		$this->assertContainsOnly( 'string', $tag_names );
@@ -94,7 +94,7 @@ class DOM_Test extends Testcase {
 	 */
 	public function test_inappropriate_tags() {
 		$inappropriate_tags = DOM::inappropriate_tags( true );
-		$this->assertInternalType( 'array', $inappropriate_tags );
+		$this->assert_is_array( $inappropriate_tags );
 
 		$tag_names = array_keys( $inappropriate_tags );
 		$this->assertContainsOnly( 'string', $tag_names );

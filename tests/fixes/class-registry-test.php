@@ -100,7 +100,7 @@ class Registry_Test extends Testcase {
 	public function test_get_node_fixes() {
 		$fixes = $this->r->get_node_fixes();
 
-		$this->assertInternalType( 'array', $fixes );
+		$this->assert_is_array( $fixes );
 		$this->assertCount( count( Registry::GROUPS ), $fixes );
 	}
 
@@ -115,7 +115,7 @@ class Registry_Test extends Testcase {
 			$fake_node_fixer = m::mock( Node_Fix::class );
 
 			$this->r->register_node_fix( $fake_node_fixer, $group );
-			$this->assertContains( $fake_node_fixer, $this->readAttribute( $this->r, 'node_fixes' )[ $group ] );
+			$this->assertContains( $fake_node_fixer, $this->get_value( $this->r, 'node_fixes' )[ $group ] );
 		}
 	}
 

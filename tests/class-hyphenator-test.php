@@ -70,8 +70,8 @@ class Hyphenator_Test extends Testcase {
 		$h2 = new \PHP_Typography\Hyphenator( 'en-US', [ 'foo-bar' ] );
 		$this->assertNotNull( $h2 );
 		$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h2 );
-		$this->assertAttributeSame( 'en-US', 'language', $h2 );
-		$this->assertAttributeCount( 1, 'custom_exceptions', $h2 );
+		$this->assert_attribute_same( 'en-US', 'language', $h2 );
+		$this->assert_attribute_count( 1, 'custom_exceptions', $h2 );
 	}
 
 	/**
@@ -87,20 +87,20 @@ class Hyphenator_Test extends Testcase {
 	public function test_set_language() {
 		$h = $this->h;
 		$h->set_language( 'en-US' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty English-US pattern array' );
-		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty English-US pattern array' );
+		$this->assert_attribute_not_empty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
 		$h->set_language( 'foobar' );
-		$this->assertAttributeEmpty( 'pattern_trie', $h );
-		$this->assertAttributeEmpty( 'pattern_exceptions', $h );
+		$this->assert_attribute_empty( 'pattern_trie', $h );
+		$this->assert_attribute_empty( 'pattern_exceptions', $h );
 
 		$h->set_language( 'no' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty Norwegian pattern array' );
-		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' ); // Norwegian has exceptions.
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty Norwegian pattern array' );
+		$this->assert_attribute_not_empty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' ); // Norwegian has exceptions.
 
 		$h->set_language( 'de' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty German pattern array' );
-		$this->assertAttributeEmpty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file.
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty German pattern array' );
+		$this->assert_attribute_empty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file.
 	}
 
 	/**
@@ -126,12 +126,12 @@ class Hyphenator_Test extends Testcase {
 		);
 		$h->set_language( 'en-US' );
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
-		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty pattern array' );
+		$this->assert_attribute_not_empty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
 		$h->set_language( 'de' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
-		$this->assertAttributeEmpty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file.
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty pattern array' );
+		$this->assert_attribute_empty( 'pattern_exceptions', $h, 'Unexpected pattern exceptions found' ); // no exceptions in the German pattern file.
 	}
 
 	/**
@@ -148,12 +148,12 @@ class Hyphenator_Test extends Testcase {
 		$h = $this->h;
 
 		$h->set_language( 'en-US' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
-		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty pattern array' );
+		$this->assert_attribute_not_empty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 
 		$h->set_language( 'en-US' );
-		$this->assertAttributeNotEmpty( 'pattern_trie', $h, 'Empty pattern array' );
-		$this->assertAttributeNotEmpty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
+		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty pattern array' );
+		$this->assert_attribute_not_empty( 'pattern_exceptions', $h, 'Empty pattern exceptions array' );
 	}
 
 	/**
@@ -190,18 +190,18 @@ class Hyphenator_Test extends Testcase {
 			if ( ! empty( $exceptions ) ) {
 
 				// Exceptions have to be strings.
-				$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
+				$this->assert_attribute_contains_only( 'string', 'custom_exceptions', $h );
 
 				// Assert count.
-				$this->assertAttributeCount( $count, 'custom_exceptions', $h );
+				$this->assert_attribute_count( $count, 'custom_exceptions', $h );
 			} else {
-				$this->assertAttributeEmpty( 'custom_exceptions', $h );
+				$this->assert_attribute_empty( 'custom_exceptions', $h );
 			}
 
 			// Assert existence of individual exceptions.
 			foreach ( $exceptions as $exception ) {
 				$exception = mb_strtolower( $exception ); // Exceptions are stored all lowercase.
-				$this->assertAttributeContains( $exception, 'custom_exceptions', $h, "Exception $exception not found in round $i" );
+				$this->assert_attribute_contains( $exception, 'custom_exceptions', $h, "Exception $exception not found in round $i" );
 			}
 		}
 	}
@@ -224,15 +224,15 @@ class Hyphenator_Test extends Testcase {
 		$h->set_custom_exceptions( $exceptions );
 		$h->set_language( 'de' ); // German has no pattern exceptions.
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeNotEmpty( 'merged_exception_patterns', $h );
+		$this->assert_attribute_not_empty( 'merged_exception_patterns', $h );
 
 		$exceptions = [ 'Hu-go' ];
 		$h->set_custom_exceptions( $exceptions );
-		$this->assertAttributeEmpty( 'merged_exception_patterns', $h );
+		$this->assert_attribute_empty( 'merged_exception_patterns', $h );
 
-		$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
-		$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
-		$this->assertAttributeCount( 1, 'custom_exceptions', $h );
+		$this->assert_attribute_contains_only( 'string', 'custom_exceptions', $h );
+		$this->assert_attribute_contains( 'hu-go', 'custom_exceptions', $h );
+		$this->assert_attribute_count( 1, 'custom_exceptions', $h );
 	}
 
 	/**
@@ -247,10 +247,10 @@ class Hyphenator_Test extends Testcase {
 		$exceptions = [ 'Hu-go', mb_convert_encoding( 'Fö-ba-ß', 'ISO-8859-2' ) ];
 		$h->set_custom_exceptions( $exceptions );
 
-		$this->assertAttributeContainsOnly( 'string', 'custom_exceptions', $h );
-		$this->assertAttributeContains( 'hu-go', 'custom_exceptions', $h );
-		$this->assertAttributeNotContains( 'fö-ba-ß', 'custom_exceptions', $h );
-		$this->assertAttributeCount( 1, 'custom_exceptions', $h );
+		$this->assert_attribute_contains_only( 'string', 'custom_exceptions', $h );
+		$this->assert_attribute_contains( 'hu-go', 'custom_exceptions', $h );
+		$this->assert_attribute_not_contains( 'fö-ba-ß', 'custom_exceptions', $h );
+		$this->assert_attribute_count( 1, 'custom_exceptions', $h );
 	}
 
 	/**
@@ -526,28 +526,28 @@ class Hyphenator_Test extends Testcase {
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
-		$this->assertAttributeNotCount( 1, 'merged_exception_patterns', $h );
-		$this->assertAttributeNotCount( 2, 'merged_exception_patterns', $h );
+		$this->assert_attribute_not_count( 0, 'merged_exception_patterns', $h );
+		$this->assert_attribute_not_count( 1, 'merged_exception_patterns', $h );
+		$this->assert_attribute_not_count( 2, 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_has_key( 'hugo', 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_has_key( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'de' ); // w/o pattern exceptions.
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeCount( 2, 'merged_exception_patterns', $h );
+		$this->assert_attribute_count( 2, 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_has_key( 'hugo', 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_has_key( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
 		$h->set_custom_exceptions( [] );
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
+		$this->assert_attribute_not_count( 0, 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_not_has_key( 'hugo', 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_not_has_key( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'de' ); // w/o pattern exceptions.
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
-		$this->assertAttributeCount( 0, 'merged_exception_patterns', $h );
+		$this->assert_attribute_count( 0, 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_not_has_key( 'hugo', 'merged_exception_patterns', $h );
 		$this->assert_attribute_array_not_has_key( 'fäviken', 'merged_exception_patterns', $h );
 	}
@@ -592,11 +592,11 @@ class Hyphenator_Test extends Testcase {
 	 */
 	public function test_get_object_hash() {
 		$hash1 = $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ 666 ] );
-		$this->assertInternalType( 'string', $hash1 );
+		$this->assert_is_string( $hash1 );
 		$this->assertGreaterThan( 0, strlen( $hash1 ) );
 
 		$hash2 = $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ new \stdClass() ] );
-		$this->assertInternalType( 'string', $hash2 );
+		$this->assert_is_string( $hash2 );
 		$this->assertGreaterThan( 0, strlen( $hash2 ) );
 
 		$this->assertNotEquals( $hash1, $hash2 );

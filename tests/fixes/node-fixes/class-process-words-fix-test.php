@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 	 * @uses PHP_Typography\Text_Parser::__construct
 	 */
 	public function test_get_text_parser() {
-		$this->assertAttributeEmpty( 'text_parser', $this->fix );
+		$this->assert_attribute_empty( 'text_parser', $this->fix );
 
 		$parser1 = $this->fix->get_text_parser();
 		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser1 );
@@ -95,7 +95,7 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser2 );
 
 		$this->assertSame( $parser1, $parser2 );
-		$this->assertAttributeInstanceOf( '\PHP_Typography\Text_Parser', 'text_parser', $this->fix );
+		$this->assert_attribute_instance_of( '\PHP_Typography\Text_Parser', 'text_parser', $this->fix );
 	}
 
 	/**
@@ -138,7 +138,7 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 		$fake_token_fixer->method( 'target' )->willReturn( Token_Fix::MIXED_WORDS );
 
 		$this->fix->register_token_fix( $fake_token_fixer );
-		$this->assertAttributeContains( $fake_token_fixer, 'token_fixes', $this->fix, 'The registered fixer is not present in the $token_fixes array.' );
+		$this->assert_attribute_contains( $fake_token_fixer, 'token_fixes', $this->fix, 'The registered fixer is not present in the $token_fixes array.' );
 	}
 
 	/**
@@ -160,6 +160,6 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 		$this->fix->register_token_fix( $token_fixer );
 		$this->fix->update_hyphenator_cache( $fake_cache );
 
-		$this->assertAttributeSame( $fake_cache, 'cache', $token_fixer, 'The hyphenator cache was not update correctly.' );
+		$this->assert_attribute_same( $fake_cache, 'cache', $token_fixer, 'The hyphenator cache was not update correctly.' );
 	}
 }

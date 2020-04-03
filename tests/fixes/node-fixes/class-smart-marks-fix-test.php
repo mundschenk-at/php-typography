@@ -63,8 +63,8 @@ class Smart_Marks_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Smart_Marks_Fix::class, [ false ] );
 
-		$this->assertAttributeInternalType( 'array', 'marks', $this->fix );
-		$this->assertAttributeInternalType( 'array', 'replacements', $this->fix );
+		$this->assert_is_array( $this->get_value( $this->fix, 'marks' ) );
+		$this->assert_is_array( $this->get_value( $this->fix, 'replacements' ) );
 	}
 
 	/**

@@ -139,7 +139,7 @@ class Trie_Node_Test extends Testcase {
 		$node = $node->get_node( 'a' );
 
 		$this->assertInstanceOf( Trie_Node::class, $node );
-		$this->assertInternalType( 'array', $node->offsets() );
+		$this->assert_is_array( $node->offsets() );
 		$this->assertGreaterThan( 0, count( $node->offsets() ) );
 
 		return $trie;
