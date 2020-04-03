@@ -529,14 +529,14 @@ class Hyphenator_Test extends Testcase {
 		$this->assertAttributeNotCount( 0, 'merged_exception_patterns', $h );
 		$this->assertAttributeNotCount( 1, 'merged_exception_patterns', $h );
 		$this->assertAttributeNotCount( 2, 'merged_exception_patterns', $h );
-		$this->assert_attribute_array_has_kay( 'hugo', 'merged_exception_patterns', $h );
-		$this->assert_attribute_array_has_kay( 'fäviken', 'merged_exception_patterns', $h );
+		$this->assert_attribute_array_has_key( 'hugo', 'merged_exception_patterns', $h );
+		$this->assert_attribute_array_has_key( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'de' ); // w/o pattern exceptions.
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assertAttributeCount( 2, 'merged_exception_patterns', $h );
-		$this->assert_attribute_array_has_kay( 'hugo', 'merged_exception_patterns', $h );
-		$this->assert_attribute_array_has_kay( 'fäviken', 'merged_exception_patterns', $h );
+		$this->assert_attribute_array_has_key( 'hugo', 'merged_exception_patterns', $h );
+		$this->assert_attribute_array_has_key( 'fäviken', 'merged_exception_patterns', $h );
 
 		$h->set_language( 'en-US' ); // w/ pattern exceptions.
 		$h->set_custom_exceptions( [] );
