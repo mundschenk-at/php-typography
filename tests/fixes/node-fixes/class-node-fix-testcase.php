@@ -53,7 +53,7 @@ abstract class Node_Fix_Testcase extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
+	protected function set_up() {
 		$this->s = new Settings( true );
 	}
 

@@ -46,8 +46,8 @@ class Cache_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->c = new \PHP_Typography\Hyphenator\Cache();
 	}

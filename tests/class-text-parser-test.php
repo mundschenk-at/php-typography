@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->parser = new \PHP_Typography\Text_Parser();
 	}
@@ -491,7 +491,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 		$parser = $this->parser;
 		$token  = new Token( $value, $type );
 
-		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_letters_policy', [ $token, $policy ] ) );
+		$this->assertSame( $result, $this->invoke_method( $parser, 'conforms_to_letters_policy', [ $token, $policy ] ) );
 	}
 
 	/**
@@ -540,7 +540,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 
 		$token = new Token( $value, $type );
 
-		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_caps_policy', [ $token, $policy ] ) );
+		$this->assertSame( $result, $this->invoke_method( $parser, 'conforms_to_caps_policy', [ $token, $policy ] ) );
 	}
 
 	/**
@@ -589,7 +589,7 @@ class Text_Parser_Test extends PHP_Typography_Testcase {
 
 		$token = new Token( $value, $type );
 
-		$this->assertSame( $result, $this->invokeMethod( $parser, 'conforms_to_compounds_policy', [ $token, $policy ] ) );
+		$this->assertSame( $result, $this->invoke_method( $parser, 'conforms_to_compounds_policy', [ $token, $policy ] ) );
 	}
 
 	/**

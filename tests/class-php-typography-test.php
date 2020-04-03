@@ -116,8 +116,8 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->typo = new PHP_Typography();
 		$this->s    = new Settings( false );
@@ -130,12 +130,12 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_constructor() {
 		$typo = new PHP_Typography();
-		$this->assertNull( $this->getValue( $typo, 'registry' ) );
-		$this->assertFalse( $this->getValue( $typo, 'update_registry_cache' ) );
+		$this->assertNull( $this->get_value( $typo, 'registry' ) );
+		$this->assertFalse( $this->get_value( $typo, 'update_registry_cache' ) );
 
 		$typo = new PHP_Typography( m::mock( Registry::class ) );
-		$this->assertNotNull( $this->getValue( $typo, 'registry' ) );
-		$this->assertTrue( $this->getValue( $typo, 'update_registry_cache' ) );
+		$this->assertNotNull( $this->get_value( $typo, 'registry' ) );
+		$this->assertTrue( $this->get_value( $typo, 'update_registry_cache' ) );
 	}
 
 	/**
@@ -444,9 +444,9 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
 		}
 
-		$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
+		$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
 
-		$this->assertEmpty( @$this->invokeStaticMethod( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$this->assertEmpty( @$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 	}
 
 	/**
@@ -3132,7 +3132,7 @@ class PHP_Typography_Test extends PHP_Typography_Testcase {
 			}
 		}
 
-		$this->assertSame( $result, $this->invokeStaticMethod( PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( PHP_Typography::class, 'arrays_intersect', [ $array1, $array2 ] ) );
 	}
 
 	/**

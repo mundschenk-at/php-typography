@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,8 +52,8 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = new Node_Fixes\Style_Initial_Quotes_Fix( 'single', 'double' );
 	}
@@ -171,7 +171,7 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @param bool   $ignored Ignored.
 	 */
 	public function test_is_single_quote( $quote, $result, $ignored ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_single_quote', [ $quote ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_single_quote', [ $quote ] ) );
 	}
 
 	/**
@@ -186,6 +186,6 @@ class Style_Initial_Quotes_Fix_Test extends Node_Fix_Testcase {
 	 * @param bool   $result  Expected result.
 	 */
 	public function test_is_double_quote( $quote, $ignored, $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_double_quote', [ $quote ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( Node_Fixes\Style_Initial_Quotes_Fix::class, 'is_double_quote', [ $quote ] ) );
 	}
 }

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,16 +66,16 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->r      = m::mock( Registry::class )->makePartial();
 		$this->pw_fix = m::mock( Process_Words_Fix::class );
-		$this->setValue( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
+		$this->set_value( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
 
-		$fixes                              = $this->getValue( $this->r, 'node_fixes', Registry::class );
+		$fixes                              = $this->get_value( $this->r, 'node_fixes', Registry::class );
 		$fixes[ Registry::PROCESS_WORDS ][] = $this->pw_fix;
-		$this->setValue( $this->r, 'node_fixes', $fixes, Registry::class );
+		$this->set_value( $this->r, 'node_fixes', $fixes, Registry::class );
 	}
 
 	/**

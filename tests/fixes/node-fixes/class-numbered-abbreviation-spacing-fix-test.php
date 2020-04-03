@@ -50,8 +50,8 @@ class Numbered_Abbreviation_Spacing_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = new Node_Fixes\Numbered_Abbreviation_Spacing_Fix();
 	}

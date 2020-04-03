@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,144 +29,7 @@ use PHP_Typography\Strings;
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
  */
-abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
-
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 */
-	protected function tearDown() {
-		\Brain\Monkey\tearDown();
-		parent::tearDown();
-	}
-
-	/**
-	 * Return encoded HTML string (everything except <>"').
-	 *
-	 * @param string $html A HTML fragment.
-	 */
-	protected function clean_html( $html ) {
-		// Convert everything except Latin and Cyrillic and Thai.
-		static $convmap = [ // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-			// Simple Latin characters.
-			0x80,   0x03ff,   0, 0xffffff,
-			// Cyrillic characters.
-			0x0514, 0x0dff,   0, 0xffffff,
-			// Thai characters.
-			0x0e7f, 0x10ffff, 0, 0xffffff,
-		]; // phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-
-		return str_replace( [ '&lt;', '&gt;' ], [ '<', '>' ], mb_encode_numericentity( htmlentities( $html, ENT_NOQUOTES, 'UTF-8', false ), $convmap, 'UTF-8' ) );
-	}
-
-	/**
-	 * Call protected/private method of a class.
-	 *
-	 * @param object $object      Instantiated object that we will run method on.
-	 * @param string $method_name Method name to call.
-	 * @param array  $parameters  Array of parameters to pass into method.
-	 * @param string $classname   Optional. The class to use for accessing private properties.
-	 *
-	 * @return mixed Method return.
-	 */
-	protected function invokeMethod( $object, $method_name, array $parameters = [], $classname = '' ) {
-		if ( empty( $classname ) ) {
-			$classname = get_class( $object );
-		}
-
-		$reflection = new \ReflectionClass( $classname );
-		$method     = $reflection->getMethod( $method_name );
-		$method->setAccessible( true );
-
-		return $method->invokeArgs( $object, $parameters );
-	}
-
-	/**
-	 * Call protected/private method of a class.
-	 *
-	 * @param string $classname   A class that we will run the method on.
-	 * @param string $method_name Method name to call.
-	 * @param array  $parameters  Array of parameters to pass into method.
-	 *
-	 * @return mixed Method return.
-	 */
-	protected function invokeStaticMethod( $classname, $method_name, array $parameters = [] ) {
-		$reflection = new \ReflectionClass( $classname );
-		$method     = $reflection->getMethod( $method_name );
-		$method->setAccessible( true );
-
-		return $method->invokeArgs( null, $parameters );
-	}
-
-	/**
-	 * Sets the value of a private/protected property of a class.
-	 *
-	 * @param string     $classname     A class whose property we will access.
-	 * @param string     $property_name Property to set.
-	 * @param mixed|null $value         The new value.
-	 */
-	protected function setStaticValue( $classname, $property_name, $value ) {
-		$reflection = new \ReflectionClass( $classname );
-		$property   = $reflection->getProperty( $property_name );
-		$property->setAccessible( true );
-		$property->setValue( $value );
-	}
-
-	/**
-	 * Sets the value of a private/protected property of a class.
-	 *
-	 * @param object     $object        Instantiated object that we will run method on.
-	 * @param string     $property_name Property to set.
-	 * @param mixed|null $value         The new value.
-	 * @param string     $classname     Optional. The class to use for accessing private properties.
-	 */
-	protected function setValue( $object, $property_name, $value, $classname = '' ) {
-		if ( empty( $classname ) ) {
-			$classname = get_class( $object );
-		}
-
-		$reflection = new \ReflectionClass( $classname );
-		$property   = $reflection->getProperty( $property_name );
-		$property->setAccessible( true );
-		$property->setValue( $object, $value );
-	}
-
-	/**
-	 * Retrieves the value of a private/protected property of a class.
-	 *
-	 * @param string $classname     A class whose property we will access.
-	 * @param string $property_name Property to set.
-	 *
-	 * @return mixed
-	 */
-	protected function getStaticValue( $classname, $property_name ) {
-		$reflection = new \ReflectionClass( $classname );
-		$property   = $reflection->getProperty( $property_name );
-		$property->setAccessible( true );
-
-		return $property->getValue();
-	}
-
-	/**
-	 * Retrieves the value of a private/protected property of a class.
-	 *
-	 * @param object $object        Instantiated object that we will run method on.
-	 * @param string $property_name Property to set.
-	 * @param string $classname     Optional. The class to use for accessing private properties.
-	 *
-	 * @return mixed
-	 */
-	protected function getValue( $object, $property_name, $classname = '' ) {
-		if ( empty( $classname ) ) {
-			$classname = get_class( $object );
-		}
-
-		$reflection = new \ReflectionClass( $classname );
-		$property   = $reflection->getProperty( $property_name );
-		$property->setAccessible( true );
-
-		return $property->getValue( $object );
-	}
+abstract class PHP_Typography_Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 
 	/**
 	 * Helper function to generate a valid token list from strings.
@@ -207,7 +70,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param array        $actual_tokens  A token array.
 	 * @param string       $message        Optional. Default ''.
 	 */
-	protected function assertTokensSame( $expected_value, array $actual_tokens, $message = '' ) {
+	protected function assert_tokens_same( $expected_value, array $actual_tokens, $message = '' ) {
 		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
@@ -246,7 +109,7 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	 * @param array        $actual_tokens  A token array.
 	 * @param string       $message        Optional. Default ''.
 	 */
-	protected function assertTokensNotSame( $expected_value, array $actual_tokens, $message = '' ) {
+	protected function assert_tokens_not_same( $expected_value, array $actual_tokens, $message = '' ) {
 		$this->assertContainsOnlyInstancesOf( \PHP_Typography\Text_Parser\Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );
@@ -276,45 +139,13 @@ abstract class PHP_Typography_Testcase extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Reports an error identified by $message if $attribute in $object does not have the $key.
-	 *
-	 * @param string $key       The array key.
-	 * @param string $attribute The attribute name.
-	 * @param object $object    The object.
-	 * @param string $message   Optional. Default ''.
-	 */
-	protected function assertAttributeArrayHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref  = new \ReflectionClass( get_class( $object ) );
-		$prop = $ref->getProperty( $attribute );
-		$prop->setAccessible( true );
-
-		return $this->assertArrayHasKey( $key, $prop->getValue( $object ), $message );
-	}
-
-	/**
-	 * Reports an error identified by $message if $attribute in $object does have the $key.
-	 *
-	 * @param string $key       The array key.
-	 * @param string $attribute The attribute name.
-	 * @param object $object    The object.
-	 * @param string $message   Optional. Default ''.
-	 */
-	protected function assertAttributeArrayNotHasKey( $key, $attribute, $object, $message = '' ) {
-		$ref  = new \ReflectionClass( get_class( $object ) );
-		$prop = $ref->getProperty( $attribute );
-		$prop->setAccessible( true );
-
-		return $this->assertArrayNotHasKey( $key, $prop->getValue( $object ), $message );
-	}
-
-	/**
 	 * Assert that the given quote styles match.
 	 *
 	 * @param string $style Style name.
 	 * @param string $open  Opening quote character.
 	 * @param string $close Closing quote character.
 	 */
-	protected function assertSmartQuotesStyle( $style, $open, $close ) {
+	protected function assert_smart_quotes_style( $style, $open, $close ) {
 		switch ( $style ) {
 			case 'doubleCurled':
 				$this->assertSame( Strings::uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2019 Peter Putzer.
+ *  Copyright 2016-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->settings = new \PHP_Typography\Settings( false );
 	}
@@ -471,7 +471,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
 
-			$this->assertSmartQuotesStyle( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
 		}
 	}
 
@@ -549,7 +549,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
 
-			$this->assertSmartQuotesStyle( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
 		}
 	}
 
@@ -1045,7 +1045,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @param  string   $regex The resulting regular expression.
 	 */
 	public function test_update_unit_pattern( array $units, $regex ) {
-		$result = $this->invokeMethod( $this->settings, 'update_unit_pattern', [ $units ] );
+		$result = $this->invoke_method( $this->settings, 'update_unit_pattern', [ $units ] );
 
 		$this->assertSame( $regex, $result );
 	}
@@ -1690,6 +1690,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @param  array    $result   Expected output array.
 	 */
 	public function test_array_map_assoc( callable $callable, array $array, array $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }

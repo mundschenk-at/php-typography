@@ -56,8 +56,8 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->construct_caller = function( $target, $feed_compatible ) {
 			$this->__construct( $target, $feed_compatible );

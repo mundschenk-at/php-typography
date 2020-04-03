@@ -51,8 +51,8 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->s = new Settings( false );
 	}
@@ -68,6 +68,6 @@ abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
 	protected function assertFixResultSame( $input, $result, $is_title = false, $textnode = null ) {
 		$tokens        = $this->tokenize_sentence( $input );
 		$result_tokens = $this->fix->apply( $tokens, $this->s, $is_title, $textnode );
-		$this->assertTokensSame( $result, $result_tokens );
+		$this->assert_tokens_same( $result, $result_tokens );
 	}
 }
