@@ -32,7 +32,7 @@ use PHP_Typography\RE;
  * @coversDefaultClass \PHP_Typography\RE
  * @usesDefaultClass \PHP_Typography\RE
  */
-class RE_Test extends PHP_Typography_Testcase {
+class RE_Test extends Testcase {
 
 	/**
 	 * Tests top_level_domains.

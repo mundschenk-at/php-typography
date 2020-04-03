@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ use PHP_Typography\DOM;
  * @coversDefaultClass \PHP_Typography\DOM
  * @usesDefaultClass \PHP_Typography\DOM
  */
-class DOM_Test extends PHP_Typography_Testcase {
+class DOM_Test extends Testcase {
 
 	/**
 	 * HTML parser.

@@ -39,8 +39,6 @@ use PHP_Typography\Fixes\Registry;
 
 use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
 
-use Brain\Monkey;
-
 use \Mockery as m;
 
 /**
@@ -96,7 +94,7 @@ use \Mockery as m;
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Numbers_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
  */
-class PHP_Typography_Test extends PHP_Typography_Testcase {
+class PHP_Typography_Test extends Testcase {
 
 	/**
 	 * The PHP_Typography instance.

@@ -28,8 +28,10 @@ use PHP_Typography\Strings;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
+ *
+ * @since 6.6.0 Renamed to Testcase
  */
-abstract class PHP_Typography_Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
+abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 
 	/**
 	 * Helper function to generate a valid token list from strings.

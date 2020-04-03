@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,14 +24,14 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
-use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Tests\Testcase;
 use PHP_Typography\Settings;
 use PHP_Typography\Fixes\Token_Fix;
 
 /**
  * Abstract base class for \PHP_Typography\* unit tests.
  */
-abstract class Token_Fix_Testcase extends PHP_Typography_Testcase {
+abstract class Token_Fix_Testcase extends Testcase {
 
 	/**
 	 * Settings object.

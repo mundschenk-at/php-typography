@@ -31,8 +31,6 @@ use PHP_Typography\U;
 use PHP_Typography\Settings\Dashes;
 use PHP_Typography\Settings\Quotes;
 
-use Brain\Monkey;
-
 use Mockery as m;
 
 /**
@@ -49,7 +47,7 @@ use Mockery as m;
  * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
-class Settings_Test extends PHP_Typography_Testcase {
+class Settings_Test extends Testcase {
 	/**
 	 * Settings fixture.
 	 *

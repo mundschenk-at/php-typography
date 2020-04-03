@@ -32,7 +32,7 @@ namespace PHP_Typography\Tests;
  *
  * @uses PHP_Typography\Hyphenator
  */
-class Hyphenator_Test extends PHP_Typography_Testcase {
+class Hyphenator_Test extends Testcase {
 	/**
 	 * Hyphenator fixture.
 	 *

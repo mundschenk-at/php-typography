@@ -33,7 +33,7 @@ use PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
 
-use Brain\Monkey;
+use PHP_Typography\Tests\Testcase;
 
 use \Mockery as m;
 
@@ -46,7 +46,7 @@ use \Mockery as m;
  * @uses ::register_node_fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  */
-class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
+class Registry_Test extends Testcase {
 
 	/**
 	 * The Registry instance.

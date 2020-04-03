@@ -37,7 +37,7 @@ use PHP_Typography\Text_Parser;
  * @uses PHP_Typography\Text_Parser\Token
  * @uses PHP_Typography\Strings::functions
  */
-class Text_Parser_Test extends PHP_Typography_Testcase {
+class Text_Parser_Test extends Testcase {
 	/**
 	 * The Text_Parser fixture.
 	 *
