@@ -123,14 +123,14 @@ class Registry_Test extends Testcase {
 	 * Tests register_node_fix.
 	 *
 	 * @covers ::register_node_fix
-	 *
-	 * @expectedException \InvalidArgumentException
-	 * @expectedExceptionMessageRegExp /^Invalid fixer group .+\.$/
 	 */
 	public function test_register_node_fix_invalid_group() {
 
 		// Create a stub for the Node_Fix interface.
 		$fake_node_fixer = m::mock( Node_Fix::class );
+
+		$this->expect_exception( \InvalidArgumentException::class );
+		$this->expect_exception_message_matches( '/^Invalid fixer group .+\.$/' );
 
 		$this->r->register_node_fix( $fake_node_fixer, 'invalid group parameter' );
 	}

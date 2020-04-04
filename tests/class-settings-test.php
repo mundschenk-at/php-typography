@@ -351,9 +351,9 @@ class Settings_Test extends Testcase {
 
 		// PHP < 7.0 raises an error instead of throwing an "exception".
 		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expectException( \PHPUnit_Framework_Error::class );
+			$this->expect_exception( \PHPUnit_Framework_Error::class );
 		} else {
-			$this->expectException( \TypeError::class );
+			$this->expect_exception( \TypeError::class );
 		}
 
 		// Invalid handler, previous handler not changed.
@@ -484,12 +484,12 @@ class Settings_Test extends Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
 	 */
 	public function test_set_smart_quotes_primary_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid quote style \w+\.$/' );
 
 		$s->set_smart_quotes_primary( 'invalidStyleName' );
 	}
@@ -562,12 +562,12 @@ class Settings_Test extends Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
 	 */
 	public function test_set_smart_quotes_secondary_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid quote style \w+\.$/' );
 
 		$s->set_smart_quotes_secondary( 'invalidStyleName' );
 	}
@@ -694,12 +694,12 @@ class Settings_Test extends Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
 	 */
 	public function test_set_smart_dashes_style_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid dash style \w+\.$/' );
 
 		$s->set_smart_dashes_style( 'invalidStyleName' );
 	}

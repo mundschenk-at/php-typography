@@ -85,15 +85,16 @@ class Token_Test extends Testcase {
 	 * @covers ::__construct
 	 *
 	 * @dataProvider provide___construct_with_exception_data
-	 * @expectedException \UnexpectedValueException
 	 *
 	 * @param  string $value The token value.
 	 * @param  int    $type  The token type.
 	 */
 	public function test___construct_with_exception( $value, $type ) {
+		$this->expect_exception( \UnexpectedValueException::class );
+
 		$token = new Token( $value, $type );
 
-		$this->$this->assertInstanceOf( Token::class, $token );
+		$this->assertInstanceOf( Token::class, $token );
 	}
 
 	/**
@@ -102,12 +103,13 @@ class Token_Test extends Testcase {
 	 * @covers ::__construct
 	 *
 	 * @dataProvider provide___construct_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value The token value.
 	 * @param  int    $type  The token type.
 	 */
 	public function test___construct_called_twice( $value, $type ) {
+		$this->expect_exception( \BadMethodCallException::class );
+
 		$token = new Token( $value, $type );
 		$token->__construct( 'foo', 0 );
 	}
@@ -166,7 +168,6 @@ class Token_Test extends Testcase {
 	 * @uses ::__construct
 	 *
 	 * @dataProvider provide___set_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value     Token value.
 	 * @param  int    $type      Token type.
@@ -174,7 +175,10 @@ class Token_Test extends Testcase {
 	 * @param  mixed  $new_value Property value to set.
 	 */
 	public function test___set( $value, $type, $property, $new_value ) {
-		$token            = new Token( $value, $type );
+		$token = new Token( $value, $type );
+
+		$this->expect_exception( \BadMethodCallException::class );
+
 		$token->$property = $new_value;
 	}
 
@@ -184,7 +188,6 @@ class Token_Test extends Testcase {
 	 * @uses ::__construct
 	 *
 	 * @dataProvider provide___set_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value     Token value.
 	 * @param  int    $type      Token type.
@@ -193,6 +196,9 @@ class Token_Test extends Testcase {
 	 */
 	public function test___unset( $value, $type, $property, $ignored ) {
 		$token = new Token( $value, $type );
+
+		$this->expect_exception( \BadMethodCallException::class );
+
 		unset( $token->$property );
 	}
 

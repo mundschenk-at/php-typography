@@ -442,9 +442,9 @@ class PHP_Typography_Test extends Testcase {
 	public function test_get_language_plugin_list_incorrect_path() {
 		// PHP < 7.0 raises an error instead of throwing an "exception".
 		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expectException( \PHPUnit_Framework_Error_Warning::class );
+			$this->expect_warning( \PHPUnit_Framework_Error_Warning::class );
 		} else {
-			$this->expectException( \PHPUnit\Framework\Error\Warning::class );
+			$this->expect_warning( \PHPUnit\Framework\Error\Warning::class );
 		}
 
 		$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
@@ -701,9 +701,9 @@ class PHP_Typography_Test extends Testcase {
 
 		// PHP < 7.0 raises an error instead of throwing an "exception".
 		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expectException( \PHPUnit_Framework_Error::class );
+			$this->expect_exception( \PHPUnit_Framework_Error::class );
 		} else {
-			$this->expectException( \TypeError::class );
+			$this->expect_exception( \TypeError::class );
 		}
 
 		$this->typo->process_textnodes( $html, 'bar', $s );
