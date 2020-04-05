@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ use PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
 
-use Brain\Monkey;
+use PHP_Typography\Tests\Testcase;
 
-use \Mockery as m;
+use Mockery as m;
 
 /**
  * PHP_Typography unit test.
@@ -46,7 +46,7 @@ use \Mockery as m;
  * @uses ::register_node_fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Abstract_Node_Fix::__construct
  */
-class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
+class Registry_Test extends Testcase {
 
 	/**
 	 * The Registry instance.
@@ -66,16 +66,16 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->r      = m::mock( Registry::class )->makePartial();
 		$this->pw_fix = m::mock( Process_Words_Fix::class );
-		$this->setValue( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
+		$this->set_value( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
 
-		$fixes                              = $this->getValue( $this->r, 'node_fixes', Registry::class );
+		$fixes                              = $this->get_value( $this->r, 'node_fixes', Registry::class );
 		$fixes[ Registry::PROCESS_WORDS ][] = $this->pw_fix;
-		$this->setValue( $this->r, 'node_fixes', $fixes, Registry::class );
+		$this->set_value( $this->r, 'node_fixes', $fixes, Registry::class );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	public function test_get_node_fixes() {
 		$fixes = $this->r->get_node_fixes();
 
-		$this->assertInternalType( 'array', $fixes );
+		$this->assert_is_array( $fixes );
 		$this->assertCount( count( Registry::GROUPS ), $fixes );
 	}
 
@@ -115,7 +115,7 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 			$fake_node_fixer = m::mock( Node_Fix::class );
 
 			$this->r->register_node_fix( $fake_node_fixer, $group );
-			$this->assertContains( $fake_node_fixer, $this->readAttribute( $this->r, 'node_fixes' )[ $group ] );
+			$this->assertContains( $fake_node_fixer, $this->get_value( $this->r, 'node_fixes' )[ $group ] );
 		}
 	}
 
@@ -123,14 +123,14 @@ class Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
 	 * Tests register_node_fix.
 	 *
 	 * @covers ::register_node_fix
-	 *
-	 * @expectedException \InvalidArgumentException
-	 * @expectedExceptionMessageRegExp /^Invalid fixer group .+\.$/
 	 */
 	public function test_register_node_fix_invalid_group() {
 
 		// Create a stub for the Node_Fix interface.
 		$fake_node_fixer = m::mock( Node_Fix::class );
+
+		$this->expect_exception( \InvalidArgumentException::class );
+		$this->expect_exception_message_matches( '/^Invalid fixer group .+\.$/' );
 
 		$this->r->register_node_fix( $fake_node_fixer, 'invalid group parameter' );
 	}

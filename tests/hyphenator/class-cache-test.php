@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2019 Peter Putzer.
+ *  Copyright 2016-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests\Hyphenator;
 
-use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Tests\Testcase;
 
 /**
  * Test Hyphenator\Cache class.
@@ -34,7 +34,7 @@ use PHP_Typography\Tests\PHP_Typography_Testcase;
  *
  * @uses PHP_Typography\Hyphenator
  */
-class Cache_Test extends PHP_Typography_Testcase {
+class Cache_Test extends Testcase {
 	/**
 	 * Hyphenator\Cache fixture.
 	 *
@@ -46,8 +46,8 @@ class Cache_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->c = new \PHP_Typography\Hyphenator\Cache();
 	}

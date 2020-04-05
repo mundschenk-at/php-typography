@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ use PHP_Typography\DOM;
  * @coversDefaultClass \PHP_Typography\DOM
  * @usesDefaultClass \PHP_Typography\DOM
  */
-class DOM_Test extends PHP_Typography_Testcase {
+class DOM_Test extends Testcase {
 
 	/**
 	 * HTML parser.
@@ -45,8 +45,8 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 	}
@@ -69,7 +69,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_block_tags() {
 		$block_tags = DOM::block_tags( true );
-		$this->assertInternalType( 'array', $block_tags );
+		$this->assert_is_array( $block_tags );
 
 		$tag_names = array_keys( $block_tags );
 		$this->assertContainsOnly( 'string', $tag_names );
@@ -94,7 +94,7 @@ class DOM_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_inappropriate_tags() {
 		$inappropriate_tags = DOM::inappropriate_tags( true );
-		$this->assertInternalType( 'array', $inappropriate_tags );
+		$this->assert_is_array( $inappropriate_tags );
 
 		$tag_names = array_keys( $inappropriate_tags );
 		$this->assertContainsOnly( 'string', $tag_names );

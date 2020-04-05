@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ use PHP_Typography\Fixes\Default_Registry;
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
 
-use Brain\Monkey;
+use PHP_Typography\Tests\Testcase;
 
-use \Mockery as m;
+use Mockery as m;
 
 /**
  * PHP_Typography unit test.
@@ -42,7 +42,7 @@ use \Mockery as m;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class Default_Registry_Test extends \PHP_Typography\Tests\PHP_Typography_Testcase {
+class Default_Registry_Test extends \PHP_Typography\Tests\Testcase {
 
 	/**
 	 * Tests constructor.

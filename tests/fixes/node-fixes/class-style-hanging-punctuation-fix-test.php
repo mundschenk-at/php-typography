@@ -51,8 +51,8 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = new Node_Fixes\Style_Hanging_Punctuation_Fix( 'push-single', 'push-double', 'pull-single', 'pull-double' );
 	}
@@ -67,10 +67,10 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = new Node_Fixes\Style_Hanging_Punctuation_Fix( 'alpha', 'beta', 'gamma', 'delta' );
 
-		$this->assertAttributeEquals( 'alpha', 'push_single_class', $this->fix );
-		$this->assertAttributeEquals( 'beta',  'push_double_class', $this->fix );
-		$this->assertAttributeEquals( 'gamma', 'pull_single_class', $this->fix );
-		$this->assertAttributeEquals( 'delta', 'pull_double_class', $this->fix );
+		$this->assert_attribute_same( 'alpha', 'push_single_class', $this->fix );
+		$this->assert_attribute_same( 'beta',  'push_double_class', $this->fix );
+		$this->assert_attribute_same( 'gamma', 'pull_single_class', $this->fix );
+		$this->assert_attribute_same( 'delta', 'pull_double_class', $this->fix );
 	}
 
 	/**

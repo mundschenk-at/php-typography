@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests\Hyphenator;
 
-use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Tests\Testcase;
 use PHP_Typography\Hyphenator\Trie_Node;
 
 /**
@@ -33,7 +33,7 @@ use PHP_Typography\Hyphenator\Trie_Node;
  * @coversDefaultClass \PHP_Typography\Hyphenator\Trie_Node
  * @usesDefaultClass \PHP_Typography\Hyphenator\Trie_Node
  */
-class Trie_Node_Test extends PHP_Typography_Testcase {
+class Trie_Node_Test extends Testcase {
 
 	/**
 	 * Tests build_trie.
@@ -139,7 +139,7 @@ class Trie_Node_Test extends PHP_Typography_Testcase {
 		$node = $node->get_node( 'a' );
 
 		$this->assertInstanceOf( Trie_Node::class, $node );
-		$this->assertInternalType( 'array', $node->offsets() );
+		$this->assert_is_array( $node->offsets() );
 		$this->assertGreaterThan( 0, count( $node->offsets() ) );
 
 		return $trie;

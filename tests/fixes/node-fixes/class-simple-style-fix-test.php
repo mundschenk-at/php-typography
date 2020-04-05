@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,9 +56,9 @@ class Simple_Style_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Simple_Style_Fix::class, [ '/(.*)/', 'fooBar', 'some-class' ] );
 
-		$this->assertAttributeEquals( '/(.*)/',     'regex',           $this->fix );
-		$this->assertAttributeEquals( 'fooBar',     'settings_switch', $this->fix );
-		$this->assertAttributeEquals( 'some-class', 'css_class',       $this->fix );
+		$this->assert_attribute_same( '/(.*)/',     'regex',           $this->fix );
+		$this->assert_attribute_same( 'fooBar',     'settings_switch', $this->fix );
+		$this->assert_attribute_same( 'some-class', 'css_class',       $this->fix );
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@ class Classes_Dependent_Fix_Test extends Node_Fix_Testcase {
 	public function test_array_constructor() {
 		$fix = $this->getMockForAbstractClass( Node_Fixes\Classes_Dependent_Fix::class, [ [ 'foo', 'bar' ], false ] );
 
-		$this->assertAttributeContains( 'foo',        'classes_to_avoid', $fix, 'The fixer should avoid class "foo".' );
-		$this->assertAttributeContains( 'bar',        'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
-		$this->assertAttributeNotContains( 'foobar',  'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
+		$this->assert_attribute_contains( 'foo',        'classes_to_avoid', $fix, 'The fixer should avoid class "foo".' );
+		$this->assert_attribute_contains( 'bar',        'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
+		$this->assert_attribute_not_contains( 'foobar',  'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Classes_Dependent_Fix_Test extends Node_Fix_Testcase {
 	public function test_string_constructor() {
 		$fix = $this->getMockForAbstractClass( Node_Fixes\Classes_Dependent_Fix::class, [ 'bar', false ] );
 
-		$this->assertAttributeContains( 'bar',    'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
-		$this->assertAttributeNotContains( 'foo', 'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
+		$this->assert_attribute_contains( 'bar',    'classes_to_avoid', $fix, 'The fixer should avoid class "bar".' );
+		$this->assert_attribute_not_contains( 'foo', 'classes_to_avoid', $fix, 'The fixer should not care about class "foobar".' );
 	}
 }

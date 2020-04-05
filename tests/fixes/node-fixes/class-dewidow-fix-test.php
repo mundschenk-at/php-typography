@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = new Dewidow_Fix();
 	}
@@ -154,7 +154,7 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::strip_breaking_characters
 	 */
 	public function test_strip_breaking_characters() {
-		$result = $this->invokeStaticMethod( Dewidow_Fix::class, 'strip_breaking_characters', [ 'foo' . U::SOFT_HYPHEN . 'bar' . U::ZERO_WIDTH_SPACE . 'baz' . U::ZERO_WIDTH_SPACE ] );
+		$result = $this->invoke_static_method( Dewidow_Fix::class, 'strip_breaking_characters', [ 'foo' . U::SOFT_HYPHEN . 'bar' . U::ZERO_WIDTH_SPACE . 'baz' . U::ZERO_WIDTH_SPACE ] );
 
 		$this->assertSame( 'foobarbaz', $result );
 	}
@@ -165,7 +165,7 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::make_space_nonbreaking
 	 */
 	public function test_make_space_nonbreaking() {
-		$result = $this->invokeStaticMethod( Dewidow_Fix::class, 'make_space_nonbreaking', [ 'foo' . U::SOFT_HYPHEN . 'bar ' . U::ZERO_WIDTH_SPACE . ' baz' . U::ZERO_WIDTH_SPACE, U::NO_BREAK_SPACE, 'u' ] );
+		$result = $this->invoke_static_method( Dewidow_Fix::class, 'make_space_nonbreaking', [ 'foo' . U::SOFT_HYPHEN . 'bar ' . U::ZERO_WIDTH_SPACE . ' baz' . U::ZERO_WIDTH_SPACE, U::NO_BREAK_SPACE, 'u' ] );
 
 		$this->assertSame( 'foo' . U::SOFT_HYPHEN . 'bar' . U::NO_BREAK_SPACE . U::ZERO_WIDTH_SPACE . U::NO_BREAK_SPACE . 'baz' . U::ZERO_WIDTH_SPACE, $result );
 	}
@@ -176,10 +176,10 @@ class Dewidow_Fix_Test extends Node_Fix_Testcase {
 	 * @covers ::is_narrow_space
 	 */
 	public function test_is_narrow_space() {
-		$this->assertTrue( $this->invokeStaticMethod( Dewidow_Fix::class, 'is_narrow_space', [ U::THIN_SPACE ] ) );
-		$this->assertTrue( $this->invokeStaticMethod( Dewidow_Fix::class, 'is_narrow_space', [ U::HAIR_SPACE ] ) );
-		$this->assertTrue( $this->invokeStaticMethod( Dewidow_Fix::class, 'is_narrow_space', [ U::NO_BREAK_NARROW_SPACE ] ) );
-		$this->assertFalse( $this->invokeStaticMethod( Dewidow_Fix::class, 'is_narrow_space', [ ' ' ] ) );
-		$this->assertFalse( $this->invokeStaticMethod( Dewidow_Fix::class, 'is_narrow_space', [ 'xxx' ] ) );
+		$this->assertTrue( $this->invoke_static_method( Dewidow_Fix::class, 'is_narrow_space', [ U::THIN_SPACE ] ) );
+		$this->assertTrue( $this->invoke_static_method( Dewidow_Fix::class, 'is_narrow_space', [ U::HAIR_SPACE ] ) );
+		$this->assertTrue( $this->invoke_static_method( Dewidow_Fix::class, 'is_narrow_space', [ U::NO_BREAK_NARROW_SPACE ] ) );
+		$this->assertFalse( $this->invoke_static_method( Dewidow_Fix::class, 'is_narrow_space', [ ' ' ] ) );
+		$this->assertFalse( $this->invoke_static_method( Dewidow_Fix::class, 'is_narrow_space', [ 'xxx' ] ) );
 	}
 }

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 namespace PHP_Typography\Tests\Text_Parser;
 
-use PHP_Typography\Tests\PHP_Typography_Testcase;
+use PHP_Typography\Tests\Testcase;
 use PHP_Typography\Text_Parser\Token;
 
 /**
@@ -33,7 +33,7 @@ use PHP_Typography\Text_Parser\Token;
  * @coversDefaultClass \PHP_Typography\Text_Parser\Token
  * @usesDefaultClass \PHP_Typography\Text_Parser\Token
  */
-class Token_Test extends PHP_Typography_Testcase {
+class Token_Test extends Testcase {
 
 	/**
 	 * Provide value pairs for testing the Token constructor.
@@ -85,15 +85,16 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @dataProvider provide___construct_with_exception_data
-	 * @expectedException \UnexpectedValueException
 	 *
 	 * @param  string $value The token value.
 	 * @param  int    $type  The token type.
 	 */
 	public function test___construct_with_exception( $value, $type ) {
+		$this->expect_exception( \UnexpectedValueException::class );
+
 		$token = new Token( $value, $type );
 
-		$this->$this->assertInstanceOf( Token::class, $token );
+		$this->assertInstanceOf( Token::class, $token );
 	}
 
 	/**
@@ -102,12 +103,13 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @covers ::__construct
 	 *
 	 * @dataProvider provide___construct_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value The token value.
 	 * @param  int    $type  The token type.
 	 */
 	public function test___construct_called_twice( $value, $type ) {
+		$this->expect_exception( \BadMethodCallException::class );
+
 		$token = new Token( $value, $type );
 		$token->__construct( 'foo', 0 );
 	}
@@ -166,7 +168,6 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @uses ::__construct
 	 *
 	 * @dataProvider provide___set_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value     Token value.
 	 * @param  int    $type      Token type.
@@ -174,7 +175,10 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @param  mixed  $new_value Property value to set.
 	 */
 	public function test___set( $value, $type, $property, $new_value ) {
-		$token            = new Token( $value, $type );
+		$token = new Token( $value, $type );
+
+		$this->expect_exception( \BadMethodCallException::class );
+
 		$token->$property = $new_value;
 	}
 
@@ -184,7 +188,6 @@ class Token_Test extends PHP_Typography_Testcase {
 	 * @uses ::__construct
 	 *
 	 * @dataProvider provide___set_data
-	 * @expectedException \BadMethodCallException
 	 *
 	 * @param  string $value     Token value.
 	 * @param  int    $type      Token type.
@@ -193,6 +196,9 @@ class Token_Test extends PHP_Typography_Testcase {
 	 */
 	public function test___unset( $value, $type, $property, $ignored ) {
 		$token = new Token( $value, $type );
+
+		$this->expect_exception( \BadMethodCallException::class );
+
 		unset( $token->$property );
 	}
 

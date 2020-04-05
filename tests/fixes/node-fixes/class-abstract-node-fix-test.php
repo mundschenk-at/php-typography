@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class );
 	}
@@ -63,8 +63,8 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 		$feed_fix     = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ true ] );
 		$non_feed_fix = $this->getMockForAbstractClass( Node_Fixes\Abstract_Node_Fix::class, [ false ] );
 
-		$this->assertAttributeEquals( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
-		$this->assertAttributeEquals( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
+		$this->assert_attribute_same( true,  'feed_compatible', $feed_fix,     'The fixer should be feed_compatible.' );
+		$this->assert_attribute_same( false, 'feed_compatible', $non_feed_fix, 'The fixer should not be feed_compatible.' );
 	}
 
 	/**
@@ -108,6 +108,6 @@ class Abstract_Node_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $result The trimmed string.
 	 */
 	public function test_remove_adjacent_characters( $string, $prev, $next, $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, 'mb_strlen', 'mb_substr', mb_strlen( $prev ), mb_strlen( $next ) ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( Node_Fixes\Abstract_Node_Fix::class, 'remove_adjacent_characters', [ $string, 'mb_strlen', 'mb_substr', mb_strlen( $prev ), mb_strlen( $next ) ] ) );
 	}
 }

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2019 Peter Putzer.
+ *  Copyright 2016-2020 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@ use PHP_Typography\U;
 use PHP_Typography\Settings\Dashes;
 use PHP_Typography\Settings\Quotes;
 
-use Brain\Monkey;
-
 use Mockery as m;
 
 /**
@@ -49,7 +47,7 @@ use Mockery as m;
  * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
-class Settings_Test extends PHP_Typography_Testcase {
+class Settings_Test extends Testcase {
 	/**
 	 * Settings fixture.
 	 *
@@ -61,8 +59,8 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * Sets up the fixture, for example, opens a network connection.
 	 * This method is called before a test is executed.
 	 */
-	protected function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 
 		$this->settings = new \PHP_Typography\Settings( false );
 	}
@@ -80,9 +78,9 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
-		$this->assertAttributeEmpty( 'data', $second_settings );
+		$this->assert_attribute_empty( 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assertAttributeNotEmpty( 'data', $second_settings );
+		$this->assert_attribute_not_empty( 'data', $second_settings );
 	}
 
 	/**
@@ -101,14 +99,14 @@ class Settings_Test extends PHP_Typography_Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assertAttributeEmpty( 'data', $s );
+		$this->assert_attribute_empty( 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assertAttributeNotEmpty( 'data', $s );
+		$this->assert_attribute_not_empty( 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assertAttributeNotEmpty( 'data', $second_settings );
+		$this->assert_attribute_not_empty( 'data', $second_settings );
 	}
 
 
@@ -291,7 +289,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	public function test_custom_units() {
 		$s = $this->settings;
 
-		$this->assertInternalType( 'string', $s->custom_units(), 'The result of custom_units() is not a string.' );
+		$this->assert_is_string( $s->custom_units(), 'The result of custom_units() is not a string.' );
 	}
 
 
@@ -327,7 +325,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 				return [];
 			}
 		);
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
 	}
 
@@ -348,19 +346,19 @@ class Settings_Test extends PHP_Typography_Testcase {
 				return [];
 			}
 		);
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
 
 		// PHP < 7.0 raises an error instead of throwing an "exception".
 		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expectException( \PHPUnit_Framework_Error::class );
+			$this->expect_exception( \PHPUnit_Framework_Error::class );
 		} else {
-			$this->expectException( \TypeError::class );
+			$this->expect_exception( \TypeError::class );
 		}
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
-		$this->assertInternalType( 'callable', $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$this->assertSame( $old_handler, $s[ Settings::PARSER_ERRORS_HANDLER ] );
 	}
 
@@ -372,12 +370,15 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
-		$s             = $this->settings;
-		$always_ignore = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
+		$s              = $this->settings;
+		$always_ignore  = [ 'iframe', 'textarea', 'button', 'select', 'optgroup', 'option', 'map', 'style', 'head', 'title', 'script', 'applet', 'object', 'param', 'svg', 'math' ];
+		$tags_to_ignore = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ];
 
 		// Default tags.
-		$s->set_tags_to_ignore( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] );
-		$this->assertArraySubset( [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ], $s['ignoreTags'] );
+		$s->set_tags_to_ignore( $tags_to_ignore );
+		foreach ( $tags_to_ignore as $tag ) {
+			$this->assertContains( $tag, $s['ignoreTags'] );
+		}
 		foreach ( $always_ignore as $tag ) {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
@@ -471,7 +472,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
 
-			$this->assertSmartQuotesStyle( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
 		}
 	}
 
@@ -483,12 +484,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
 	 */
 	public function test_set_smart_quotes_primary_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid quote style \w+\.$/' );
 
 		$s->set_smart_quotes_primary( 'invalidStyleName' );
 	}
@@ -549,7 +550,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
 
-			$this->assertSmartQuotesStyle( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
 		}
 	}
 
@@ -561,12 +562,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid quote style \w+\.$/
 	 */
 	public function test_set_smart_quotes_secondary_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid quote style \w+\.$/' );
 
 		$s->set_smart_quotes_secondary( 'invalidStyleName' );
 	}
@@ -693,12 +694,12 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
-	 *
-	 * @expectedException \DomainException
-	 * @expectedExceptionMessageRegExp /^Invalid dash style \w+.$/
 	 */
 	public function test_set_smart_dashes_style_invalid() {
 		$s = $this->settings;
+
+		$this->expect_exception( \DomainException::class );
+		$this->expect_exception_message_matches( '/^Invalid dash style \w+\.$/' );
 
 		$s->set_smart_dashes_style( 'invalidStyleName' );
 	}
@@ -1045,7 +1046,7 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @param  string   $regex The resulting regular expression.
 	 */
 	public function test_update_unit_pattern( array $units, $regex ) {
-		$result = $this->invokeMethod( $this->settings, 'update_unit_pattern', [ $units ] );
+		$result = $this->invoke_method( $this->settings, 'update_unit_pattern', [ $units ] );
 
 		$this->assertSame( $regex, $result );
 	}
@@ -1604,15 +1605,15 @@ class Settings_Test extends PHP_Typography_Testcase {
 		];
 
 		$s = new Settings( false, $mapping );
-		$this->assertAttributeSame( $mapping, 'unicode_mapping', $s );
+		$this->assert_attribute_same( $mapping, 'unicode_mapping', $s );
 
 		$s->remap_character( 'a', 'a' );
-		$this->assertAttributeSame( [ 'r' => 'z' ], 'unicode_mapping', $s );
+		$this->assert_attribute_same( [ 'r' => 'z' ], 'unicode_mapping', $s );
 
 		$s->remap_character( U::NO_BREAK_NARROW_SPACE, 'x' );
-		$this->assertAttributeCount( 2, 'unicode_mapping', $s );
-		$this->assertAttributeContains( 'x', 'unicode_mapping', $s );
-		$this->assertAttributeSame( 'x', 'no_break_narrow_space', $s );
+		$this->assert_attribute_count( 2, 'unicode_mapping', $s );
+		$this->assert_attribute_contains( 'x', 'unicode_mapping', $s );
+		$this->assert_attribute_same( 'x', 'no_break_narrow_space', $s );
 	}
 
 
@@ -1690,6 +1691,6 @@ class Settings_Test extends PHP_Typography_Testcase {
 	 * @param  array    $result   Expected output array.
 	 */
 	public function test_array_map_assoc( callable $callable, array $array, array $result ) {
-		$this->assertSame( $result, $this->invokeStaticMethod( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
+		$this->assertSame( $result, $this->invoke_static_method( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }
