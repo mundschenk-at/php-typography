@@ -355,7 +355,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 * @uses PHP_Typography\Strings::mb_str_split
-	 * @uses \mb_convert_encoding
 	 */
 	public function test_hyphenate_wrong_encoding() {
 		$this->h->set_language( 'de' );
@@ -457,8 +456,6 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses ReflectionClass
-	 * @uses ReflectionProperty
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
@@ -502,7 +499,6 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::convert_hyphenation_exception_to_pattern
 	 *
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses \mb_convert_encoding
 	 */
 	public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
 		$h         = $this->h;
