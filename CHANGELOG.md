@@ -1,6 +1,6 @@
 # Change History
 
-## 6.6.0 - unreleased
+## 6.6.0 - April 5, 2020
 *   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
 *   _Change_: Significantly updated hyphenation patterns for:
     -   Amharic
