@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -158,13 +158,13 @@ class Pattern_Converter {
 	/**
 	 * Format hyphenation pattern file for wp-Typography.
 	 *
-	 * @param array $patterns An array of TeX hyphenation patterns.
-	 * @param array $exceptions {
+	 * @param string[] $patterns An array of TeX hyphenation patterns.
+	 * @param string[] $exceptions {
 	 *      An array of hyphenation exceptions.
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @param array $comments An array of TeX comments.
+	 * @param string[] $comments An array of TeX comments.
 	 *
 	 * @return string
 	 */
@@ -193,19 +193,19 @@ class Pattern_Converter {
 			'patterns'    => $pattern_mapping,
 		];
 
-		return \json_encode( $json_results, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+		return (string) \json_encode( $json_results, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
 	 * Try to match squences of TeX hyphenation exceptions.
 	 *
-	 * @param string $line A line from the TeX pattern file.
-	 * @param array  $exceptions {
+	 * @param string   $line A line from the TeX pattern file.
+	 * @param string[] $exceptions {
 	 *      An array of hyphenation exceptions.
 	 *
 	 *      @type string $key Hyphenated key (e.g. 'something' => 'some-thing').
 	 * }
-	 * @param int    $line_no  Optional. Line number. Default 0.
+	 * @param int      $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the exception line is malformed.
 	 *
@@ -240,9 +240,9 @@ class Pattern_Converter {
 	/**
 	 * Try to match a pattern.
 	 *
-	 * @param string $line     A line from the TeX pattern file.
-	 * @param array  $patterns An array of patterns.
-	 * @param int    $line_no  Optional. Line number. Default 0.
+	 * @param string   $line     A line from the TeX pattern file.
+	 * @param string[] $patterns An array of patterns.
+	 * @param int      $line_no  Optional. Line number. Default 0.
 	 *
 	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
@@ -299,11 +299,10 @@ class Pattern_Converter {
 	 *
 	 * @param  string $line A line (fragment).
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
 	private static function split_at_whitespace( $line ) {
-		// We can safely cast to an array here, as long as $line convertible to a string.
-		return (array) \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY );
+		return \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- We can safely assume an array here, as long as $line convertible to a string.
 	}
 
 	/**
@@ -337,10 +336,10 @@ class Pattern_Converter {
 	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
 	 * @param string[] $comments   Extracted comments lines. Passed by reference.
 	 *
-	 * @throws \RangeException Thrown when a line cannot be parsed at all.
-	 * @throws \RuntimeException Thrown when file does not exist.
+	 * @throws \RangeException   Thrown when a line cannot be parsed at all.
+	 * @throws \RuntimeException Thrown when file does not exist or is not readable.
 	 */
-	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) {
+	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) : void {
 		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
 			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
 		}
@@ -355,9 +354,15 @@ class Pattern_Converter {
 		$file    = new \SplFileObject( $url );
 		$line_no = 0;
 		while ( ! $file->eof() ) {
+			// Read the next line.
 			$line = $file->fgets();
+			if ( ! \is_string( $line ) ) {
+				throw new \RuntimeException( "Error reading file '{$url}'\n" );
+			}
+
 			$line_no++;
 
+			// Parse the line.
 			if ( $reading_patterns ) {
 				$reading_patterns = $this->match_patterns( $this->expand_macros( $line, $macros ), $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
