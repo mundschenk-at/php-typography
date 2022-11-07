@@ -11,6 +11,9 @@ node_modules/*
 # SASS
 .sass-cache/*
 
+# PHPUnit cache
+.phpunit.result.cache
+
 # ignore generated code coverage files
 tests/coverage/*
 
