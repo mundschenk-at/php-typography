@@ -1,9 +1,9 @@
 # PHP-Typography
 
-[![Build Status](https://travis-ci.org/mundschenk-at/php-typography.svg?branch=master)](https://travis-ci.org/mundschenk-at/php-typography)
+![Build Status](https://github.com/mundschenk-at/php-typography/actions/workflows/ci.yml/badge.svg)
 [![Latest Stable Version](https://poser.pugx.org/mundschenk-at/php-typography/v/stable)](https://packagist.org/packages/mundschenk-at/php-typography)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mundschenk-at/php-typography/?branch=master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mundschenk-at_php-typography&metric=alert_status)](https://sonarcloud.io/dashboard?id=mundschenk-at_php-typography)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mundschenk-at_php-typography&metric=coverage)](https://sonarcloud.io/dashboard?id=mundschenk-at_php-typography)
 [![License](https://poser.pugx.org/mundschenk-at/php-typography/license)](https://packagist.org/packages/mundschenk-at/php-typography)
 
 A PHP library for improving your web typography:
