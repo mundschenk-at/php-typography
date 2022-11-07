@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -241,7 +241,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string $offset The settings key.
 	 * @param mixed  $value  The settings value.
 	 */
-	public function offsetSet( $offset, $value ) {
+	public function offsetSet( $offset, $value ) : void {
 		if ( ! empty( $offset ) ) {
 			$this->data[ $offset ] = $value;
 		}
@@ -252,7 +252,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @param string $offset The settings key.
 	 */
-	public function offsetExists( $offset ) {
+	public function offsetExists( $offset ) : bool {
 		return isset( $this->data[ $offset ] );
 	}
 
@@ -261,7 +261,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @param string $offset The settings key.
 	 */
-	public function offsetUnset( $offset ) {
+	public function offsetUnset( $offset ) : void {
 		unset( $this->data[ $offset ] );
 	}
 
@@ -272,6 +272,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		return isset( $this->data[ $offset ] ) ? $this->data[ $offset ] : null;
 	}
@@ -281,6 +282,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return \array_merge(
 			$this->data,
