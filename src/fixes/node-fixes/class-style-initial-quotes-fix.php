@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -83,8 +83,14 @@ class Style_Initial_Quotes_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		$node_data       = $textnode->data;
-		$f               = Strings::functions( $node_data );
+		$node_data = $textnode->data;
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
+
 		$first_character = $f['substr']( $node_data, 0, 1 );
 
 		if ( self::is_single_quote( $first_character ) ) {

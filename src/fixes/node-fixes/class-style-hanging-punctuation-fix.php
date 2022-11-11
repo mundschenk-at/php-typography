@@ -154,7 +154,12 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
 		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
-		$f              = Strings::functions( $node_data );
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
 
 		$node_data = \preg_replace(
 			[

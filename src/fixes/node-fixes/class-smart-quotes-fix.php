@@ -103,7 +103,12 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$previous_character = DOM::get_prev_chr( $textnode );
 		$next_character     = DOM::get_next_chr( $textnode );
 		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
-		$f                  = Strings::functions( $node_data );
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
 
 		// Various special characters and regular expressions.
 		$double = $settings->primary_quote_style();
