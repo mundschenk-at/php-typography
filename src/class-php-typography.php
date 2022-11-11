@@ -405,7 +405,7 @@ class PHP_Typography {
 	 */
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
-		if ( ! isset( $this->html5_parser ) ) {
+		if ( null === $this->html5_parser ) {
 			$this->html5_parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
 		}
 
@@ -418,7 +418,7 @@ class PHP_Typography {
 	 * @return Hyphenator\Cache
 	 */
 	public function get_hyphenator_cache() {
-		if ( ! isset( $this->hyphenator_cache ) ) {
+		if ( null === $this->hyphenator_cache ) {
 			$this->hyphenator_cache = new Hyphenator\Cache();
 		}
 
