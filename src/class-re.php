@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2018 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,9 @@ abstract class RE {
 
 			while ( ! $file->eof() ) {
 				$line = $file->fgets();
+				if ( ! \is_string( $line ) ) {
+					break; // File could not be read, let's bail.
+				}
 
 				if ( \preg_match( '#^[a-zA-Z0-9][a-zA-Z0-9-]*$#', $line, $matches ) ) {
 					$domains[] = \strtolower( $matches[0] );

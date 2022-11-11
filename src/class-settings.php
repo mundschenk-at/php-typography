@@ -661,6 +661,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		if ( ! \is_object( $object ) || ! $object instanceof $expected_class ) {
+			$style = \is_string( $style ) ? $style : \get_class( $style );
 			throw new \DomainException( "Invalid $description style $style." );
 		}
 
@@ -780,8 +781,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 				return [];
 			},
-			/** RE correct. @scrutinizer ignore-type */
-			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY )
+			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) ?: [] // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
 		);
 	}
 
@@ -1145,11 +1145,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) : void {
 		// Make array if handed a list of tags as a string.
 		if ( ! \is_array( $tags ) ) {
-			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, PREG_SPLIT_NO_EMPTY );
+			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, \PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type.
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
-		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( /** Array. @scrutinizer ignore-type */ $tags ), CASE_LOWER );
+		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( $tags ), \CASE_LOWER );
 	}
 
 	/**

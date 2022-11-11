@@ -461,7 +461,7 @@ class PHP_Typography {
 		while ( $file ) {
 			// We only want the JSON files.
 			if ( '.json' === \substr( $file, -5 ) ) {
-				$file_content = \file_get_contents( $path . $file );
+				$file_content = (string) \file_get_contents( $path . $file );
 				if ( \preg_match( '/"language"\s*:\s*((".+")|(\'.+\'))\s*,/', $file_content, $matches ) ) {
 					$language_name = \substr( $matches[1], 1, -1 );
 					$language_code = \substr( $file, 0, -5 );

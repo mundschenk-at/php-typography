@@ -57,7 +57,7 @@ class Hyphenator {
 	 *
 	 * @var string[]
 	 */
-	protected $pattern_exceptions;
+	protected $pattern_exceptions = [];
 
 	/**
 	 * Custom hyphenation exceptions set by the user.
@@ -136,7 +136,7 @@ class Hyphenator {
 			 * @var string $exception
 			 */
 			$exception                    = $f['strtolower']( $exception );
-			$exception_keys[ $exception ] = \preg_replace( "#-#{$f['u']}", '', $exception );
+			$exception_keys[ $exception ] = (string) \preg_replace( "#-#{$f['u']}", '', $exception );
 		}
 
 		// Update exceptions.
@@ -155,7 +155,7 @@ class Hyphenator {
 	 * @return string
 	 */
 	protected static function get_object_hash( $object ) {
-		return \md5( \json_encode( $object ), false );
+		return \md5( (string) \json_encode( $object ), false );
 	}
 
 	/**

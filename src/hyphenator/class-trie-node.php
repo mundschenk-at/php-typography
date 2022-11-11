@@ -114,8 +114,8 @@ final class Trie_Node {
 				$node = $node->get_node( $char );
 			}
 
-			\preg_match_all( '/([1-9])/S', $pattern, $offsets, PREG_OFFSET_CAPTURE );
-			$node->offsets = $offsets[1];
+			\preg_match_all( '/([1-9])/S', $pattern, $offsets, \PREG_OFFSET_CAPTURE );
+			$node->offsets = $offsets[1]; // @phpstan-ignore-line -- The array contains only ints because of the regex.
 		}
 
 		return $trie;

@@ -117,12 +117,12 @@ abstract class Strings {
 		// Checking here is not optimal, the check should be made on instantiation
 		// when the class is refactored.
 		if ( \function_exists( 'mb_str_split' ) ) {
-			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound
-			return (array) \mb_str_split( $string, $split_length, 'UTF-8' );
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound, WordPress.PHP.DisallowShortTernary -- Ensure array type.
+			return \mb_str_split( $string, $split_length, 'UTF-8' ) ?: [];
 		}
 
-		// We can safely cast to an array here, as long as $string convertible to a string.
-		return (array) \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE );
+		// We can safely assume an array here, as long as $string convertible to a string.
+		return \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type.
 	}
 
 	/**
@@ -158,8 +158,8 @@ abstract class Strings {
 	 */
 	public static function maybe_split_parameters( $params ) {
 		if ( ! \is_array( $params ) ) {
-			// We can safely cast to an array here, as long as $params convertible to a string.
-			$params = (array) \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+			// We can safely assume an array here, as long as $params convertible to a string.
+			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
 		}
 
 		return $params;
