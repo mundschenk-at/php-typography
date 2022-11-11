@@ -73,7 +73,7 @@
             "@phpstan"
         ],
         "phpcs": [
-            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+            "phpcs -p -s src/ tests/ --ignore=tests/benchmarks,tests/coverage --extensions=php"
         ],
         "phpstan": [
             "phpstan analyse --configuration=.phpstan.neon --level=7 --ansi src/",
