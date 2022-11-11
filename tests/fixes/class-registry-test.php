@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,14 +51,14 @@ class Registry_Test extends Testcase {
 	/**
 	 * The Registry instance.
 	 *
-	 * @var Registry
+	 * @var Registry|\Mockery\MockInterface
 	 */
 	protected $r;
 
 	/**
 	 * Test fixture.
 	 *
-	 * @var Process_Words_Fix
+	 * @var Process_Words_Fix|\Mockery\MockInterface
 	 */
 	protected $pw_fix;
 
@@ -71,11 +71,11 @@ class Registry_Test extends Testcase {
 
 		$this->r      = m::mock( Registry::class )->makePartial();
 		$this->pw_fix = m::mock( Process_Words_Fix::class );
-		$this->set_value( $this->r, 'process_words_fix', $this->pw_fix, Registry::class );
+		$this->set_value( $this->r, 'process_words_fix', $this->pw_fix );
 
-		$fixes                              = $this->get_value( $this->r, 'node_fixes', Registry::class );
+		$fixes                              = $this->get_value( $this->r, 'node_fixes' );
 		$fixes[ Registry::PROCESS_WORDS ][] = $this->pw_fix;
-		$this->set_value( $this->r, 'node_fixes', $fixes, Registry::class );
+		$this->set_value( $this->r, 'node_fixes', $fixes );
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Registry_Test extends Testcase {
 		$fix = m::mock( Registry::class )->makePartial();
 		$fix->shouldReceive( 'register_node_fix' )->once()->with( m::type( Process_Words_Fix::class ), Registry::PROCESS_WORDS );
 
-		$this->assertNull( $fix->__construct() );
+		$this->assertNull( $fix->__construct() ); // @phpstan-ignore-line
 	}
 
 	/**
@@ -164,7 +164,7 @@ class Registry_Test extends Testcase {
 
 		$this->pw_fix->shouldReceive( 'update_hyphenator_cache' )->once()->with( $cache );
 
-		$this->assertNull( $this->r->update_hyphenator_cache( $cache ) );
+		$this->assertNull( $this->r->update_hyphenator_cache( $cache ) ); // @phpstan-ignore-line
 	}
 
 	/**
@@ -184,7 +184,7 @@ class Registry_Test extends Testcase {
 
 		$this->pw_fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
 
-		$this->assertNull( $this->r->apply_fixes( $node, $s, false, false ) );
+		$this->assertNull( $this->r->apply_fixes( $node, $s, false, false ) ); // @phpstan-ignore-line
 	}
 
 	/**
@@ -213,6 +213,6 @@ class Registry_Test extends Testcase {
 		$this->pw_fix->shouldReceive( 'apply' )->once()->with( $node, $s, false );
 		$this->pw_fix->shouldReceive( 'feed_compatible' )->once()->andReturn( true );
 
-		$this->assertNull( $this->r->apply_fixes( $node, $s, false, true ) );
+		$this->assertNull( $this->r->apply_fixes( $node, $s, false, true ) ); // @phpstan-ignore-line
 	}
 }

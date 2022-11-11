@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2020 Peter Putzer.
+ *  Copyright 2016-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$s['new_key'] = 42;
-		$this->assertEquals( 42, $s->new_key );
+		$this->assertEquals( 42, $s->new_key ); // @phpstan-ignore-line
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$this->assertFalse( isset( $s->new_key ) );
-		$s->new_key = 42;
+		$s->new_key = 42; // @phpstan-ignore-line
 		$this->assertTrue( isset( $s->new_key ) );
 	}
 
@@ -149,7 +149,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$this->assertFalse( isset( $s->new_key ) );
-		$s->new_key = 42;
+		$s->new_key = 42; // @phpstan-ignore-line
 		$this->assertTrue( isset( $s->new_key ) );
 	}
 
@@ -161,7 +161,7 @@ class Settings_Test extends Testcase {
 	public function test___unset() {
 		$s = $this->settings;
 
-		$s->new_key = 42;
+		$s->new_key = 42; // @phpstan-ignore-line
 		$this->assertTrue( isset( $s->new_key ) );
 
 		unset( $s->new_key );
@@ -349,12 +349,7 @@ class Settings_Test extends Testcase {
 		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
 		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
 
-		// PHP < 7.0 raises an error instead of throwing an "exception".
-		if ( version_compare( phpversion(), '7.0.0', '<' ) ) {
-			$this->expect_exception( \PHPUnit_Framework_Error::class );
-		} else {
-			$this->expect_exception( \TypeError::class );
-		}
+		$this->expect_exception( \TypeError::class );
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
