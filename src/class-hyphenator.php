@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class Hyphenator {
 	 * The hyphenation exceptions from the pattern file.
 	 * Stored as an array of "hy-phen-at-ed" strings.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $pattern_exceptions;
 
@@ -63,7 +63,7 @@ class Hyphenator {
 	 * Custom hyphenation exceptions set by the user.
 	 * Stored as an array of "hy-phen-at-ed" strings.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $custom_exceptions;
 
@@ -77,7 +77,7 @@ class Hyphenator {
 	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
-	 * @var array|null
+	 * @var array<string,int[]>|null
 	 */
 	protected $merged_exception_patterns;
 
@@ -93,7 +93,7 @@ class Hyphenator {
 	 * Constructs new Hyphenator instance.
 	 *
 	 * @param string|null $language   Optional. Short-form language name. Default null.
-	 * @param array       $exceptions Optional. Custom hyphenation exceptions. Default empty array.
+	 * @param string[]    $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
 	public function __construct( $language = null, array $exceptions = [] ) {
 
@@ -109,9 +109,9 @@ class Hyphenator {
 	/**
 	 * Sets custom word hyphenations.
 	 *
-	 * @param array $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen. Default empty array.
+	 * @param array<string,string> $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen. Default empty array.
 	 */
-	public function set_custom_exceptions( array $exceptions = [] ) {
+	public function set_custom_exceptions( array $exceptions = [] ) : void {
 		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
 			return; // Nothing to do at all.
 		}
@@ -130,6 +130,11 @@ class Hyphenator {
 				continue; // unknown encoding, abort.
 			}
 
+			/**
+			 * Prepare exception keys.
+			 *
+			 * @var string $exception
+			 */
 			$exception                    = $f['strtolower']( $exception );
 			$exception_keys[ $exception ] = \preg_replace( "#-#{$f['u']}", '', $exception );
 		}
@@ -200,12 +205,12 @@ class Hyphenator {
 	/**
 	 * Hyphenates parsed text tokens.
 	 *
-	 * @param array  $parsed_text_tokens   An array of text tokens.
-	 * @param string $hyphen               Optional. The hyphen character. Default '-'.
-	 * @param bool   $hyphenate_title_case Optional. Whether words in Title Case should be hyphenated. Default false.
-	 * @param int    $min_length           Optional. Minimum word length for hyphenation. Default 2.
-	 * @param int    $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
-	 * @param int    $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
+	 * @param Token[] $parsed_text_tokens   An array of text tokens.
+	 * @param string  $hyphen               Optional. The hyphen character. Default '-'.
+	 * @param bool    $hyphenate_title_case Optional. Whether words in Title Case should be hyphenated. Default false.
+	 * @param int     $min_length           Optional. Minimum word length for hyphenation. Default 2.
+	 * @param int     $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
+	 * @param int     $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
 	 *
 	 * @return Token[] The modified text tokens.
 	 */
@@ -291,7 +296,7 @@ class Hyphenator {
 	 * @param  callable $strlen    A function equivalent to `strlen` for the appropriate encoding.
 	 * @param  callable $str_split A function equivalent to `str_split` for the appropriate encoding.
 	 *
-	 * @return array The hyphenation pattern.
+	 * @return int[] The hyphenation pattern.
 	 */
 	protected function lookup_word_pattern( $key, callable $strlen, callable $str_split ) {
 		if ( null === $this->pattern_trie ) {
@@ -336,7 +341,7 @@ class Hyphenator {
 	 * Merges hyphenation exceptions from the language file and custom hyphenation exceptions and
 	 * generates patterns for all of them.
 	 */
-	protected function merge_hyphenation_exceptions() {
+	protected function merge_hyphenation_exceptions() : void {
 		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
@@ -362,7 +367,7 @@ class Hyphenator {
 	 *
 	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
 	 *
-	 * @return array|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
+	 * @return int[]|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 */
 	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
 		$f = Strings::functions( $exception );

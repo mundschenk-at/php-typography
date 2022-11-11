@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,15 +41,15 @@ abstract class Classes_Dependent_Fix extends Abstract_Node_Fix {
 	/**
 	 * An array of HTML classes to avoid applying the fix.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $classes_to_avoid;
 
 	/**
 	 * Creates a new classes dependent fix.
 	 *
-	 * @param array|string $classes         HTML class(es).
-	 * @param bool         $feed_compatible Optional. Default false.
+	 * @param string[]|string $classes         HTML class(es).
+	 * @param bool            $feed_compatible Optional. Default false.
 	 */
 	public function __construct( $classes, $feed_compatible = false ) {
 		parent::__construct( $feed_compatible );

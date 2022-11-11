@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -76,6 +76,11 @@ class Default_Registry extends Registry {
 
 		// Initialize node fixes.
 		foreach ( self::get_default_node_fixes() as $group => $node_fixes ) {
+			/**
+			 * Iterate over the node fixes and their additional parameters.
+			 *
+			 *  @var Node_Fix $fix A node fix class.
+			 */
 			foreach ( $node_fixes as $fix => $params ) {
 				$arguments = [];
 
@@ -96,7 +101,11 @@ class Default_Registry extends Registry {
 			}
 		}
 
-		// Register token fixes.
+		/**
+		 * Also register the token fixes.
+		 *
+		 *  @var Token_Fix $fix A token fix class.
+		 */
 		foreach ( self::get_default_token_fixes() as $fix => $params ) {
 			$arguments = [];
 
@@ -111,7 +120,7 @@ class Default_Registry extends Registry {
 	/**
 	 * Returns a configuration array for the default node fixes.
 	 *
-	 * @return array {
+	 * @return array<int,array<class-string,mixed[]>> {
 	 *     @type array $group {
 	 *           A group of fixes.
 	 *
@@ -185,7 +194,7 @@ class Default_Registry extends Registry {
 	/**
 	 * Returns a configuration array for the default token fixes.
 	 *
-	 * @return array
+	 * @return array<class-string,mixed[]>
 	 */
 	protected static function get_default_token_fixes() {
 		return [

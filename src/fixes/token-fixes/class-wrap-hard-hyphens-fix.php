@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	/**
 	 * An array of "hyphen-like" characters.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $hyphens_array;
 
@@ -82,7 +82,7 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 			foreach ( $tokens as $index => $text_token ) {
 				$value = $text_token->value;
 
-				if ( isset( $settings[ Settings::HYPHEN_HARD_WRAP ] ) && $settings[ Settings::HYPHEN_HARD_WRAP ] ) {
+				if ( isset( $settings[ Settings::HYPHEN_HARD_WRAP ] ) && $settings[ Settings::HYPHEN_HARD_WRAP ] ) { // @phpstan-ignore-line -- Right side is not always true.
 					$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
 					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
 					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );

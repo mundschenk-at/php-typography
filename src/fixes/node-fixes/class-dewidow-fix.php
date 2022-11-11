@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -102,12 +102,12 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 *
 	 * @since 6.5.0 Parameter $narrow_space has been deprecated.
 	 *
-	 * @param  string $text         The text fragment to dewidow.
-	 * @param  array  $func         An array of string functions.
-	 * @param  int    $max_pull     Maximum number of characters pulled from previous line.
-	 * @param  int    $max_length   Maximum widow length.
-	 * @param  int    $word_number  Maximum number of words allowed in widow.
-	 * @param  string $deprecated   Ignored.
+	 * @param  string  $text         The text fragment to dewidow.
+	 * @param  mixed[] $func         An array of string functions.
+	 * @param  int     $max_pull     Maximum number of characters pulled from previous line.
+	 * @param  int     $max_length   Maximum widow length.
+	 * @param  int     $word_number  Maximum number of words allowed in widow.
+	 * @param  string  $deprecated   Ignored.
 	 *
 	 * @return string
 	 */

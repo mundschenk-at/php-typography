@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 	 *
 	 * @since 6.0.0
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $marks;
 
@@ -68,7 +68,7 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 	 *
 	 * @since 6.0.0
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $replacements;
 

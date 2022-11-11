@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -167,7 +167,7 @@ class PHP_Typography {
 
 		// Query some nodes in the DOM.
 		$xpath     = new \DOMXPath( $dom );
-		$body_node = $xpath->query( '/html/body' )->item( 0 );
+		$body_node = $xpath->query( '/html/body' )->item( 0 ); // @phpstan-ignore-line -- The query is valid.
 
 		// Abort if we could not retrieve the body node.
 		// This should be refactored to use exceptions in a future version.
@@ -179,7 +179,7 @@ class PHP_Typography {
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
-		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) {
+		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) { // @phpstan-ignore-line -- The query is valid.
 			if (
 				// One of the ancestors should be ignored.
 				self::arrays_intersect( DOM::get_ancestors( $textnode ), $tags_to_ignore ) ||
@@ -195,7 +195,11 @@ class PHP_Typography {
 			// Apply fixes.
 			$fixer( $textnode, $settings, $is_title );
 
-			// Until now, we've only been working on a textnode: HTMLify result.
+			/**
+			 * Until now, we've only been working on a textnode: HTMLify result.
+			 *
+			 * @var string $new
+			 */
 			$new = $textnode->data;
 
 			// Replace original node (if anthing was changed).
@@ -211,10 +215,12 @@ class PHP_Typography {
 	 * Determines whether two object arrays intersect. The second array is expected
 	 * to use the spl_object_hash for its keys.
 	 *
-	 * @param array $array1 The keys are ignored.
-	 * @param array $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 * @template T
 	 *
-	 * @return boolean
+	 * @param array<T> $array1 The keys are ignored.
+	 * @param array<T> $array2 This array has to be in the form ( $spl_object_hash => $object ).
+	 *
+	 * @return bool
 	 */
 	protected static function arrays_intersect( array $array1, array $array2 ) {
 		foreach ( $array1 as $value ) {
@@ -330,7 +336,7 @@ class PHP_Typography {
 	 * @param \DOMNode $node    The node to replace.
 	 * @param string   $content The HTML fragment used to replace the node.
 	 *
-	 * @return \DOMNode|array An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
+	 * @return \DOMNode[]|\DOMNode An array of \DOMNode containing the new nodes or the old \DOMNode if the replacement failed.
 	 */
 	public function replace_node_with_html( \DOMNode $node, $content ) {
 		$result = $node;
@@ -345,8 +351,18 @@ class PHP_Typography {
 
 		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 
+		/**
+		 * Create DOM nodes from HTML fragment.
+		 *
+		 * @var \DOMNode|false $html_fragment
+		 */
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
+			/**
+			 * Import fragment into existing DOM.
+			 *
+			 * @var \DOMNode|false $imported_fragment
+			 */
 			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
 
 			if ( ! empty( $imported_fragment ) ) {
@@ -414,7 +430,7 @@ class PHP_Typography {
 	 *
 	 * @param Hyphenator\Cache $cache A hyphenator cache instance.
 	 */
-	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ) : void {
 		$this->hyphenator_cache = $cache;
 
 		// Change hyphenator cache for existing token fixes.

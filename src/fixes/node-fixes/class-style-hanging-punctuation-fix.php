@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * An array of replacment arrays (indexed by the "$block" flag).
 	 *
-	 * @var array
+	 * @var array<int,string[]>
 	 */
 	protected $replacements;
 

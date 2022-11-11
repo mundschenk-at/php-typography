@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	/**
 	 * An array of ( $tag => true ) for quick checking with `isset`.
 	 *
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	private $heading_tags = [
 		'h1' => true,
@@ -157,7 +157,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 *
 	 * @param Hyphenator\Cache $cache Required.
 	 */
-	public function set_hyphenator_cache( Hyphenator\Cache $cache ) {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ) : void {
 		$this->cache = $cache;
 	}
 }

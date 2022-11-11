@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2012-2013 Marie Hogebrandt.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
@@ -267,9 +267,7 @@ class Text_Parser {
 	/**
 	 * The tokenized text.
 	 *
-	 * @var array $text {
-	 *      @type Text_Parser\Token $index
-	 * }
+	 * @var Token[] $text Numerically indexed tokens.
 	 */
 	private $text = [];
 
@@ -298,7 +296,7 @@ class Text_Parser {
 
 		// Detect encoding.
 		$str_functions = Strings::functions( $raw_text );
-		if ( empty( $str_functions ) ) {
+		if ( empty( $str_functions ) ) { // TODO: Refactor encoding check.
 			return false; // unknown encoding.
 		}
 		$this->current_strtoupper = $str_functions['strtoupper'];
@@ -345,12 +343,12 @@ class Text_Parser {
 	/**
 	 * Parse ambigious tokens (that may need to be combined with the predecessors).
 	 *
-	 * @param int     $expected_type Either Token::WORD or Token::OTHER.
-	 * @param string  $part          The string fragment to parse.
-	 * @param Token[] $tokens        The token array. Passed by reference.
-	 * @param int     $index         The current index. Passed by reference.
+	 * @param Token::WORD|Token::OTHER $expected_type The expected token type.
+	 * @param string                   $part          The string fragment to parse.
+	 * @param Token[]                  $tokens        The token array. Passed by reference.
+	 * @param int                      $index         The current index. Passed by reference.
 	 */
-	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) {
+	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) : void {
 
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
 		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
@@ -375,10 +373,10 @@ class Text_Parser {
 	/**
 	 * Checks if the predecessor of the current token is of a certain type.
 	 *
-	 * @param  int   $type   A valid token type (e.g. Token::WORD).
-	 * @param  array $tokens An array of tokens.
-	 * @param  int   $index  The current token index.
-	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
+	 * @param  Token[]  $tokens An array of tokens.
+	 * @param  int      $index  The current token index.
+	 * @param  int      $steps  Optional. The number steps to go back for the check. Default 1.
 	 *
 	 * @return bool
 	 */
@@ -389,10 +387,10 @@ class Text_Parser {
 	/**
 	 * Checks if the predecessor of the current token is not of a certain type.
 	 *
-	 * @param  int   $type   A valid token type (e.g. Token::WORD).
-	 * @param  array $tokens An array of tokens.
-	 * @param  int   $index  The current token index.
-	 * @param  int   $steps  Optional. The number steps to go back for the check. Default 1.
+	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
+	 * @param  Token[]  $tokens An array of tokens.
+	 * @param  int      $index  The current token index.
+	 * @param  int      $steps  Optional. The number steps to go back for the check. Default 1.
 	 *
 	 * @return bool
 	 */
@@ -432,7 +430,7 @@ class Text_Parser {
 	/**
 	 * Clears the currently set text from the parser.
 	 */
-	public function clear() {
+	public function clear() : void {
 		$this->text = [];
 	}
 
@@ -441,7 +439,7 @@ class Text_Parser {
 	 *
 	 * @param Token[] $tokens An array of tokens.
 	 */
-	public function update( $tokens ) {
+	public function update( $tokens ) : void {
 		foreach ( $tokens as $index => $token ) {
 			$this->text[ $index ] = $this->text[ $index ]->with_value( $token->value );
 		}
@@ -477,9 +475,9 @@ class Text_Parser {
 	/**
 	 * Retrieves all tokens of the type "word".
 	 *
-	 * @param int $abc   Optional. Handling of all-letter words. Allowed values NO_ALL_LETTERS, ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS. Default ALLOW_ALL_LETTERS.
-	 * @param int $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
-	 * @param int $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
+	 * @param self::*_ALL_LETTERS $abc   Optional. Handling of all-letter words. Allowed values NO_ALL_LETTERS, ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS. Default ALLOW_ALL_LETTERS.
+	 * @param self::*_ALL_CAPS    $caps  Optional. Handling of capitalized words (setting does not affect non-letter characters). Allowed values NO_ALL_CAPS, ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS. Default ALLOW_ALL_CAPS.
+	 * @param self::*_COMPOUNDS   $comps Optional. Handling of compound words (setting does not affect all-letter words). Allowed values NO_COMPOUNDS, ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS. Default ALLOW_COMPOUNDS.
 	 *
 	 * @return Token[] An array of numerically indexed tokens.
 	 */
@@ -509,8 +507,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for letters.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS or NO_ALL_LETTERS.
+	 * @param  Token               $token  Required.
+	 * @param  self::*_ALL_LETTERS $policy Either ALLOW_ALL_LETTERS, REQUIRE_ALL_LETTERS or NO_ALL_LETTERS.
 	 *
 	 * @return bool
 	 */
@@ -530,8 +528,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for all-caps words.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS or NO_ALL_CAPS.
+	 * @param  Token            $token  Required.
+	 * @param  self::*_ALL_CAPS $policy Either ALLOW_ALL_CAPS, REQUIRE_ALL_CAPS or NO_ALL_CAPS.
 	 *
 	 * @return bool
 	 */
@@ -549,8 +547,8 @@ class Text_Parser {
 	/**
 	 * Check if the value of the token conforms to the given policy for compound words.
 	 *
-	 * @param  Token $token  Required.
-	 * @param  int   $policy Either ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS or NO_COMPOUNDS.
+	 * @param  Token             $token  Required.
+	 * @param  self::*_COMPOUNDS $policy Either ALLOW_COMPOUNDS, REQUIRE_COMPOUNDS or NO_COMPOUNDS.
 	 *
 	 * @return bool
 	 */

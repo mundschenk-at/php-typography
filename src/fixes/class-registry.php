@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,9 +52,9 @@ class Registry {
 	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
 
 	/**
-	 * An array of Node_Fix implementations.
+	 * An array of Node_Fix implementations indexed by groups.
 	 *
-	 * @var array
+	 * @var array<int,Node_Fix[]>
 	 */
 	private $node_fixes = [
 		self::CHARACTERS         => [],
@@ -99,7 +99,7 @@ class Registry {
 	 *
 	 * @throws \InvalidArgumentException Group is invalid.
 	 */
-	public function register_node_fix( Node_Fix $fix, $group ) {
+	public function register_node_fix( Node_Fix $fix, $group ) : void {
 		if ( isset( $this->node_fixes[ $group ] ) ) {
 			$this->node_fixes[ $group ][] = $fix;
 		} else {
@@ -112,7 +112,7 @@ class Registry {
 	 *
 	 * @param Token_Fix $fix Required.
 	 */
-	public function register_token_fix( Token_Fix $fix ) {
+	public function register_token_fix( Token_Fix $fix ) : void {
 		$this->process_words_fix->register_token_fix( $fix );
 	}
 
@@ -121,7 +121,7 @@ class Registry {
 	 *
 	 * @param Cache $cache A hyphenator cache instance.
 	 */
-	public function update_hyphenator_cache( Cache $cache ) {
+	public function update_hyphenator_cache( Cache $cache ) : void {
 		$this->process_words_fix->update_hyphenator_cache( $cache );
 	}
 
@@ -133,7 +133,7 @@ class Registry {
 	 * @param bool     $is_title Treat as title/heading tag if true.
 	 * @param bool     $is_feed  Check for feed compatibility if true.
 	 */
-	public function apply_fixes( \DOMText $textnode, Settings $settings, $is_title, $is_feed ) {
+	public function apply_fixes( \DOMText $textnode, Settings $settings, $is_title, $is_feed ) : void {
 		foreach ( $this->node_fixes as $group => $fixes ) {
 			foreach ( $fixes as $fix ) {
 				if ( ! $is_feed || $fix->feed_compatible() ) {
