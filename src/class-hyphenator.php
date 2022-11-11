@@ -215,7 +215,7 @@ class Hyphenator {
 	 * @return Token[] The modified text tokens.
 	 */
 	public function hyphenate( array $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
-		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) || ! isset( $this->pattern_exceptions ) ) {
+		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) ) {
 			return $parsed_text_tokens;
 		}
 
