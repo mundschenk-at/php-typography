@@ -1,15 +1,2 @@
 parameters:
-	reportUnmatchedIgnoredErrors: false
-	ignoreErrors:
-		- '#Parameter \#2 \$group of method PHP_Typography\\PHP_Typography::register_node_fix\(\) expects int, string given.#'
-		- '#Parameter \#1 \$raw_text of method PHP_Typography\\Text_Parser::load\(\) expects string, mixed\[\] given.#'
-		- '#Parameter \#[0-9]+ \$[a-zA-Z0-9_]+ of( static)? method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) expects [a-zA-Z0-9\\_]+(\|[a-zA-Z0-9\\_]+)*, PHPUnit_Framework_MockObject_MockObject given.#'
-		- '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+ \([a-zA-Z0-9\\_]+\) does not accept PHPUnit_Framework_MockObject_MockObject.#'
-		- '#Call to an undefined method [a-zA-Z0-9\\_]+::method\(\)#'
-		- '#Call to an undefined method [a-zA-Z0-9\\_]+::expects\(\)#'
-		- '#Access to an undefined property PHPUnit_Framework_MockObject_MockObject::\$[a-zA-Z0-9_]+#'
-		- '#Call to an undefined method PHPUnit_Framework_MockObject_MockObject::[a-zA-Z0-9_]+\(\)#'
-		- '#Class PHPUnit_Framework_Error not found\.#'
-
-	universalObjectCratesClasses:
-		- PHP_Typography\Settings
+	reportUnmatchedIgnoredErrors: true
