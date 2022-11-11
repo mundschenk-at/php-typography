@@ -722,10 +722,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 		$this->data[ self::DIACRITIC_LANGUAGE ] = $lang;
 		$language_file_name                     = \dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
+		$diacritics                             = [];
 
 		if ( \file_exists( $language_file_name ) ) {
-			$diacritics_file                     = \json_decode( \file_get_contents( $language_file_name ), true );
-			$this->data[ self::DIACRITIC_WORDS ] = $diacritics_file['diacritic_words'];
+			$diacritics = \json_decode( (string) \file_get_contents( $language_file_name ), true );
+		}
+
+		if ( ! empty( $diacritics['diacritic_words'] ) ) {
+			$this->data[ self::DIACRITIC_WORDS ] = $diacritics['diacritic_words'];
 		} else {
 			unset( $this->data[ self::DIACRITIC_WORDS ] );
 		}
