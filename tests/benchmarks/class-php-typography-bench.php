@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,14 +37,14 @@ class PHP_Typography_Bench {
 	/**
 	 * PHP_Typography instance.
 	 *
-	 * @var PHP_Typography\PHP_Typography
+	 * @var \PHP_Typography\PHP_Typography
 	 */
 	protected $typo;
 
 	/**
 	 * Settings instance.
 	 *
-	 * @var PHP_Typography\Settings
+	 * @var \PHP_Typography\Settings
 	 */
 	protected $settings;
 

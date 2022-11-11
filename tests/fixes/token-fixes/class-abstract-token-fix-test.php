@@ -48,7 +48,7 @@ class Abstract_Token_Fix_Test extends Token_Fix_Testcase {
 	/**
 	 * Closure to call protected constructors.
 	 *
-	 * @var callable
+	 * @var \Closure
 	 */
 	private $construct_caller;
 

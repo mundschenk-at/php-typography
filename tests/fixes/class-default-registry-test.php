@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -105,6 +105,6 @@ class Default_Registry_Test extends \PHP_Typography\Tests\Testcase {
 			$registry->shouldReceive( 'register_token_fix' )->once()->with( m::type( \get_class( $fix ) ) );
 		}
 
-		$this->assertNull( $registry->__construct( null, [] ) );
+		$this->assertNull( $registry->__construct( null, [] ) ); // @phpstan-ignore-line
 	}
 }

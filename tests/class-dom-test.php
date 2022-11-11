@@ -265,7 +265,7 @@ class DOM_Test extends Testcase {
 
 		$this->assertSame( $parent_node, DOM::get_block_parent( $input_node ) );
 
-		if ( ! empty( $parent_tag ) ) {
+		if ( ! empty( $parent_tag ) && $parent_node instanceof \DOMElement ) {
 			$this->assertSame( $parent_tag, $parent_node->tagName );
 		}
 	}

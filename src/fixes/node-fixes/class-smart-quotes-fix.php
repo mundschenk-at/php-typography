@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,14 +75,14 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	/**
 	 * Brackets matching array (depending on quote styles).
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $brackets_matches;
 
 	/**
 	 * Brackets replacement array (depending on quote styles).
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $brackets_replacements;
 
@@ -103,7 +103,12 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$previous_character = DOM::get_prev_chr( $textnode );
 		$next_character     = DOM::get_next_chr( $textnode );
 		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
-		$f                  = Strings::functions( $node_data );
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
 
 		// Various special characters and regular expressions.
 		$double = $settings->primary_quote_style();
@@ -259,7 +264,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	 * @param  string $secondary_open  Secondary quote style open.
 	 * @param  string $secondary_close Secondary quote style close.
 	 */
-	private function update_smart_quotes_brackets( $primary_open, $primary_close, $secondary_open, $secondary_close ) {
+	private function update_smart_quotes_brackets( $primary_open, $primary_close, $secondary_open, $secondary_close ) : void {
 		$brackets = [
 			// Single quotes.
 			"['"  => '[' . $secondary_open,

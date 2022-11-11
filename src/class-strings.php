@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2020 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,15 @@ namespace PHP_Typography;
  * A utility class to handle fast and save string function access.
  *
  * @since 4.2.0
+ *
+ * @phpstan-type String_Functions array{
+ *         'strlen'     : callable,
+ *         'str_split'  : callable,
+ *         'strtolower' : callable,
+ *         'strtoupper' : callable,
+ *         'substr'     : callable,
+ *         'u'          : String
+ * }
  */
 abstract class Strings {
 	/**
@@ -49,7 +58,7 @@ abstract class Strings {
 	 *
 	 * @internal
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	const ENCODINGS = [ 'ASCII', 'UTF-8' ];
 
@@ -58,7 +67,11 @@ abstract class Strings {
 	 *
 	 * @internal
 	 *
-	 * @var array $encoding => [ 'strlen' => $function_name, ... ].
+	 * @var array{
+	 *     'UTF-8' : String_Functions,
+	 *     'ASCII' : String_Functions,
+	 *     0       : array{}
+	 * }
 	 */
 	const STRING_FUNCTIONS = [
 		'UTF-8' => [
@@ -84,19 +97,10 @@ abstract class Strings {
 	 * Retrieves str* functions.
 	 *
 	 * @param  string $str A string to detect the encoding from.
-	 * @return array {
-	 *         An array of string functions.
-	 *
-	 *         'strlen'     => callable,
-	 *         'str_split'  => callable,
-	 *         'strtolower' => callable,
-	 *         'strtoupper' => callable,
-	 *         'substr'     => callable,
-	 *         'u'          => modifier string
-	 * }
+	 * @return String_Functions|array{}
 	 */
 	public static function functions( $str ) {
-		return self::STRING_FUNCTIONS[ \mb_detect_encoding( $str, self::ENCODINGS, true ) ];
+		return self::STRING_FUNCTIONS[ \mb_detect_encoding( $str, self::ENCODINGS, true ) ]; // TODO: benchmark mb_check_encoding loop.
 	}
 
 	/**
@@ -104,27 +108,27 @@ abstract class Strings {
 	 * `$split_length` < 1 is undefined and may or may not result in an error
 	 * being raised.
 	 *
-	 * @param string $string       The input string.
-	 * @param int    $split_length Optional. Maximum length of the chunk. Default 1.
+	 * @param string     $string       The input string.
+	 * @param int<1,max> $split_length Optional. Maximum length of the chunk. Default 1.
 	 *
-	 * @return string[]            An array of $split_length character chunks.
+	 * @return string[]                An array of $split_length character chunks.
 	 */
 	public static function mb_str_split( $string, $split_length = 1 ) {
 		// Checking here is not optimal, the check should be made on instantiation
 		// when the class is refactored.
 		if ( \function_exists( 'mb_str_split' ) ) {
-			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound
-			return (array) \mb_str_split( $string, $split_length, 'UTF-8' );
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound, WordPress.PHP.DisallowShortTernary -- Ensure array type.
+			return \mb_str_split( $string, $split_length, 'UTF-8' ) ?: [];
 		}
 
-		// We can safely cast to an array here, as long as $string convertible to a string.
-		return (array) \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE );
+		// We can safely assume an array here, as long as $string convertible to a string.
+		return \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type.
 	}
 
 	/**
 	 * Converts decimal value to unicode character.
 	 *
-	 * @param int|string|array $codes Decimal value(s) coresponding to unicode character(s).
+	 * @param int|string|array<string|int> $codes Decimal value(s) coresponding to unicode character(s).
 	 *
 	 * @return string Unicode character(s).
 	 */
@@ -148,14 +152,14 @@ abstract class Strings {
 	/**
 	 * If necessary, split the passed parameters string into an array.
 	 *
-	 * @param  array|string $params Parameters.
+	 * @param  string[]|string $params Parameters.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function maybe_split_parameters( $params ) {
 		if ( ! \is_array( $params ) ) {
-			// We can safely cast to an array here, as long as $params convertible to a string.
-			$params = (array) \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY );
+			// We can safely assume an array here, as long as $params convertible to a string.
+			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
 		}
 
 		return $params;

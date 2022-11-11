@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ abstract class Dash_Style {
 	/**
 	 * Available dash styles.
 	 *
-	 * @var array
+	 * @var array<string,string[]>
 	 */
 	private static $styles = [
 		self::TRADITIONAL_US               => [

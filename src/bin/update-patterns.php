@@ -3,7 +3,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,7 +40,14 @@ if ( file_exists( $autoload ) ) {
 }
 
 $target_directory = dirname( __DIR__ ) . '/lang';
-$patterns_list    = json_decode( file_get_contents( __DIR__ . '/patterns.json' ), true );
+$pattern_files    = file_get_contents( __DIR__ . '/patterns.json' );
+
+if ( ! is_string( $pattern_files ) ) {
+	echo "Error: Could not read '" . __DIR__ . "/patterns.json'\n";
+	die( -3 );
+}
+
+$patterns_list = json_decode( $pattern_files, true );
 
 foreach ( $patterns_list['list'] as $pattern ) {
 	$language = $pattern['name'];

@@ -34,7 +34,9 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
         "phpstan/phpstan": "^1.9",
         "phpbench/phpbench": "^0.17||^1.0@dev",
-        "mundschenk-at/phpunit-cross-version": "dev-master"
+        "mundschenk-at/phpunit-cross-version": "dev-master",
+        "phpstan/phpstan-mockery": "^1.1",
+        "phpstan/extension-installer": "^1.2"
     },
 
     "autoload": {
@@ -73,16 +75,17 @@
             "@phpstan"
         ],
         "phpcs": [
-            "phpcs -p -s src/ tests/ --ignore=tests/perf.php,tests/coverage --extensions=php"
+            "phpcs -p -s src/ tests/ --ignore=tests/benchmarks,tests/coverage --extensions=php"
         ],
         "phpstan": [
             "phpstan analyse --configuration=.phpstan.neon --level=7 --ansi src/",
-            "phpstan analyse --configuration=.phpstan.neon --level=6 --ansi tests/"
+            "phpstan analyse --configuration=.phpstan.neon --level=2 --ansi tests/"
         ]
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     }
 }

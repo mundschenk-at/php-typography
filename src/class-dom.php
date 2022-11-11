@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -37,16 +37,16 @@ use Masterminds\HTML5\Elements;
 abstract class DOM {
 
 	/**
-	 * An array of block tag names.
+	 * A flipped array of block tag names. Checked via isset/has_key.
 	 *
-	 * @var array
+	 * @var array<string,int>
 	 */
 	private static $block_tags;
 
 	/**
-	 * An array of tags that should never be modified.
+	 * A flipped array of tags that should never be modified. Checked via isset/has_key.
 	 *
-	 * @var array
+	 * @var array<string,int>
 	 */
 	private static $inappropriate_tags;
 
@@ -68,10 +68,10 @@ abstract class DOM {
 	 *
 	 * @param bool $reset Optional. Default false.
 	 *
-	 * @return array {
-	 *         An array of boolean values indexed by tagname.
+	 * @return array<string,int> {
+	 *         An array of integer values indexed by tagname.
 	 *
-	 *         @type bool $tag `true` if the tag is a block tag.
+	 *         @type int $tag Only the existence of the $tag key is relevant.
 	 * }
 	 */
 	public static function block_tags( $reset = false ) {
@@ -97,10 +97,10 @@ abstract class DOM {
 	 *
 	 * @param bool $reset Optional. Default false.
 	 *
-	 * @return array {
+	 * @return array<string,int> {
 	 *         An array of boolean values indexed by tagname.
 	 *
-	 *         @type bool $tag `true` if the tag should never be modified in any way.
+	 *         @type int $tag Only the existence of the $tag key is relevant.
 	 * }
 	 */
 	public static function inappropriate_tags( $reset = false ) {
@@ -124,13 +124,13 @@ abstract class DOM {
 	}
 
 	/**
-	 * Converts \DOMNodeList to array;
+	 * Converts a DOMNodeList to array.
 	 *
-	 * @param \DOMNodeList $list Required.
+	 * @param \DOMNodeList<\DOMNode> $list Required.
 	 *
-	 * @return array An associative array in the form ( $spl_object_hash => $node ).
+	 * @return array<string,\DOMNode> An associative array in the form ( $spl_object_hash => $node ).
 	 */
-	public static function nodelist_to_array( \DOMNodeList $list ) {
+	public static function nodelist_to_array( \DOMNodeList $list ) { // phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint -- ignore phpstan Generics syntax.
 		$out = [];
 
 		foreach ( $list as $node ) {
@@ -146,7 +146,7 @@ abstract class DOM {
 	 *
 	 * @param \DOMNode $node Required.
 	 *
-	 * @return array An array of \DOMNode.
+	 * @return \DOMNode[] An array of \DOMNode.
 	 */
 	public static function get_ancestors( \DOMNode $node ) {
 		$result = [];
@@ -162,8 +162,8 @@ abstract class DOM {
 	 * Checks whether the \DOMNode has one of the given classes.
 	 * If $tag is a \DOMText, the parent DOMElement is checked instead.
 	 *
-	 * @param \DOMNode     $tag        An element or textnode.
-	 * @param string|array $classnames A single classname or an array of classnames.
+	 * @param \DOMNode        $tag        An element or textnode.
+	 * @param string|string[] $classnames A single classname or an array of classnames.
 	 *
 	 * @return bool True if the element has any of the given class(es).
 	 */
@@ -315,7 +315,7 @@ abstract class DOM {
 			/**
 			 * Let's try the next node.
 			 *
-			 * @var \DOMNode|null
+			 * @var \DOMText|null
 			 */
 			$adjacent = $iterate( $iterated_node );
 		}
@@ -325,7 +325,7 @@ abstract class DOM {
 			/**
 			 * The parent node.
 			 *
-			 * @var \DOMNode|null
+			 * @var \DOMText|null
 			 */
 			$adjacent = $get_adjacent_parent( $node->parentNode );
 		}

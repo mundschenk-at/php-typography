@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * An array of replacment arrays (indexed by the "$block" flag).
 	 *
-	 * @var array
+	 * @var array<int,string[]>
 	 */
 	protected $replacements;
 
@@ -154,7 +154,12 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_chr( $textnode );
 		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
-		$f              = Strings::functions( $node_data );
+
+		// Check encoding.
+		$f = Strings::functions( $node_data );
+		if ( empty( $f ) ) {
+			return;
+		}
 
 		$node_data = \preg_replace(
 			[
