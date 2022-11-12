@@ -777,15 +777,12 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			function( $key, $replacement ) : array {
 				// Account for single and double quotes in keys in and values, discard everything else.
 				if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
-					$key         = $match['key'];
-					$replacement = $match['replacement'];
-
-					return [ $key => $replacement ];
+					return [ $match['key'] => $match['replacement'] ];
 				}
 
 				return [];
 			},
-			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) ?: [] // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
+			\preg_split( '/,/', $custom_replacements, -1, \PREG_SPLIT_NO_EMPTY ) ?: [] // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
 		);
 	}
 
