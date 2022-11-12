@@ -29,7 +29,7 @@ A PHP library for improving your web typography:
 
 ## Requirements
 
-*   PHP 7.2.0 or above
+*   PHP 7.4.0 or above
 *   The `mbstring` extension
 
 ## Installation
