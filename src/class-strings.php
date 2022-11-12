@@ -76,7 +76,7 @@ abstract class Strings {
 	const STRING_FUNCTIONS = [
 		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
-			'str_split'  => [ __CLASS__, 'mb_str_split' ],
+			'str_split'  => 'mb_str_split',
 			'strtolower' => 'mb_strtolower',
 			'strtoupper' => 'mb_strtoupper',
 			'substr'     => 'mb_substr',
@@ -107,6 +107,8 @@ abstract class Strings {
 	 * Multibyte-safe str_split function. Unlike regular str_split, behavior for
 	 * `$split_length` < 1 is undefined and may or may not result in an error
 	 * being raised.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @param string     $string       The input string.
 	 * @param int<1,max> $split_length Optional. Maximum length of the chunk. Default 1.
