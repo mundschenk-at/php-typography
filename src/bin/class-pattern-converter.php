@@ -27,7 +27,6 @@
 
 namespace PHP_Typography\Bin;
 
-use PHP_Typography\Strings;
 use PHP_Typography\U;
 
 /**
@@ -122,7 +121,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_sequence( $pattern ) {
-		$characters = Strings::mb_str_split( \str_replace( '.', '_', $pattern ) );
+		$characters = \mb_str_split( \str_replace( '.', '_', $pattern ) );
 		$result     = [];
 
 		foreach ( $characters as $index => $chr ) {
