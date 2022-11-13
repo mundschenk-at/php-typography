@@ -120,7 +120,7 @@ class Default_Registry extends Registry {
 	/**
 	 * Returns a configuration array for the default node fixes.
 	 *
-	 * @return array<int,array<class-string,mixed[]>> {
+	 * @return array<value-of<Registry::GROUPS>,array<class-string,mixed[]>> {
 	 *     @type array $group {
 	 *           A group of fixes.
 	 *

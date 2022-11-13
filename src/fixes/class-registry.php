@@ -94,8 +94,8 @@ class Registry {
 	 *
 	 * @since 5.0.0
 	 *
-	 * @param Node_Fix $fix   Required.
-	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
+	 * @param Node_Fix               $fix   Required.
+	 * @param value-of<self::GROUPS> $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
 	 *
 	 * @throws \InvalidArgumentException Group is invalid.
 	 */
