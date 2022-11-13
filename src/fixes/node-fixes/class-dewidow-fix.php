@@ -93,7 +93,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 
 		if ( '' === DOM::get_next_chr( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
-			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings[ Settings::DEWIDOW_MAX_PULL ], $settings[ Settings::DEWIDOW_MAX_LENGTH ], $settings[ Settings::DEWIDOW_WORD_NUMBER ], U::NO_BREAK_NARROW_SPACE );
+			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings[ Settings::DEWIDOW_MAX_PULL ], $settings[ Settings::DEWIDOW_MAX_LENGTH ], $settings[ Settings::DEWIDOW_WORD_NUMBER ] );
 		}
 	}
 
@@ -101,17 +101,17 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * Dewidow a given text fragment.
 	 *
 	 * @since 6.5.0 Parameter $narrow_space has been deprecated.
+	 * @since 6.7.0 Previously deprecated parameter $narrow_space has been removed.
 	 *
 	 * @param  string  $text         The text fragment to dewidow.
 	 * @param  mixed[] $func         An array of string functions.
 	 * @param  int     $max_pull     Maximum number of characters pulled from previous line.
 	 * @param  int     $max_length   Maximum widow length.
 	 * @param  int     $word_number  Maximum number of words allowed in widow.
-	 * @param  string  $deprecated   Ignored.
 	 *
 	 * @return string
 	 */
-	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number, $deprecated ) {
+	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number ) {
 		if ( $word_number < 1 ) {
 			return $text; // We are done.
 		}
@@ -135,7 +135,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 					// Never replace thin and hair spaces with &nbsp;.
 					self::is_narrow_space( $widow['space_between'] )
 				) {
-					return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1, U::NO_BREAK_NARROW_SPACE );
+					return $widow['space_before'] . $widow['neighbor'] . $this->dewidow( $widow['space_between'] . $widow['widow'] . $widow['trailing'], $func, $max_pull, $max_length, $word_number - 1 );
 				}
 
 				// Let's protect some widows!
