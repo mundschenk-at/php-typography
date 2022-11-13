@@ -212,17 +212,17 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
-		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( \preg_match( "/^\s*({$this->word_class}+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 			return false;
-		} if ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
 			$this->match_exceptions( $matches[1], $exceptions, $line_no );
 			return false;
 		} elseif ( \preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
-		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
 			// Sometimes there are multiple exceptions on a single line.
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
@@ -249,14 +249,14 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
-		if ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
+		if ( \preg_match( "/^\s*({$this->word_class}+)\s*\}\s*(?:%.*)?$/u", $line, $matches ) ) {
 			$patterns[] = $matches[1];
 			return false;
 		} elseif ( \preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
 			return false;
-		} elseif ( \preg_match( '/^\s*(' . $this->word_class . '+)\s*(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$patterns[] = $matches[1];
-		} elseif ( \preg_match( '/^\s*((?:' . $this->word_class . '+\s*)+)(?:%.*)?$/u',  $line, $matches ) ) {
+		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
