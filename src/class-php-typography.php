@@ -150,7 +150,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) || \in_array( 'h2', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'], true ) ) ) {
+		if ( isset( $settings['ignoreTags'] ) && $is_title && ( \in_array( 'h1', $settings['ignoreTags'], true ) || \in_array( 'h2',  $settings['ignoreTags'], true ) ) ) {
 			return $html;
 		}
 
@@ -309,13 +309,13 @@ class PHP_Typography {
 		$elements    = [];
 		$query_parts = [];
 		if ( ! empty( $settings['ignoreTags'] ) ) {
-			$query_parts[] = '//' . \implode( ' | //', /** Array. @scrutinizer ignore-type */ $settings['ignoreTags'] );
+			$query_parts[] = '//' . \implode( ' | //', $settings['ignoreTags'] );
 		}
 		if ( ! empty( $settings['ignoreClasses'] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", /** Array. @scrutinizer ignore-type */ $settings['ignoreClasses'] ) . " ')]";
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings['ignoreClasses'] ) . " ')]";
 		}
 		if ( ! empty( $settings['ignoreIDs'] ) ) {
-			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', /** Array. @scrutinizer ignore-type */ $settings['ignoreIDs'] ) . '\']';
+			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings['ignoreIDs'] ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {

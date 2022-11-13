@@ -125,7 +125,7 @@ abstract class Dash_Style {
 	 *
 	 * @return Dashes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_dashes( $style, /** Currently unused. @scrutinizer ignore-unused */ Settings $settings ) {
+	public static function get_styled_dashes( $style, Settings $settings ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Dashes(
 				self::$styles[ $style ][ self::PARENTHETICAL ],

@@ -151,7 +151,7 @@ abstract class Quote_Style {
 	 *
 	 * @return Quotes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_quotes( $style, /** Currently unused. @scrutinizer ignore-unused */ Settings $settings ) {
+	public static function get_styled_quotes( $style, Settings $settings ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Quotes( self::$styles[ $style ][ self::OPEN ], self::$styles[ $style ][ self::CLOSE ] );
 		}
