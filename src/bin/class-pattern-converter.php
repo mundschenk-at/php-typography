@@ -212,14 +212,16 @@ class Pattern_Converter {
 	 * @return bool
 	 */
 	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
+		$continue_reading_exceptions = true;
+
 		if ( \preg_match( "/^\s*({$this->word_class}+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
-			$exceptions[] = $matches[1];
-			return false;
+			$exceptions[]                = $matches[1];
+			$continue_reading_exceptions = false;
 		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
 			$this->match_exceptions( $matches[1], $exceptions, $line_no );
-			return false;
+			$continue_reading_exceptions = false;
 		} elseif ( \preg_match( '/^\s*}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			return false;
+			$continue_reading_exceptions = false;
 		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$exceptions[] = $matches[1];
 		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
@@ -227,14 +229,13 @@ class Pattern_Converter {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$exceptions[] = $match;
 			}
-		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
-			// Ignore comments and whitespace in exceptions.
-			return true;
-		} else {
+		} elseif ( ! \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+			// Ignore comments and whitespace in exceptions, but everything else
+			// unaccounted for at this point means we should abort.
 			throw new \RangeException( "Error: unknown exception $line on line $line_no\n" );
 		}
 
-		return true;
+		return $continue_reading_exceptions;
 	}
 
 	/**
@@ -246,28 +247,29 @@ class Pattern_Converter {
 	 *
 	 * @throws \RangeException Thrown when the pattern line is malformed.
 	 *
-	 * @return bool
+	 * @return bool Whether the parser should stay in "reading patterns" mode.
 	 */
 	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
+		$continue_reading_patterns = true;
+
 		if ( \preg_match( "/^\s*({$this->word_class}+)\s*\}\s*(?:%.*)?$/u", $line, $matches ) ) {
-			$patterns[] = $matches[1];
-			return false;
+			$patterns[]                = $matches[1];
+			$continue_reading_patterns = false;
 		} elseif ( \preg_match( '/^\s*\}\s*(?:%.*)?$/u', $line, $matches ) ) {
-			return false;
+			$continue_reading_patterns = false;
 		} elseif ( \preg_match( "/^\s*({$this->word_class}+)\s*(?:%.*)?$/u",  $line, $matches ) ) {
 			$patterns[] = $matches[1];
 		} elseif ( \preg_match( "/^\s*((?:{$this->word_class}+\s*)+)(?:%.*)?$/u",  $line, $matches ) ) {
 			foreach ( self::split_at_whitespace( $matches[1] ) as $match ) {
 				$patterns[] = $match;
 			}
-		} elseif ( \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
-			// Ignore comments and whitespace in patterns.
-			return true;
-		} else {
+		} elseif ( ! \preg_match( '/^\s*(?:%.*)?$/u', $line, $matches ) ) {
+			// Ignore comments and whitespace in patterns, but everything else
+			// unaccounted for at this point means we should abort.
 			throw new \RangeException( "Error: unknown pattern $line on line $line_no\n" );
 		}
 
-		return true;
+		return $continue_reading_patterns;
 	}
 
 	/**
