@@ -285,12 +285,9 @@ class Text_Parser {
 	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
 	public function load( $raw_text ) {
-		if ( ! \is_string( $raw_text ) ) {
-			return false; // we have an error, abort.
-		}
-
-		// Abort if a simple string exceeds 500 characters (security concern).
-		if ( \preg_match( self::RE_MAX_STRING_LENGTH, $raw_text ) ) {
+		if ( ! \is_string( $raw_text ) || \preg_match( self::RE_MAX_STRING_LENGTH, $raw_text ) ) {
+			// Abort if called on a non-string or the string exceeds 500 characters
+			// (security concern). TODO: Evaluate limit.
 			return false;
 		}
 
