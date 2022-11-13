@@ -134,8 +134,8 @@ class Registry {
 	 * @param bool     $is_feed  Check for feed compatibility if true.
 	 */
 	public function apply_fixes( \DOMText $textnode, Settings $settings, $is_title, $is_feed ) : void {
-		foreach ( $this->node_fixes as $group => $fixes ) {
-			foreach ( $fixes as $fix ) {
+		foreach ( $this->node_fixes as $fix_group ) {
+			foreach ( $fix_group as $fix ) {
 				if ( ! $is_feed || $fix->feed_compatible() ) {
 					$fix->apply( $textnode, $settings, $is_title );
 				}
