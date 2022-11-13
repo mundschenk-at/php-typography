@@ -165,17 +165,11 @@ class PHP_Typography {
 			return $html;
 		}
 
-		// Query some nodes in the DOM.
-		$xpath     = new \DOMXPath( $dom );
-		$body_node = $xpath->query( '/html/body' )->item( 0 ); // @phpstan-ignore-line -- The query is valid.
-
-		// Abort if we could not retrieve the body node.
-		// This should be refactored to use exceptions in a future version.
-		if ( ! $body_node instanceof \DOMNode ) {
-			return $html;
-		}
+		// Retrieve the document body.
+		$body_node = $dom->getElementsByTagName( 'body' )->item( 0 );
 
 		// Get the list of tags that should be ignored.
+		$xpath          = new \DOMXPath( $dom );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		// Start processing.
