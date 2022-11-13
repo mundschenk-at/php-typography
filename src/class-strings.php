@@ -130,6 +130,8 @@ abstract class Strings {
 	/**
 	 * Converts decimal value to unicode character.
 	 *
+	 * @deprecated 6.7.0
+	 *
 	 * @param int|string|array<string|int> $codes Decimal value(s) coresponding to unicode character(s).
 	 *
 	 * @return string Unicode character(s).
