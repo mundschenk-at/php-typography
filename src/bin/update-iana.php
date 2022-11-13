@@ -42,11 +42,9 @@ if ( file_exists( $autoload ) ) {
 $source_file = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt';
 $target_file = dirname( __DIR__ ) . '/IANA/tlds-alpha-by-domain.txt';
 
-if ( ! file_exists( $source_file ) ) {
-	if ( 404 === File_Operations::get_http_response_code( $source_file ) ) {
-		echo "Error: unknown TLD file '{$source_file}'\n";
-		die( -3 );
-	}
+if ( ! file_exists( $source_file ) && 404 === File_Operations::get_http_response_code( $source_file ) ) {
+	echo "Error: unknown TLD file '{$source_file}'\n";
+	die( -3 );
 }
 
 try {
