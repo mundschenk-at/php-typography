@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		// Combined URL pattern.
 		$this->url_pattern = '`(?:
 			\A
-			(?<schema>' . self::URL_SCHEME . ':\/\/)?	        # Subpattern 1: contains _http://_ if it exists
+			(?<scheme>' . self::URL_SCHEME . ':\/\/)?	        # Subpattern 1: contains _http://_ if it exists
 			(?<domain>											# Subpattern 2: contains subdomains.domain.tld
 				(?:
 					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
@@ -116,10 +116,10 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		foreach ( $tokens as $token_index => $text_token ) {
 			if ( \preg_match( $this->url_pattern, $text_token->value, $url_match ) ) {
 
-				// $url_match['schema'] holds "http://".
+				// $url_match['scheme'] holds "http://".
 				// $url_match['domain'] holds "subdomains.domain.tld".
 				// $url_match['path']   holds the path after the domain.
-				$http = ( $url_match['schema'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
+				$scheme = ( $url_match['scheme'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
 
 				$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
 				if ( false === $domain_parts ) {
@@ -163,7 +163,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 					}
 				}
 
-				$tokens[ $token_index ] = $text_token->with_value( $http . $domain . $path );
+				$tokens[ $token_index ] = $text_token->with_value( $scheme . $domain . $path );
 			}
 		}
 
