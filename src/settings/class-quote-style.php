@@ -62,64 +62,64 @@ abstract class Quote_Style {
 	 */
 	private static $styles = [
 		self::DOUBLE_CURLED              => [
-			self::_OPEN  => U::DOUBLE_QUOTE_OPEN,
-			self::_CLOSE => U::DOUBLE_QUOTE_CLOSE,
+			self::OPEN  => U::DOUBLE_QUOTE_OPEN,
+			self::CLOSE => U::DOUBLE_QUOTE_CLOSE,
 		],
 		self::DOUBLE_CURLED_REVERSED     => [
-			self::_OPEN  => U::DOUBLE_QUOTE_CLOSE,
-			self::_CLOSE => U::DOUBLE_QUOTE_CLOSE,
+			self::OPEN  => U::DOUBLE_QUOTE_CLOSE,
+			self::CLOSE => U::DOUBLE_QUOTE_CLOSE,
 		],
 		self::DOUBLE_LOW_9               => [
-			self::_OPEN  => U::DOUBLE_LOW_9_QUOTE,
-			self::_CLOSE => U::DOUBLE_QUOTE_CLOSE,
+			self::OPEN  => U::DOUBLE_LOW_9_QUOTE,
+			self::CLOSE => U::DOUBLE_QUOTE_CLOSE,
 		],
 		self::DOUBLE_LOW_9_REVERSED      => [
-			self::_OPEN  => U::DOUBLE_LOW_9_QUOTE,
-			self::_CLOSE => U::DOUBLE_QUOTE_OPEN,
+			self::OPEN  => U::DOUBLE_LOW_9_QUOTE,
+			self::CLOSE => U::DOUBLE_QUOTE_OPEN,
 		],
 		self::SINGLE_CURLED              => [
-			self::_OPEN  => U::SINGLE_QUOTE_OPEN,
-			self::_CLOSE => U::SINGLE_QUOTE_CLOSE,
+			self::OPEN  => U::SINGLE_QUOTE_OPEN,
+			self::CLOSE => U::SINGLE_QUOTE_CLOSE,
 		],
 		self::SINGLE_CURLED_REVERSED     => [
-			self::_OPEN  => U::SINGLE_QUOTE_CLOSE,
-			self::_CLOSE => U::SINGLE_QUOTE_CLOSE,
+			self::OPEN  => U::SINGLE_QUOTE_CLOSE,
+			self::CLOSE => U::SINGLE_QUOTE_CLOSE,
 		],
 		self::SINGLE_LOW_9               => [
-			self::_OPEN  => U::SINGLE_LOW_9_QUOTE,
-			self::_CLOSE => U::SINGLE_QUOTE_CLOSE,
+			self::OPEN  => U::SINGLE_LOW_9_QUOTE,
+			self::CLOSE => U::SINGLE_QUOTE_CLOSE,
 		],
 		self::SINGLE_LOW_9_REVERSED      => [
-			self::_OPEN  => U::SINGLE_LOW_9_QUOTE,
-			self::_CLOSE => U::SINGLE_QUOTE_OPEN,
+			self::OPEN  => U::SINGLE_LOW_9_QUOTE,
+			self::CLOSE => U::SINGLE_QUOTE_OPEN,
 		],
 		self::DOUBLE_GUILLEMETS          => [
-			self::_OPEN  => U::GUILLEMET_OPEN,
-			self::_CLOSE => U::GUILLEMET_CLOSE,
+			self::OPEN  => U::GUILLEMET_OPEN,
+			self::CLOSE => U::GUILLEMET_CLOSE,
 		],
 		self::DOUBLE_GUILLEMETS_REVERSED => [
-			self::_OPEN  => U::GUILLEMET_CLOSE,
-			self::_CLOSE => U::GUILLEMET_OPEN,
+			self::OPEN  => U::GUILLEMET_CLOSE,
+			self::CLOSE => U::GUILLEMET_OPEN,
 		],
 		self::DOUBLE_GUILLEMETS_FRENCH   => [
-			self::_OPEN  => U::GUILLEMET_OPEN . U::NO_BREAK_NARROW_SPACE,
-			self::_CLOSE => U::NO_BREAK_NARROW_SPACE . U::GUILLEMET_CLOSE,
+			self::OPEN  => U::GUILLEMET_OPEN . U::NO_BREAK_NARROW_SPACE,
+			self::CLOSE => U::NO_BREAK_NARROW_SPACE . U::GUILLEMET_CLOSE,
 		],
 		self::SINGLE_GUILLEMETS          => [
-			self::_OPEN  => U::SINGLE_ANGLE_QUOTE_OPEN,
-			self::_CLOSE => U::SINGLE_ANGLE_QUOTE_CLOSE,
+			self::OPEN  => U::SINGLE_ANGLE_QUOTE_OPEN,
+			self::CLOSE => U::SINGLE_ANGLE_QUOTE_CLOSE,
 		],
 		self::SINGLE_GUILLEMETS_REVERSED => [
-			self::_OPEN  => U::SINGLE_ANGLE_QUOTE_CLOSE,
-			self::_CLOSE => U::SINGLE_ANGLE_QUOTE_OPEN,
+			self::OPEN  => U::SINGLE_ANGLE_QUOTE_CLOSE,
+			self::CLOSE => U::SINGLE_ANGLE_QUOTE_OPEN,
 		],
 		self::CORNER_BRACKETS            => [
-			self::_OPEN  => U::LEFT_CORNER_BRACKET,
-			self::_CLOSE => U::RIGHT_CORNER_BRACKET,
+			self::OPEN  => U::LEFT_CORNER_BRACKET,
+			self::CLOSE => U::RIGHT_CORNER_BRACKET,
 		],
 		self::WHITE_CORNER_BRACKETS      => [
-			self::_OPEN  => U::LEFT_WHITE_CORNER_BRACKET,
-			self::_CLOSE => U::RIGHT_WHITE_CORNER_BRACKET,
+			self::OPEN  => U::LEFT_WHITE_CORNER_BRACKET,
+			self::CLOSE => U::RIGHT_WHITE_CORNER_BRACKET,
 		],
 	];
 
@@ -130,7 +130,7 @@ abstract class Quote_Style {
 	 *
 	 * @var int
 	 */
-	const _OPEN = 0;
+	private const OPEN = 0;
 
 	/**
 	 * Closing quote.
@@ -139,7 +139,7 @@ abstract class Quote_Style {
 	 *
 	 * @var int
 	 */
-	const _CLOSE = 1;
+	private const CLOSE = 1;
 
 	/**
 	 * Creates a new Quotes object in the given style.
@@ -151,9 +151,9 @@ abstract class Quote_Style {
 	 *
 	 * @return Quotes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_quotes( $style, /** Currently unused. @scrutinizer ignore-unused */ Settings $settings ) {
+	public static function get_styled_quotes( $style, Settings $settings ) {
 		if ( isset( self::$styles[ $style ] ) ) {
-			return new Simple_Quotes( self::$styles[ $style ][ self::_OPEN ], self::$styles[ $style ][ self::_CLOSE ] );
+			return new Simple_Quotes( self::$styles[ $style ][ self::OPEN ], self::$styles[ $style ][ self::CLOSE ] );
 		}
 
 		return null;

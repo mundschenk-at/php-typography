@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,16 +41,16 @@ use PHP_Typography\RE;
  * @since 5.0.0
  */
 class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
-	const _ISO           = 'ISO(?:\/(?:IEC|TR|TS))?';
-	const _ABBREVIATIONS = '
+	private const ISO           = 'ISO(?:\/(?:IEC|TR|TS))?';
+	private const ABBREVIATIONS = '
 		### Internationl standards
-		' . self::_ISO . '|
+		' . self::ISO . '|
 
 		### German standards
 		DIN|
-		DIN[ ]EN(?:[ ]' . self::_ISO . ')?|
+		DIN[ ]EN(?:[ ]' . self::ISO . ')?|
 		DIN[ ]EN[ ]ISP
-		DIN[ ]' . self::_ISO . '|
+		DIN[ ]' . self::ISO . '|
 		DIN[ ]IEC|
 		DIN[ ]CEN\/TS|
 		DIN[ ]CLC\/TS|
@@ -62,7 +62,7 @@ class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 		### Austrian standards
 		ÖNORM|
 		ÖNORM[ ](?:A|B|C|E|F|G|H|K|L|M|N|O|S|V|Z)|
-		ÖNORM[ ]EN(?:[ ]' . self::_ISO . ')?|
+		ÖNORM[ ]EN(?:[ ]' . self::ISO . ')?|
 		ÖNORM[ ]ETS|
 
 		ÖVE|ONR|
@@ -72,7 +72,7 @@ class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	'; // required modifiers: x (multiline pattern).
 
 	const REPLACEMENT = '$1' . U::NO_BREAK_SPACE . '$2';
-	const REGEX       = '/\b(' . self::_ABBREVIATIONS . ')[' . RE::NORMAL_SPACES . ']+([0-9]+)/xu';
+	const REGEX       = '/\b(' . self::ABBREVIATIONS . ')[' . RE::NORMAL_SPACES . ']+([0-9]+)/xu';
 
 	/**
 	 * Creates a new fix object.

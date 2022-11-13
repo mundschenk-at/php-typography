@@ -371,10 +371,6 @@ abstract class DOM {
 	 * @return \DOMText|null The last child of type \DOMText, the element itself if it is of type \DOMText or null.
 	 */
 	private static function get_edge_textnode( callable $get_textnode, \DOMNode $node = null, $recursive = false, $reverse = false ) {
-		if ( ! isset( $node ) ) {
-			return null;
-		}
-
 		if ( $node instanceof \DOMText ) {
 			return $node;
 		} elseif ( ! $node instanceof \DOMElement || $recursive && self::is_block_tag( $node ) ) {

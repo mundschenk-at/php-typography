@@ -78,14 +78,14 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 
 
 	// Hanging punctuation.
-	const _DOUBLE_HANGING_PUNCTUATION =
+	private const DOUBLE_HANGING_PUNCTUATION =
 		'"' .
 		U::DOUBLE_QUOTE_OPEN .
 		U::DOUBLE_QUOTE_CLOSE .
 		U::DOUBLE_LOW_9_QUOTE .
 		U::DOUBLE_PRIME; // requires modifiers: x (multiline pattern) u (utf8).
 
-	const _SINGLE_HANGING_PUNCTUATION =
+	private const SINGLE_HANGING_PUNCTUATION =
 		"'" .
 		U::SINGLE_QUOTE_OPEN .
 		U::SINGLE_QUOTE_CLOSE .
@@ -94,10 +94,10 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		U::APOSTROPHE; // requires modifiers: x (multiline pattern) u (utf8).
 
 	// Style hanging punctuation.
-	const STYLE_DOUBLE         = '/(\s)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_SINGLE         = '/(\s)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::_DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
-	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::_SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_DOUBLE         = '/(\s)([' . self::DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_SINGLE         = '/(\s)([' . self::SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_INITIAL_DOUBLE = '/(?:\A)([' . self::DOUBLE_HANGING_PUNCTUATION . '])(\w+)/S';
+	const STYLE_INITIAL_SINGLE = '/(?:\A)([' . self::SINGLE_HANGING_PUNCTUATION . '])(\w+)/S';
 
 	/**
 	 * Creates a new classes dependent fix.

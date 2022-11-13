@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-	bootstrap="tests/bootstrap.php"
-	beStrictAboutTestsThatDoNotTestAnything="true"
-	beStrictAboutCoversAnnotation="true"
-	stopOnRisky="true"
-	verbose="true"
->
-	<testsuites>
-	    <testsuite name="PHP-Typography">
-			<directory suffix="-test.php">tests</directory>
-	    </testsuite>
-	</testsuites>
-	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-	    	<directory suffix=".php">src</directory>
-	    	<exclude>
-	    		<directory>src/bin</directory>
-	    		<directory>src/IANA</directory>
-					<directory>src/lang</directory>
-	    		<directory>src/diacritics</directory>
-	    	</exclude>
-		</whitelist>
-	</filter>
-	<php>
-  		<ini name="memory_limit" value="3G"/>
-	</php>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="tests/bootstrap.php" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutCoversAnnotation="true" stopOnRisky="true" verbose="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory>src/bin</directory>
+      <directory>src/IANA</directory>
+      <directory>src/lang</directory>
+      <directory>src/diacritics</directory>
+    </exclude>
+  </coverage>
+  <testsuites>
+    <testsuite name="PHP-Typography">
+      <directory suffix="-test.php">tests</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <ini name="memory_limit" value="3G"/>
+  </php>
 </phpunit>

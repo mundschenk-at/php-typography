@@ -193,7 +193,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 		// Keep backwards compatibility.
 		if ( isset( $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ] ) ) {
-			/* @scrutinizer ignore-deprecated */
 			$this->no_break_narrow_space = $this->unicode_mapping[ U::NO_BREAK_NARROW_SPACE ];
 		}
 	}
@@ -317,7 +316,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 		// Compatibility with the old way of setting the no-break narrow space.
 		if ( U::NO_BREAK_NARROW_SPACE === $char ) {
-			/* @scrutinizer ignore-deprecated */
 			$this->no_break_narrow_space = $new_char;
 		}
 	}
@@ -359,7 +357,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return string
 	 */
 	public function no_break_narrow_space() {
-		return /* @scrutinizer ignore-deprecated */$this->no_break_narrow_space;
+		return $this->no_break_narrow_space;
 	}
 
 	/**
@@ -442,7 +440,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_email_wrap();
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
-		/* @scrutinizer ignore-deprecated */
 		$this->set_true_no_break_narrow_space();
 
 		// Character styling.
@@ -748,19 +745,15 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
 		}
 
-		$this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] = self::array_map_assoc(
-			function( $key, $replacement ) {
-				$key         = \strip_tags( \trim( $key ) );
-				$replacement = \strip_tags( \trim( $replacement ) );
+		$this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] = [];
+		foreach ( $custom_replacements as $key => $replacement ) {
+			$key         = \strip_tags( \trim( $key ) );
+			$replacement = \strip_tags( \trim( $replacement ) );
 
-				if ( ! empty( $key ) && ! empty( $replacement ) ) {
-					return [ $key => $replacement ];
-				} else {
-					return [];
-				}
-			},
-			$custom_replacements
-		);
+			if ( ! empty( $key ) && ! empty( $replacement ) ) {
+				$this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ][ $key ] = $replacement;
+			}
+		}
 
 		$this->update_diacritics_replacement_arrays();
 	}
@@ -773,20 +766,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return array<string,string>
 	 */
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
-		return self::array_map_assoc(
-			function( $key, $replacement ) : array {
-				// Account for single and double quotes in keys in and values, discard everything else.
-				if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
-					$key         = $match['key'];
-					$replacement = $match['replacement'];
+		$replacements = [];
+		foreach ( ( \preg_split( '/,/', $custom_replacements, -1, \PREG_SPLIT_NO_EMPTY ) ?: [] ) as $replacement ) { // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
+			if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
+				$replacements[ $match['key'] ] = $match['replacement'];
+			}
+		}
 
-					return [ $key => $replacement ];
-				}
-
-				return [];
-			},
-			\preg_split( '/,/', $custom_replacements, -1, PREG_SPLIT_NO_EMPTY ) ?: [] // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
-		);
+		return $replacements;
 	}
 
 	/**
@@ -795,6 +782,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * Based on https://gist.github.com/jasand-pereza/84ecec7907f003564584.
 	 *
 	 * @since 6.0.0
+	 * @deprecated 6.7.0
 	 *
 	 * @template T
 	 *

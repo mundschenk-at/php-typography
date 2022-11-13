@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,9 @@ use PHP_Typography\U;
 class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 
 	const REPLACEMENT = '$1' . U::NO_BREAK_NARROW_SPACE . '$2';
-	const REGEX       = '/(\d\.?)\s(' . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
+	const REGEX       = '/(\d\.?)\s(' . self::STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
-	const _STANDARD_UNITS = '
+	private const STANDARD_UNITS = '
 		### Temporal units
 		(?:ms|s|secs?|mins?|hrs?)\.?|
 		milliseconds?|seconds?|minutes?|hours?|days?|years?|decades?|century|centuries|millennium|millennia|
@@ -92,7 +92,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title = false ) {
 		// Update regex with custom units.
-		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::_STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
+		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
 		parent::apply( $textnode, $settings, $is_title );
 	}
