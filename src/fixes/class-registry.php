@@ -94,8 +94,8 @@ class Registry {
 	 *
 	 * @since 5.0.0
 	 *
-	 * @param Node_Fix $fix   Required.
-	 * @param int      $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
+	 * @param Node_Fix               $fix   Required.
+	 * @param value-of<self::GROUPS> $group Required. Only the constants CHARACTERS, SPACING_PRE_WORDS, SPACING_POST_WORDS, HTML_INSERTION are valid.
 	 *
 	 * @throws \InvalidArgumentException Group is invalid.
 	 */
@@ -134,8 +134,8 @@ class Registry {
 	 * @param bool     $is_feed  Check for feed compatibility if true.
 	 */
 	public function apply_fixes( \DOMText $textnode, Settings $settings, $is_title, $is_feed ) : void {
-		foreach ( $this->node_fixes as $group => $fixes ) {
-			foreach ( $fixes as $fix ) {
+		foreach ( $this->node_fixes as $fix_group ) {
+			foreach ( $fix_group as $fix ) {
 				if ( ! $is_feed || $fix->feed_compatible() ) {
 					$fix->apply( $textnode, $settings, $is_title );
 				}

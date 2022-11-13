@@ -67,10 +67,14 @@ class Style_Hanging_Punctuation_Fix_Test extends Node_Fix_Testcase {
 	public function test_constructor() {
 		$this->fix = new Node_Fixes\Style_Hanging_Punctuation_Fix( 'alpha', 'beta', 'gamma', 'delta' );
 
-		$this->assert_attribute_same( 'alpha', 'push_single_class', $this->fix );
-		$this->assert_attribute_same( 'beta',  'push_double_class', $this->fix );
-		$this->assert_attribute_same( 'gamma', 'pull_single_class', $this->fix );
-		$this->assert_attribute_same( 'delta', 'pull_double_class', $this->fix );
+		$replacements = $this->get_value( $this->fix, 'replacements' );
+
+		$this->assertCount( 2, $replacements );
+		$this->assertContainsOnly( 'array', $replacements, true );
+		$this->assertCount( 4, $replacements[0] );
+		$this->assertContainsOnly( 'string', $replacements[0], true );
+		$this->assertCount( 4, $replacements[1] );
+		$this->assertContainsOnly( 'string', $replacements[1], true );
 	}
 
 	/**

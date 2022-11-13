@@ -44,12 +44,16 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * CSS class for single-width punctuation marks.
 	 *
+	 * @deprecated 6.7.0
+	 *
 	 * @var string
 	 */
 	protected $push_single_class;
 
 	/**
 	 * CSS class for double-width punctuation marks.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @var string
 	 */
@@ -58,12 +62,16 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	/**
 	 * CSS class for single-width punctuation marks.
 	 *
+	 * @deprecated 6.7.0
+	 *
 	 * @var string
 	 */
 	protected $pull_single_class;
 
 	/**
 	 * CSS class for double-width punctuation marks.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @var string
 	 */
@@ -111,23 +119,23 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 	public function __construct( $push_single_class, $push_double_class, $pull_single_class, $pull_double_class, $feed_compatible = false ) {
 		parent::__construct( [ $pull_single_class, $pull_double_class ], $feed_compatible );
 
-		$this->push_single_class = $push_single_class;
-		$this->push_double_class = $push_double_class;
-		$this->pull_single_class = $pull_single_class;
-		$this->pull_double_class = $pull_double_class;
+		$escaped_style_double = RE::escape_tags( "$1<span class=\"{$push_double_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_double_class}\">$2</span>\$3" );
+		$escaped_style_single = RE::escape_tags( "$1<span class=\"{$push_single_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_single_class}\">$2</span>$3" );
 
 		$this->replacements = [
-			false => [
-				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
-				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
-				RE::escape_tags( '<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
-				RE::escape_tags( '<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			// Non-block elements.
+			[
+				$escaped_style_double, // STYLE_DOUBLE.
+				$escaped_style_single, // STYLE_SINGLE.
+				RE::escape_tags( "<span class=\"{$push_double_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_double_class}\">$1</span>$2" ), // STYLE_INITIAL_DOUBLE.
+				RE::escape_tags( "<span class=\"{$push_single_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_single_class}\">$1</span>$2" ), // STYLE_INITIAL_SINGLE.
 			],
-			true  => [
-				RE::escape_tags( '$1<span class="' . $this->push_double_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_double_class . '">$2</span>$3' ),
-				RE::escape_tags( '$1<span class="' . $this->push_single_class . '"></span>' . U::ZERO_WIDTH_SPACE . '<span class="' . $this->pull_single_class . '">$2</span>$3' ),
-				RE::escape_tags( '<span class="' . $this->pull_double_class . '">$1</span>$2' ),
-				RE::escape_tags( '<span class="' . $this->pull_single_class . '">$1</span>$2' ),
+			// Block eleemnts.
+			[
+				$escaped_style_double, // STYLE_DOUBLE.
+				$escaped_style_single, // STYLE_SINGLE.
+				RE::escape_tags( "<span class=\"{$pull_double_class}\">$1</span>$2" ), // STYLE_INITIAL_DOUBLE.
+				RE::escape_tags( "<span class=\"{$pull_single_class}\">$1</span>$2" ), // STYLE_INITIAL_SINGLE.
 			],
 		];
 	}

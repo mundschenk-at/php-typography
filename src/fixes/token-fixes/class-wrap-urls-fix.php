@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2017 Peter Putzer.
+ *  Copyright 2014-2022 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		// Combined URL pattern.
 		$this->url_pattern = '`(?:
 			\A
-			(?<schema>' . self::URL_SCHEME . ':\/\/)?	        # Subpattern 1: contains _http://_ if it exists
+			(?<scheme>' . self::URL_SCHEME . ':\/\/)?	        # Subpattern 1: contains _http://_ if it exists
 			(?<domain>											# Subpattern 2: contains subdomains.domain.tld
 				(?:
 					[a-z0-9]									# first chr of (sub)domain can not be a hyphen
@@ -101,7 +101,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * Apply the tweak to a given textnode.
 	 *
 	 * @param Token[]       $tokens   Required.
-	 * @param Settings      $settings Required.
+	 * @param Settings      $settings The settings to apply.
 	 * @param bool          $is_title Optional. Default false.
 	 * @param \DOMText|null $textnode Optional. Default null.
 	 *
@@ -115,58 +115,91 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		// Test for and parse urls.
 		foreach ( $tokens as $token_index => $text_token ) {
 			if ( \preg_match( $this->url_pattern, $text_token->value, $url_match ) ) {
+				/**
+				 * The URL is split into three parts:
+				 *  - $url_match['scheme'] holds "http://".
+				 *  - $url_match['domain'] holds "subdomains.domain.tld".
+				 *  - $url_match['path']   holds the path after the domain.
+				 *
+				 * @var array{ 'scheme' : string, 'domain' : string,'path' : string } $url_match
+				 */
 
-				// $url_match['schema'] holds "http://".
-				// $url_match['domain'] holds "subdomains.domain.tld".
-				// $url_match['path']   holds the path after the domain.
-				$http = ( $url_match['schema'] ) ? $url_match[1] . U::ZERO_WIDTH_SPACE : '';
+				$scheme = ! empty( $url_match['scheme'] ) ? $url_match['scheme'] . U::ZERO_WIDTH_SPACE : '';
+				$domain = $this->split_domain( $url_match['domain'], $settings );
+				$path   = $this->split_path( $url_match['path'], $settings );
 
-				$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $url_match['domain'], -1, PREG_SPLIT_DELIM_CAPTURE );
-				if ( false === $domain_parts ) {
-					// Should not happen.
-					continue;  // @codeCoverageIgnore
-				}
-
-				// This is a hack, but it works.
-				// First, we hyphenate each part, we need it formated like a group of words.
-				$parsed_words_like = [];
-				foreach ( $domain_parts as $key => $part ) {
-					$parsed_words_like[ $key ] = new Text_Parser\Token( $part, Text_Parser\Token::OTHER );
-				}
-
-				// Do the hyphenation.
-				$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $settings, U::ZERO_WIDTH_SPACE );
-
-				// Restore format.
-				foreach ( $parsed_words_like as $key => $parsed_word ) {
-					$value = $parsed_word->value;
-
-					if ( $key > 0 && 1 === \strlen( $value ) ) {
-						$domain_parts[ $key ] = U::ZERO_WIDTH_SPACE . $value;
-					} else {
-						$domain_parts[ $key ] = $value;
-					}
-				}
-
-				// Lastly let's recombine.
-				$domain = \implode( '', $domain_parts );
-
-				// Break up the URL path to individual characters.
-				$path_parts = \str_split( $url_match['path'], 1 );
-				$path_count = \count( $path_parts );
-				$path       = '';
-				foreach ( $path_parts as $index => $path_part ) {
-					if ( 0 === $index || $path_count - $index < $settings[ Settings::URL_MIN_AFTER_WRAP ] ) {
-						$path .= $path_part;
-					} else {
-						$path .= U::ZERO_WIDTH_SPACE . $path_part;
-					}
-				}
-
-				$tokens[ $token_index ] = $text_token->with_value( $http . $domain . $path );
+				$tokens[ $token_index ] = $text_token->with_value( $scheme . $domain . $path );
 			}
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Splits the given domain name.
+	 *
+	 * @since  6.7.0
+	 *
+	 * @param  string   $domain   A domain/host name.
+	 * @param  Settings $settings The settings to apply.
+	 *
+	 * @return string             The hyphenated domain name.
+	 */
+	private function split_domain( string $domain, Settings $settings ) : string {
+		$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $domain, -1, PREG_SPLIT_DELIM_CAPTURE );
+		if ( false === $domain_parts ) {
+			// Should not happen.
+			return $domain;  // @codeCoverageIgnore
+		}
+
+		// This is a hack, but it works.
+		// First, we hyphenate each part, we need it formated like a group of words.
+		$parsed_words_like = [];
+		foreach ( $domain_parts as $key => $part ) {
+			$parsed_words_like[ $key ] = new Text_Parser\Token( $part, Text_Parser\Token::OTHER );
+		}
+
+		// Do the hyphenation.
+		$parsed_words_like = $this->do_hyphenate( $parsed_words_like, $settings, U::ZERO_WIDTH_SPACE );
+
+		// Restore format.
+		foreach ( $parsed_words_like as $key => $parsed_word ) {
+			$value = $parsed_word->value;
+
+			if ( $key > 0 && 1 === \strlen( $value ) ) {
+				$domain_parts[ $key ] = U::ZERO_WIDTH_SPACE . $value;
+			} else {
+				$domain_parts[ $key ] = $value;
+			}
+		}
+
+		// Lastly let's recombine.
+		return \implode( '', $domain_parts );
+	}
+
+	/**
+	 * Splits the given URL path.
+	 *
+	 * @since  6.7.0
+	 *
+	 * @param  string   $path     A URL path.
+	 * @param  Settings $settings The settings to apply.
+	 *
+	 * @return string             The hyphenated domain name.
+	 */
+	private function split_path( string $path, Settings $settings ) : string {
+		// Break up the URL path to individual characters.
+		$path_parts = \str_split( $path, 1 ); // TODO: Does not work with non-ASCII paths.
+		$path_count = \count( $path_parts );
+		$split_path = '';
+		foreach ( $path_parts as $index => $part ) {
+			if ( 0 === $index || $path_count - $index < $settings[ Settings::URL_MIN_AFTER_WRAP ] ) {
+				$split_path .= $part;
+			} else {
+				$split_path .= U::ZERO_WIDTH_SPACE . $part;
+			}
+		}
+
+		return $split_path;
 	}
 }
