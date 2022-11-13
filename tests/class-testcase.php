@@ -25,6 +25,7 @@
 namespace PHP_Typography\Tests;
 
 use PHP_Typography\Strings;
+use PHP_Typography\U;
 use PHP_Typography\Text_Parser\Token;
 
 /**
@@ -167,78 +168,78 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 	protected function assert_smart_quotes_style( $style, $open, $close ) {
 		switch ( $style ) {
 			case 'doubleCurled':
-				$this->assertSame( Strings::uchr( 8220 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_OPEN, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleCurledReversed':
-				$this->assertSame( Strings::uchr( 8221 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_CLOSE, $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9':
-				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8221 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_LOW_9_QUOTE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleLow9Reversed':
-				$this->assertSame( Strings::uchr( 8222 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8220 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_LOW_9_QUOTE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::DOUBLE_QUOTE_OPEN, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurled':
-				$this->assertSame( Strings::uchr( 8216 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_OPEN, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleCurledReversed':
-				$this->assertSame( Strings::uchr( 8217 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_CLOSE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9':
-				$this->assertSame( Strings::uchr( 8218 ), $open,  "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8217 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_LOW_9_QUOTE, $open,  "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleLow9Reversed':
-				$this->assertSame( Strings::uchr( 8218 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8216 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_LOW_9_QUOTE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_QUOTE_OPEN, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsFrench':
-				$this->assertSame( Strings::uchr( 171, 8239 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8239, 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::GUILLEMET_OPEN . U::NO_BREAK_NARROW_SPACE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::NO_BREAK_NARROW_SPACE . U::GUILLEMET_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemets':
-				$this->assertSame( Strings::uchr( 171 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 187 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::GUILLEMET_OPEN, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::GUILLEMET_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'doubleGuillemetsReversed':
-				$this->assertSame( Strings::uchr( 187 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 171 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::GUILLEMET_CLOSE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::GUILLEMET_OPEN, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemets':
-				$this->assertSame( Strings::uchr( 8249 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8250 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_ANGLE_QUOTE_OPEN, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_ANGLE_QUOTE_CLOSE, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'singleGuillemetsReversed':
-				$this->assertSame( Strings::uchr( 8250 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 8249 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::SINGLE_ANGLE_QUOTE_CLOSE, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::SINGLE_ANGLE_QUOTE_OPEN, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'cornerBrackets':
-				$this->assertSame( Strings::uchr( 12300 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 12301 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::LEFT_CORNER_BRACKET, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::RIGHT_CORNER_BRACKET, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			case 'whiteCornerBracket':
-				$this->assertSame( Strings::uchr( 12302 ), $open, "Opening quote $open did not match quote style $style." );
-				$this->assertSame( Strings::uchr( 12303 ), $close, "Closeing quote $close did not match quote style $style." );
+				$this->assertSame( U::LEFT_WHITE_CORNER_BRACKET, $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( U::RIGHT_WHITE_CORNER_BRACKET, $close, "Closeing quote $close did not match quote style $style." );
 				break;
 
 			default:
