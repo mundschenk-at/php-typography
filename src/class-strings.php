@@ -70,10 +70,9 @@ abstract class Strings {
 	 * @var array{
 	 *     'UTF-8' : String_Functions,
 	 *     'ASCII' : String_Functions,
-	 *     0       : array{}
 	 * }
 	 */
-	const STRING_FUNCTIONS = [
+	private const STRING_FUNCTIONS = [
 		'UTF-8' => [
 			'strlen'     => 'mb_strlen',
 			'str_split'  => 'mb_str_split',
@@ -90,7 +89,6 @@ abstract class Strings {
 			'substr'     => 'substr',
 			'u'          => '',
 		],
-		false   => [],
 	];
 
 	/**
@@ -100,7 +98,13 @@ abstract class Strings {
 	 * @return String_Functions|array{}
 	 */
 	public static function functions( $str ) {
-		return self::STRING_FUNCTIONS[ \mb_detect_encoding( $str, self::ENCODINGS, true ) ]; // TODO: benchmark mb_check_encoding loop.
+		foreach ( self::ENCODINGS as $encoding ) {
+			if ( \mb_check_encoding( $str, $encoding ) ) {
+				return self::STRING_FUNCTIONS[ $encoding ];
+			}
+		}
+
+		return [];
 	}
 
 	/**
@@ -129,6 +133,8 @@ abstract class Strings {
 
 	/**
 	 * Converts decimal value to unicode character.
+	 *
+	 * @deprecated 6.7.0
 	 *
 	 * @param int|string|array<string|int> $codes Decimal value(s) coresponding to unicode character(s).
 	 *

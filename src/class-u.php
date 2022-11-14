@@ -74,5 +74,7 @@ interface U {
 	const RIGHT_CORNER_BRACKET       = "\xe3\x80\x8d";
 	const LEFT_WHITE_CORNER_BRACKET  = "\xe3\x80\x8e";
 	const RIGHT_WHITE_CORNER_BRACKET = "\xe3\x80\x8f";
+	const ZERO_WIDTH_JOINER          = "\u{200c}";
+	const ZERO_WIDTH_NON_JOINER      = "\u{200d}";
 
 }

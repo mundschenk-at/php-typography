@@ -27,7 +27,7 @@
 
 namespace PHP_Typography\Bin;
 
-use PHP_Typography\Strings;
+use PHP_Typography\U;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.
@@ -95,10 +95,7 @@ class Pattern_Converter {
 					'\p{Thai}',
 
 					// Very special characters.
-					'[' . Strings::uchr(
-						8204, // ZERO WIDTH NON-JOINER.
-						8205  // ZERO WIDTH JOINER.
-					) . ']',
+					'[' . U::ZERO_WIDTH_JOINER . U::ZERO_WIDTH_NON_JOINER . ']',
 				]
 			)
 		. ')';
@@ -124,7 +121,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_sequence( $pattern ) {
-		$characters = Strings::mb_str_split( \str_replace( '.', '_', $pattern ) );
+		$characters = \mb_str_split( \str_replace( '.', '_', $pattern ) );
 		$result     = [];
 
 		foreach ( $characters as $index => $chr ) {

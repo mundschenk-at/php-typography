@@ -25,7 +25,6 @@
 namespace PHP_Typography\Tests;
 
 use PHP_Typography\Settings;
-use PHP_Typography\Strings;
 use PHP_Typography\U;
 
 use PHP_Typography\Settings\Dashes;
@@ -44,7 +43,6 @@ use Mockery as m;
  * @uses PHP_Typography\Settings\Simple_Quotes
  * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
  * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
- * @uses PHP_Typography\Strings::uchr
  * @uses PHP_Typography\DOM::inappropriate_tags
  */
 class Settings_Test extends Testcase {
