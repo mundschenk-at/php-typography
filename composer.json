@@ -68,7 +68,7 @@
             "phpunit --testsuite PHP-Typography"
         ],
         "coverage": [
-            "phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
+            "XDEBUG_MODE=coverage phpunit --testsuite PHP-Typography --coverage-html tests/coverage"
         ],
         "check": [
             "@phpcs",
