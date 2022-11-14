@@ -33,43 +33,16 @@ use PHP_Typography\U;
 /**
  * Wraps words of all caps (may include numbers) in <span class="caps"> if enabled.
  *
- * Call before style_numbers().Only call if you are certain that no html tags have been
- * injected containing capital letters.
+ * Call before style_numbers(). Only call if you are certain that no html tags have
+ * been injected containing capital letters.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
  */
 class Style_Caps_Fix extends Simple_Style_Fix {
-	/*
-	// \p{Lu} equals upper case letters and should match non english characters; since PHP 4.4.0 and 5.1.0
-	// for more info, see http://www.regextester.com/pregsyntax.html#regexp.reference.unicode
-	$this->components[ Settings::STYLE_CAPS ]  = '
-	(?<![\w\-_'.U::ZERO_WIDTH_SPACE.U::SOFT_HYPHEN.'])
-	# negative lookbehind assertion
-	(
-	(?:							# CASE 1: " 9A "
-	[0-9]+					# starts with at least one number
-	\p{Lu}					# must contain at least one capital letter
-	(?:\p{Lu}|[0-9]|\-|_|'.U::ZERO_WIDTH_SPACE.'|'.U::SOFT_HYPHEN.')*
-	# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
-	)
-	|
-	(?:							# CASE 2: " A9 "
-	\p{Lu}					# starts with capital letter
-	(?:\p{Lu}|[0-9])		# must be followed a number or capital letter
-	(?:\p{Lu}|[0-9]|\-|_|'.U::ZERO_WIDTH_SPACE.'|'.U::SOFT_HYPHEN.')*
-	# may be followed by any number of numbers capital letters, hyphens, underscores, zero width spaces, or soft hyphens
 
-	)
-	)
-	(?![\w\-_'.U::ZERO_WIDTH_SPACE.U::SOFT_HYPHEN.'])
-	# negative lookahead assertion
-	'; // required modifiers: x (multiline pattern) u (utf8)
-	*/
-
-	// Servers with PCRE compiled without "--enable-unicode-properties" fail at \p{Lu} by returning an empty string (this leaving the screen void of text
-	// thus are testing this alternative.
+	// PCRE needs to be compiled with "--enable-unicode-properties", but we already depend on that elsehwere.
 	const REGEX = '/
 		(?<![\w' . self::COMBINING_MARKS . '])  # negative lookbehind assertion
 		(
@@ -77,16 +50,16 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 				[0-9]+                          # starts with at least one number
 				(?:[' . self::COMBINING_MARKS . '])*
 						                        # may contain hyphens, underscores, zero width spaces, or soft hyphens,
-				[A-ZÀ-ÖØ-Ý]                     # but must contain at least one capital letter
-				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|[' . self::COMBINING_MARKS . '])*
+				\p{Lu}                          # but must contain at least one capital letter
+				(?:\p{Lu}|[0-9]|[' . self::COMBINING_MARKS . '])*
 												# may be followed by any number of numbers capital letters, hyphens,
 												# underscores, zero width spaces, or soft hyphens
 			)
 			|
 			(?:                                 # CASE 2: " A9 "
-				[A-ZÀ-ÖØ-Ý]                     # starts with capital letter
-				(?:[A-ZÀ-ÖØ-Ý]|[0-9])           # must be followed a number or capital letter
-				(?:[A-ZÀ-ÖØ-Ý]|[0-9]|[' . self::COMBINING_MARKS . '])*
+				\p{Lu}                          # starts with capital letter
+				(?:\p{Lu}|[0-9])                # must be followed a number or capital letter
+				(?:\p{Lu}|[0-9]|[' . self::COMBINING_MARKS . '])*
 												# may be followed by any number of numbers capital letters, hyphens,
 												# underscores, zero width spaces, or soft hyphens
 			)
