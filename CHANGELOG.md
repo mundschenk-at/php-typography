@@ -1,5 +1,13 @@
 # Change History
 
+## 6.7.0 - November 15, 2022
+*   _Change_: Significantly updated hyphenation patterns for:
+    -   German
+    -   German (Traditional)
+    -   German (Swiss Traditional)
+*   _Change_: Minimum PHP version increased to 7.4.0.
+*   _Bugfix_: No more deprecation warnings when running on PHP 8.1.
+
 ## 6.6.0 - April 5, 2020
 *   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
 *   _Change_: Significantly updated hyphenation patterns for:

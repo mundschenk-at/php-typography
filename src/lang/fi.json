@@ -34,7 +34,7 @@
         "%     babelname: finnish",
         "%     legacy_patterns: fihyph.tex",
         "%     message: Finnish hyphenation patterns",
-        "%     description: Hyphenation patterns for Finnish in T1\/EC and UTF-8 encodings.",
+        "%     package: finnish",
         "%"
     ],
     "exceptions": [],
