@@ -67,7 +67,7 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 		(?![\w' . self::COMBINING_MARKS . '])   # negative lookahead assertion
 	/Sxu';
 
-	const COMBINING_MARKS = '\-_' . U::HYPHEN . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE; // Needs to be part of character class.
+	private const COMBINING_MARKS = '\-_' . U::HYPHEN . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE; // Needs to be part of character class.
 
 	/**
 	 * Creates a new node fix with a class.
