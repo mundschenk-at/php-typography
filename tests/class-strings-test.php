@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,6 +72,18 @@ class Strings_Test extends Testcase {
 		// Each function is a callable (except for the 'u' modifier string).
 		$this->assert_string_functions( $func_ascii );
 		$this->assert_string_functions( $func_utf8 );
+	}
+
+	/**
+	 * Test ::functions.
+	 *
+	 * @covers ::functions
+	 */
+	public function test_functions_invalid_encoding() {
+		$func = Strings::functions( \mb_convert_encoding( 'Ungültiges Encoding', 'ISO-8859-2' ) );
+
+		$this->assertTrue( \is_array( $func ) );
+		$this->assertCount( 0, $func );
 	}
 
 	/**
