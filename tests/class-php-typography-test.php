@@ -2726,10 +2726,8 @@ class PHP_Typography_Test extends Testcase {
 	public function provide_hyphenate_data() {
 		return [
 			[ 'A few words to hyphenate, like KINGdesk. Really, there should be more hyphenation here!', 'A few words to hy&shy;phen&shy;ate, like KING&shy;desk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!', 'en-US', true, true, true, false ],
-			// Not working with new de pattern file: [ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],.
-			[ 'Sauerstofffeldflasche', 'Sauer&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],
-			// Not working with new de pattern file: [ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],.
-			[ 'Sauerstoff-Feldflasche', 'Sauer&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
+			[ 'Sauerstofffeldflasche', 'Sau&shy;er&shy;stoff&shy;feld&shy;fla&shy;sche', 'de', true, true, true, false ],
+			[ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
 			[ 'Geschäftsübernahme', 'Ge&shy;sch&auml;fts&shy;&uuml;ber&shy;nah&shy;me', 'de', true, true, true, false ],
 			[ 'Trinkwasserinstallation', 'Trink&shy;was&shy;ser&shy;in&shy;stal&shy;la&shy;ti&shy;on', 'de', true, true, true, false ],

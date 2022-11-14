@@ -1,5 +1,18 @@
 # Change History
 
+## 6.7.0 - November 15, 2022
+*   _Change_: Significantly updated hyphenation patterns for:
+    -   German
+    -   German (Traditional)
+    -   German (Swiss Traditional)
+*   _Change_: Minimum PHP version increased to 7.4.0.
+*   _Change_: The following public methods have been deprecated:
+    -   `Strings::mb_str_split`
+    -   `Strings::uchr`
+*   _Bugfix_: No more deprecation warnings when running on PHP 8.1.
+*   _Bugfix_: The ASCII string functions actually get used on pure ASCII fragments
+    (instead of falling back to the slower `mb_*` functions).
+
 ## 6.6.0 - April 5, 2020
 *   _Feature_: Use native `mb_str_split` on PHP 7.4 and above.
 *   _Change_: Significantly updated hyphenation patterns for:
@@ -17,7 +30,7 @@
 
 ## 6.5.2 - December 7, 2019
 *   _Bugfix_: PHP 7.4 compatibility.
-*   _Bugfix_: Parsing does not break anymore when the returned more `DOMDocument`
+*   _Bugfix_: Parsing does not break anymore when the returned `DOMDocument`
     is invalid.
 
 ## 6.5.1 - July 8, 2019

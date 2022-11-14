@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2022 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,8 +77,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 	 */
 	public function provide_hyphenate_data() {
 		return [
-			// Not working with new de pattern file: [ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],.
-			[ 'Sauerstoff-Feldflasche', 'Sauer&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
+			[ 'Sauerstoff-Feldflasche', 'Sau&shy;er&shy;stoff-Feld&shy;fla&shy;sche', 'de', true, true, true, true ],
 			[ 'Sauerstoff-Feldflasche', 'Sauerstoff-Feldflasche', 'de', true, true, true, false ],
 		];
 	}
