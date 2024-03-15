@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -87,17 +87,17 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @dataProvider provide_smart_diacritics_error_in_pattern_data
 	 *
-	 * @param string $html  HTML input.
-	 * @param string $lang  Language code.
-	 * @param string $unset Replacement to unset.
+	 * @param string $html              HTML input.
+	 * @param string $lang              Language code.
+	 * @param string $unset_replacement Replacement to unset.
 	 */
-	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset ) {
+	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset_replacement ) {
 
 		$this->s->set_smart_diacritics( true );
 		$this->s->set_diacritic_language( $lang );
 
 		$replacements = $this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
-		unset( $replacements['replacements'][ $unset ] );
+		unset( $replacements['replacements'][ $unset_replacement ] );
 		$this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertFixResultSame( $html, $html );

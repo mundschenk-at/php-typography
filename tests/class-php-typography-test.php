@@ -1122,18 +1122,18 @@ class PHP_Typography_Test extends Testcase {
 	 *
 	 * @dataProvider provide_smart_diacritics_error_in_pattern_data
 	 *
-	 * @param string $html   HTML input.
-	 * @param string $lang   Language code.
-	 * @param string $unset  Replacement to unset.
+	 * @param string $html              HTML input.
+	 * @param string $lang              Language code.
+	 * @param string $unset_replacement Replacement to unset.
 	 */
-	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset ) {
+	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset_replacement ) {
 
 		$this->s->set_smart_diacritics( true );
 		$this->s->set_diacritic_language( $lang );
 		$s = $this->s;
 
 		$replacements = $s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
-		unset( $replacements['replacements'][ $unset ] );
+		unset( $replacements['replacements'][ $unset_replacement ] );
 		$s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $s, false ) ) );
