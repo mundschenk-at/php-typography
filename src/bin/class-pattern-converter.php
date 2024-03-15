@@ -359,7 +359,8 @@ class Pattern_Converter {
 				throw new \RuntimeException( "Error reading file '{$url}'\n" );
 			}
 
-			$line_no++;
+			// Calculate current line number (instead of calling `SplFileObject::current`).
+			++$line_no;
 
 			// Parse the line.
 			if ( $reading_patterns ) {

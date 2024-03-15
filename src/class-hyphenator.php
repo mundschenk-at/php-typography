@@ -386,7 +386,7 @@ class Hyphenator {
 			if ( '-' === $lowercase_hyphened_word_parts[ $i ] ) {
 				$word_pattern[ $index ] = 9;
 			} else {
-				$index++;
+				++$index;
 			}
 		}
 

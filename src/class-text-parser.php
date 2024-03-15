@@ -331,7 +331,7 @@ class Text_Parser {
 				self::parse_ambiguous_token( Token::OTHER, $part, $tokens, $index );
 			}
 
-			$index++;
+			++$index;
 		}
 
 		return $tokens;
@@ -349,8 +349,7 @@ class Text_Parser {
 
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
 		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
-			$index--;
-			$old_part         = $tokens[ $index ]->value;
+			$old_part         = $tokens[ --$index ]->value;
 			$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
 		} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
