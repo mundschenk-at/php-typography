@@ -718,7 +718,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		$this->data[ self::DIACRITIC_LANGUAGE ] = $lang;
-		$language_file_name                     = \dirname( __FILE__ ) . '/diacritics/' . $lang . '.json';
+		$language_file_name                     = __DIR__ . '/diacritics/' . $lang . '.json';
 		$diacritics                             = [];
 
 		if ( \file_exists( $language_file_name ) ) {
