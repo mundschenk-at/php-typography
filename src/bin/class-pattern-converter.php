@@ -301,7 +301,7 @@ class Pattern_Converter {
 	 * @return array<int, string>
 	 */
 	private static function split_at_whitespace( $line ) {
-		return \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- We can safely assume an array here, as long as $line convertible to a string.
+		return \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- We can safely assume an array here, as long as $line convertible to a string.
 	}
 
 	/**

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -123,12 +123,12 @@ abstract class Strings {
 		// Checking here is not optimal, the check should be made on instantiation
 		// when the class is refactored.
 		if ( \function_exists( 'mb_str_split' ) ) {
-			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound, WordPress.PHP.DisallowShortTernary -- Ensure array type.
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound, Universal.Operators.DisallowShortTernary -- Ensure array type.
 			return \mb_str_split( $string, $split_length, 'UTF-8' ) ?: [];
 		}
 
 		// We can safely assume an array here, as long as $string convertible to a string.
-		return \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type.
+		return \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type.
 	}
 
 	/**
@@ -167,7 +167,7 @@ abstract class Strings {
 	public static function maybe_split_parameters( $params ) {
 		if ( ! \is_array( $params ) ) {
 			// We can safely assume an array here, as long as $params convertible to a string.
-			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
+			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
 		}
 
 		return $params;

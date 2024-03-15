@@ -120,7 +120,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$single_open  = RE::ESCAPE_MARKER . $single->open() . RE::ESCAPE_MARKER;
 		$single_close = RE::ESCAPE_MARKER . $single->close() . RE::ESCAPE_MARKER;
 
-		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison -- object value comparison.
+		if ( $double != $this->cached_primary_quotes || $single != $this->cached_secondary_quotes ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- object value comparison.
 			$this->update_smart_quotes_brackets( $double_open, $double_close, $single_open, $single_close );
 			$this->cached_primary_quotes   = $double;
 			$this->cached_secondary_quotes = $single;
