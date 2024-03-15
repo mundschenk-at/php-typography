@@ -27,6 +27,7 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Exceptions\Invalid_Path_Exception;
 use PHP_Typography\Fixes\Registry;
 use PHP_Typography\Fixes\Default_Registry;
 
@@ -457,15 +458,16 @@ class PHP_Typography {
 	 * @param string $path The path in which to look for language plugin files.
 	 *
 	 * @return string[] An array in the form ( $language_code => $language_name ).
+	 *
+	 * @throws Invalid_Path_Exception If the directory cannot be read, an exception is thrown.
 	 */
 	private static function get_language_plugin_list( $path ) {
 		$languages = [];
 
 		// Try to open the given directory.
-		$handle = \opendir( $path );
+		$handle = @\opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors -- Prevent PHP error code from being raised.
 		if ( false === $handle ) {
-			// Abort.
-			return $languages; // @codeCoverageIgnore
+			throw new Invalid_Path_Exception( "Unable to read directory '{$path}'" );
 		}
 
 		// Read all files in directory.

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2022 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ use PHP_Typography\Fixes\Token_Fix;
 use PHP_Typography\Fixes\Registry;
 
 use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
+
+use PHP_Typography\Exceptions\Invalid_Path_Exception;
 
 use Mockery as m;
 
@@ -440,11 +442,10 @@ class PHP_Typography_Test extends Testcase {
 	 * @covers ::get_language_plugin_list
 	 */
 	public function test_get_language_plugin_list_incorrect_path() {
-		$this->expect_warning( \PHPUnit\Framework\Error\Warning::class );
-
+		$this->expect_exception( Invalid_Path_Exception::class );
 		$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] );
 
-		$this->assertEmpty( @$this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$this->assertEmpty( $this->invoke_static_method( PHP_Typography::class, 'get_language_plugin_list', [ '/does/not/exist' ] ) );
 	}
 
 	/**
