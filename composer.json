@@ -78,8 +78,10 @@
             "phpcs -p -s src/ tests/ --ignore=tests/benchmarks,tests/coverage --extensions=php"
         ],
         "phpstan": [
-            "phpstan analyse --configuration=.phpstan.neon --level=7 --ansi src/",
-            "phpstan analyse --configuration=.phpstan.neon --level=2 --ansi tests/"
+            "phpstan analyze --memory-limit 1G"
+        ],
+        "phpstan-clean": [
+            "phpstan clear-result-cache && phpstan analyze --memory-limit 1G"
         ]
     },
     "config": {
