@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -136,7 +136,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 	 * @param string $interval            The dash character used for interval dashes.
 	 * @param string $interval_space      The space character used around interval dashes.
 	 */
-	private function update_dash_spacing_regex( $parenthetical, $parenthetical_space, $interval, $interval_space ) : void {
+	private function update_dash_spacing_regex( $parenthetical, $parenthetical_space, $interval, $interval_space ): void {
 		// Mandatory UTF-8 modifier.
 		$this->parenthetical_dash_spacing = "/
 			(?:

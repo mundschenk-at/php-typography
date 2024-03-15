@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -119,7 +119,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 		// Do what we have to do.
 		return \preg_replace_callback(
 			self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END,
-			function( array $widow ) use ( $func, $max_pull, $max_length, $word_number ) {
+			function ( array $widow ) use ( $func, $max_pull, $max_length, $word_number ) {
 
 				// If we are here, we know that widows are being protected in some fashion
 				// with that, we will assert that widows should never be hyphenated or wrapped

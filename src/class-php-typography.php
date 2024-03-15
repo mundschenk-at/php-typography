@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ class PHP_Typography {
 	public function process( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes(
 			$html,
-			function( $html, $settings, $is_title ) {
+			function ( $html, $settings, $is_title ) {
 				$this->get_registry()->apply_fixes( $html, $settings, $is_title, false );
 			},
 			$settings,
@@ -126,7 +126,7 @@ class PHP_Typography {
 	public function process_feed( $html, Settings $settings, $is_title = false, array $body_classes = [] ) {
 		return $this->process_textnodes(
 			$html,
-			function( $html, $settings, $is_title ) {
+			function ( $html, $settings, $is_title ) {
 				$this->get_registry()->apply_fixes( $html, $settings, $is_title, true );
 			},
 			$settings,
@@ -187,7 +187,7 @@ class PHP_Typography {
 	 * @param Settings $settings   A settings object.
 	 * @param bool     $is_title   A flag indicating whether the HTML fragment in the DOM is a title.
 	 */
-	private function process_textnodes_internal( \DOMNode $body_node, callable $fixer, Settings $settings, bool $is_title ) : void {
+	private function process_textnodes_internal( \DOMNode $body_node, callable $fixer, Settings $settings, bool $is_title ): void {
 		// Get the list of tags that should be ignored.
 		$xpath          = new \DOMXPath( $body_node->ownerDocument );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
@@ -442,7 +442,7 @@ class PHP_Typography {
 	 *
 	 * @param Hyphenator\Cache $cache A hyphenator cache instance.
 	 */
-	public function set_hyphenator_cache( Hyphenator\Cache $cache ) : void {
+	public function set_hyphenator_cache( Hyphenator\Cache $cache ): void {
 		$this->hyphenator_cache = $cache;
 
 		// Change hyphenator cache for existing token fixes.

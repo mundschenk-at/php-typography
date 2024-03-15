@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -145,7 +145,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 *
 	 * @return string             The hyphenated domain name.
 	 */
-	private function split_domain( string $domain, Settings $settings ) : string {
+	private function split_domain( string $domain, Settings $settings ): string {
 		$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $domain, -1, PREG_SPLIT_DELIM_CAPTURE );
 		if ( false === $domain_parts ) {
 			// Should not happen.
@@ -187,7 +187,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 *
 	 * @return string             The hyphenated domain name.
 	 */
-	private function split_path( string $path, Settings $settings ) : string {
+	private function split_path( string $path, Settings $settings ): string {
 		// Break up the URL path to individual characters.
 		$path_parts = \str_split( $path, 1 ); // TODO: Does not work with non-ASCII paths.
 		$path_count = \count( $path_parts );
