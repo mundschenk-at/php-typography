@@ -364,33 +364,32 @@ class Pattern_Converter {
 
 			// Parse the line.
 			if ( $reading_patterns ) {
+				// Continue reading patterns.
 				$reading_patterns = $this->match_patterns( $this->expand_macros( $line, $macros ), $patterns, $line_no );
 			} elseif ( $reading_exceptions ) {
+				// Continue reading exceptions.
 				$reading_exceptions = $this->match_exceptions( $this->expand_macros( $line, $macros ), $exceptions, $line_no );
-			} else {
-				// Not a pattern & not an exception.
-				if ( \preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
+			} elseif ( \preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
+				$comments[] = $line;
+			} elseif ( \preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
+				$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
+			} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
+				$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
+			} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
+				// Add a macro definition.
+				$macros[ $matches[1] ] = $matches[2];
+			} elseif ( \preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
+				// Add a macro definition and expand any contained macros.
+				$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
+			} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
+				// Ignore \endinput.
+				if ( ! \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
+					// Treat other commands as comments unless we are matching exceptions or patterns.
 					$comments[] = $line;
-				} elseif ( \preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
-				} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
-					$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
-				} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
-					// Add a macro definition.
-					$macros[ $matches[1] ] = $matches[2];
-				} elseif ( \preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
-					// Add a macro definition and expand any contained macros.
-					$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
-				} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
-					// Ignore \endinput.
-					if ( ! \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
-						// Treat other commands as comments unless we are matching exceptions or patterns.
-						$comments[] = $line;
-					}
-				} elseif ( ! \preg_match( '/^\s*$/u', $line, $matches ) ) {
-					// If this was not simply whitespace, we are in trouble.
-					throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
 				}
+			} elseif ( ! \preg_match( '/^\s*$/u', $line, $matches ) ) {
+				// If this was not simply whitespace, we are in trouble.
+				throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
 			}
 		}
 	}
