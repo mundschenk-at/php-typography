@@ -171,7 +171,7 @@ class Hyphenator {
 		}
 
 		$success            = false;
-		$language_file_name = \dirname( __FILE__ ) . '/lang/' . $lang . '.json';
+		$language_file_name = __DIR__ . '/lang/' . $lang . '.json';
 
 		if ( \file_exists( $language_file_name ) ) {
 			$raw_language_file = \file_get_contents( $language_file_name );
