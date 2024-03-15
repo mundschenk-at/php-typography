@@ -318,7 +318,7 @@ class Settings_Test extends Testcase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
-			function ( $errors ) {
+			function ( $errors ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- error handler signature.
 				return [];
 			}
 		);
@@ -339,7 +339,7 @@ class Settings_Test extends Testcase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
-			function ( $errors ) {
+			function ( $errors ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- error handler signature.
 				return [];
 			}
 		);
@@ -1662,7 +1662,7 @@ class Settings_Test extends Testcase {
 				],
 			],
 			[
-				function ( $key, $value ) {
+				function ( $key, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- callable signature.
 						return [];
 				},
 				[ 1, 2, 3 ],
