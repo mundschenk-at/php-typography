@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ abstract class DOM {
 				\array_flip(
 					\array_filter(
 						\array_keys( Elements::$html5 ),
-						function( $tag ) {
+						function ( $tag ) {
 							return Elements::isA( $tag, Elements::BLOCK_TAG );
 						}
 					)
@@ -109,7 +109,7 @@ abstract class DOM {
 				\array_merge(
 					\array_filter(
 						\array_keys( Elements::$html5 ),
-						function( $tag ) {
+						function ( $tag ) {
 							return Elements::isA( $tag, Elements::VOID_TAG )
 								|| Elements::isA( $tag, Elements::TEXT_RAW )
 								|| Elements::isA( $tag, Elements::TEXT_RCDATA );
@@ -253,7 +253,7 @@ abstract class DOM {
 	 */
 	public static function get_previous_textnode( \DOMNode $node = null ) {
 		return self::get_adjacent_textnode(
-			function( &$another_node = null ) {
+			function ( &$another_node = null ) {
 				$another_node = $another_node->previousSibling;
 				return self::get_last_textnode( $another_node );
 			},
@@ -271,7 +271,7 @@ abstract class DOM {
 	 */
 	public static function get_next_textnode( \DOMNode $node = null ) {
 		return self::get_adjacent_textnode(
-			function( &$another_node = null ) {
+			function ( &$another_node = null ) {
 				$another_node = $another_node->nextSibling;
 				return self::get_first_textnode( $another_node );
 			},

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2022 Peter Putzer.
+ *  Copyright 2016-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -200,7 +200,6 @@ class Settings_Test extends Testcase {
 		$this->assertFalse( isset( $s['new_key'] ) );
 		$s['new_key'] = 42;
 		$this->assertTrue( isset( $s['new_key'] ) );
-
 	}
 
 	/**
@@ -319,7 +318,7 @@ class Settings_Test extends Testcase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
-			function( $errors ) {
+			function ( $errors ) {
 				return [];
 			}
 		);
@@ -340,7 +339,7 @@ class Settings_Test extends Testcase {
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
-			function( $errors ) {
+			function ( $errors ) {
 				return [];
 			}
 		);
@@ -1405,7 +1404,6 @@ class Settings_Test extends Testcase {
 
 		$this->settings->set_min_before_hyphenation( 66 );
 		$this->assertSame( 66, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
-
 	}
 
 	/**
@@ -1653,7 +1651,7 @@ class Settings_Test extends Testcase {
 	public function provide_array_map_assoc_data() {
 		return [
 			[
-				function( $key, $value ) {
+				function ( $key, $value ) {
 						return [ $value => $value * 2 ];
 				},
 				[ 1, 2, 3 ],
@@ -1664,7 +1662,7 @@ class Settings_Test extends Testcase {
 				],
 			],
 			[
-				function( $key, $value ) {
+				function ( $key, $value ) {
 						return [];
 				},
 				[ 1, 2, 3 ],

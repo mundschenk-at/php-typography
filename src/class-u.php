@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -76,5 +76,4 @@ interface U {
 	const RIGHT_WHITE_CORNER_BRACKET = "\xe3\x80\x8f";
 	const ZERO_WIDTH_JOINER          = "\u{200c}";
 	const ZERO_WIDTH_NON_JOINER      = "\u{200d}";
-
 }

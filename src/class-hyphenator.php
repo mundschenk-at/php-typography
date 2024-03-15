@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ class Hyphenator {
 	 *
 	 * @param array<string,string> $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen. Default empty array.
 	 */
-	public function set_custom_exceptions( array $exceptions = [] ) : void {
+	public function set_custom_exceptions( array $exceptions = [] ): void {
 		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
 			return; // Nothing to do at all.
 		}
@@ -341,7 +341,7 @@ class Hyphenator {
 	 * Merges hyphenation exceptions from the language file and custom hyphenation exceptions and
 	 * generates patterns for all of them.
 	 */
-	protected function merge_hyphenation_exceptions() : void {
+	protected function merge_hyphenation_exceptions(): void {
 		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.

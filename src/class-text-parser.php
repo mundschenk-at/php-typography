@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2022 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2012-2013 Marie Hogebrandt.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
@@ -345,7 +345,7 @@ class Text_Parser {
 	 * @param Token[]                  $tokens        The token array. Passed by reference.
 	 * @param int                      $index         The current index. Passed by reference.
 	 */
-	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ) : void {
+	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ): void {
 
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
 		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
@@ -427,7 +427,7 @@ class Text_Parser {
 	/**
 	 * Clears the currently set text from the parser.
 	 */
-	public function clear() : void {
+	public function clear(): void {
 		$this->text = [];
 	}
 
@@ -436,7 +436,7 @@ class Text_Parser {
 	 *
 	 * @param Token[] $tokens An array of tokens.
 	 */
-	public function update( $tokens ) : void {
+	public function update( $tokens ): void {
 		foreach ( $tokens as $index => $token ) {
 			$this->text[ $index ] = $this->text[ $index ]->with_value( $token->value );
 		}
@@ -516,7 +516,7 @@ class Text_Parser {
 			self::ALLOW_ALL_LETTERS,
 			self::REQUIRE_ALL_LETTERS,
 			self::NO_ALL_LETTERS,
-			function( $value ) {
+			function ( $value ) {
 				return \preg_replace( self::RE_HTML_LETTER_CONNECTORS, '', $value );
 			}
 		);
@@ -556,7 +556,7 @@ class Text_Parser {
 			self::ALLOW_COMPOUNDS,
 			self::NO_COMPOUNDS,
 			self::REQUIRE_COMPOUNDS,
-			function( $value ) {
+			function ( $value ) {
 				return \preg_replace( '/-/S', '', $value );
 			}
 		);

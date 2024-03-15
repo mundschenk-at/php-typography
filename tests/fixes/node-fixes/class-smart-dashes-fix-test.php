@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -143,7 +143,6 @@ class Smart_Dashes_Fix_Test extends Node_Fix_Testcase {
 
 		$this->s->set_smart_dashes_style( 'international' );
 		$this->assertFixResultSame( $input, $result_int );
-
 	}
 
 	/**

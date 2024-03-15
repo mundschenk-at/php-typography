@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 			$tokens[ $key ] = $word_token->with_value(
 				\array_reduce(
 					parent::apply( $component_words, $settings, $is_title, $textnode ),
-					function( $carry, $item ) {
+					function ( $carry, $item ) {
 						return $carry . $item->value;
 					}
 				)

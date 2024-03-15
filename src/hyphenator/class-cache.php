@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ class Cache {
 	 * @param string     $lang       A language code.
 	 * @param Hyphenator $hyphenator The object to cache.
 	 */
-	public function set_hyphenator( $lang, Hyphenator $hyphenator ) : void {
+	public function set_hyphenator( $lang, Hyphenator $hyphenator ): void {
 		$this->cache[ $lang ] = $hyphenator;
 		$this->changed        = true;
 	}

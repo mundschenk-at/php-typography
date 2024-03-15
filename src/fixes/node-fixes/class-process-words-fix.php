@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	 *
 	 * @param Token_Fix $fix Required.
 	 */
-	public function register_token_fix( Token_Fix $fix ) : void {
+	public function register_token_fix( Token_Fix $fix ): void {
 		$this->token_fixes[] = $fix;
 	}
 
@@ -127,7 +127,7 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	 *
 	 * @param Cache $cache A hyphenator cache instance.
 	 */
-	public function update_hyphenator_cache( Cache $cache ) : void {
+	public function update_hyphenator_cache( Cache $cache ): void {
 		foreach ( $this->token_fixes as $fix ) {
 			if ( $fix instanceof Hyphenate_Fix ) {
 				$fix->set_hyphenator_cache( $cache );

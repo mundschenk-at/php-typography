@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 	 * @param array        $actual_tokens  A token array.
 	 * @param string       $message        Optional. Default ''.
 	 */
-	protected function assert_tokens_not_same( $expected_value, array $actual_tokens, $message = '' ) : void {
+	protected function assert_tokens_not_same( $expected_value, array $actual_tokens, $message = '' ): void {
 		$this->assertContainsOnlyInstancesOf( Token::class, $actual_tokens, '$actual_tokens has to be an array of tokens.' );
 		foreach ( $actual_tokens as $index => $token ) {
 			$actual_tokens[ $index ] = $token->with_value( $this->clean_html( $token->value ) );

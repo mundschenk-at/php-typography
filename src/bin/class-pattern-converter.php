@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2022 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -338,7 +338,7 @@ class Pattern_Converter {
 	 * @throws \RangeException   Thrown when a line cannot be parsed at all.
 	 * @throws \RuntimeException Thrown when file does not exist or is not readable.
 	 */
-	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ) : void {
+	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ): void {
 		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
 			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
 		}

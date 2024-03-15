@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		// First, let's find math equations.
 		$node_data = \preg_replace_callback(
 			self::MATH_EQUATION,
-			function( array $matches ) {
+			function ( array $matches ) {
 				return \str_replace(
 					[
 						'-',
