@@ -665,7 +665,7 @@ class PHP_Typography_Test extends Testcase {
 			$this->clean_html(
 				$this->typo->process_textnodes(
 					$html,
-					function ( $node ) {
+					function ( $node ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- callable signature.
 						return 'XXX';
 					},
 					$s
