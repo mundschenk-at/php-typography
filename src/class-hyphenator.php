@@ -150,12 +150,14 @@ class Hyphenator {
 	/**
 	 * Calculates binary-safe hash from data object.
 	 *
-	 * @param mixed $object Any datatype.
+	 * @since 6.8.0 Parameter $object renamed to $data.
+	 *
+	 * @param mixed $data Any datatype.
 	 *
 	 * @return string
 	 */
-	protected static function get_object_hash( $object ) {
-		return \md5( (string) \json_encode( $object ), false );
+	protected static function get_object_hash( $data ) {
+		return \md5( (string) \json_encode( $data ), false );
 	}
 
 	/**

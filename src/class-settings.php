@@ -791,7 +791,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @return array<T>
 	 */
-	protected static function array_map_assoc( callable $callback, array $array ): array {
+	protected static function array_map_assoc( callable $callback, array $array ): array { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.arrayFound -- method is already deprecated.
 		$new = [];
 
 		foreach ( $array as $k => $v ) {

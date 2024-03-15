@@ -60,11 +60,11 @@ class Smart_Diacritics_Fix extends Abstract_Node_Fix {
 			$replacements   = $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'];
 			$textnode->data = \preg_replace_callback(
 				$settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'],
-				function ( $match ) use ( $replacements ) {
-					if ( isset( $replacements[ $match[0] ] ) ) {
-						return $replacements[ $match[0] ];
+				function ( $matching ) use ( $replacements ) {
+					if ( isset( $replacements[ $matching[0] ] ) ) {
+						return $replacements[ $matching[0] ];
 					} else {
-						return $match[0];
+						return $matching[0];
 					}
 				},
 				$textnode->data

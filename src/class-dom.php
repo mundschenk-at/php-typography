@@ -126,14 +126,18 @@ abstract class DOM {
 	/**
 	 * Converts a DOMNodeList to array.
 	 *
-	 * @param \DOMNodeList<\DOMNode> $list Required.
+	 * @since 6.8.0 The Parameter $list has been renamed to $node_list.
+	 *
+	 * @param \DOMNodeList $node_list Required.
 	 *
 	 * @return array<string,\DOMNode> An associative array in the form ( $spl_object_hash => $node ).
+	 *
+	 * @phpstan-param \DOMNodeList<\DOMNode> $node_list
 	 */
-	public static function nodelist_to_array( \DOMNodeList $list ) { // phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint -- ignore phpstan Generics syntax.
+	public static function nodelist_to_array( \DOMNodeList $node_list ) {
 		$out = [];
 
-		foreach ( $list as $node ) {
+		foreach ( $node_list as $node ) {
 			$out[ \spl_object_hash( $node ) ] = $node;
 		}
 
@@ -151,7 +155,7 @@ abstract class DOM {
 	public static function get_ancestors( \DOMNode $node ) {
 		$result = [];
 
-		while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+		while ( ( $node = $node->parentNode ) && ( $node instanceof \DOMElement ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 			$result[] = $node;
 		}
 

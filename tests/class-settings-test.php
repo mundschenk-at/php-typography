@@ -1681,7 +1681,7 @@ class Settings_Test extends Testcase {
 	 * @param  array    $array    Input array.
 	 * @param  array    $result   Expected output array.
 	 */
-	public function test_array_map_assoc( callable $callable, array $array, array $result ) {
+	public function test_array_map_assoc( callable $callable, array $array, array $result ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames -- test for deprecated method.
 		$this->assertSame( $result, $this->invoke_static_method( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }
