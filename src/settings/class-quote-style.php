@@ -26,7 +26,6 @@
 
 namespace PHP_Typography\Settings;
 
-use PHP_Typography\Settings;
 use PHP_Typography\U;
 
 /**
@@ -145,13 +144,13 @@ abstract class Quote_Style {
 	 * Creates a new Quotes object in the given style.
 	 *
 	 * @since 6.5.0 The $settings parameter has been deprecated.
+	 * @since 6.8.0 The unused $settings parameter has been removed.
 	 *
-	 * @param string   $style    The quote style.
-	 * @param Settings $settings The current settings.
+	 * @param string $style The quote style.
 	 *
 	 * @return Quotes|null Returns null in case of an invalid $style parameter.
 	 */
-	public static function get_styled_quotes( $style, Settings $settings ) {
+	public static function get_styled_quotes( $style ) {
 		if ( isset( self::$styles[ $style ] ) ) {
 			return new Simple_Quotes( self::$styles[ $style ][ self::OPEN ], self::$styles[ $style ][ self::CLOSE ] );
 		}
