@@ -299,7 +299,7 @@ class Text_Parser {
 		$this->current_strtoupper = $str_functions['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore WordPress.PHP.DisallowShortTernary.Found -- Ensure array type in case of error.
+		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
 
 		// The token array should never be empty.
 		return ! empty( $this->text );

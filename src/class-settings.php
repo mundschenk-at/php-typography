@@ -767,7 +767,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	private function parse_diacritics_replacement_string( $custom_replacements ) {
 		$replacements = [];
-		foreach ( ( \preg_split( '/,/', $custom_replacements, -1, \PREG_SPLIT_NO_EMPTY ) ?: [] ) as $replacement ) { // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type in case of error.
+		foreach ( ( \preg_split( '/,/', $custom_replacements, -1, \PREG_SPLIT_NO_EMPTY ) ?: [] ) as $replacement ) { // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
 			if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
 				$replacements[ $match['key'] ] = $match['replacement'];
 			}
@@ -1137,7 +1137,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ) : void {
 		// Make array if handed a list of tags as a string.
 		if ( ! \is_array( $tags ) ) {
-			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, \PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary -- Ensure array type.
+			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, \PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type.
 		}
 
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
