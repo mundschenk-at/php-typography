@@ -117,8 +117,18 @@ final class Token {
 	 * @return mixed
 	 */
 	public function __get( $property ) {
-		if ( \property_exists( $this, $property ) ) {
-			return $this->$property;
+		switch ( $property ) {
+			case 'type':
+				return $this->type;
+
+			case 'value':
+				return $this->value;
+
+			case 'mutable':
+				return $this->mutable;
+
+			default:
+				return null;
 		}
 	}
 
