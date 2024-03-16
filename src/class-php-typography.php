@@ -285,7 +285,7 @@ class PHP_Typography {
 
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
-		if ( ! empty( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && ! empty( $errors ) ) {
+		if ( isset( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && \is_callable( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && ! empty( $errors ) ) {
 			$errors = $settings[ Settings::PARSER_ERRORS_HANDLER ]( $errors );
 		}
 
