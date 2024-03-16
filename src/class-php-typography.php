@@ -171,7 +171,7 @@ class PHP_Typography {
 			if ( $body_node instanceof \DOMElement ) {
 
 				// Process text nodes in the document body.
-				$this->process_textnodes_internal( $body_node, $fixer, $settings, $is_title );
+				$this->process_textnodes_internal( $dom, $body_node, $fixer, $settings, $is_title );
 
 				return $html5_parser->saveHTML( $body_node->childNodes );
 			}
@@ -184,15 +184,17 @@ class PHP_Typography {
 	 * Processes the text nodes below the <body> node.
 	 *
 	 * @since 6.7.0
+	 * @since 6.8.0 Parameter $dom added.
 	 *
-	 * @param \DOMNode $body_node  The body node containing the HTML fragment to process.
-	 * @param callable $fixer      A callback that applies typography fixes to a single textnode.
-	 * @param Settings $settings   A settings object.
-	 * @param bool     $is_title   A flag indicating whether the HTML fragment in the DOM is a title.
+	 * @param \DOMDocument $dom        The document.
+	 * @param \DOMNode     $body_node  The body node containing the HTML fragment to process.
+	 * @param callable     $fixer      A callback that applies typography fixes to a single textnode.
+	 * @param Settings     $settings   A settings object.
+	 * @param bool         $is_title   A flag indicating whether the HTML fragment in the DOM is a title.
 	 */
-	private function process_textnodes_internal( \DOMNode $body_node, callable $fixer, Settings $settings, bool $is_title ): void {
+	private function process_textnodes_internal( \DOMDocument $dom, \DOMNode $body_node, callable $fixer, Settings $settings, bool $is_title ): void {
 		// Get the list of tags that should be ignored.
-		$xpath          = new \DOMXPath( $body_node->ownerDocument );
+		$xpath          = new \DOMXPath( $dom );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
 		/**
