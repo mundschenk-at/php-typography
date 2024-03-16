@@ -363,7 +363,7 @@ class PHP_Typography {
 		$result = $node;
 
 		$parent = $node->parentNode;
-		if ( empty( $parent ) ) {
+		if ( null === $parent || null === $parent->ownerDocument ) {
 			return $node; // abort early to save cycles.
 		}
 
@@ -384,7 +384,7 @@ class PHP_Typography {
 			 *
 			 * @var \DOMDocumentFragment $imported_fragment
 			 */
-			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
+			$imported_fragment = $parent->ownerDocument->importNode( $html_fragment, true );
 
 			if ( ! empty( $imported_fragment ) ) {
 				// Save the children of the imported DOMDocumentFragment before replacement.
