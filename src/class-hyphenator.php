@@ -53,17 +53,17 @@ class Hyphenator {
 
 	/**
 	 * The hyphenation exceptions from the pattern file.
-	 * Stored as an array of "hy-phen-at-ed" strings.
+	 * Stored as an array of "hyphenated" => "hy-phen-at-ed" strings.
 	 *
-	 * @var string[]
+	 * @var array<string,string>
 	 */
 	protected $pattern_exceptions = [];
 
 	/**
 	 * Custom hyphenation exceptions set by the user.
-	 * Stored as an array of "hy-phen-at-ed" strings.
+	 * Stored as an array of "hyphenated" => "hy-phen-at-ed" strings.
 	 *
-	 * @var string[]
+	 * @var array<string,string>
 	 */
 	protected $custom_exceptions;
 
@@ -77,7 +77,7 @@ class Hyphenator {
 	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
-	 * @var array<string,int[]>|null
+	 * @var ?array<string,int[]|null>
 	 */
 	protected $merged_exception_patterns;
 
@@ -184,7 +184,7 @@ class Hyphenator {
 				if ( false !== $language_file ) {
 					$this->language           = $lang;
 					$this->pattern_trie       = Trie_Node::build_trie( $language_file['patterns'] );
-					$this->pattern_exceptions = $language_file['exceptions'];
+					$this->pattern_exceptions = $language_file['exceptions'] ?? [];
 
 					$success = true;
 				}
@@ -344,6 +344,12 @@ class Hyphenator {
 	 * generates patterns for all of them.
 	 */
 	protected function merge_hyphenation_exceptions(): void {
+
+		/**
+		 * The exception array.
+		 *
+		 * @var array<string,string> $exceptions
+		 */
 		$exceptions = [];
 
 		// Merge custom and language specific word hyphenations.
@@ -355,7 +361,11 @@ class Hyphenator {
 			$exceptions = $this->custom_exceptions;
 		}
 
-		// Update patterns as well.
+		/**
+		 * Update patterns as well.
+		 *
+		 * @var array<string,array<int>|null> $exception_patterns
+		 */
 		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
 			$exception_patterns[ $exception_key ] = self::convert_hyphenation_exception_to_pattern( $exception );
