@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 		foreach ( $tokens as $index => $token ) {
 			$value = $token->value;
 			if ( \preg_match( $this->email_pattern, $value, $email_match ) ) {
-				$tokens[ $index ] = $token->with_value( \preg_replace( '/([^a-zA-Z0-9])/S', '$1' . U::ZERO_WIDTH_SPACE, $value ) );
+				$tokens[ $index ] = $token->with_value( (string) \preg_replace( '/([^a-zA-Z0-9])/S', '$1' . U::ZERO_WIDTH_SPACE, $value ) );
 			}
 		}
 

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -143,10 +143,10 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		$node_data = \str_replace( '---', U::EM_DASH, $node_data );
-		$node_data = \preg_replace( self::PARENTHETICAL_DOUBLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $node_data );
+		$node_data = (string) \preg_replace( self::PARENTHETICAL_DOUBLE_DASH, "\$1{$s->parenthetical_dash()}\$2", $node_data );
 		$node_data = \str_replace( '--', U::EN_DASH, $node_data );
 
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::PARENTHETICAL_SINGLE_DASH,
 				self::EN_DASH_WORDS,
@@ -168,7 +168,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( 'xn' . U::EN_DASH, 'xn--', $node_data );
 
 		// Revert dates back to original formats.
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::DATE_YYYY_MM_DD, // YYYY-MM-DD.
 				self::DATE_MM_DD_YYYY, // MM-DD-YYYY or DD-MM-YYYY.

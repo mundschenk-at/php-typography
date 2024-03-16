@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// Replace spaces.
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				// Normal spacing.
 				self::COLLAPSE_NORMAL_SPACES,
@@ -82,7 +82,7 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 
 		// Remove all spacing at beginning of block level elements.
 		if ( null === DOM::get_previous_textnode( $textnode ) ) {
-			$node_data = \preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $node_data );
+			$node_data = (string) \preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $node_data );
 		}
 
 		// Restore textnode content.

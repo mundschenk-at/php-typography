@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2018 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -92,6 +92,6 @@ abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( $this->regex, RE::escape_tags( "<span class=\"{$this->css_class}\">\$1</span>" ), $textnode->data );
+		$textnode->data = (string) \preg_replace( $this->regex, RE::escape_tags( "<span class=\"{$this->css_class}\">\$1</span>" ), $textnode->data );
 	}
 }

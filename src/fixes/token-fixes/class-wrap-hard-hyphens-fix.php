@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
 					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
 
-					$value = \preg_replace( $this->remove_ending_space_regex, '$1', $value );
+					$value = (string) \preg_replace( $this->remove_ending_space_regex, '$1', $value );
 				}
 
 				$tokens[ $index ] = $text_token->with_value( $value );

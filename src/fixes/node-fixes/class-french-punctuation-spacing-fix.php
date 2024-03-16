@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2022 Peter Putzer.
+ *  Copyright 2016-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::INSERT_SPACE_BEFORE_CLOSING_QUOTE,
 				self::INSERT_NARROW_SPACE,
@@ -90,7 +90,7 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 		);
 
 		// The next rule depends on the following characters as well.
-		$node_data = \preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . U::NO_BREAK_NARROW_SPACE . '$4', "{$node_data}{$next_character}" );
+		$node_data = (string) \preg_replace( self::INSERT_SPACE_AFTER_OPENING_QUOTE,  '$1$2' . U::NO_BREAK_NARROW_SPACE . '$4', "{$node_data}{$next_character}" );
 
 		// If we have adjacent characters remove them from the text.
 		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );

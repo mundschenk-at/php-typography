@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 		}
 
 		// Replace spaces.
-		$node_data = \preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );
+		$node_data = (string) \preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );
 
 		// If we have adjacent characters remove them from the text.
 		$textnode->data = self::remove_adjacent_characters( $node_data, $f['strlen'], $f['substr'], $f['strlen']( $previous_character ), $f['strlen']( $next_character ) );

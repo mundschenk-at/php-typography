@@ -132,7 +132,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::SINGLE_QUOTED_NUMBERS . $f['u'],
 				self::DOUBLE_QUOTED_NUMBERS . $f['u'],
@@ -148,7 +148,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		$node_data = \str_replace( [ '<<', '>>' ], [ U::GUILLEMET_OPEN, U::GUILLEMET_CLOSE ],  $node_data );
 
 		// Primes.
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::SINGLE_DOUBLE_PRIME . $f['u'],
 				self::DOUBLE_PRIME . $f['u'], // should not interfere with regular quote matching.
@@ -168,10 +168,10 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			[ $double_open, $single_open, $double_close, U::DOUBLE_LOW_9_QUOTE ],
 			$node_data
 		);
-		$node_data = \preg_replace( self::COMMA_QUOTE . $f['u'], U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
+		$node_data = (string) \preg_replace( self::COMMA_QUOTE . $f['u'], U::SINGLE_LOW_9_QUOTE, $node_data ); // like _,¿hola?'_.
 
 		// Apostrophes.
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[ self::APOSTROPHE_WORDS . $f['u'], self::APOSTROPHE_DECADES . $f['u'] ],
 			[ U::APOSTROPHE, U::APOSTROPHE . '$1' ],
 			$node_data
@@ -179,7 +179,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 		// Quotes.
 		$node_data = \str_replace( $this->brackets_matches, $this->brackets_replacements, $node_data );
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::SINGLE_QUOTE_OPEN . $f['u'],
 				self::SINGLE_QUOTE_CLOSE . $f['u'],

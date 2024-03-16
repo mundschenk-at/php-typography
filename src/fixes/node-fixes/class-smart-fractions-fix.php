@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -144,13 +144,13 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		if ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
-			$node_data = \preg_replace( self::SPACING, '$1' . U::NO_BREAK_NARROW_SPACE . '$2', $node_data );
+			$node_data = (string) \preg_replace( self::SPACING, '$1' . U::NO_BREAK_NARROW_SPACE . '$2', $node_data );
 		} elseif ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
-			$node_data = \preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
+			$node_data = (string) \preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
 		}
 
 		if ( ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
-			$node_data = \preg_replace(
+			$node_data = (string) \preg_replace(
 				[
 					// Escape sequences we don't want fractionified.
 					$this->escape_consecutive_years,
