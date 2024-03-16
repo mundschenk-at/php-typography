@@ -81,7 +81,8 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 					parent::apply( $component_words, $settings, $is_title, $textnode ),
 					function ( ?string $carry, Token $item ): string {
 						return $carry . $item->value;
-					}
+					},
+					''
 				)
 			);
 		}
