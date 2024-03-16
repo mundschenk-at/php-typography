@@ -31,6 +31,8 @@ use PHP_Typography\Exceptions\Invalid_Path_Exception;
 use PHP_Typography\Fixes\Registry;
 use PHP_Typography\Fixes\Default_Registry;
 
+use Masterminds\HTML5;
+
 /**
  * Parses HTML5 (or plain text) and applies various typographic fixes to the text.
  *
@@ -49,7 +51,7 @@ class PHP_Typography {
 	/**
 	 * A DOM-based HTML5 parser.
 	 *
-	 * @var \Masterminds\HTML5
+	 * @var ?HTML5
 	 */
 	private $html5_parser;
 
@@ -254,15 +256,15 @@ class PHP_Typography {
 	 *
 	 * @since 6.0.0 Parameter $body_classes added.
 	 *
-	 * @param \Masterminds\HTML5 $parser       An intialized parser object.
-	 * @param string             $html         The HTML fragment to parse (not a complete document).
-	 * @param Settings           $settings     The settings to apply.
-	 * @param string[]           $body_classes Optional. CSS classes added to the virtual
-	 *                                         <body> element used for processing. Default [].
+	 * @param HTML5    $parser       An intialized parser object.
+	 * @param string   $html         The HTML fragment to parse (not a complete document).
+	 * @param Settings $settings     The settings to apply.
+	 * @param string[] $body_classes Optional. CSS classes added to the virtual <body>
+	 *                               element used for processing. Default [].
 	 *
 	 * @return \DOMDocument|null The encoding has already been set to UTF-8. Returns null if there were parsing errors.
 	 */
-	public function parse_html( \Masterminds\HTML5 $parser, $html, Settings $settings, array $body_classes = [] ) {
+	public function parse_html( HTML5 $parser, $html, Settings $settings, array $body_classes = [] ) {
 		// Silence some parsing errors for invalid HTML.
 		\set_error_handler( [ $this, 'handle_parsing_errors' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		$xml_error_handling = \libxml_use_internal_errors( true );
@@ -418,12 +420,12 @@ class PHP_Typography {
 	/**
 	 * Retrieves the HTML5 parser instance.
 	 *
-	 * @return \Masterminds\HTML5
+	 * @return HTML5
 	 */
 	public function get_html5_parser() {
 		// Lazy-load HTML5 parser.
 		if ( null === $this->html5_parser ) {
-			$this->html5_parser = new \Masterminds\HTML5( [ 'disable_html_ns' => true ] );
+			$this->html5_parser = new HTML5( [ 'disable_html_ns' => true ] );
 		}
 
 		return $this->html5_parser;
