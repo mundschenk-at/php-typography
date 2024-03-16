@@ -79,7 +79,7 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 			$tokens[ $key ] = $word_token->with_value(
 				\array_reduce(
 					parent::apply( $component_words, $settings, $is_title, $textnode ),
-					function ( $carry, $item ) {
+					function ( ?string $carry, Token $item ): string {
 						return $carry . $item->value;
 					}
 				)
