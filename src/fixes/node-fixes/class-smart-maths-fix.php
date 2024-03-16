@@ -197,7 +197,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// First, let's find math equations.
-		$node_data = \preg_replace_callback(
+		$node_data = (string) \preg_replace_callback(
 			self::MATH_EQUATION,
 			function ( array $matches ): string {
 				return \str_replace(
@@ -220,6 +220,6 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		);
 
 		// Revert some non-desired changes and restore textnode content.
-		$textnode->data = \preg_replace( self::REVERT_MATCHES, self::REVERT_REPLACEMENTS, $node_data );
+		$textnode->data = (string) \preg_replace( self::REVERT_MATCHES, self::REVERT_REPLACEMENTS, $node_data );
 	}
 }

@@ -117,7 +117,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 		}
 
 		// Do what we have to do.
-		return \preg_replace_callback(
+		return (string) \preg_replace_callback(
 			self::REGEX_START . ( $word_number - 1 ) . self::REGEX_END,
 			function ( array $widow ) use ( $func, $max_pull, $max_length, $word_number ) {
 
@@ -181,7 +181,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * @return string
 	 */
 	protected static function make_space_nonbreaking( $string, $deprecated, $u ) {
-		return \preg_replace(
+		return (string) \preg_replace(
 			[
 				'/\s*(?:' . U::THIN_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')\s*/Su',
 				"/\\s+/S$u",

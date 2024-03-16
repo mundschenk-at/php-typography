@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -124,6 +124,6 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 			$patterns[] = self::RE_ROMAN_ORDINALS;
 		}
 
-		$textnode->data = \preg_replace( $patterns, $this->replacement, $textnode->data );
+		$textnode->data = (string) \preg_replace( $patterns, $this->replacement, $textnode->data );
 	}
 }

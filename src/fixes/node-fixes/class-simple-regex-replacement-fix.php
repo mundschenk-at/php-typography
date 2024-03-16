@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,6 +89,6 @@ abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace( $this->regex, $this->replacement, $textnode->data );
+		$textnode->data = (string) \preg_replace( $this->regex, $this->replacement, $textnode->data );
 	}
 }

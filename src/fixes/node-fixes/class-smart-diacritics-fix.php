@@ -58,7 +58,7 @@ class Smart_Diacritics_Fix extends Abstract_Node_Fix {
 
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
 			$replacements   = $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'];
-			$textnode->data = \preg_replace_callback(
+			$textnode->data = (string) \preg_replace_callback(
 				$settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'],
 				function ( $matching ) use ( $replacements ) {
 					if ( isset( $replacements[ $matching[0] ] ) ) {

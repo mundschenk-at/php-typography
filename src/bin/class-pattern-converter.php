@@ -108,7 +108,7 @@ class Pattern_Converter {
 	 * @return string
 	 */
 	protected function get_segment( $pattern ) {
-		return \preg_replace( '/[0-9]/', '', \str_replace( '.', '_', $pattern ) );
+		return (string) \preg_replace( '/[0-9]/', '', \str_replace( '.', '_', $pattern ) );
 	}
 
 	/**
@@ -283,9 +283,9 @@ class Pattern_Converter {
 		if ( 0 < \preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, \PREG_SET_ORDER ) ) {
 			foreach ( $matches as $m ) {
 				if ( ! empty( $macros[ $m['name'] ] ) ) {
-					$expanded = \preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
-					$pattern  = \preg_quote( $m[0], '/' );
-					$line     = \preg_replace( "/{$pattern}/u", $expanded, $line );
+					$expanded = (string) \preg_replace( '/#1/', $m['arg'], $macros[ $m['name'] ] );
+					$pattern  = (string) \preg_quote( $m[0], '/' );
+					$line     = (string) \preg_replace( "/{$pattern}/u", $expanded, $line );
 				}
 			}
 		}

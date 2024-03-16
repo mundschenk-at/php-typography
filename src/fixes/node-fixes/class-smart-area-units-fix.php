@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2019 Peter Putzer.
+ *  Copyright 2019-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ class Smart_Area_Units_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		$textnode->data = \preg_replace(
+		$textnode->data = (string) \preg_replace(
 			[ self::AREA_UNITS, self::VOLUME_UNITS ],
 			[ '$1 $3²', '$1 $3³' ],
 			$textnode->data

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		$node_data = $textnode->data;
 
 		// Escape usage of "501(c)(1...29)" (US non-profit).
-		$node_data = \preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
+		$node_data = (string) \preg_replace( self::ESCAPE_501C, '$1' . RE::ESCAPE_MARKER . '$2' . RE::ESCAPE_MARKER . '$3', $node_data );
 
 		// Replace marks.
 		$node_data = \str_replace( $this->marks, $this->replacements, $node_data );

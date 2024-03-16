@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 			return;
 		}
 
-		$node_data = \preg_replace(
+		$node_data = (string) \preg_replace(
 			[
 				self::STYLE_DOUBLE . $f['u'],
 				self::STYLE_SINGLE . $f['u'],
