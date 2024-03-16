@@ -82,13 +82,11 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 			foreach ( $tokens as $index => $text_token ) {
 				$value = $text_token->value;
 
-				if ( isset( $settings[ Settings::HYPHEN_HARD_WRAP ] ) && $settings[ Settings::HYPHEN_HARD_WRAP ] ) { // @phpstan-ignore-line -- Right side is not always true.
-					$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
-					$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
-					$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
+				$value = \str_replace( $this->hyphens_array, '-' . U::ZERO_WIDTH_SPACE, $value );
+				$value = \str_replace( '_', '_' . U::ZERO_WIDTH_SPACE, $value );
+				$value = \str_replace( '/', '/' . U::ZERO_WIDTH_SPACE, $value );
 
-					$value = (string) \preg_replace( $this->remove_ending_space_regex, '$1', $value );
-				}
+				$value = (string) \preg_replace( $this->remove_ending_space_regex, '$1', $value );
 
 				$tokens[ $index ] = $text_token->with_value( $value );
 			}
