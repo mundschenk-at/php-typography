@@ -10,17 +10,15 @@ on:
 jobs:
     unit-tests:
         name: Unit tests (PHP ${{ matrix.php-versions }})
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-22.04
         continue-on-error: ${{ matrix.experimental }}
-        env:
-            COVERAGE_PHP: '8.0'
         strategy:
             fail-fast: false
             matrix:
-                php-versions: ['7.4', '8.0']
+                php-versions: ['7.4', '8.0', '8.1', '8.2']
                 experimental: [false]
                 include:
-                    - php-versions: '8.1'
+                    - php-versions: '8.3'
                       experimental: true
         steps:
             - name: Checkout repository
@@ -54,11 +52,11 @@ jobs:
 
     coverage:
         name: Coverage & SonarCloud (PHP ${{ matrix.php-versions }})
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: true
             matrix:
-                php-versions: ['8.0']
+                php-versions: ['8.2']
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -102,11 +100,11 @@ jobs:
 
     phpcs:
         name: Check Coding Standards
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: true
             matrix:
-                php-versions: ['8.0']
+                php-versions: ['8.2']
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -141,11 +139,11 @@ jobs:
 
     phpstan:
         name: Static Analysis
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: true
             matrix:
-                php-versions: ['8.0']
+                php-versions: ['8.2']
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
