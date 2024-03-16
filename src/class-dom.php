@@ -310,7 +310,7 @@ abstract class DOM {
 		/**
 		 * The initial node.
 		 *
-		 * @var \DOMNode|null
+		 * @var \DOMNode
 		 */
 		$iterated_node = $node;
 

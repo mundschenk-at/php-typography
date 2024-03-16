@@ -63,7 +63,7 @@ class PHP_Typography {
 	/**
 	 * The node fixes registry.
 	 *
-	 * @var Registry|null;
+	 * @var Registry|null
 	 */
 	private $registry;
 
@@ -193,7 +193,11 @@ class PHP_Typography {
 		$xpath          = new \DOMXPath( $body_node->ownerDocument );
 		$tags_to_ignore = $this->query_tags_to_ignore( $xpath, $body_node, $settings );
 
-		// Start processing.
+		/**
+		 * Start processing.
+		 *
+		 * @phpstan-var \DOMText $textnode
+		 */
 		foreach ( $xpath->query( '//text()', $body_node ) as $textnode ) { // @phpstan-ignore-line -- The query is valid.
 			if (
 				// One of the ancestors should be ignored.
@@ -228,7 +232,7 @@ class PHP_Typography {
 	 * Determines whether two object arrays intersect. The second array is expected
 	 * to use the spl_object_hash for its keys.
 	 *
-	 * @template T
+	 * @template T of object
 	 *
 	 * @param array<T> $array1 The keys are ignored.
 	 * @param array<T> $array2 This array has to be in the form ( $spl_object_hash => $object ).
@@ -367,14 +371,14 @@ class PHP_Typography {
 		/**
 		 * Create DOM nodes from HTML fragment.
 		 *
-		 * @var \DOMNode|false $html_fragment
+		 * @var \DOMDocumentFragment $html_fragment
 		 */
 		$html_fragment = $this->get_html5_parser()->loadHTMLFragment( $content );
 		if ( ! empty( $html_fragment ) ) {
 			/**
 			 * Import fragment into existing DOM.
 			 *
-			 * @var \DOMNode|false $imported_fragment
+			 * @var \DOMDocumentFragment $imported_fragment
 			 */
 			$imported_fragment = $node->ownerDocument->importNode( $html_fragment, true );
 
