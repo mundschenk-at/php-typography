@@ -199,7 +199,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		// First, let's find math equations.
 		$node_data = \preg_replace_callback(
 			self::MATH_EQUATION,
-			function ( array $matches ) {
+			function ( array $matches ): string {
 				return \str_replace(
 					[
 						'-',

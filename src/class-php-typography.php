@@ -72,7 +72,7 @@ class PHP_Typography {
 	 *
 	 * @var bool
 	 */
-	private $update_registry_cache;
+	private bool $update_registry_cache;
 
 	/**
 	 * Sets up a new PHP_Typography object.

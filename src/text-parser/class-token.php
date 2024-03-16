@@ -58,21 +58,21 @@ final class Token {
 	 *
 	 * @var int
 	 */
-	private $type;
+	private int $type;
 
 	/**
 	 * The token value.
 	 *
 	 * @var string
 	 */
-	private $value;
+	private string $value;
 
 	/**
 	 * Ensure that properties can only be set once via the constructor.
 	 *
-	 * @var boolean
+	 * @var bool
 	 */
-	private $mutable = true;
+	private bool $mutable = true;
 
 	/**
 	 * Creates a new token.
