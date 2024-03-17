@@ -3,7 +3,6 @@
  *  This file is part of PHP-Typography.
  *
  *  Copyright 2014-2024 Peter Putzer.
- *  Copyright 2012-2013 Marie Hogebrandt.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
