@@ -38,44 +38,10 @@ use PHP_Typography\U;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ * @since 7.0.0 The deprecated protected properties `$push_single_class`, `$push_double_class`,
+ *              `$pull_single_class`, and `$pull_double_class` have been removed.
  */
 class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
-
-	/**
-	 * CSS class for single-width punctuation marks.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @var string
-	 */
-	protected $push_single_class;
-
-	/**
-	 * CSS class for double-width punctuation marks.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @var string
-	 */
-	protected $push_double_class;
-
-	/**
-	 * CSS class for single-width punctuation marks.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @var string
-	 */
-	protected $pull_single_class;
-
-	/**
-	 * CSS class for double-width punctuation marks.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @var string
-	 */
-	protected $pull_double_class;
 
 	/**
 	 * An array of replacment arrays (indexed by the "$block" flag).
