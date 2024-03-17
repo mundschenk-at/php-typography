@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Strings;
 
 /**
@@ -80,10 +81,9 @@ class Strings_Test extends Testcase {
 	 * @covers ::functions
 	 */
 	public function test_functions_invalid_encoding() {
-		$func = Strings::functions( \mb_convert_encoding( 'Ungültiges Encoding', 'ISO-8859-2' ) );
+		$this->expect_exception( Invalid_Encoding_Exception::class );
 
-		$this->assertTrue( \is_array( $func ) );
-		$this->assertCount( 0, $func );
+		$this->assertEmpty( Strings::functions( \mb_convert_encoding( 'Ungültiges Encoding', 'ISO-8859-2' ) ) );
 	}
 
 	/**

@@ -24,6 +24,8 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
+
 /**
  * Test Hyphenator class.
  *
@@ -349,6 +351,7 @@ class Hyphenator_Test extends Testcase {
 	public function test_hyphenate_wrong_encoding() {
 		$this->h->set_language( 'de' );
 
+		$this->expect_exception( Invalid_Encoding_Exception::class );
 		$tokens     = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
 		$hyphenated = $this->h->hyphenate( $tokens, '|', true, 2, 2, 2 );
 		$this->assert_tokens_same( $hyphenated, $tokens, 'Wrong encoding, value should be unchanged.' );
@@ -473,9 +476,8 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_convert_hyphenation_exception_to_pattern() {
-		$h = $this->h;
-		$this->assertSame( [ 4 => 9 ], $this->invoke_method( $h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
-		$this->assertSame( [ 2 => 9 ], $this->invoke_method( $h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );
+		$this->assertSame( [ 4 => 9 ], $this->invoke_method( $this->h, 'convert_hyphenation_exception_to_pattern', [ 'KING-desk' ] ) );
+		$this->assertSame( [ 2 => 9 ], $this->invoke_method( $this->h, 'convert_hyphenation_exception_to_pattern', [ 'ta-ble' ] ) );
 	}
 
 	/**
@@ -486,10 +488,10 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_convert_hyphenation_exception_to_pattern_unknown_encoding() {
-		$h         = $this->h;
 		$exception = mb_convert_encoding( 'Fö-ba-ß' , 'ISO-8859-2' );
 
-		$this->assertNull( $this->invoke_method( $h, 'convert_hyphenation_exception_to_pattern', [ $exception ] ) );
+		$this->expect_exception( Invalid_Encoding_Exception::class );
+		$this->assertNull( $this->invoke_method( $this->h, 'convert_hyphenation_exception_to_pattern', [ $exception ] ) );
 	}
 
 	/**

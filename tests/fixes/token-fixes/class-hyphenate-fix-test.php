@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Fixes\Token_Fix;
 use PHP_Typography\Fixes\Token_Fixes;
 use PHP_Typography\Settings;
@@ -97,6 +98,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_all_caps( true );
 		$this->s->set_hyphenate_title_case( true );
 
+		$this->expect_exception( Invalid_Encoding_Exception::class );
 		$tokens     = $this->tokenize( mb_convert_encoding( 'Änderungsmeldung', 'ISO-8859-2' ) );
 		$hyphenated = $this->invoke_method( $this->fix, 'do_hyphenate', [ $tokens, $this->s ] );
 		$this->assert_tokens_same( $hyphenated, $tokens );

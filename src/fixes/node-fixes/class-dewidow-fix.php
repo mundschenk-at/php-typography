@@ -39,6 +39,8 @@ use PHP_Typography\U;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ *
+ * @phpstan-import-type String_Functions from \PHP_Typography\Strings
  */
 class Dewidow_Fix extends Abstract_Node_Fix {
 	const SPACE_BETWEEN = '[\s]+'; // \s includes all special spaces (but not ZWSP) with the u flag.
@@ -114,6 +116,8 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 	 * @param  int     $word_number  Maximum number of words allowed in widow.
 	 *
 	 * @return string
+	 *
+	 * @phpstan-param String_Functions $func
 	 */
 	protected function dewidow( $text, array $func, $max_pull, $max_length, $word_number ) {
 		if ( $word_number < 1 ) {

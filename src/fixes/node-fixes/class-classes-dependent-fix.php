@@ -28,6 +28,7 @@ namespace PHP_Typography\Fixes\Node_Fixes;
 
 use PHP_Typography\Settings;
 use PHP_Typography\DOM;
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 
 /**
  * All fixes that depend on certain HTML classes not being present should extend this baseclass.

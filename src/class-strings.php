@@ -27,6 +27,8 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
+
 /**
  * A utility class to handle fast and save string function access.
  *
@@ -96,7 +98,12 @@ abstract class Strings {
 	 * Retrieves str* functions.
 	 *
 	 * @param  string $str A string to detect the encoding from.
-	 * @return String_Functions|array{}
+	 *
+	 * @return array
+	 *
+	 * @throws Invalid_Encoding_Exception Throws an exception if the string is not encoded in ASCII or UTF-8.
+	 *
+	 * @phpstan-return String_Functions
 	 */
 	public static function functions( $str ) {
 		foreach ( self::ENCODINGS as $encoding ) {
@@ -105,7 +112,7 @@ abstract class Strings {
 			}
 		}
 
-		return [];
+		throw new Invalid_Encoding_Exception( "String '$str' uses neither ASCII nor UTF-8 encoding." );
 	}
 
 	/**
