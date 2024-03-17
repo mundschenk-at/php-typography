@@ -184,7 +184,7 @@ class PHP_Typography {
 	 * Processes the text nodes below the <body> node.
 	 *
 	 * @since 6.7.0
-	 * @since 6.8.0 Parameter $dom added.
+	 * @since 7.0.0 Parameter $dom added.
 	 *
 	 * @param \DOMDocument $dom        The document.
 	 * @param \DOMNode     $body_node  The body node containing the HTML fragment to process.

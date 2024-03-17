@@ -126,7 +126,7 @@ abstract class DOM {
 	/**
 	 * Converts a DOMNodeList to array.
 	 *
-	 * @since 6.8.0 The Parameter $list has been renamed to $node_list.
+	 * @since 7.0.0 The Parameter $list has been renamed to $node_list.
 	 *
 	 * @param \DOMNodeList $node_list Required.
 	 *
