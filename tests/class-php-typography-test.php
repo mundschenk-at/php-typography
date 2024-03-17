@@ -601,6 +601,7 @@ class PHP_Typography_Test extends Testcase {
 	 * Test process_textnodes.
 	 *
 	 * @covers ::process_textnodes
+	 * @covers ::process_textnodes_internal
 	 *
 	 * @uses PHP_Typography\Hyphenator
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
