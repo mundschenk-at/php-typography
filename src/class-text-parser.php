@@ -256,7 +256,6 @@ class Text_Parser {
 	private const RE_PUNCTUATION            = '/\A' . self::PUNCTUATION . '\Z/Ssxiu';
 	private const RE_WORD                   = '/\A' . self::WORD . '\Z/Sxu';
 	private const RE_HTML_LETTER_CONNECTORS = '/' . self::HTML_LETTER_CONNECTORS . '|[0-9\-_&#;\/]/Sxu';
-	private const RE_MAX_STRING_LENGTH      = '/\w{500}/Ss';
 
 	/**
 	 * The current strtoupper function to use (either 'strtoupper' or 'mb_strtoupper').
@@ -285,11 +284,9 @@ class Text_Parser {
 	 *
 	 * @return bool Returns `true` on successful completion, `false` otherwise.
 	 */
-	public function load( $raw_text ) {
-		if ( ! \is_string( $raw_text ) || \preg_match( self::RE_MAX_STRING_LENGTH, $raw_text ) ) {
-			// Abort if called on a non-string or the string exceeds 500 characters
-			// (security concern). TODO: Evaluate limit.
-			return false;
+	public function load( string $raw_text ) {
+		if ( empty( $raw_text ) ) {
+			return false; // Can't tokenize an empty string.
 		}
 
 		// Detect encoding.

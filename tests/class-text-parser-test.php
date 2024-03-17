@@ -88,9 +88,9 @@ class Text_Parser_Test extends Testcase {
 
 		$parser = $this->parser;
 
-		// Security check.
-		$this->assertFalse( $parser->load( $too_long ) );
-		$this->assertFalse( $parser->load( $still_too_long ) );
+		// Previously, we didn't allow really long strings, but this is unnecessary with PHP.
+		$this->assertTrue( $parser->load( $too_long ) );
+		$this->assertTrue( $parser->load( $still_too_long ) );
 		$this->assertTrue( $parser->load( $almost_too_long ) );
 
 		$interesting = 'Quoth the raven, "nevermore"! Äöüß?';
@@ -202,17 +202,6 @@ class Text_Parser_Test extends Testcase {
 
 		$this->expect_exception( Invalid_Encoding_Exception::class );
 		$this->assertFalse( $parser->load( $string ) );
-	}
-
-	/**
-	 * Test load with something that is not a string.
-	 *
-	 * @covers ::load
-	 */
-	public function test_load_not_a_string() {
-		$parser = $this->parser;
-
-		$this->assertFalse( $parser->load( [] ) );
 	}
 
 	/**
