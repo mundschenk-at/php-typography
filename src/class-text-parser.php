@@ -28,6 +28,7 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Text_Parser\Token;
 
 /**
@@ -292,11 +293,7 @@ class Text_Parser {
 		}
 
 		// Detect encoding.
-		$str_functions = Strings::functions( $raw_text );
-		if ( empty( $str_functions ) ) { // TODO: Refactor encoding check.
-			return false; // unknown encoding.
-		}
-		$this->current_strtoupper = $str_functions['strtoupper'];
+		$this->current_strtoupper = Strings::functions( $raw_text )['strtoupper'];
 
 		// Tokenize the raw text parts.
 		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.

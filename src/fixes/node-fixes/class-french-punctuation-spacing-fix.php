@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use PHP_Typography\DOM;
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Settings;
 use PHP_Typography\Strings;
 use PHP_Typography\U;
@@ -75,9 +76,6 @@ class French_Punctuation_Spacing_Fix extends Abstract_Node_Fix {
 
 		// Check encoding.
 		$f = Strings::functions( "{$node_data}{$next_character}" ); // Include $next_character for determining encodiing.
-		if ( empty( $f ) ) {
-			return;
-		}
 
 		$node_data = (string) \preg_replace(
 			[

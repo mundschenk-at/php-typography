@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Text_Parser\Token;
 use PHP_Typography\Text_Parser;
 
@@ -199,6 +200,7 @@ class Text_Parser_Test extends Testcase {
 		$string = mb_convert_encoding( 'Ein längerer String im falschen Zeichensatz', 'ISO-8859-2' );
 		$parser = $this->parser;
 
+		$this->expect_exception( Invalid_Encoding_Exception::class );
 		$this->assertFalse( $parser->load( $string ) );
 	}
 

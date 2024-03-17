@@ -27,6 +27,7 @@
 namespace PHP_Typography\Fixes\Node_Fixes;
 
 use PHP_Typography\DOM;
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\RE;
 use PHP_Typography\Settings;
 use PHP_Typography\Strings;
@@ -74,9 +75,6 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 
 		// Check encoding.
 		$f = Strings::functions( $node_data );
-		if ( empty( $f ) ) {
-			return;
-		}
 
 		// Replace spaces.
 		$node_data = (string) \preg_replace( self::REGEX . $f['u'], '$1$2' . U::NO_BREAK_SPACE, $node_data );

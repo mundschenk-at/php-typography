@@ -27,6 +27,7 @@
 
 namespace PHP_Typography;
 
+use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Hyphenator\Trie_Node;
 use PHP_Typography\Text_Parser\Token;
 
@@ -125,9 +126,10 @@ class Hyphenator {
 		// Do our thing.
 		$exception_keys = [];
 		foreach ( $exceptions as $exception ) {
-			$f = Strings::functions( $exception );
-			if ( empty( $f ) ) {
-				continue; // unknown encoding, abort.
+			try {
+				$f = Strings::functions( $exception );
+			} catch ( Invalid_Encoding_Exception $e ) {
+				continue; // unknown encoding, skip to next exception.
 			}
 
 			/**
@@ -248,9 +250,6 @@ class Hyphenator {
 	protected function hyphenate_word( $word, $hyphen, $hyphenate_title_case, $min_length, $min_before, $min_after ) {
 		// Quickly reference string functions according to encoding.
 		$f = Strings::functions( $word );
-		if ( empty( $f ) ) {
-			return $word; // unknown encoding, abort.
-		}
 
 		// Check word length.
 		$word_length = $f['strlen']( $word );
@@ -368,7 +367,11 @@ class Hyphenator {
 		 */
 		$exception_patterns = [];
 		foreach ( $exceptions as $exception_key => $exception ) {
-			$exception_patterns[ $exception_key ] = self::convert_hyphenation_exception_to_pattern( $exception );
+			try {
+				$exception_patterns[ $exception_key ] = self::convert_hyphenation_exception_to_pattern( $exception );
+			} catch ( Invalid_Encoding_Exception $e ) {
+				continue;
+			}
 		}
 
 		$this->merged_exception_patterns = $exception_patterns;
@@ -380,12 +383,11 @@ class Hyphenator {
 	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
 	 *
 	 * @return int[]|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
+	 *
+	 * @throws Invalid_Encoding_Exception Throws an exception if an unsupported encoding is used.
 	 */
 	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
 		$f = Strings::functions( $exception );
-		if ( empty( $f ) ) {
-			return null; // unknown encoding, abort.
-		}
 
 		// Set the word_pattern - this method keeps any contextually important capitalization.
 		$lowercase_hyphened_word_parts  = $f['str_split']( $exception, 1 );
