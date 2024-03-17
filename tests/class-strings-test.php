@@ -87,65 +87,6 @@ class Strings_Test extends Testcase {
 	}
 
 	/**
-	 * Provide data for testing uchr.
-	 *
-	 * @return array
-	 */
-	public function provide_uchr_data() {
-		return [
-			[ 33,   '!' ],
-			[ 9,    "\t" ],
-			[ 10,   "\n" ],
-			[ 35,   '#' ],
-			[ 103,  'g' ],
-			[ 336,  'Ő' ],
-			[ 497,  'Ǳ' ],
-			[ 1137, 'ѱ' ],
-			[ 2000, 'ߐ' ],
-		];
-	}
-
-	/**
-	 * Provide data for testing uchr.
-	 *
-	 * @return array
-	 */
-	public function provide_uchr_multi_data() {
-		return [
-			[ [ 33, 9, 103, 2000 ],   "!\tgߐ" ],
-		];
-	}
-
-	/**
-	 * Test uchr.
-	 *
-	 * @covers ::uchr
-	 *
-	 * @dataProvider provide_uchr_data
-	 *
-	 * @param  int    $code   Character code.
-	 * @param  string $result Expected result.
-	 */
-	public function test_uchr( $code, $result ) {
-		$this->assertSame( $result, Strings::uchr( $code ) );
-	}
-
-	/**
-	 * Test uchr.
-	 *
-	 * @covers ::uchr
-	 *
-	 * @dataProvider provide_uchr_multi_data
-	 *
-	 * @param  array  $input  Character codes.
-	 * @param  string $result Expected result.
-	 */
-	public function test_uchr_multi( $input, $result ) {
-		$this->assertSame( $result, call_user_func_array( [ 'PHP_Typography\Strings', 'uchr' ], $input ) );
-		$this->assertSame( $result, Strings::uchr( $input ) );
-	}
-
-	/**
 	 * Provide data for testing maybe_split_parameters.
 	 *
 	 * @return array

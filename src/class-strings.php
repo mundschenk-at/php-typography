@@ -31,7 +31,7 @@ namespace PHP_Typography;
  * A utility class to handle fast and save string function access.
  *
  * @since 4.2.0
- * @since 7.0.0 The deprecated methods mb_str_split have been removed.
+ * @since 7.0.0 The deprecated static methods `mb_str_split`, and `uchr` have been removed.
  *
  * @phpstan-type String_Functions array{
  *         'strlen'     : callable,
@@ -106,32 +106,6 @@ abstract class Strings {
 		}
 
 		return [];
-	}
-
-	/**
-	 * Converts decimal value to unicode character.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @param int|string|array<string|int> $codes Decimal value(s) coresponding to unicode character(s).
-	 *
-	 * @return string Unicode character(s).
-	 */
-	public static function uchr( $codes ) {
-
-		// Single character code.
-		if ( \is_scalar( $codes ) ) {
-			$codes = \func_get_args(); // phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
-		}
-
-		// Deal with an array of character codes.
-		$json = '"';
-		foreach ( $codes as $code ) {
-			$json .= \sprintf( '\u%04x', $code );
-		}
-		$json .= '"';
-
-		return \json_decode( $json );
 	}
 
 	/**
