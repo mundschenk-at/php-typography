@@ -31,10 +31,11 @@ use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Text_Parser\Token;
 
 /**
- * A class to parse plain text (such as the data of DOMText).
+ * A class to parse plain text (such as the data of DOMText). If multibyte characters are passed,
+ * they must be encoded as UTF-8.
  *
- * Parse_Text assumes no HTML markup in the text (except for special html characters like &gt;).
- * If multibyte characters are passed, they must be encoded as UTF-8.
+ * @since 7.0.0 The `load`, `reload`, and `clear` methods have been removed in favor creating new parser
+ *              objects for each text fragment. The method `unload` has been replaced with `get_text`.
  */
 class Text_Parser {
 
@@ -261,41 +262,26 @@ class Text_Parser {
 	 *
 	 * @var callable
 	 */
-	private $current_strtoupper = 'strtoupper';
+	private $current_strtoupper;
 
 	/**
 	 * The tokenized text.
 	 *
 	 * @var Token[] $text Numerically indexed tokens.
 	 */
-	private $text = [];
+	private array $text = [];
 
 	/**
-	 * Creates a new parser object.
-	 */
-	public function __construct() {
-	}
-
-	/**
-	 * Tokenizes a string and stores the tokens in $this->text.
+	 * Creates a new parser object and parses the given text.
 	 *
-	 * @param string $raw_text A text fragment without any HTML markup.
-	 *
-	 * @return bool Returns `true` on successful completion, `false` otherwise.
+	 * @param string $text A text fragment without any HTML markup.
 	 */
-	public function load( string $raw_text ) {
-		if ( empty( $raw_text ) ) {
-			return false; // Can't tokenize an empty string.
-		}
-
+	public function __construct( string $text ) {
 		// Detect encoding.
-		$this->current_strtoupper = Strings::functions( $raw_text )['strtoupper'];
+		$this->current_strtoupper = Strings::functions( $text )['strtoupper'];
 
 		// Tokenize the raw text parts.
-		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $raw_text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
-
-		// The token array should never be empty.
-		return ! empty( $this->text );
+		$this->text = self::tokenize( \preg_split( self::RE_ANY_TEXT, $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [] ); // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
 	}
 
 	/**
@@ -387,40 +373,21 @@ class Text_Parser {
 		return $index - $steps >= 0 && $type !== $tokens[ $index - $steps ]->type;
 	}
 
-
 	/**
-	 * Reloads $this->text (i.e. capture new inserted text, or remove those tokens whose values have been deleted).
+	 * Returns the complete text as a string.
 	 *
-	 * Warning: Tokens previously acquired through 'get' methods may not match new tokenization.
-	 *
-	 * @return bool Returns true on successful completion.
-	 */
-	public function reload() {
-		return $this->load( $this->unload() );
-	}
-
-	/**
-	 * Returns the complete text as a string and clears the parser.
+	 * @since 7.0.0
 	 *
 	 * @return string
 	 */
-	public function unload() {
+	public function get_text(): string {
 		$reassembled_text = '';
 
 		foreach ( $this->text as $token ) {
 			$reassembled_text .= $token->value;
 		}
 
-		$this->clear();
-
 		return $reassembled_text;
-	}
-
-	/**
-	 * Clears the currently set text from the parser.
-	 */
-	public function clear(): void {
-		$this->text = [];
 	}
 
 	/**
@@ -471,11 +438,6 @@ class Text_Parser {
 	 * @return Token[] An array of numerically indexed tokens.
 	 */
 	public function get_words( $abc = self::ALLOW_ALL_LETTERS, $caps = self::ALLOW_ALL_CAPS, $comps = self::ALLOW_COMPOUNDS ) {
-		// Return early if no text has been loaded.
-		if ( empty( $this->text ) ) {
-			return []; // abort.
-		}
-
 		// Result set.
 		$tokens = [];
 

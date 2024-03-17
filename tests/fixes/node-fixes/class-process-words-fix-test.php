@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -83,19 +83,20 @@ class Process_Words_Fix_Test extends Node_Fix_Testcase {
 	 *
 	 * @covers ::get_text_parser
 	 *
-	 * @uses PHP_Typography\Text_Parser::__construct
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
 	 */
 	public function test_get_text_parser() {
-		$this->assert_attribute_empty( 'text_parser', $this->fix );
+		$some_words = 'A short text of no importance at all.';
 
-		$parser1 = $this->fix->get_text_parser();
+		$parser1 = $this->fix->get_text_parser( $some_words );
 		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser1 );
 
-		$parser2 = $this->fix->get_text_parser();
+		$parser2 = $this->fix->get_text_parser( $some_words );
 		$this->assertInstanceOf( '\PHP_Typography\Text_Parser', $parser2 );
 
-		$this->assertSame( $parser1, $parser2 );
-		$this->assert_attribute_instance_of( '\PHP_Typography\Text_Parser', 'text_parser', $this->fix );
+		// The text parser is not stored as part of the object state anymore.
+		$this->assertNotSame( $parser1, $parser2 );
 	}
 
 	/**

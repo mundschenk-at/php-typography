@@ -56,13 +56,6 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	private $token_fixes = [];
 
 	/**
-	 * A custom parser for \DOMText to separate words, whitespace etc. for HTML injection.
-	 *
-	 * @var Text_Parser|null
-	 */
-	private $text_parser;
-
-	/**
 	 * Apply the fix to a given textnode.
 	 *
 	 * @since 7.0.0 All parameters are now required.
@@ -74,10 +67,6 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		// Lazy-load text parser.
-		$text_parser = $this->get_text_parser();
-		$tokens      = [];
-
 		// Set up parameters for word categories.
 		$mixed_caps       = empty( $settings[ Settings::HYPHENATE_ALL_CAPS ] ) ? Text_Parser::ALLOW_ALL_CAPS : Text_Parser::NO_ALL_CAPS;
 		$letter_caps      = empty( $settings[ Settings::HYPHENATE_ALL_CAPS ] ) ? Text_Parser::NO_ALL_CAPS : Text_Parser::ALLOW_ALL_CAPS;
@@ -85,7 +74,7 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 		$letter_compounds = empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ? Text_Parser::NO_COMPOUNDS : Text_Parser::ALLOW_COMPOUNDS;
 
 		// Break text down for a bit more granularity.
-		$text_parser->load( $textnode->data );
+		$text_parser                         = $this->get_text_parser( $textnode->data );
 		$tokens[ Token_Fix::MIXED_WORDS ]    = $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $mixed_caps, $mixed_compounds );  // prohibit letter-only words, allow caps, allow compounds (or not).
 		$tokens[ Token_Fix::COMPOUND_WORDS ] = ! empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ? $text_parser->get_words( Text_Parser::NO_ALL_LETTERS, $letter_caps, Text_Parser::REQUIRE_COMPOUNDS ) : [];
 		$tokens[ Token_Fix::WORDS ]          = $text_parser->get_words( Text_Parser::REQUIRE_ALL_LETTERS, $letter_caps, $letter_compounds ); // require letter-only words allow/prohibit caps & compounds vice-versa.
@@ -100,21 +89,20 @@ class Process_Words_Fix extends Abstract_Node_Fix {
 
 		// Apply updates to our text.
 		$text_parser->update( $tokens[ Token_Fix::MIXED_WORDS ] + $tokens[ Token_Fix::COMPOUND_WORDS ] + $tokens[ Token_Fix::WORDS ] + $tokens[ Token_Fix::OTHER ] );
-		$textnode->data = $text_parser->unload();
+		$textnode->data = $text_parser->get_text();
 	}
 
 	/**
 	 * Retrieves the text parser instance.
 	 *
-	 * @return \PHP_Typography\Text_Parser
+	 * @since 7.0.0 Parameter $text added.
+	 *
+	 * @param string $text The text to tokenize.
+	 *
+	 * @return Text_Parser
 	 */
-	public function get_text_parser() {
-		// Lazy-load text parser.
-		if ( ! isset( $this->text_parser ) ) {
-			$this->text_parser = new Text_Parser();
-		}
-
-		return $this->text_parser;
+	public function get_text_parser( string $text ) {
+		return new Text_Parser( $text );
 	}
 
 	/**
