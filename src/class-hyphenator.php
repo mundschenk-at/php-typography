@@ -150,7 +150,7 @@ class Hyphenator {
 	/**
 	 * Calculates binary-safe hash from data object.
 	 *
-	 * @since 6.8.0 Parameter $object renamed to $data.
+	 * @since 7.0.0 Parameter $object renamed to $data.
 	 *
 	 * @param mixed $data Any datatype.
 	 *

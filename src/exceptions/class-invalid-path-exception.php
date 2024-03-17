@@ -31,7 +31,7 @@ namespace PHP_Typography\Exceptions;
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
- * @since 6.8.0
+ * @since 7.0.0
  */
 class Invalid_Path_Exception extends \RuntimeException {
 }
