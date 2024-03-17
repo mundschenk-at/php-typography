@@ -39,6 +39,7 @@ use PHP_Typography\Settings\Quotes;
  * @since 4.0.0
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
+ *              The deprecated method array_map_assoc has been removed.
  *
  * @implements \ArrayAccess<string,mixed>
  */
@@ -727,35 +728,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		return $replacements;
-	}
-
-	/**
-	 * Provides an array_map implementation with control over resulting array's keys.
-	 *
-	 * Based on https://gist.github.com/jasand-pereza/84ecec7907f003564584.
-	 *
-	 * @since 6.0.0
-	 * @deprecated 6.7.0
-	 *
-	 * @template T
-	 *
-	 * @param  callable $callback A callback function that needs to return [ $key => $value ] pairs.
-	 * @param  array<T> $array    The array.
-	 *
-	 * @return array<T>
-	 */
-	protected static function array_map_assoc( callable $callback, array $array ): array { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.arrayFound -- method is already deprecated.
-		$new = [];
-
-		foreach ( $array as $k => $v ) {
-			$u = $callback( $k, $v );
-
-			if ( ! empty( $u ) ) {
-				$new[ \key( $u ) ] = \current( $u );
-			}
-		}
-
-		return $new;
 	}
 
 	/**
