@@ -270,6 +270,52 @@ class Pattern_Converter {
 	}
 
 	/**
+	 * Parse a single line of a pattern file.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param string   $line       The line.
+	 * @param int      $line_no    The line number.
+	 * @param string[] $patterns   The patterns array. Passed by reference.
+	 * @param string[] $exceptions The exceptions array. Passed by reference.
+	 * @param string[] $comments   The comments array. Passed by reference.
+	 * @param string[] $macros     The macros array. Passed by reference.
+	 *
+	 * @return bool[]
+	 *
+	 * @throws \RangeException   Thrown when a line cannot be parsed at all.
+	 */
+	protected function parse_line( string $line, int $line_no, array &$patterns, array &$exceptions, array &$comments, array &$macros ): array {
+		$reading_patterns   = false;
+		$reading_exceptions = false;
+
+		if ( \preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
+			$comments[] = $line;
+		} elseif ( \preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
+			$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
+		} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
+			$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
+		} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
+			// Add a macro definition.
+			$macros[ $matches[1] ] = $matches[2];
+		} elseif ( \preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
+			// Add a macro definition and expand any contained macros.
+			$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
+		} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
+			// Ignore \endinput.
+			if ( ! \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
+				// Treat other commands as comments unless we are matching exceptions or patterns.
+				$comments[] = $line;
+			}
+		} elseif ( ! \preg_match( '/^\s*$/u', $line, $matches ) ) {
+			// If this was not simply whitespace, we are in trouble.
+			throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
+		}
+
+		return [ $reading_patterns, $reading_exceptions ];
+	}
+
+	/**
 	 * Replace macros in the given line.
 	 *
 	 * @since 6.1.0
@@ -335,7 +381,6 @@ class Pattern_Converter {
 	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
 	 * @param string[] $comments   Extracted comments lines. Passed by reference.
 	 *
-	 * @throws \RangeException   Thrown when a line cannot be parsed at all.
 	 * @throws \RuntimeException Thrown when file does not exist or is not readable.
 	 */
 	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ): void {
@@ -369,27 +414,8 @@ class Pattern_Converter {
 			} elseif ( $reading_exceptions ) {
 				// Continue reading exceptions.
 				$reading_exceptions = $this->match_exceptions( $this->expand_macros( $line, $macros ), $exceptions, $line_no );
-			} elseif ( \preg_match( '/^\s*%.*$/u', $line, $matches ) ) {
-				$comments[] = $line;
-			} elseif ( \preg_match( '/^\s*\\\patterns\s*\{\s*(.*)$/u', $line, $matches ) ) {
-				$reading_patterns = $this->match_patterns( $matches[1], $patterns, $line_no );
-			} elseif ( \preg_match( '/^\s*\\\hyphenation\s*{\s*(.*)$/u', $line, $matches ) ) {
-				$reading_exceptions = $this->match_exceptions( $matches[1], $exceptions, $line_no );
-			} elseif ( \preg_match( '/^\s*\\\def\\\(\w+)#1\s*\{([^\}]*)\}\s*$/u', $line, $matches ) ) {
-				// Add a macro definition.
-				$macros[ $matches[1] ] = $matches[2];
-			} elseif ( \preg_match( '/^\s*\\\edef\\\(\w+)#1\s*\{(.*)\}\s*$/u', $line, $matches ) ) {
-				// Add a macro definition and expand any contained macros.
-				$macros[ $matches[1] ] = $this->expand_macros( $matches[2], $macros );
-			} elseif ( \preg_match( '/^\s*\\\[\w]+.*$/u', $line, $matches ) ) {
-				// Ignore \endinput.
-				if ( ! \preg_match( '/^\s*\\\endinput.*$/u', $line, $matches ) ) {
-					// Treat other commands as comments unless we are matching exceptions or patterns.
-					$comments[] = $line;
-				}
-			} elseif ( ! \preg_match( '/^\s*$/u', $line, $matches ) ) {
-				// If this was not simply whitespace, we are in trouble.
-				throw new \RangeException( "Error: unknown string $line at line $line_no\n" );
+			} else {
+				[ $reading_patterns, $reading_exceptions ] = $this->parse_line( $line, $line_no, $patterns, $exceptions, $comments, $macros );
 			}
 		}
 	}
