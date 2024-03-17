@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2022 Peter Putzer.
+ *  Copyright 2016-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
@@ -82,7 +81,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language() {
 		$h = $this->h;
@@ -114,7 +112,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_language_with_custom_exceptions() {
 		$h = $this->h;
@@ -142,7 +139,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_same_hyphenation_language() {
 		$h = $this->h;
@@ -216,7 +212,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
 	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_set_custom_exceptions_again() {
 		$h          = $this->h;
@@ -280,7 +275,6 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 *
 	 * @dataProvider provide_hyphenate_data
@@ -323,7 +317,6 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 *
 	 * @dataProvider provide_hyphenate_with_exceptions_data
@@ -352,7 +345,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_wrong_encoding() {
 		$this->h->set_language( 'de' );
@@ -376,7 +368,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_title_case() {
 		$this->h->set_language( 'de' );
@@ -396,7 +387,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_invalid() {
 		$this->h->set_language( 'de' );
@@ -414,7 +404,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_lookup_word_pattern_invalid_pattern_trie() {
 		$string = 'unknown';
@@ -435,7 +424,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_custom_exceptions() {
 		$this->h->set_language( 'en-US' );
@@ -457,7 +445,6 @@ class Hyphenator_Test extends Testcase {
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 */
 	public function test_hyphenate_no_exceptions_at_all() {
 		$this->h->set_language( 'en-US' );
@@ -511,7 +498,6 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::merge_hyphenation_exceptions
 	 *
 	 * @uses PHP_Typography\Hyphenator\Trie_Node
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_merge_hyphenation_exceptions() {

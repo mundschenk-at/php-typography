@@ -31,6 +31,7 @@ namespace PHP_Typography;
  * A utility class to handle fast and save string function access.
  *
  * @since 4.2.0
+ * @since 7.0.0 The deprecated methods mb_str_split have been removed.
  *
  * @phpstan-type String_Functions array{
  *         'strlen'     : callable,
@@ -105,30 +106,6 @@ abstract class Strings {
 		}
 
 		return [];
-	}
-
-	/**
-	 * Multibyte-safe str_split function. Unlike regular str_split, behavior for
-	 * `$split_length` < 1 is undefined and may or may not result in an error
-	 * being raised.
-	 *
-	 * @deprecated 6.7.0
-	 *
-	 * @param string     $string       The input string.
-	 * @param int<1,max> $split_length Optional. Maximum length of the chunk. Default 1.
-	 *
-	 * @return string[]                An array of $split_length character chunks.
-	 */
-	public static function mb_str_split( $string, $split_length = 1 ) {
-		// Checking here is not optimal, the check should be made on instantiation
-		// when the class is refactored.
-		if ( \function_exists( 'mb_str_split' ) ) {
-			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.mb_str_splitFound, Universal.Operators.DisallowShortTernary -- Ensure array type.
-			return \mb_str_split( $string, $split_length, 'UTF-8' ) ?: [];
-		}
-
-		// We can safely assume an array here, as long as $string convertible to a string.
-		return \preg_split( "/(.{{$split_length}})/us", $string , -1, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type.
 	}
 
 	/**
