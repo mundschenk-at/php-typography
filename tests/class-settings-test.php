@@ -68,7 +68,6 @@ class Settings_Test extends Testcase {
 	 *
 	 * @covers ::set_defaults
 	 *
-	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
@@ -87,7 +86,6 @@ class Settings_Test extends Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::set_defaults
-	 * @uses ::array_map_assoc
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 * @uses PHP_Typography\Strings::maybe_split_parameters
@@ -795,8 +793,6 @@ class Settings_Test extends Testcase {
 	 * @covers ::parse_diacritics_replacement_string
 	 * @covers ::update_diacritics_replacement_arrays
 	 * @covers ::parse_diacritics_rules
-	 *
-	 * @uses ::array_map_assoc
 	 *
 	 * @dataProvider provide_set_diacritic_custom_replacements_data
 	 *
@@ -1620,47 +1616,5 @@ class Settings_Test extends Testcase {
 		$s = new Settings( false, $mapping );
 
 		$this->assertSame( $result, $s->apply_character_mapping( $input ) );
-	}
-
-	/**
-	 * Provide data for testing array_map_assoc.
-	 *
-	 * @return array
-	 */
-	public function provide_array_map_assoc_data() {
-		return [
-			[
-				function ( $key, $value ) {
-						return [ $value => $value * 2 ];
-				},
-				[ 1, 2, 3 ],
-				[
-					1 => 2,
-					2 => 4,
-					3 => 6,
-				],
-			],
-			[
-				function ( $key, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- callable signature.
-						return [];
-				},
-				[ 1, 2, 3 ],
-				[],
-			],
-		];
-	}
-
-	/**
-	 * Test array_map_assoc.
-	 *
-	 * @covers ::array_map_assoc
-	 * @dataProvider provide_array_map_assoc_data
-	 *
-	 * @param  callable $callable The function to apply to the array.
-	 * @param  array    $array    Input array.
-	 * @param  array    $result   Expected output array.
-	 */
-	public function test_array_map_assoc( callable $callable, array $array, array $result ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames -- test for deprecated method.
-		$this->assertSame( $result, $this->invoke_static_method( Settings::class, 'array_map_assoc', [ $callable, $array ] ) );
 	}
 }
