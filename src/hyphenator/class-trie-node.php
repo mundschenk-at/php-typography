@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ final class Trie_Node {
 		foreach ( $patterns as $key => $pattern ) {
 			$node = $trie;
 
-			foreach ( Strings::mb_str_split( $key ) as $char ) {
+			foreach ( \mb_str_split( $key ) as $char ) {
 				$node = $node->get_node( $char );
 			}
 

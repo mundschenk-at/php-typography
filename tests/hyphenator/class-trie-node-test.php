@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ class Trie_Node_Test extends Testcase {
 	 * @covers ::__construct
 	 *
 	 * @uses ::get_node
-	 * @uses PHP_Typography\Strings::mb_str_split
 	 *
 	 * @return Trie_Node
 	 */

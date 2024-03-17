@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2022 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -143,36 +143,6 @@ class Strings_Test extends Testcase {
 	public function test_uchr_multi( $input, $result ) {
 		$this->assertSame( $result, call_user_func_array( [ 'PHP_Typography\Strings', 'uchr' ], $input ) );
 		$this->assertSame( $result, Strings::uchr( $input ) );
-	}
-
-	/**
-	 * Provide data for testing mb_str_split.
-	 *
-	 * @return array
-	 */
-	public function provide_mb_str_split_data() {
-		return [
-			[ '', 1, [] ],
-			[ 'A ship', 1, [ 'A', ' ', 's', 'h', 'i', 'p' ] ],
-			[ 'Äöüß', 1, [ 'Ä', 'ö', 'ü', 'ß' ] ],
-			[ 'Äöüß', 2, [ 'Äö', 'üß' ] ],
-			[ '那是杂志吗', 2, [ '那是', '杂志', '吗' ] ],
-			[ '不，那不是杂志。那是字典', 3, [ '不，那', '不是杂', '志。那', '是字典' ] ],
-		];
-	}
-
-	/**
-	 * Test mb_str_split.
-	 *
-	 * @covers ::mb_str_split
-	 * @dataProvider provide_mb_str_split_data
-	 *
-	 * @param  string $string   A multibyte string.
-	 * @param  int    $length   Split length.
-	 * @param  array  $result   Expected result.
-	 */
-	public function test_mb_str_split( $string, $length, $result ) {
-		$this->assertSame( $result, Strings::mb_str_split( $string, $length ) );
 	}
 
 	/**
