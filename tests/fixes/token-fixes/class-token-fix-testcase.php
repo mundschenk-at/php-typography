@@ -52,7 +52,7 @@ abstract class Token_Fix_Testcase extends Testcase {
 	 *
 	 * @var \DOMNode[]
 	 */
-	private $nodes = [];
+	private $nodes = []; // @phpstan-ignore-line - prevents GC
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -81,13 +81,13 @@ abstract class Token_Fix_Testcase extends Testcase {
 	/**
 	 * Creates a \DOMText node.
 	 *
-	 * @param  string $parent  The parent tag.
-	 * @param  string $content The node content.
+	 * @param  string $parent_node The parent element.
+	 * @param  string $content     The node content.
 	 *
 	 * @return \DOMText
 	 */
-	protected function getTextnode( $parent, $content ) {
-		$element       = new \DOMElement( $parent, $content );
+	protected function getTextnode( $parent_node, $content ) {
+		$element       = new \DOMElement( $parent_node, $content );
 		$this->nodes[] = $element;
 
 		return $element->firstChild;
