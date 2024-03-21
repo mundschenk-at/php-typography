@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2019 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -117,6 +117,24 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 				Quote_Style::SINGLE_CURLED,
 				'"',
 				'"',
+			],
+			[
+				'à "l’âge"<br>N112',
+				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;<br>N112',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
+				Quote_Style::SINGLE_GUILLEMETS,
+			],
+			[
+				'à "l’âge" N112',
+				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo; N112',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
+				Quote_Style::SINGLE_GUILLEMETS,
+			],
+			[
+				'à "l’âge"<sup>N112</sup>',
+				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;<sup>N112</sup>',
+				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
+				Quote_Style::SINGLE_GUILLEMETS,
 			],
 		];
 	}

@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -298,13 +298,15 @@ class DOM_Test extends Testcase {
 	 * Test get_prev_chr.
 	 *
 	 * @covers ::get_prev_chr
-	 * @covers ::get_adjacent_chr
-	 * @covers ::get_previous_textnode
-	 * @covers ::get_adjacent_textnode
+	 * @covers ::get_adjacent_character
+	 * @covers ::get_previous_acceptable_node
+	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_linebreak
+	 * @covers ::is_text_or_linebreak
 	 *
-	 * @uses ::get_last_textnode
-	 * @uses ::get_edge_textnode
+	 * @uses ::get_last_acceptable_node
+	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_get_prev_chr() {
@@ -322,11 +324,42 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
+	 * Test get_prev_chr when the textnode is preceeded by <br>.
+	 *
+	 * @covers ::get_prev_chr
+	 * @covers ::get_adjacent_character
+	 * @covers ::get_previous_acceptable_node
+	 * @covers ::get_adjacent_node
+	 * @covers ::is_linebreak
+	 * @covers ::is_text_or_linebreak
+	 *
+	 * @uses ::is_block_tag
+	 * @uses ::get_last_acceptable_node
+	 * @uses ::get_edge_node
+	 * @uses PHP_Typography\Strings::functions
+	 */
+	public function test_get_prev_chr_with_br() {
+		$html  = '<p><span>A</span><br><span id="foo">new hope.</span></p><p><br><span id="bar">The empire</span> strikes back.</p<';
+		$doc   = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$this->assertSame( ' ', $prev_char );
+
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
+		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$this->assertSame( ' ', $prev_char );
+	}
+
+	/**
 	 * Test get_previous_textnode.
 	 *
 	 * @covers ::get_previous_textnode
-	 * @covers ::get_adjacent_textnode
+	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
+	 *
+	 * @uses ::get_previous_acceptable_node
 	 */
 	public function test_get_previous_textnode_null() {
 		$node = DOM::get_previous_textnode( null );
@@ -337,13 +370,15 @@ class DOM_Test extends Testcase {
 	 * Test get_next_chr.
 	 *
 	 * @covers ::get_next_chr
-	 * @covers ::get_adjacent_chr
-	 * @covers ::get_next_textnode
-	 * @covers ::get_adjacent_textnode
+	 * @covers ::get_adjacent_character
+	 * @covers ::get_next_acceptable_node
+	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_linebreak
+	 * @covers ::is_text_or_linebreak
 	 *
-	 * @uses ::get_first_textnode
-	 * @uses ::get_edge_textnode
+	 * @uses ::get_first_acceptable_node
+	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_get_next_chr() {
@@ -361,11 +396,43 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
+	 * Test get_next_chr followed by <br>.
+	 *
+	 * @covers ::get_next_chr
+	 * @covers ::get_adjacent_character
+	 * @covers ::get_next_acceptable_node
+	 * @covers ::get_adjacent_node
+	 * @covers ::is_block_tag
+	 * @covers ::is_linebreak
+	 * @covers ::is_text_or_linebreak
+	 *
+	 * @uses ::get_first_acceptable_node
+	 * @uses ::get_edge_node
+	 * @uses PHP_Typography\Strings::functions
+	 */
+	public function test_get_next_chr_with_br() {
+		$html  = '<p><span id="foo">A</span><span id="bar"><br>new hope.</span><br></p><p><span>The empire</span> strikes back.</p<';
+		$doc   = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( ' ', $prev_char );
+
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( ' ', $prev_char );
+	}
+
+	/**
 	 * Test get_next_textnode.
 	 *
 	 * @covers ::get_next_textnode
-	 * @covers ::get_adjacent_textnode
+	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_textnode
+	 *
+	 * @uses ::get_next_acceptable_node
 	 */
 	public function test_get_next_textnode_null() {
 		$node = DOM::get_next_textnode( null );
@@ -377,8 +444,11 @@ class DOM_Test extends Testcase {
 	 * Test get_first_textnode.
 	 *
 	 * @covers ::get_first_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_textnode
+	 *
+	 * @uses ::get_first_acceptable_node
 	 */
 	public function test_get_first_textnode() {
 		$html  = '<p><span id="foo">A</span><span id="bar">new hope.</span></p>';
@@ -406,7 +476,9 @@ class DOM_Test extends Testcase {
 	 * Test get_first_textnode.
 	 *
 	 * @covers ::get_first_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
+	 * @covers ::is_textnode
+	 * @covers ::get_first_acceptable_node
 	 */
 	public function test_get_first_textnode_null() {
 		// Passing null returns null.
@@ -420,8 +492,10 @@ class DOM_Test extends Testcase {
 	 * Test get_first_textnode.
 	 *
 	 * @covers ::get_first_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_textnode
+	 * @covers ::get_first_acceptable_node
 	 */
 	public function test_get_first_textnode_only_block_level() {
 		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
@@ -437,10 +511,11 @@ class DOM_Test extends Testcase {
 	 * Test get_last_textnode.
 	 *
 	 * @covers ::get_last_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_textnode
 	 *
-	 * @uses ::get_first_textnode
+	 * @uses ::get_last_acceptable_node
 	 */
 	public function test_get_last_textnode() {
 
@@ -457,7 +532,7 @@ class DOM_Test extends Testcase {
 		$this->assertSame( 'A', $node->nodeValue );
 
 		$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
-		$node      = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
 		$this->assertSame( 'new hope.', $node->nodeValue );
 
 		$textnodes = $xpath->query( '//p' ); // really only one.
@@ -469,7 +544,9 @@ class DOM_Test extends Testcase {
 	 * Test get_last_textnode.
 	 *
 	 * @covers ::get_last_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
+	 * @covers ::is_textnode
+	 * @covers ::get_last_acceptable_node
 	 */
 	public function test_get_last_textnode_null() {
 		// Passing null returns null.
@@ -484,8 +561,10 @@ class DOM_Test extends Testcase {
 	 * Test get_last_textnode.
 	 *
 	 * @covers ::get_last_textnode
-	 * @covers ::get_edge_textnode
+	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
+	 * @covers ::is_textnode
+	 * @covers ::get_last_acceptable_node
 	 */
 	public function test_get_last_textnode_only_block_level() {
 		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
