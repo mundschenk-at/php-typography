@@ -64,6 +64,17 @@ abstract class DOM {
 	];
 
 	/**
+	 * Elements that are acceptable as neighbor nodes.
+	 *
+	 * @since 7.0.0
+	 */
+	private const ACCEPTABLE_NEIGHBOR_ELEMENTS = [
+		'br'  => true,
+		'sub' => true,
+		'sup' => true,
+	];
+
+	/**
 	 * Retrieves an array of block tags.
 	 *
 	 * @param bool $reset Optional. Default false.
@@ -235,12 +246,20 @@ abstract class DOM {
 	 * @return string The character or an empty string.
 	 */
 	private static function get_adjacent_character( \DOMNode $node, $position, $length, callable $get_node ) {
-		$adjacent_node = $get_node( [ __CLASS__, 'is_text_or_linebreak' ], $node );
+		$adjacent_node = $get_node( [ __CLASS__, 'is_acceptable_neighbor_node' ], $node );
 		$character     = '';
 
 		if ( null !== $adjacent_node ) {
-			if ( self::is_linebreak( $adjacent_node ) ) {
-				$character = ' ';
+			if ( $adjacent_node instanceof \DOMElement ) {
+				switch ( $adjacent_node->tagName ) {
+					case 'br':
+						$character = ' ';
+						break;
+					case 'sub':
+					case 'sup':
+					default:
+						$character = '';
+				}
 			} elseif ( $adjacent_node instanceof \DOMText ) {
 				$node_data = $adjacent_node->data;
 				$character = \preg_replace( '/\p{C}/Su', '', Strings::functions( $node_data )['substr']( $node_data, $position, $length ) );
@@ -248,19 +267,6 @@ abstract class DOM {
 		}
 
 		return $character;
-	}
-
-	/**
-	 * Determines if the node is a <br> element.
-	 *
-	 * @since 7.0.0
-	 *
-	 * @param ?\DOMNode $node The node to test.
-	 *
-	 * @return bool
-	 */
-	private static function is_linebreak( ?\DOMNode $node ): bool {
-		return $node instanceof \DOMElement && ( $node->tagName ?? '' ) === 'br';
 	}
 
 	/**
@@ -277,7 +283,7 @@ abstract class DOM {
 	}
 
 	/**
-	 * Determines if the node is a textnode or <br> element.
+	 * Determines if the node is a textnode or one of the acceptable elements.
 	 *
 	 * @since 7.0.0
 	 *
@@ -285,8 +291,8 @@ abstract class DOM {
 	 *
 	 * @return bool
 	 */
-	private static function is_text_or_linebreak( ?\DOMNode $node ): bool {
-		return $node instanceof \DOMText || ( $node instanceof \DOMElement && 'br' === $node->tagName );
+	private static function is_acceptable_neighbor_node( ?\DOMNode $node ): bool {
+		return $node instanceof \DOMText || ( $node instanceof \DOMElement && isset( self::ACCEPTABLE_NEIGHBOR_ELEMENTS[ $node->tagName ] ) );
 	}
 
 

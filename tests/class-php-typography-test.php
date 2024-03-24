@@ -506,6 +506,7 @@ class PHP_Typography_Test extends Testcase {
 			[ 'ein-, zweimal', 'ein&#8209;, zweimal', true ],
 			[ 'В зависимости от региона, может выращиватся на зерно и силос. После колосовых может выращиватся на второй посев.', 'В зависимости от региона, может выращиватся на зерно и&nbsp;силос. После колосовых может выращиватся на второй посев.', false ],
 			[ '"Text."<br>Text after.', '<span class="pull-double">&ldquo;</span>Text.&rdquo;<br>Text after.', '&ldquo;Text.&rdquo;<br>Text after.' ],
+			[ 'à "l’âge"<sup>N112</sup>', '&agrave; <span class="push-double"></span>&#8203;<span class="pull-double">&ldquo;</span>l&rsquo;&acirc;ge&rdquo;<sup><span class="caps">N<span class="numbers">112</span></span></sup>', '&agrave; &ldquo;l&rsquo;&acirc;ge&rdquo;<sup>N112</sup>' ],
 		];
 	}
 

@@ -302,8 +302,7 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_linebreak
-	 * @covers ::is_text_or_linebreak
+	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_last_acceptable_node
 	 * @uses ::get_edge_node
@@ -330,8 +329,7 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
-	 * @covers ::is_linebreak
-	 * @covers ::is_text_or_linebreak
+	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::is_block_tag
 	 * @uses ::get_last_acceptable_node
@@ -374,8 +372,7 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_linebreak
-	 * @covers ::is_text_or_linebreak
+	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_first_acceptable_node
 	 * @uses ::get_edge_node
@@ -403,8 +400,7 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_linebreak
-	 * @covers ::is_text_or_linebreak
+	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_first_acceptable_node
 	 * @uses ::get_edge_node
@@ -422,6 +418,34 @@ class DOM_Test extends Testcase {
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
 		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
 		$this->assertSame( ' ', $prev_char );
+	}
+
+	/**
+	 * Test get_next_chr followed by <br>.
+	 *
+	 * @covers ::get_next_chr
+	 * @covers ::get_adjacent_character
+	 * @covers ::get_next_acceptable_node
+	 * @covers ::get_adjacent_node
+	 * @covers ::is_block_tag
+	 * @covers ::is_acceptable_neighbor_node
+	 *
+	 * @uses ::get_first_acceptable_node
+	 * @uses ::get_edge_node
+	 * @uses PHP_Typography\Strings::functions
+	 */
+	public function test_get_next_chr_with_sub_sup() {
+		$html  = '<p><span id="foo">A</span><span id="bar"><sup>new</sup> hope.</span><sub>x</sub></p><p><span>The empire</span> strikes back.</p<';
+		$doc   = $this->load_html( $html );
+		$xpath = new \DOMXPath( $doc );
+
+		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( '', $prev_char );
+
+		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
+		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$this->assertSame( '', $prev_char );
 	}
 
 	/**
