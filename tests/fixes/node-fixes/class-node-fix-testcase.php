@@ -71,12 +71,12 @@ abstract class Node_Fix_Testcase extends Testcase {
 	/**
 	 * Assert that the output of the fix is the same as the expected result.
 	 *
-	 * @param string      $input         Text node value.
-	 * @param string      $result        Expected result.
-	 * @param string|null $left_sibling  Optional. Left sibling node value. Default null.
-	 * @param string|null $right_sibling Optional. Right sibling node value. Default null.
-	 * @param string      $parent_tag    Optional. Parent tag. Default 'p'.
-	 * @param bool        $is_title      Optional. Default false.
+	 * @param string                  $input         Text node value.
+	 * @param string                  $result        Expected result.
+	 * @param string|\DOMNode|null $left_sibling  Optional. Left sibling node value. Default null.
+	 * @param string|\DOMNode|null $right_sibling Optional. Right sibling node value. Default null.
+	 * @param string                  $parent_tag    Optional. Parent tag. Default 'p'.
+	 * @param bool                    $is_title      Optional. Default false.
 	 */
 	protected function assertFixResultSame( $input, $result, $left_sibling = null, $right_sibling = null, $parent_tag = 'p', $is_title = false ) {
 		$node = $this->create_textnode( $input );
@@ -87,13 +87,21 @@ abstract class Node_Fix_Testcase extends Testcase {
 			$dom->appendChild( $parent );
 
 			if ( ! empty( $left_sibling ) ) {
-				$parent->appendChild( $this->create_textnode( $left_sibling ) );
+				if ( ! $left_sibling instanceof \DOMNode ) {
+					$left_sibling = $this->create_textnode( $left_sibling );
+				}
+
+				$parent->appendChild( $left_sibling );
 			}
 
 			$parent->appendChild( $node );
 
 			if ( ! empty( $right_sibling ) ) {
-				$parent->appendChild( $this->create_textnode( $right_sibling ) );
+				if ( ! $right_sibling instanceof \DOMNode ) {
+					$right_sibling = $this->create_textnode( $right_sibling );
+				}
+
+				$parent->appendChild( $right_sibling );
 			}
 		}
 
