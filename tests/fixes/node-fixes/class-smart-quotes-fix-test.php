@@ -119,10 +119,12 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 				'"',
 			],
 			[
-				'à "l’âge"<br>N112',
-				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;<br>N112',
+				'à "l’âge"',
+				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;',
 				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
 				Quote_Style::SINGLE_GUILLEMETS,
+				null,
+				new \DOMElement( 'br' ),
 			],
 			[
 				'à "l’âge" N112',
@@ -131,10 +133,12 @@ class Smart_Quotes_Fix_Test extends Node_Fix_Testcase {
 				Quote_Style::SINGLE_GUILLEMETS,
 			],
 			[
-				'à "l’âge"<sup>N112</sup>',
-				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;<sup>N112</sup>',
+				'à "l’âge"',
+				'&agrave; &laquo;&#8239;l&rsquo;&acirc;ge&#8239;&raquo;',
 				Quote_Style::DOUBLE_GUILLEMETS_FRENCH,
 				Quote_Style::SINGLE_GUILLEMETS,
+				null,
+				new \DOMElement( 'sup', 'N112' ),
 			],
 		];
 	}
