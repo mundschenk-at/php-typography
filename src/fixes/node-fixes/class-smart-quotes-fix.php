@@ -104,8 +104,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
-		$previous_character = DOM::get_prev_chr( $textnode );
-		$next_character     = DOM::get_next_chr( $textnode );
+		$previous_character = DOM::get_previous_character( $textnode );
+		$next_character     = DOM::get_next_character( $textnode );
 		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
 
 		// Check encoding.

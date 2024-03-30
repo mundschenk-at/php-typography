@@ -69,8 +69,8 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 		}
 
 		// Add $next_character and $previous_character for context.
-		$previous_character = DOM::get_prev_chr( $textnode );
-		$next_character     = DOM::get_next_chr( $textnode );
+		$previous_character = DOM::get_previous_character( $textnode );
+		$next_character     = DOM::get_next_character( $textnode );
 		$node_data          = "{$previous_character}{$textnode->data}{$next_character}";
 
 		// Check encoding.
