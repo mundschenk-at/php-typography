@@ -85,7 +85,7 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 		);
 
 		// Remove all spacing at beginning of block level elements.
-		if ( null === DOM::get_previous_textnode( $textnode ) ) {
+		if ( DOM::get_first_textnode( $textnode ) === $textnode ) {
 			$node_data = (string) \preg_replace( self::COLLAPSE_SPACES_AT_START_OF_BLOCK, '', $node_data );
 		}
 

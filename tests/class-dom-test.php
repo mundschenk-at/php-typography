@@ -271,30 +271,6 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_block_parent_name.
-	 *
-	 * @covers ::get_block_parent_name
-	 *
-	 * @uses ::get_block_parent
-	 * @uses ::is_block_tag
-	 *
-	 * @dataProvider provide_get_block_parent_data
-	 *
-	 * @param string $input_xpath  Input element/node.
-	 * @param string $parent_xpath Ignored.
-	 * @param string $parent_tag   Parent tag name.
-	 * @param string $html         HTML code.
-	 */
-	public function test_get_block_parent_name( $input_xpath, $parent_xpath, $parent_tag, $html ) {
-		$doc   = $this->load_html( $html );
-		$xpath = new \DOMXPath( $doc );
-
-		$input_node = $xpath->query( $input_xpath )->item( 0 ); // really only one.
-
-		$this->assertSame( $parent_tag, DOM::get_block_parent_name( $input_node ) );
-	}
-
-	/**
 	 * Test get_prev_chr.
 	 *
 	 * @covers ::get_prev_chr
@@ -302,7 +278,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_last_acceptable_node
 	 * @uses ::get_edge_node
@@ -329,7 +304,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
-	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::is_block_tag
 	 * @uses ::get_last_acceptable_node
@@ -351,17 +325,22 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_previous_textnode.
+	 * Test get_previous_acceptable_node.
 	 *
-	 * @covers ::get_previous_textnode
+	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 *
-	 * @uses ::get_previous_acceptable_node
 	 */
-	public function test_get_previous_textnode_null() {
-		$node = DOM::get_previous_textnode( null );
-		$this->assertNull( $node );
+	public function test_get_previous_acceptable_node_null() {
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
+
+		$this->assertNull( DOM::get_previous_acceptable_node( $is_text, null ) );
+		$this->assertNull( DOM::get_previous_acceptable_node( $is_text_or_br, null ) );
 	}
 
 	/**
@@ -372,7 +351,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_first_acceptable_node
 	 * @uses ::get_edge_node
@@ -400,7 +378,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_first_acceptable_node
 	 * @uses ::get_edge_node
@@ -428,7 +405,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_acceptable_neighbor_node
 	 *
 	 * @uses ::get_first_acceptable_node
 	 * @uses ::get_edge_node
@@ -449,18 +425,22 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_next_textnode.
+	 * Test get_next_acceptable_node.
 	 *
-	 * @covers ::get_next_textnode
+	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_textnode
-	 *
-	 * @uses ::get_next_acceptable_node
 	 */
-	public function test_get_next_textnode_null() {
-		$node = DOM::get_next_textnode( null );
-		$this->assertNull( $node );
+	public function test_get_next_acceptable_node_null() {
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
+
+		$this->assertNull( DOM::get_next_acceptable_node( $is_text, null ) );
+		$this->assertNull( DOM::get_next_acceptable_node( $is_text_or_br, null ) );
 	}
 
 
@@ -470,7 +450,6 @@ class DOM_Test extends Testcase {
 	 * @covers ::get_first_textnode
 	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_textnode
 	 *
 	 * @uses ::get_first_acceptable_node
 	 */
@@ -497,106 +476,233 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_first_textnode.
+	 * Test get_first_acceptable_node.
 	 *
-	 * @covers ::get_first_textnode
-	 * @covers ::get_edge_node
-	 * @covers ::is_textnode
 	 * @covers ::get_first_acceptable_node
+	 * @covers ::get_edge_node
+	 * @covers ::is_block_tag
 	 */
-	public function test_get_first_textnode_null() {
-		// Passing null returns null.
-		$this->assertNull( DOM::get_first_textnode( null ) );
+	public function test_get_first_acceptable_node() {
+		$html          = '<p><br><span id="foo">A</span><span id="bar">new hope.</span></p>';
+		$doc           = $this->load_html( $html );
+		$xpath         = new \DOMXPath( $doc );
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
 
-		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-		$this->assertNull( DOM::get_first_textnode( new \DOMDocument() ) );
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='foo']/text()";
+
+		$node = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='foo']";
+		$node  = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='bar']";
+		$node  = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'new hope.', $node->nodeValue );
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'new hope.', $node->nodeValue );
+
+		// Different result depending on acceptability predicate.
+		$query = '//p';
+		$node  = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMElement::class, $node );
+		$this->assertSame( 'br', $node->tagName );
+
+		// Different result depending on acceptability predicate.
+		$query = '//br';
+		$node  = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertNull( $node );
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMElement::class, $node );
+		$this->assertSame( 'br', $node->tagName );
 	}
 
 	/**
-	 * Test get_first_textnode.
+	 * Test get_first_acceptable_node.
 	 *
-	 * @covers ::get_first_textnode
+	 * @covers ::get_first_acceptable_node
+	 * @covers ::get_edge_node
+	 */
+	public function test_get_first_acceptable_node_null() {
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
+
+		// Passing null returns null.
+		$this->assertNull( DOM::get_first_acceptable_node( $is_text, null ) );
+		$this->assertNull( DOM::get_first_acceptable_node( $is_text_or_br, null ) );
+
+		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
+		$this->assertNull( DOM::get_first_acceptable_node( $is_text, new \DOMDocument() ) );
+		$this->assertNull( DOM::get_first_acceptable_node( $is_text_or_br, new \DOMDocument() ) );
+	}
+
+	/**
+	 * Test get_first_acceptable_node.
+	 *
+	 * @covers ::get_first_acceptable_node
 	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_textnode
 	 * @covers ::get_first_acceptable_node
 	 */
-	public function test_get_first_textnode_only_block_level() {
-		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-		$doc   = $this->load_html( $html );
-		$xpath = new \DOMXPath( $doc );
+	public function test_get_first_acceptable_node_only_block_level() {
+		$html          = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+		$doc           = $this->load_html( $html );
+		$xpath         = new \DOMXPath( $doc );
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
 
-		$textnodes = $xpath->query( '//div' ); // really only one.
-		$node      = DOM::get_first_textnode( $textnodes->item( 0 ) );
+		// Same result regardless of acceptability predicate.
+		$query = '//div';
+		$node  = DOM::get_first_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertNull( $node );
+		$node = DOM::get_first_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
 		$this->assertNull( $node );
 	}
 
+
 	/**
-	 * Test get_last_textnode.
+	 * Test get_last_acceptable_node.
 	 *
-	 * @covers ::get_last_textnode
+	 * @covers ::get_last_acceptable_node
 	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_textnode
-	 *
-	 * @uses ::get_last_acceptable_node
 	 */
-	public function test_get_last_textnode() {
+	public function test_get_last_acceptable_node() {
+		$html          = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.<br></p>';
+		$doc           = $this->load_html( $html );
+		$xpath         = new \DOMXPath( $doc );
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
 
-		$html  = '<p><span id="foo">A</span><span id="bar">new hope.</span> Really.</p>';
-		$doc   = $this->load_html( $html );
-		$xpath = new \DOMXPath( $doc );
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='foo']/text()";
 
-		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$node = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
 		$this->assertSame( 'A', $node->nodeValue );
 
-		$textnodes = $xpath->query( "//*[@id='foo']" ); // really only one.
-		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
 		$this->assertSame( 'A', $node->nodeValue );
 
-		$textnodes = $xpath->query( "//*[@id='bar']" ); // really only one.
-		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='foo']";
+		$node  = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'A', $node->nodeValue );
+
+		// Same result regardless of acceptability predicate.
+		$query = "//*[@id='bar']";
+		$node  = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
+		$this->assertSame( 'new hope.', $node->nodeValue );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
 		$this->assertSame( 'new hope.', $node->nodeValue );
 
-		$textnodes = $xpath->query( '//p' ); // really only one.
-		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		// Different result depending on acceptability predicate.
+		$query = '//p';
+		$node  = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMText::class, $node );
 		$this->assertSame( ' Really.', $node->nodeValue );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMElement::class, $node );
+		$this->assertSame( 'br', $node->tagName );
+
+		// Different result depending on acceptability predicate.
+		$query = '//br';
+		$node  = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertNull( $node );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
+		$this->assertInstanceOf( \DOMElement::class, $node );
+		$this->assertSame( 'br', $node->tagName );
 	}
 
 	/**
-	 * Test get_last_textnode.
+	 * Test get_last_acceptable_node.
 	 *
-	 * @covers ::get_last_textnode
-	 * @covers ::get_edge_node
-	 * @covers ::is_textnode
 	 * @covers ::get_last_acceptable_node
+	 * @covers ::get_edge_node
 	 */
-	public function test_get_last_textnode_null() {
+	public function test_get_last_acceptable_node_null() {
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
+
 		// Passing null returns null.
-		$this->assertNull( DOM::get_last_textnode( null ) );
+		$this->assertNull( DOM::get_last_acceptable_node( $is_text, null ) );
+		$this->assertNull( DOM::get_last_acceptable_node( $is_text_or_br, null ) );
 
 		// Passing a DOMNode that is not a DOMElement or a DOMText returns null as well.
-		$this->assertNull( DOM::get_last_textnode( new \DOMDocument() ) );
+		$this->assertNull( DOM::get_last_acceptable_node( $is_text, new \DOMDocument() ) );
+		$this->assertNull( DOM::get_last_acceptable_node( $is_text_or_br, new \DOMDocument() ) );
 	}
 
 
 	/**
-	 * Test get_last_textnode.
+	 * Test get_last_acceptable_node.
 	 *
-	 * @covers ::get_last_textnode
+	 * @covers ::get_last_acceptable_node
 	 * @covers ::get_edge_node
 	 * @covers ::is_block_tag
-	 * @covers ::is_textnode
-	 * @covers ::get_last_acceptable_node
 	 */
-	public function test_get_last_textnode_only_block_level() {
-		$html  = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
-		$doc   = $this->load_html( $html );
-		$xpath = new \DOMXPath( $doc );
+	public function test_get_last_acceptable_only_block_level() {
+		$html          = '<div><div id="foo">No</div><div id="bar">hope</div></div>';
+		$doc           = $this->load_html( $html );
+		$xpath         = new \DOMXPath( $doc );
+		$is_text       = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText;
+		};
+		$is_text_or_br = function ( ?\DOMNode $n ): bool {
+			return $n instanceof \DOMText || ( $n instanceof \DOMElement && 'br' === $n->tagName );
+		};
 
-		$textnodes = $xpath->query( '//div' ); // really only one.
-		$node      = DOM::get_last_textnode( $textnodes->item( 0 ) );
+		// Same result regardless of acceptability predicate.
+		$query = '//div';
+		$node  = DOM::get_last_acceptable_node( $is_text, $xpath->query( $query )->item( 0 ) );
+		$this->assertNull( $node );
+		$node = DOM::get_last_acceptable_node( $is_text_or_br, $xpath->query( $query )->item( 0 ) );
 		$this->assertNull( $node );
 	}
 }
