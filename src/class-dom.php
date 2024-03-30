@@ -48,14 +48,14 @@ abstract class DOM {
 	 *
 	 * @var array<string,int>
 	 */
-	private static $block_tags;
+	private static array $block_tags;
 
 	/**
 	 * A flipped array of tags that should never be modified. Checked via isset/has_key.
 	 *
 	 * @var array<string,int>
 	 */
-	private static $inappropriate_tags;
+	private static array $inappropriate_tags;
 
 	const ADDITIONAL_INAPPROPRIATE_TAGS = [
 		'button',
@@ -92,7 +92,7 @@ abstract class DOM {
 	 *         @type int $tag Only the existence of the $tag key is relevant.
 	 * }
 	 */
-	public static function block_tags( $reset = false ) {
+	public static function block_tags( bool $reset = false ): array {
 		if ( empty( self::$block_tags ) || $reset ) {
 			self::$block_tags = \array_merge(
 				\array_flip(
@@ -121,7 +121,7 @@ abstract class DOM {
 	 *         @type int $tag Only the existence of the $tag key is relevant.
 	 * }
 	 */
-	public static function inappropriate_tags( $reset = false ) {
+	public static function inappropriate_tags( bool $reset = false ): array {
 		if ( empty( self::$inappropriate_tags ) || $reset ) {
 			self::$inappropriate_tags = \array_flip(
 				\array_merge(
@@ -152,7 +152,7 @@ abstract class DOM {
 	 *
 	 * @phpstan-param DOMNodeList<DOMNode> $node_list
 	 */
-	public static function nodelist_to_array( DOMNodeList $node_list ) {
+	public static function nodelist_to_array( DOMNodeList $node_list ): array {
 		$out = [];
 
 		foreach ( $node_list as $node ) {
@@ -170,7 +170,7 @@ abstract class DOM {
 	 *
 	 * @return DOMNode[] An array of DOMNode.
 	 */
-	public static function get_ancestors( DOMNode $node ) {
+	public static function get_ancestors( DOMNode $node ): array {
 		$result = [];
 
 		while ( ( $node = $node->parentNode ) && ( $node instanceof DOMElement ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
@@ -189,7 +189,7 @@ abstract class DOM {
 	 *
 	 * @return bool True if the element has any of the given class(es).
 	 */
-	public static function has_class( DOMNode $tag, $classnames ) {
+	public static function has_class( DOMNode $tag, $classnames ): bool {
 		if ( $tag instanceof DOMText ) {
 			$tag = $tag->parentNode;
 		}
@@ -224,7 +224,7 @@ abstract class DOM {
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	public static function get_prev_chr( DOMNode $node ) {
+	public static function get_prev_chr( DOMNode $node ): string {
 		return self::get_adjacent_character( $node, -1, 1, [ __CLASS__, 'get_previous_acceptable_node' ] );
 	}
 
@@ -235,7 +235,7 @@ abstract class DOM {
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	public static function get_next_chr( DOMNode $node ) {
+	public static function get_next_chr( DOMNode $node ): string {
 		return self::get_adjacent_character( $node, 0, 1, [ __CLASS__, 'get_next_acceptable_node' ] );
 	}
 
@@ -252,7 +252,7 @@ abstract class DOM {
 	 *
 	 * @return string The character or an empty string.
 	 */
-	private static function get_adjacent_character( DOMNode $node, $position, $length, callable $get_node ) {
+	private static function get_adjacent_character( DOMNode $node, int $position, int $length, callable $get_node ): string {
 		$character     = '';
 		$adjacent_node = $get_node(
 			// Determines if the node is a textnode or one of the acceptable elements.
@@ -335,7 +335,7 @@ abstract class DOM {
 	 *
 	 * @return DOMNode|null Null if $node is a block-level element or no acceptable sibling exists.
 	 */
-	private static function get_adjacent_node( callable $is_acceptable, callable $iterate, callable $get_adjacent_parent, DOMNode $node = null ): ?DOMNode {
+	private static function get_adjacent_node( callable $is_acceptable, callable $iterate, callable $get_adjacent_parent, ?DOMNode $node ): ?DOMNode {
 		if ( ! isset( $node ) || self::is_block_tag( $node ) ) {
 			return null;
 		}
@@ -375,7 +375,7 @@ abstract class DOM {
 	 *
 	 * @return DOMText|null The first child of type DOMText, the element itself if it is of type DOMText or null.
 	 */
-	public static function get_first_textnode( DOMNode $node = null, $recursive = false ) {
+	public static function get_first_textnode( DOMNode $node = null, bool $recursive = false ): ?DOMText {
 		/**
 		 * We only allow textnodes in our `is_acceptable` callable.
 		 *
@@ -431,7 +431,7 @@ abstract class DOM {
 	 *
 	 * @return DOMNode|null The last acceptable child, the element itself if it is acceptable or null.
 	 */
-	private static function get_edge_node( callable $is_acceptable, callable $get_acceptable_node, DOMNode $node = null, $recursive = false, $reverse = false ): ?DOMNode {
+	private static function get_edge_node( callable $is_acceptable, callable $get_acceptable_node, ?DOMNode $node, bool $recursive = false, bool $reverse = false ): ?DOMNode {
 		if ( $is_acceptable( $node ) ) {
 			return $node;
 		} elseif ( ! $node instanceof DOMElement || ( $recursive && self::is_block_tag( $node ) ) ) {
@@ -469,7 +469,7 @@ abstract class DOM {
 	 *
 	 * @return DOMElement|null
 	 */
-	public static function get_block_parent( DOMNode $node ) {
+	public static function get_block_parent( DOMNode $node ): ?DOMElement {
 		$parent = $node->parentNode;
 		if ( ! $parent instanceof DOMElement ) {
 			return null;
@@ -496,7 +496,7 @@ abstract class DOM {
 	 *
 	 * @return bool
 	 */
-	public static function is_block_tag( DOMNode $node ) {
+	public static function is_block_tag( DOMNode $node ): bool {
 		return $node instanceof DOMElement && isset( self::$block_tags[ $node->tagName ] );
 	}
 }
