@@ -48,9 +48,9 @@ class Hyphenator {
 	/**
 	 * The hyphenation patterns, stored in a trie for easier searching.
 	 *
-	 * @var Trie_Node|null
+	 * @var ?Trie_Node
 	 */
-	protected $pattern_trie;
+	protected ?Trie_Node $pattern_trie;
 
 	/**
 	 * The hyphenation exceptions from the pattern file.
@@ -58,7 +58,7 @@ class Hyphenator {
 	 *
 	 * @var array<string,string>
 	 */
-	protected $pattern_exceptions = [];
+	protected array $pattern_exceptions = [];
 
 	/**
 	 * Custom hyphenation exceptions set by the user.
@@ -66,45 +66,43 @@ class Hyphenator {
 	 *
 	 * @var array<string,string>
 	 */
-	protected $custom_exceptions;
+	protected array $custom_exceptions;
 
 	/**
 	 * A binary hash of $custom_exceptions array.
 	 *
 	 * @var string
 	 */
-	protected $custom_exceptions_hash;
+	protected string $custom_exceptions_hash;
 
 	/**
 	 * Patterns calculated from the merged hyphenation exceptions.
 	 *
 	 * @var ?array<string,int[]|null>
 	 */
-	protected $merged_exception_patterns;
+	protected ?array $merged_exception_patterns;
 
 	/**
 	 * The current hyphenation language.
 	 * Stored in the short form (e.g. "en-US").
 	 *
-	 * @var string|null
+	 * @var ?string
 	 */
-	protected $language;
+	protected ?string $language;
 
 	/**
 	 * Constructs new Hyphenator instance.
 	 *
-	 * @param string|null $language   Optional. Short-form language name. Default null.
-	 * @param string[]    $exceptions Optional. Custom hyphenation exceptions. Default empty array.
+	 * @param ?string  $language   Optional. Short-form language name. Default null.
+	 * @param string[] $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
-	public function __construct( $language = null, array $exceptions = [] ) {
+	public function __construct( ?string $language = null, array $exceptions = [] ) {
 
 		if ( ! empty( $language ) ) {
 			$this->set_language( $language );
 		}
 
-		if ( ! empty( $exceptions ) ) {
-			$this->set_custom_exceptions( $exceptions );
-		}
+		$this->set_custom_exceptions( $exceptions );
 	}
 
 	/**
@@ -113,13 +111,9 @@ class Hyphenator {
 	 * @param array<string,string> $exceptions Optional. An array of words with all hyphenation points marked with a hard hyphen. Default empty array.
 	 */
 	public function set_custom_exceptions( array $exceptions = [] ): void {
-		if ( empty( $exceptions ) && empty( $this->custom_exceptions ) ) {
-			return; // Nothing to do at all.
-		}
-
 		// Calculate hash & check against previous exceptions.
 		$new_hash = self::get_object_hash( $exceptions );
-		if ( $this->custom_exceptions_hash === $new_hash ) {
+		if ( isset( $this->custom_exceptions_hash ) && $this->custom_exceptions_hash === $new_hash ) {
 			return; // No need to update exceptions.
 		}
 
@@ -158,7 +152,7 @@ class Hyphenator {
 	 *
 	 * @return string
 	 */
-	protected static function get_object_hash( $data ) {
+	protected static function get_object_hash( $data ): string {
 		return \md5( (string) \json_encode( $data ), false );
 	}
 
@@ -169,7 +163,7 @@ class Hyphenator {
 	 *
 	 * @return bool Whether loading the pattern file was successful.
 	 */
-	public function set_language( $lang = 'en-US' ) {
+	public function set_language( string $lang = 'en-US' ): bool {
 		if ( isset( $this->language ) && $this->language === $lang ) {
 			return true; // Bail out, no need to do anything.
 		}
@@ -218,7 +212,7 @@ class Hyphenator {
 	 *
 	 * @return Token[] The modified text tokens.
 	 */
-	public function hyphenate( array $parsed_text_tokens, $hyphen = '-', $hyphenate_title_case = false, $min_length = 2, $min_before = 2, $min_after = 2 ) {
+	public function hyphenate( array $parsed_text_tokens, string $hyphen = '-', bool $hyphenate_title_case = false, int $min_length = 2, int $min_before = 2, int $min_after = 2 ): array {
 		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) ) {
 			return $parsed_text_tokens;
 		}
@@ -247,7 +241,7 @@ class Hyphenator {
 	 *
 	 * @return string
 	 */
-	protected function hyphenate_word( $word, $hyphen, $hyphenate_title_case, $min_length, $min_before, $min_after ) {
+	protected function hyphenate_word( string $word, string $hyphen, bool $hyphenate_title_case, int $min_length, int $min_before, int $min_after ): string {
 		// Quickly reference string functions according to encoding.
 		$f = Strings::functions( $word );
 
@@ -299,7 +293,7 @@ class Hyphenator {
 	 *
 	 * @return int[] The hyphenation pattern.
 	 */
-	protected function lookup_word_pattern( $key, callable $strlen, callable $str_split ) {
+	protected function lookup_word_pattern( string $key, callable $strlen, callable $str_split ): array {
 		if ( null === $this->pattern_trie ) {
 			return []; // abort early.
 		}
@@ -380,13 +374,13 @@ class Hyphenator {
 	/**
 	 * Generates a hyphenation pattern from an exception.
 	 *
-	 * @param string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
+	 * @param  string $exception A hyphenation exception in the form "foo-bar". Needs to be encoded in ASCII or UTF-8.
 	 *
 	 * @return int[]|null Returns the hyphenation pattern or null if `$exception` is using an invalid encoding.
 	 *
 	 * @throws Invalid_Encoding_Exception Throws an exception if an unsupported encoding is used.
 	 */
-	protected static function convert_hyphenation_exception_to_pattern( $exception ) {
+	protected static function convert_hyphenation_exception_to_pattern( $exception ): ?array {
 		$f = Strings::functions( $exception );
 
 		// Set the word_pattern - this method keeps any contextually important capitalization.
@@ -414,7 +408,7 @@ class Hyphenator {
 	 *
 	 * @return bool true if $number is odd, false if it is even.
 	 */
-	protected static function is_odd( $number ) {
+	protected static function is_odd( int $number ): bool {
 		return (bool) ( $number % 2 );
 	}
 }

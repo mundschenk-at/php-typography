@@ -26,8 +26,6 @@
 
 namespace PHP_Typography\Hyphenator;
 
-use PHP_Typography\Strings;
-
 /**
  * A hyphenation pattern trie node.
  *
@@ -45,7 +43,7 @@ final class Trie_Node {
 	 *
 	 * @var array<int,int[]>
 	 */
-	private $offsets = [];
+	private array $offsets = [];
 
 	/**
 	 * Linked trie nodes.
@@ -54,7 +52,7 @@ final class Trie_Node {
 	 *      @type Trie_Node $char The next node in the given character path.
 	 * }
 	 */
-	private $links = [];
+	private array $links = [];
 
 	/**
 	 * Create new Trie_Node.
@@ -69,7 +67,7 @@ final class Trie_Node {
 	 *
 	 * @return Trie_Node
 	 */
-	public function get_node( $char ) {
+	public function get_node( string $char ): Trie_Node {
 		if ( ! isset( $this->links[ $char ] ) ) {
 			$this->links[ $char ] = new Trie_Node();
 		}
@@ -84,7 +82,7 @@ final class Trie_Node {
 	 *
 	 * @return bool
 	 */
-	public function exists( $char ) {
+	public function exists( string $char ): bool {
 		return ! empty( $this->links[ $char ] );
 	}
 
@@ -93,7 +91,7 @@ final class Trie_Node {
 	 *
 	 * @return array<int,int[]>
 	 */
-	public function offsets() {
+	public function offsets(): array {
 		return $this->offsets;
 	}
 
@@ -104,7 +102,7 @@ final class Trie_Node {
 	 *
 	 * @return Trie_Node The starting node of the trie.
 	 */
-	public static function build_trie( array $patterns ) {
+	public static function build_trie( array $patterns ): Trie_Node {
 		$trie = new Trie_Node();
 
 		foreach ( $patterns as $key => $pattern ) {

@@ -42,21 +42,21 @@ class Cache {
 	 *
 	 * @var array<string,Hyphenator>
 	 */
-	protected $cache = [];
+	protected array $cache = [];
 
 	/**
 	 * A flag that indicated that the cache has changed since creation/deserialization.
 	 *
 	 * @var bool
 	 */
-	protected $changed = false;
+	protected bool $changed = false;
 
 	/**
 	 * Ignore the "changed" flag during serialization.
 	 *
 	 * @return string[]
 	 */
-	public function __sleep() {
+	public function __sleep(): array {
 		return [
 			'cache',
 		];
@@ -68,7 +68,7 @@ class Cache {
 	 * @param string     $lang       A language code.
 	 * @param Hyphenator $hyphenator The object to cache.
 	 */
-	public function set_hyphenator( $lang, Hyphenator $hyphenator ): void {
+	public function set_hyphenator( string $lang, Hyphenator $hyphenator ): void {
 		$this->cache[ $lang ] = $hyphenator;
 		$this->changed        = true;
 	}
@@ -78,9 +78,9 @@ class Cache {
 	 *
 	 * @param string $lang A language code.
 	 *
-	 * @return Hyphenator|null
+	 * @return ?Hyphenator
 	 */
-	public function get_hyphenator( $lang ) {
+	public function get_hyphenator( string $lang ): ?Hyphenator {
 		if ( isset( $this->cache[ $lang ] ) ) {
 			return $this->cache[ $lang ];
 		}
@@ -94,7 +94,7 @@ class Cache {
 	 *
 	 * @return bool
 	 */
-	public function has_changed() {
+	public function has_changed(): bool {
 		return $this->changed;
 	}
 }
