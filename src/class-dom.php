@@ -236,22 +236,26 @@ abstract class DOM {
 	/**
 	 * Retrieves the last character of the previous DOMText sibling (if there is one).
 	 *
+	 * @since 7.0.0 Renamed to `get_previous_character`.
+	 *
 	 * @param DOMNode $node The content node.
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	public static function get_prev_chr( DOMNode $node ): string {
+	public static function get_previous_character( DOMNode $node ): string {
 		return self::get_adjacent_character( $node, -1, 1, [ __CLASS__, 'get_previous_acceptable_node' ] );
 	}
 
 	/**
 	 * Retrieves the first character of the next DOMText sibling (if there is one).
 	 *
+	 * @since 7.0.0 Renamed to `get_next_character`.
+	 *
 	 * @param DOMNode $node The content node.
 	 *
 	 * @return string A single character (or the empty string).
 	 */
-	public static function get_next_chr( DOMNode $node ): string {
+	public static function get_next_character( DOMNode $node ): string {
 		return self::get_adjacent_character( $node, 0, 1, [ __CLASS__, 'get_next_acceptable_node' ] );
 	}
 

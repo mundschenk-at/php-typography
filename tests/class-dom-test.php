@@ -271,9 +271,9 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_prev_chr.
+	 * Test get_previous_character.
 	 *
-	 * @covers ::get_prev_chr
+	 * @covers ::get_previous_character
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
@@ -283,24 +283,24 @@ class DOM_Test extends Testcase {
 	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
-	public function test_get_prev_chr() {
+	public function test_get_previous_character() {
 		$html  = '<p><span>A</span><span id="foo">new hope.</span></p><p><span id="bar">The empire</span> strikes back.</p<';
 		$doc   = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_previous_character( $textnodes->item( 0 ) );
 		$this->assertSame( 'A', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_previous_character( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
 	}
 
 	/**
-	 * Test get_prev_chr when the textnode is preceeded by <br>.
+	 * Test get_previous_character when the textnode is preceeded by <br>.
 	 *
-	 * @covers ::get_prev_chr
+	 * @covers ::get_previous_character
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_previous_acceptable_node
 	 * @covers ::get_adjacent_node
@@ -310,17 +310,17 @@ class DOM_Test extends Testcase {
 	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
-	public function test_get_prev_chr_with_br() {
+	public function test_get_previous_character_with_br() {
 		$html  = '<p><span>A</span><br><span id="foo">new hope.</span></p><p><br><span id="bar">The empire</span> strikes back.</p<';
 		$doc   = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_previous_character( $textnodes->item( 0 ) );
 		$this->assertSame( ' ', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-		$prev_char = DOM::get_prev_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_previous_character( $textnodes->item( 0 ) );
 		$this->assertSame( ' ', $prev_char );
 	}
 
@@ -344,9 +344,9 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_next_chr.
+	 * Test get_next_character.
 	 *
-	 * @covers ::get_next_chr
+	 * @covers ::get_next_character
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
@@ -356,24 +356,24 @@ class DOM_Test extends Testcase {
 	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
-	public function test_get_next_chr() {
+	public function test_get_next_character() {
 		$html  = '<p><span id="foo">A</span><span id="bar">new hope.</span></p><p><span>The empire</span> strikes back.</p<';
 		$doc   = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( 'n', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
 	}
 
 	/**
-	 * Test get_next_chr followed by <br>.
+	 * Test get_next_character followed by <br>.
 	 *
-	 * @covers ::get_next_chr
+	 * @covers ::get_next_character
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
@@ -383,24 +383,24 @@ class DOM_Test extends Testcase {
 	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
-	public function test_get_next_chr_with_br() {
+	public function test_get_next_character_with_br() {
 		$html  = '<p><span id="foo">A</span><span id="bar"><br>new hope.</span><br></p><p><span>The empire</span> strikes back.</p<';
 		$doc   = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( ' ', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( ' ', $prev_char );
 	}
 
 	/**
-	 * Test get_next_chr followed by <br>.
+	 * Test get_next_character followed by <br>.
 	 *
-	 * @covers ::get_next_chr
+	 * @covers ::get_next_character
 	 * @covers ::get_adjacent_character
 	 * @covers ::get_next_acceptable_node
 	 * @covers ::get_adjacent_node
@@ -410,17 +410,17 @@ class DOM_Test extends Testcase {
 	 * @uses ::get_edge_node
 	 * @uses PHP_Typography\Strings::functions
 	 */
-	public function test_get_next_chr_with_sub_sup() {
+	public function test_get_next_character_with_sub_sup() {
 		$html  = '<p><span id="foo">A</span><span id="bar"><sup>new</sup> hope.</span><sub>x</sub></p><p><span>The empire</span> strikes back.</p<';
 		$doc   = $this->load_html( $html );
 		$xpath = new \DOMXPath( $doc );
 
 		$textnodes = $xpath->query( "//*[@id='foo']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
 
 		$textnodes = $xpath->query( "//*[@id='bar']/text()" ); // really only one.
-		$prev_char = DOM::get_next_chr( $textnodes->item( 0 ) );
+		$prev_char = DOM::get_next_character( $textnodes->item( 0 ) );
 		$this->assertSame( '', $prev_char );
 	}
 

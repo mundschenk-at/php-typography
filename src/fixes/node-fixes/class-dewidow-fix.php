@@ -97,7 +97,7 @@ class Dewidow_Fix extends Abstract_Node_Fix {
 			return;
 		}
 
-		if ( '' === DOM::get_next_chr( $textnode ) ) {
+		if ( '' === DOM::get_next_character( $textnode ) ) {
 			// We have the last type "text" child of a block level element.
 			$textnode->data = $this->dewidow( $textnode->data, Strings::functions( $textnode->data ), $settings[ Settings::DEWIDOW_MAX_PULL ], $settings[ Settings::DEWIDOW_MAX_LENGTH ], $settings[ Settings::DEWIDOW_WORD_NUMBER ] );
 		}

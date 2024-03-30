@@ -129,7 +129,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
-		$next_character = DOM::get_next_chr( $textnode );
+		$next_character = DOM::get_next_character( $textnode );
 		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
 
 		// Check encoding.
