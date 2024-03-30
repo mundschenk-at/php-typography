@@ -243,7 +243,7 @@ abstract class DOM {
 	 * @return string A single character (or the empty string).
 	 */
 	public static function get_previous_character( DOMNode $node ): string {
-		return self::get_adjacent_character( $node, -1, 1, [ __CLASS__, 'get_previous_acceptable_node' ] );
+		return self::get_adjacent_character( $node, -1, [ __CLASS__, 'get_previous_acceptable_node' ] );
 	}
 
 	/**
@@ -256,23 +256,23 @@ abstract class DOM {
 	 * @return string A single character (or the empty string).
 	 */
 	public static function get_next_character( DOMNode $node ): string {
-		return self::get_adjacent_character( $node, 0, 1, [ __CLASS__, 'get_next_acceptable_node' ] );
+		return self::get_adjacent_character( $node, 0, [ __CLASS__, 'get_next_acceptable_node' ] );
 	}
 
 	/**
 	 * Retrieves a character from the given DOMNode.
 	 *
 	 * @since 5.0.0
-	 * @since 7.0.0 Renamed to `get_adjacent_character`. Parameter `$get_textnode` renamed to `$get_node`
+	 * @since 7.0.0 Renamed to `get_adjacent_character`. Parameter `$get_textnode` renamed to `$get_node` and
+	 *              obsolete parameter `$length` removed.
 	 *
 	 * @param  DOMNode  $node     The starting node.
 	 * @param  int      $position The position parameter for `substr`.
-	 * @param  int      $length   The length parameter for `substr`.
 	 * @param  callable $get_node A function to retrieve the adjacent node from the starting node.
 	 *
 	 * @return string The character or an empty string.
 	 */
-	private static function get_adjacent_character( DOMNode $node, int $position, int $length, callable $get_node ): string {
+	private static function get_adjacent_character( DOMNode $node, int $position, callable $get_node ): string {
 		$character     = '';
 		$adjacent_node = $get_node(
 			// Determines if the node is a textnode or one of the acceptable elements.
@@ -295,7 +295,7 @@ abstract class DOM {
 				}
 			} elseif ( $adjacent_node instanceof DOMText ) {
 				$node_data = $adjacent_node->data;
-				$character = \preg_replace( '/\p{C}/Su', '', Strings::functions( $node_data )['substr']( $node_data, $position, $length ) );
+				$character = \preg_replace( '/\p{C}/Su', '', Strings::functions( $node_data )['substr']( $node_data, $position, 1 ) );
 			}
 		}
 
