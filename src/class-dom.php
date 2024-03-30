@@ -57,7 +57,23 @@ abstract class DOM {
 	 */
 	private static array $inappropriate_tags;
 
-	const ADDITIONAL_INAPPROPRIATE_TAGS = [
+	/**
+	 * Block tags not included as such in the current HTML5-PHP version.
+	 *
+	 * @since 7.0.0
+	 */
+	private const ADDITIONAL_BLOCK_TAGS = [
+		'li',
+		'td',
+		'dt',
+	];
+
+	/**
+	 * Tags that should never be modified.
+	 *
+	 * @since 5.2.0
+	 */
+	private const ADDITIONAL_INAPPROPRIATE_TAGS = [
 		'button',
 		'select',
 		'optgroup',
@@ -94,16 +110,16 @@ abstract class DOM {
 	 */
 	public static function block_tags( bool $reset = false ): array {
 		if ( empty( self::$block_tags ) || $reset ) {
-			self::$block_tags = \array_merge(
-				\array_flip(
+			self::$block_tags = \array_flip(
+				\array_merge(
 					\array_filter(
 						\array_keys( Elements::$html5 ),
 						function ( $tag ) {
 							return Elements::isA( $tag, Elements::BLOCK_TAG );
 						}
-					)
-				),
-				\array_flip( [ 'li', 'td', 'dt' ] ) // not included as "block tags" in current HTML5-PHP version.
+					),
+					self::ADDITIONAL_BLOCK_TAGS
+				)
 			);
 		}
 
