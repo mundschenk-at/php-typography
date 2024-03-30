@@ -99,7 +99,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 
 		$is_heading = false;
 		if ( ! empty( $textnode->parentNode ) ) {
-			$block_level_parent = DOM::get_block_parent_name( $textnode );
+			$block_level_parent = DOM::get_block_parent( $textnode )->tagName ?? '';
 
 			if ( ! empty( $block_level_parent ) && isset( $this->heading_tags[ $block_level_parent ] ) ) {
 				$is_heading = true;
