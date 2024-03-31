@@ -93,15 +93,11 @@ class Hyphenator {
 	/**
 	 * Constructs new Hyphenator instance.
 	 *
-	 * @param ?string  $language   Optional. Short-form language name. Default null.
+	 * @param string   $language   Optional. Short-form language name. Default null.
 	 * @param string[] $exceptions Optional. Custom hyphenation exceptions. Default empty array.
 	 */
-	public function __construct( ?string $language = null, array $exceptions = [] ) {
-
-		if ( ! empty( $language ) ) {
-			$this->set_language( $language );
-		}
-
+	public function __construct( string $language, array $exceptions ) {
+		$this->set_language( $language );
 		$this->set_custom_exceptions( $exceptions );
 	}
 
@@ -159,11 +155,13 @@ class Hyphenator {
 	/**
 	 * Sets the hyphenation pattern language.
 	 *
-	 * @param string $lang Optional. Has to correspond to a filename in 'lang'. Default 'en-US'.
+	 * @since  7.0.0 Parameter `$lang` is no longer optional.
+	 *
+	 * @param  string $lang Has to correspond to a filename in 'lang'.
 	 *
 	 * @return bool Whether loading the pattern file was successful.
 	 */
-	public function set_language( string $lang = 'en-US' ): bool {
+	public function set_language( string $lang ): bool {
 		if ( isset( $this->language ) && $this->language === $lang ) {
 			return true; // Bail out, no need to do anything.
 		}
@@ -203,16 +201,22 @@ class Hyphenator {
 	/**
 	 * Hyphenates parsed text tokens.
 	 *
+	 * @since 7.0.0 All Parameters are now mandatory.
+	 *
 	 * @param Token[] $parsed_text_tokens   An array of text tokens.
-	 * @param string  $hyphen               Optional. The hyphen character. Default '-'.
-	 * @param bool    $hyphenate_title_case Optional. Whether words in Title Case should be hyphenated. Default false.
-	 * @param int     $min_length           Optional. Minimum word length for hyphenation. Default 2.
-	 * @param int     $min_before           Optional. Minimum number of characters before a hyphenation point. Default 2.
-	 * @param int     $min_after            Optional. Minimum number of characters after a hyphenation point. Default 2.
+	 * @param string  $hyphen               The hyphen character to use.
+	 * @param bool    $hyphenate_title_case Whether words in Title Case should be hyphenated.
+	 * @param int     $min_length           Minimum word length for hyphenation.
+	 * @param int     $min_before           Minimum number of characters before a hyphenation point.
+	 * @param int     $min_after            Minimum number of characters after a hyphenation point.
 	 *
 	 * @return Token[] The modified text tokens.
+	 *
+	 * @phpstan-param int<2,max> $min_length
+	 * @phpstan-param positive-int $min_before
+	 * @phpstan-param positive-int $min_after
 	 */
-	public function hyphenate( array $parsed_text_tokens, string $hyphen = '-', bool $hyphenate_title_case = false, int $min_length = 2, int $min_before = 2, int $min_after = 2 ): array {
+	public function hyphenate( array $parsed_text_tokens, string $hyphen, bool $hyphenate_title_case, int $min_length, int $min_before, int $min_after ): array {
 		if ( empty( $min_length ) || empty( $min_before ) || ! isset( $this->pattern_trie ) ) {
 			return $parsed_text_tokens;
 		}
