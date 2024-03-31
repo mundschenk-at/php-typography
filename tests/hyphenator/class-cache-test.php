@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2020 Peter Putzer.
+ *  Copyright 2016-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ namespace PHP_Typography\Tests\Hyphenator;
 
 use PHP_Typography\Tests\Testcase;
 
+use PHP_Typography\Hyphenator\Cache;
+
 /**
  * Test Hyphenator\Cache class.
  *
@@ -38,7 +40,7 @@ class Cache_Test extends Testcase {
 	/**
 	 * Hyphenator\Cache fixture.
 	 *
-	 * @var \PHP_Typography\Hyphenator\Cache|null
+	 * @var Cache|null
 	 */
 	protected $c;
 
@@ -49,7 +51,7 @@ class Cache_Test extends Testcase {
 	protected function set_up() {
 		parent::set_up();
 
-		$this->c = new \PHP_Typography\Hyphenator\Cache();
+		$this->c = new Cache();
 	}
 
 	/**
@@ -67,7 +69,7 @@ class Cache_Test extends Testcase {
 		$this->assertTrue( $this->c->has_changed() );
 
 		$new_c = unserialize( serialize( $this->c ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize,WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-		$this->assertInstanceOf( \PHP_Typography\Hyphenator\Cache::class, $new_c );
+		$this->assertInstanceOf( Cache::class, $new_c );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $new_c->get_hyphenator( 'de' ) );
 		$this->assertFalse( $new_c->has_changed() );
 	}
@@ -77,9 +79,11 @@ class Cache_Test extends Testcase {
 	 *
 	 * @covers ::set_hyphenator
 	 * @covers ::get_hyphenator
+	 *
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 */
 	public function test_hyphenator_cache() {
-		$hyphenator = new \PHP_Typography\Hyphenator();
+		$hyphenator = new \PHP_Typography\Hyphenator( 'en-US', [] );
 
 		$this->assertSame( null, $this->c->get_hyphenator( 'de' ) );
 		$this->c->set_hyphenator( 'de', $hyphenator );

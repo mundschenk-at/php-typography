@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
+use PHP_Typography\Hyphenator;
 use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 
 /**
@@ -32,13 +33,18 @@ use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
  * @coversDefaultClass \PHP_Typography\Hyphenator
  * @usesDefaultClass \PHP_Typography\Hyphenator
  *
- * @uses PHP_Typography\Hyphenator
+ * @uses ::__construct
+ * @uses ::get_object_hash
+ * @uses ::is_odd
+ * @uses ::set_custom_exceptions
+ * @uses ::set_language
+ * @uses PHP_Typography\Hyphenator\Trie_Node
  */
 class Hyphenator_Test extends Testcase {
 	/**
 	 * Hyphenator fixture.
 	 *
-	 * @var \PHP_Typography\Hyphenator
+	 * @var Hyphenator
 	 */
 	protected $h;
 
@@ -49,7 +55,7 @@ class Hyphenator_Test extends Testcase {
 	protected function set_up() {
 		parent::set_up();
 
-		$this->h = new \PHP_Typography\Hyphenator();
+		$this->h = new Hyphenator( 'en-US', [] );
 	}
 
 	/**
@@ -57,20 +63,14 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @covers ::__construct
 	 *
+	 * @uses ::get_object_hash
+	 * @uses ::set_custom_exceptions
 	 * @uses PHP_Typography\Strings::functions
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 */
 	public function test_constructor() {
-		$h = $this->h;
-
-		$this->assertNotNull( $h );
-		$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h );
-
-		$h2 = new \PHP_Typography\Hyphenator( 'en-US', [ 'foo-bar' ] );
+		$h2 = new Hyphenator( 'en-US', [ 'foo-bar' ] );
 		$this->assertNotNull( $h2 );
-		$this->assertInstanceOf( '\PHP_Typography\Hyphenator', $h2 );
+		$this->assertInstanceOf( Hyphenator::class, $h2 );
 		$this->assert_attribute_same( 'en-US', 'language', $h2 );
 		$this->assert_attribute_count( 1, 'custom_exceptions', $h2 );
 	}
@@ -79,10 +79,6 @@ class Hyphenator_Test extends Testcase {
 	 * Tests set_language.
 	 *
 	 * @covers ::set_language
-	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 */
 	public function test_set_language() {
 		$h = $this->h;
@@ -108,11 +104,8 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @covers ::set_language
 	 *
-	 * @uses ::set_custom_exceptions
 	 * @uses ::merge_hyphenation_exceptions
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
+	 * @uses ::convert_hyphenation_exception_to_pattern
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_set_language_with_custom_exceptions() {
@@ -123,6 +116,7 @@ class Hyphenator_Test extends Testcase {
 				'KINGdesk' => 'KING-desk',
 			]
 		);
+
 		$h->set_language( 'en-US' );
 		$this->invoke_method( $h, 'merge_hyphenation_exceptions', [] );
 		$this->assert_attribute_not_empty( 'pattern_trie', $h, 'Empty pattern array' );
@@ -137,10 +131,6 @@ class Hyphenator_Test extends Testcase {
 	 * Tests set_language.
 	 *
 	 * @covers ::set_language
-	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
 	 */
 	public function test_set_same_hyphenation_language() {
 		$h = $this->h;
@@ -210,9 +200,7 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::set_custom_exceptions
 	 *
 	 * @uses ::merge_hyphenation_exceptions
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::__construct
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::build_trie
-	 * @uses PHP_Typography\Hyphenator\Trie_Node::get_node
+	 * @uses ::convert_hyphenation_exception_to_pattern
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_set_custom_exceptions_again() {
@@ -275,7 +263,8 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::convert_hyphenation_exception_to_pattern
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 *
@@ -317,7 +306,8 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::convert_hyphenation_exception_to_pattern
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 *
@@ -344,7 +334,7 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -368,7 +358,7 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -387,7 +377,6 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -404,7 +393,6 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -424,7 +412,8 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::convert_hyphenation_exception_to_pattern
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -445,7 +434,7 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::hyphenate_word
 	 * @covers ::lookup_word_pattern
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::merge_hyphenation_exceptions
 	 * @uses PHP_Typography\Text_Parser\Token
 	 * @uses PHP_Typography\Strings::functions
 	 */
@@ -453,7 +442,7 @@ class Hyphenator_Test extends Testcase {
 		$this->h->set_language( 'en-US' );
 
 		// Unset some internal stuff.
-		$ref  = new \ReflectionClass( '\PHP_Typography\Hyphenator' );
+		$ref  = new \ReflectionClass( Hyphenator::class );
 		$prop = $ref->getProperty( 'pattern_exceptions' );
 		$prop->setAccessible( true );
 		$prop->setValue( $this->h, [] );
@@ -499,7 +488,7 @@ class Hyphenator_Test extends Testcase {
 	 *
 	 * @covers ::merge_hyphenation_exceptions
 	 *
-	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses ::convert_hyphenation_exception_to_pattern
 	 * @uses PHP_Typography\Strings::functions
 	 */
 	public function test_merge_hyphenation_exceptions() {
@@ -561,9 +550,9 @@ class Hyphenator_Test extends Testcase {
 	 */
 	public function test_is_odd( $number, $result ) {
 		if ( $result ) {
-			$this->assertTrue( $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'is_odd', [ $number ] ) );
+			$this->assertTrue( $this->invoke_static_method( Hyphenator::class, 'is_odd', [ $number ] ) );
 		} else {
-			$this->assertFalse( $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'is_odd', [ $number ] ) );
+			$this->assertFalse( $this->invoke_static_method( Hyphenator::class, 'is_odd', [ $number ] ) );
 		}
 	}
 
@@ -573,11 +562,11 @@ class Hyphenator_Test extends Testcase {
 	 * @covers ::get_object_hash
 	 */
 	public function test_get_object_hash() {
-		$hash1 = $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ 666 ] );
+		$hash1 = $this->invoke_static_method( Hyphenator::class, 'get_object_hash', [ 666 ] );
 		$this->assert_is_string( $hash1 );
 		$this->assertGreaterThan( 0, strlen( $hash1 ) );
 
-		$hash2 = $this->invoke_static_method( \PHP_Typography\Hyphenator::class, 'get_object_hash', [ new \stdClass() ] );
+		$hash2 = $this->invoke_static_method( Hyphenator::class, 'get_object_hash', [ new \stdClass() ] );
 		$this->assert_is_string( $hash2 );
 		$this->assertGreaterThan( 0, strlen( $hash2 ) );
 
