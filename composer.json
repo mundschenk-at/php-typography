@@ -34,6 +34,7 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpstan/phpstan": "^1.9",
         "phpbench/phpbench": "^0.17||^1.0@dev",
+        "mikey179/vfsstream": "~1",
         "mundschenk-at/phpunit-cross-version": "dev-master",
         "phpstan/phpstan-mockery": "^1.1",
         "phpstan/extension-installer": "^1.2"

@@ -169,6 +169,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 	 * @covers ::get_hyphenator()
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
+	 * @uses PHP_Typography\Hyphenator::read_patterns_from_file
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
 	 * @uses PHP_Typography\Hyphenator::set_language
 	 * @uses PHP_Typography\Hyphenator::get_object_hash
