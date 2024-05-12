@@ -28,6 +28,10 @@
 namespace PHP_Typography;
 
 use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
+use PHP_Typography\Exceptions\Invalid_File_Exception;
+use PHP_Typography\Exceptions\Invalid_Hyphenation_Pattern_File_Exception;
+use PHP_Typography\Exceptions\Invalid_JSON_Exception;
+
 use PHP_Typography\Hyphenator\Trie_Node;
 use PHP_Typography\Text_Parser\Token;
 
@@ -42,6 +46,8 @@ use PHP_Typography\Text_Parser\Token;
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 3.4.0
+ *
+ * @phpstan-type Pattern_File array{ patterns: array<string,string>, exceptions: array<string,string> }
  */
 class Hyphenator {
 
@@ -159,44 +165,72 @@ class Hyphenator {
 	 *
 	 * @param  string $lang Has to correspond to a filename in 'lang'.
 	 *
-	 * @return bool Whether loading the pattern file was successful.
+	 * @return void
+	 *
+	 * @throws \RuntimeException Throws an exception when the language file cannot be read correctly.
 	 */
-	public function set_language( string $lang ): bool {
+	public function set_language( string $lang ): void {
 		if ( isset( $this->language ) && $this->language === $lang ) {
-			return true; // Bail out, no need to do anything.
+			return; // Bail out, no need to do anything.
 		}
 
-		$success            = false;
-		$language_file_name = __DIR__ . '/lang/' . $lang . '.json';
+		try {
+			$pattern_file = $this->read_patterns_from_file( __DIR__ . '/lang/' . $lang . '.json' );
 
-		if ( \file_exists( $language_file_name ) ) {
-			$raw_language_file = \file_get_contents( $language_file_name );
-
-			if ( false !== $raw_language_file ) {
-				$language_file = \json_decode( $raw_language_file, true );
-
-				if ( false !== $language_file ) {
-					$this->language           = $lang;
-					$this->pattern_trie       = Trie_Node::build_trie( $language_file['patterns'] );
-					$this->pattern_exceptions = $language_file['exceptions'] ?? [];
-
-					$success = true;
-				}
-			}
-		}
-
-		// Clean up.
-		if ( ! $success ) {
-			$this->language           = null;
+			$this->pattern_trie       = Trie_Node::build_trie( $pattern_file['patterns'] );
+			$this->pattern_exceptions = $pattern_file['exceptions'];
+			$this->language           = $lang;
+		} catch ( \RuntimeException $e ) {
+			// Clean up object state.
 			$this->pattern_trie       = null;
 			$this->pattern_exceptions = [];
+			$this->language           = null;
+
+			throw $e;
+		} finally {
+			// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
+			$this->merged_exception_patterns = null;
 		}
-
-		// Make sure hyphenationExceptions is not set to force remerging of patgen and custom exceptions.
-		$this->merged_exception_patterns = null;
-
-		return $success;
 	}
+
+	/**
+	 * Reads the hyphenation patterns and exceptions from a given pattern file and builds the
+	 * corresponding trie and exceptions array.
+	 *
+	 * @since  7.0.0
+	 *
+	 * @param  string $file The full path to the pattern file.
+	 *
+	 * @return Pattern_File
+	 *
+	 * @throws Invalid_File_Exception Throws an exception if the pattern file cannot be read.
+	 * @throws Invalid_JSON_Exception Throws an exception if the pattern file cannot decoded.
+	 * @throws Invalid_Hyphenation_Pattern_File_Exception Throws an exception if the pattern file is structurally invalid.
+	 */
+	protected function read_patterns_from_file( string $file ): array {
+		$pattern_file = @\file_get_contents( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- return value is checked.
+
+		if ( false !== $pattern_file ) {
+			$pattern_file = \json_decode( $pattern_file, true );
+
+			if ( null !== $pattern_file ) {
+				if ( ! isset( $pattern_file['patterns'] ) || ! \is_array( $pattern_file['patterns'] ) ) {
+					throw new Invalid_Hyphenation_Pattern_File_Exception( "Invalid pattern file {$file}" );
+				}
+
+				if ( ! isset( $pattern_file['exceptions'] ) || ! \is_array( $pattern_file['exceptions'] ) ) {
+					$pattern_file['exceptions'] = [];
+				}
+
+				return $pattern_file;
+			} else {
+				throw new Invalid_JSON_Exception( "Error decoding JSON from language file {$file}" );
+			}
+		} else {
+			throw new Invalid_File_Exception( "Could not open language file {$file}" );
+		}
+	}
+
 
 	/**
 	 * Hyphenates parsed text tokens.
