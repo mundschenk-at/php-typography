@@ -83,7 +83,7 @@
 *   _Bugfix_: Smart diacritics won't try to "correct" the spelling of `Uber` anymore.
 
 ## 6.2.1 - August 27, 2018
-*   _Bugfix_: French punctuation is now correctly applied to quotes preceeded or
+*   _Bugfix_: French punctuation is now correctly applied to quotes preceded or
     followed by round and square brackets.
 
 ## 6.2.0 - August 26, 2018
@@ -93,7 +93,7 @@
     -   Bulgarian
     -   German
     -   German (Traditional)
-    -   German (Swiss Tradtional)
+    -   German (Swiss Traditional)
     -   Latin (Liturgical)
     -   Thai
 *   _Bugfix_: Smart quotes replacement could result in invalid unicode sequences in rare cases.

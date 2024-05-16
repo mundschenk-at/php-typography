@@ -35,13 +35,13 @@ namespace PHP_Typography\Text_Parser;
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
- * @property-read string $value The token value.
- * @property-read int    $type  The token type. Can be any of the following constants:
+ * @property-read string $value   The token value.
+ * @property-read int    $type    The token type. Can be any of the following constants:
  * - Token::SPACE
  * - Token::PUNCTUATION
  * - Token::WORD
  * - Token::OTHER
- * @property-read bool   $mutable Wether the properties of the object can be modified.
+ * @property-read bool   $mutable Whether the properties of the object can be modified.
  */
 final class Token {
 	const SPACE       = 1;

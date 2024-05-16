@@ -44,8 +44,8 @@ use PHP_Typography\U;
 class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 
 	// Possible suffixes.
-	const ENGLISH_SUFFIXES = 'st|nd|rd|th';
-	const FRENCH_SUFFIXES  = 'er|re|e|ère|d|nd|nde|de|me|ème|è';
+	const ENGLISH_SUFFIXES = 'st|nd|rd|th'; // @spellchecker:disable-line
+	const FRENCH_SUFFIXES  = 'er|re|e|ère|d|nd|nde|de|me|ème|è'; // @spellchecker:disable-line
 	const LATIN_SUFFIXES   = 'o';
 
 	// Ordinals with arabic numerals.
@@ -123,7 +123,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 		// Always match Arabic numbers.
 		$patterns = [ self::RE_ARABIC_ORDINALS ];
 
-		// Only match Roman numbers if explicitely enabled.
+		// Only match Roman numbers if explicitly enabled.
 		if ( ! empty( $settings[ Settings::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] ) ) {
 			$patterns[] = self::RE_ROMAN_ORDINALS;
 		}

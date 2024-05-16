@@ -46,8 +46,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::__construct
 	 * @covers ::tokenize
 	 * @covers ::parse_ambiguous_token
-	 * @covers ::is_preceeded_by
-	 * @covers ::is_not_preceeded_by
+	 * @covers ::is_preceded_by
+	 * @covers ::is_not_preceded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -80,8 +80,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::__construct
 	 * @covers ::tokenize
 	 * @covers ::parse_ambiguous_token
-	 * @covers ::is_preceeded_by
-	 * @covers ::is_not_preceeded_by
+	 * @covers ::is_preceded_by
+	 * @covers ::is_not_preceded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -105,8 +105,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::__construct
 	 * @covers ::tokenize
 	 * @covers ::parse_ambiguous_token
-	 * @covers ::is_preceeded_by
-	 * @covers ::is_not_preceeded_by
+	 * @covers ::is_preceded_by
+	 * @covers ::is_not_preceded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -134,8 +134,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::__construct
 	 * @covers ::tokenize
 	 * @covers ::parse_ambiguous_token
-	 * @covers ::is_preceeded_by
-	 * @covers ::is_not_preceeded_by
+	 * @covers ::is_preceded_by
+	 * @covers ::is_not_preceded_by
 	 *
 	 * @uses ::get_all
 	 */
@@ -170,8 +170,8 @@ class Text_Parser_Test extends Testcase {
 	 *
 	 * @covers ::get_text
 	 *
-	 * @uses ::is_not_preceeded_by
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_not_preceded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::__construct
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
@@ -191,8 +191,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::update
 	 *
 	 * @uses ::get_all
-	 * @uses ::is_not_preceeded_by
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_not_preceded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::__construct
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
@@ -220,8 +220,8 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::get_all
 	 *
 	 * @uses ::__construct
-	 * @uses ::is_not_preceeded_by
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_not_preceded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
 	 */
@@ -280,7 +280,7 @@ class Text_Parser_Test extends Testcase {
 	 * @uses ::conforms_to_letters_policy
 	 * @uses ::check_policy
 	 * @uses ::get_type
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
 	 *
@@ -366,7 +366,7 @@ class Text_Parser_Test extends Testcase {
 	 * @dataProvider provide_conforms_to_letters_policy_data
 	 *
 	 * @uses ::__construct
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
 	 *
@@ -414,7 +414,7 @@ class Text_Parser_Test extends Testcase {
 	 * @dataProvider provide_conforms_to_caps_policy_data
 	 *
 	 * @uses ::__construct
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
 	 *
@@ -462,7 +462,7 @@ class Text_Parser_Test extends Testcase {
 	 * @dataProvider provide_conforms_to_compounds_policy
 	 *
 	 * @uses ::__construct
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize
 	 *
@@ -502,7 +502,7 @@ class Text_Parser_Test extends Testcase {
 	 * @covers ::get_type
 	 *
 	 * @uses ::get_all
-	 * @uses ::is_preceeded_by
+	 * @uses ::is_preceded_by
 	 * @uses ::__construct
 	 * @uses ::parse_ambiguous_token
 	 * @uses ::tokenize

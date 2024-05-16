@@ -298,7 +298,7 @@ class DOM_Test extends Testcase {
 	}
 
 	/**
-	 * Test get_previous_character when the textnode is preceeded by <br>.
+	 * Test get_previous_character when the textnode is preceded by <br>.
 	 *
 	 * @covers ::get_previous_character
 	 * @covers ::get_adjacent_character

@@ -130,7 +130,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			$this->cached_secondary_quotes = $single;
 		}
 
-		// Handle excpetions first.
+		// Handle exceptions first.
 		if ( ! empty( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ] ) ) {
 			$node_data = \str_replace( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['patterns'], $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['replacements'], $node_data );
 		}
@@ -199,7 +199,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 			$node_data
 		);
 
-		// Quote catch-alls - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
+		// Quote catch-all - assume left over quotes are closing - as this is often the most complicated position, thus most likely to be missed.
 		$node_data = \str_replace( [ "'", '"' ], [ $single_close, $double_close ], $node_data );
 
 		// Add a thin non-breaking space between secondary and primary quotes.

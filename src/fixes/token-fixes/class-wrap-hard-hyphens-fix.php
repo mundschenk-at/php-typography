@@ -32,7 +32,7 @@ use PHP_Typography\Text_Parser\Token;
 use PHP_Typography\U;
 
 /**
- * Wraps hard hypens with zero-width spaces (if enabled).
+ * Wraps hard hyphens with zero-width spaces (if enabled).
  *
  * @author Peter Putzer <github@mundschenk.at>
  *

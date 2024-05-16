@@ -155,7 +155,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		}
 
 		// This is a hack, but it works.
-		// First, we hyphenate each part, we need it formated like a group of words.
+		// First, we hyphenate each part, we need it formatted like a group of words.
 		$parsed_words_like = [];
 		foreach ( $domain_parts as $key => $part ) {
 			$parsed_words_like[ $key ] = new Text_Parser\Token( $part, Text_Parser\Token::OTHER );

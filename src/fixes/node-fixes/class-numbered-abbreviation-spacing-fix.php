@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ use PHP_Typography\RE;
 class Numbered_Abbreviation_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	private const ISO           = 'ISO(?:\/(?:IEC|TR|TS))?';
 	private const ABBREVIATIONS = '
-		### Internationl standards
+		### International standards
 		' . self::ISO . '|
 
 		### German standards

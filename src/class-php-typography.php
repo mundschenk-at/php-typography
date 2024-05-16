@@ -225,7 +225,7 @@ class PHP_Typography {
 			 */
 			$new = $textnode->data;
 
-			// Replace original node (if anthing was changed).
+			// Replace original node (if anything was changed).
 			if ( $new !== $original ) {
 				$this->replace_node_with_html( $textnode, $settings->apply_character_mapping( $new ) );
 			}
@@ -258,7 +258,7 @@ class PHP_Typography {
 	 *
 	 * @since 6.0.0 Parameter $body_classes added.
 	 *
-	 * @param HTML5    $parser       An intialized parser object.
+	 * @param HTML5    $parser       An initialized parser object.
 	 * @param string   $html         The HTML fragment to parse (not a complete document).
 	 * @param Settings $settings     The settings to apply.
 	 * @param string[] $body_classes Optional. CSS classes added to the virtual <body>
