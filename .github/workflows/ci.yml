@@ -171,3 +171,16 @@ jobs:
 
             - name: Run PHPStan
               run: composer run-script phpstan
+
+    spellchecking:
+        name: Spellchecking
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+
+        steps:
+            - name: Checkout Actions Repository
+              uses: actions/checkout@v4
+
+            - name: typos-action
+              uses: crate-ci/typos@master
