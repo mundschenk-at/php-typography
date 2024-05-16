@@ -1046,7 +1046,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Enables/disables wrapping of punctiation and wide characters in <span class="pull-*">.
+	 * Enables/disables wrapping of punctuation and wide characters in <span class="pull-*">.
 	 *
 	 * @param bool $on Optional. Default true.
 	 */
@@ -1176,7 +1176,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @since 5.2.0 The new parameter $raw_output has been added.
 	 *
 	 * @param int  $max_length Optional. The maximum number of bytes returned (0 for unlimited). Default 16.
-	 * @param bool $raw_output Optional. Wether to return raw binary data for the hash. Default true.
+	 * @param bool $raw_output Optional. Whether to return raw binary data for the hash. Default true.
 	 *
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */

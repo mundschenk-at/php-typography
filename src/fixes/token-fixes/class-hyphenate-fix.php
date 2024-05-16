@@ -110,7 +110,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 			return $tokens; // abort.
 		}
 
-		// Call functionality as seperate function so it can be run without test for setting[ Settings::HYPHENATION ] - such as with url wrapping.
+		// Call functionality as separate function so it can be run without test for setting[ Settings::HYPHENATION ] - such as with url wrapping.
 		return $this->do_hyphenate( $tokens, $settings );
 	}
 

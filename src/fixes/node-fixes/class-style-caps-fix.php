@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ use PHP_Typography\U;
  */
 class Style_Caps_Fix extends Simple_Style_Fix {
 
-	// PCRE needs to be compiled with "--enable-unicode-properties", but we already depend on that elsehwere.
+	// PCRE needs to be compiled with "--enable-unicode-properties", but we already depend on that elsewhere.
 	const REGEX = '/
 		(?<![\w' . self::COMBINING_MARKS . '])  # negative lookbehind assertion
 		(

@@ -78,7 +78,7 @@ class Text_Parser {
 					;
 				)
 				|
-				(?:										# hexidecimal matches
+				(?:										# hexadecimal matches
 					&\#x
 					(?: 000[9ad]|0020|00a0|1361|1680|200[0-9a]|202f|205f|3000 )
 					;
@@ -94,7 +94,7 @@ class Text_Parser {
 	private const SPACE = '(?:\s|' . self::HTML_SPACING . ')+'; // required modifiers: x (multiline pattern) i (case insensitive) $utf8.
 
 	/**
-	 * Find punctuation and symbols before words (to capture preceeding delimiating characters like hyphens or underscores)
+	 * Find punctuation and symbols before words (to capture preceding delimiting characters like hyphens or underscores)
 	 *
 	 * @see http://www.unicode.org/charts/PDF/U2000.pdf
 	 *
@@ -112,7 +112,7 @@ class Text_Parser {
 			(?:
 				(?:										# alpha matches
 					&
-					(?:quot|amp|frasl|lt|gt|iexcl|cent|pound|curren|yen|brvbar|sect|uml|pound|ordf|laquo|not|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|times|divide|circ|tilde|thetasym|upsih|piv|ndash|mdash|lsquo|rsquo|sbquo|ldquo|rdquo|bdquo|dagger|Dagger|bull|hellip|permil|prime|Prime|lsaquo|rsaquo|oline|frasl|euro|trade|alefsym|larr|uarr|rarr|darr|harr|crarr|lArr|uArr|rArr|dArr|hArr|forall|part|exist|emptyn|abla|isin|notin|ni|prod|sum|minus|lowast|radic|prop|infin|ang|and|orc|ap|cup|int|there4|simc|ong|asymp|ne|equiv|le|ge|sub|supn|sub|sube|supe|oplus|otimes|perp|sdot|lceil|rceil|lfloor|rfloor|lang|rang|loz|spades|clubs|hearts|diams)
+					(?:quot|amp|frasl|lt|gt|iexcl|cent|pound|curren|yen|brvbar|sect|uml|pound|ordf|laquo|not|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|times|divide|circ|tilde|thetasym|upsih|piv|ndash|mdash|lsquo|rsquo|sbquo|ldquo|rdquo|bdquo|dagger|Dagger|bull|hellip|permil|prime|Prime|lsaquo|rsaquo|oline|frasl|euro|trade|alefsym|larr|uarr|rarr|darr|harr|crarr|lArr|uArr|rArr|dArr|hArr|forall|part|exist|emptyn|abla|isin|notin|ni|prod|sum|minus|lowast|radic|prop|infin|ang|and|orc|ap|cup|int|there4|simc|ong|asymp|ne|equiv|le|ge|sub|supn|sub|sube|supe|oplus|otimes|perp|sdot|lceil|rceil|lfloor|rfloor|lang|rang|loz|spades|clubs|hearts|diams) # spellchecker:disable-line
 					;
 				)
 				|
@@ -122,7 +122,7 @@ class Text_Parser {
 					;
 				)
 				|
-				(?:										# hexidecimal matches
+				(?:										# hexadecimal matches
 					&\#x
 					(?: 002[1-9a-cef]|003[a-cef]|0040|005[b-e]|0060|007[b-e]|00a[1-9a-cef]|00b[0-9a-f]|00d7|00f7|02c6|02dc|03d[126]|201[3-9a-f]|202[0-7]|20[34][0-9a-f]|205[0-9a-e]|206[1-4]|20[a-c][0-9a-f]|21[0-4][0-9a-f]|219[0-9a-f]|2[23][0-9a-f][0-9a-f]|25[a-f][0-9a-f]|23[0-9a-f][0-9a-f]|2e[0-7][0-9a-f] )
 					;
@@ -165,7 +165,7 @@ class Text_Parser {
 				;
 			)
 			|
-			(?:												# hexidecimal matches
+			(?:												# hexadecimal matches
 				&\#x
 				(?: 002d|005f|00ad|200[b-d]|201[0-2] )
 				;
@@ -197,7 +197,7 @@ class Text_Parser {
 				;
 			)
 			|
-			(?:												# hexidecimal matches
+			(?:												# hexadecimal matches
 				(?:
 					&\#x00
 					(?: 3[1-9]|4[1-9a-f]|5[0-9a]|6[1-9a-f]|7[0-9a]|c[0-9a-f]|d[0-689]|e[0-9a-f]|f[0-689a-f] )
@@ -302,11 +302,11 @@ class Text_Parser {
 				$tokens[ $index ] = new Token( $part, Token::PUNCTUATION );
 			} elseif ( \preg_match( self::RE_WORD, $part ) ) {
 				// Make sure that things like email addresses and URLs are not broken up
-				// into words and punctuation not preceeded by an 'other'.
+				// into words and punctuation not preceded by an 'other'.
 				self::parse_ambiguous_token( Token::WORD, $part, $tokens, $index );
 			} else {
 				// Make sure that things like email addresses and URLs are not broken up into words
-				// and punctuation not preceeded by an 'other' or 'word'.
+				// and punctuation not preceded by an 'other' or 'word'.
 				self::parse_ambiguous_token( Token::OTHER, $part, $tokens, $index );
 			}
 
@@ -317,7 +317,7 @@ class Text_Parser {
 	}
 
 	/**
-	 * Parse ambigious tokens (that may need to be combined with the predecessors).
+	 * Parse ambiguous tokens (that may need to be combined with the predecessors).
 	 *
 	 * @param Token::WORD|Token::OTHER $expected_type The expected token type.
 	 * @param string                   $part          The string fragment to parse.
@@ -327,12 +327,12 @@ class Text_Parser {
 	protected static function parse_ambiguous_token( $expected_type, $part, array &$tokens, &$index ): void {
 
 		// Make sure that things like email addresses and URLs are not broken up incorrectly.
-		if ( self::is_preceeded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceeded_by( Token::WORD, $tokens, $index ) ) ) {
+		if ( self::is_preceded_by( Token::OTHER, $tokens, $index ) || ( Token::OTHER === $expected_type && self::is_preceded_by( Token::WORD, $tokens, $index ) ) ) {
 			$old_part         = $tokens[ --$index ]->value;
 			$tokens[ $index ] = new Token( $old_part . $part, Token::OTHER );
 
-		} elseif ( self::is_preceeded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceeded_by( Token::SPACE, $tokens, $index, 2 ) ) {
-			// Not preceeded by a non-space + punctuation.
+		} elseif ( self::is_preceded_by( Token::PUNCTUATION, $tokens, $index ) && self::is_not_preceded_by( Token::SPACE, $tokens, $index, 2 ) ) {
+			// Not preceded by a non-space + punctuation.
 			$old_part             = $tokens[ $index - 1 ]->value;
 			$older_part           = $tokens[ $index - 2 ]->value;
 			$tokens[ $index - 2 ] = new Token( $older_part . $old_part . $part, Token::OTHER );
@@ -348,6 +348,8 @@ class Text_Parser {
 	/**
 	 * Checks if the predecessor of the current token is of a certain type.
 	 *
+	 * @since 7.0.0 Renamed to `is_preceded_by`.
+	 *
 	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
 	 * @param  Token[]  $tokens An array of tokens.
 	 * @param  int      $index  The current token index.
@@ -355,13 +357,15 @@ class Text_Parser {
 	 *
 	 * @return bool
 	 */
-	protected static function is_preceeded_by( $type, array $tokens, $index, $steps = 1 ) {
+	protected static function is_preceded_by( $type, array $tokens, $index, $steps = 1 ) {
 		return $index - $steps >= 0 && $type === $tokens[ $index - $steps ]->type;
 	}
 
 	/**
 	 * Checks if the predecessor of the current token is not of a certain type.
 	 *
+	 * @since 7.0.0 Renamed to `is_not_preceded_by`.
+	 *
 	 * @param  Token::* $type   A valid token type (e.g. Token::WORD).
 	 * @param  Token[]  $tokens An array of tokens.
 	 * @param  int      $index  The current token index.
@@ -369,7 +373,7 @@ class Text_Parser {
 	 *
 	 * @return bool
 	 */
-	protected static function is_not_preceeded_by( $type, array $tokens, $index, $steps = 1 ) {
+	protected static function is_not_preceded_by( $type, array $tokens, $index, $steps = 1 ) {
 		return $index - $steps >= 0 && $type !== $tokens[ $index - $steps ]->type;
 	}
 

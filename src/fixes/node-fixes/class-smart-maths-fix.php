@@ -82,7 +82,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 
 		(\d+)' . U::MINUS . '(\d+)
 
-		' . self::FINAL_LOOKAHEAD . '                   # lookahead assertion: most punctuation marks are allowd
+		' . self::FINAL_LOOKAHEAD . '                   # lookahead assertion: most punctuation marks are allowed
 		(?!' . self::DECIMAL_SEPARATOR . '[0-9]+)                                    # negative lookahead assertion: but not decimal numbers
 	/Sxu';
 
@@ -95,7 +95,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 		' . U::DIVISION . '
 		(
 			\d+
-			(?:st|nd|rd|th)?
+			(?:st|nd|rd|th)? # spellchecker:disable-line
 		)
 		' . self::FINAL_LOOKAHEAD . '
 	/Sxu';

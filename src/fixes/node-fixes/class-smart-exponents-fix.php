@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2019 Peter Putzer.
+ *  Copyright 2014-2024 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -33,7 +33,7 @@ use PHP_Typography\Settings;
 
 /**
  * Applies smart exponents (if enabled).
- * Purposefully seperated from smart_math because of HTML code injection.
+ * Purposefully separated from smart_math because of HTML code injection.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *

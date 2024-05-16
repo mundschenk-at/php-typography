@@ -73,7 +73,7 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 				self::COLLAPSE_NORMAL_SPACES,
 				// Non-breakable space get's priority. If non-breakable space exists in a string of spaces, it collapses to a single non-breakable space.
 				self::COLLAPSE_NON_BREAKABLE_SPACES,
-				// For any other spaceing, replace with the first occurance of an unusual space character.
+				// For any other spaceing, replace with the first occurrence of an unusual space character.
 				self::COLLAPSE_OTHER_SPACES,
 			],
 			[ // @codeCoverageIgnoreStart

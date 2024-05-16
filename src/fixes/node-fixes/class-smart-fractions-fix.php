@@ -35,7 +35,7 @@ use PHP_Typography\U;
  * Applies smart fractions (if enabled).
  *
  * Call before style_numbers, but after smart_ordinal_suffix.
- * Purposefully seperated from smart_math because of HTML code injection.
+ * Purposefully separated from smart_math because of HTML code injection.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
@@ -72,7 +72,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			(?:' . U::SINGLE_PRIME . '|' . U::DOUBLE_PRIME . ')?
 
 			# handle ordinals after fractions
-			(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)?
+			(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)? # spellchecker:disable-line
 
 			# makes sure we are not messing up a url
 			(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|,|\!|\?|\)|\;|\:|\'|")

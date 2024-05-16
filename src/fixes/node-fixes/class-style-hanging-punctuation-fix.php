@@ -44,7 +44,7 @@ use PHP_Typography\U;
 class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 
 	/**
-	 * An array of replacment arrays (indexed by the "$block" flag).
+	 * An array of replacement arrays (indexed by the "$block" flag).
 	 *
 	 * @var array<int,string[]>
 	 */
@@ -96,7 +96,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 				RE::escape_tags( "<span class=\"{$push_double_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_double_class}\">$1</span>$2" ), // STYLE_INITIAL_DOUBLE.
 				RE::escape_tags( "<span class=\"{$push_single_class}\"></span>" . U::ZERO_WIDTH_SPACE . "<span class=\"{$pull_single_class}\">$1</span>$2" ), // STYLE_INITIAL_SINGLE.
 			],
-			// Block eleemnts.
+			// Block elements.
 			[
 				$escaped_style_double, // STYLE_DOUBLE.
 				$escaped_style_single, // STYLE_SINGLE.
@@ -130,7 +130,7 @@ class Style_Hanging_Punctuation_Fix extends Classes_Dependent_Fix {
 		// Need to get context of adjacent characters outside adjacent inline tags or HTML comment
 		// if we have adjacent characters add them to the text.
 		$next_character = DOM::get_next_character( $textnode );
-		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceeding characters for this fix.
+		$node_data      = "{$textnode->data}$next_character"; // We have no interest in preceding characters for this fix.
 
 		// Check encoding.
 		$f = Strings::functions( $node_data );

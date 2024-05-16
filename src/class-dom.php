@@ -180,7 +180,7 @@ abstract class DOM {
 
 	/**
 	 * Retrieves an array containing all the ancestors of the node. This could be done
-	 * via an XPath query for "ancestor::*", but DOM walking is in all likelyhood faster.
+	 * via an XPath query for "ancestor::*", but DOM walking is in all likelihood faster.
 	 *
 	 * @param DOMNode $node Required.
 	 *
@@ -323,7 +323,7 @@ abstract class DOM {
 	}
 
 	/**
-	 * Retrieves the next accceptable sibling (if there is one).
+	 * Retrieves the next acceptable sibling (if there is one).
 	 *
 	 * @param  callable $is_acceptable Returns true if the \DOMnode is acceptable.
 	 * @param  ?DOMNode $node          Optional. The content node. Default null.
