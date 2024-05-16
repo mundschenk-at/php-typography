@@ -6,7 +6,6 @@ parameters:
 	level: 8
 	inferPrivatePropertyTypeFromConstructor: true
 	treatPhpDocTypesAsCertain: false
-	checkMissingIterableValueType: false
 	reportUnmatchedIgnoredErrors: false
 
 	paths:
