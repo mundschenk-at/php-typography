@@ -40,9 +40,49 @@ use PHP_Typography\Settings\Quotes;
  * @since 4.0.0
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
- *              The deprecated method array_map_assoc has been removed.
+ *              The deprecated method array_map_assoc has been removed. Most setter methods have been
+ *              virtualized via `__call`.
  *
  * @implements \ArrayAccess<string,mixed>
+ *
+ * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
+ * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
+ * @method void set_classes_to_ignore( string[] $classes = ['vcard','noTypo'] )  Sets classes for which the typography of their children will be left untouched.
+ * @method void set_ids_to_ignore( string[] $ids = [] ) Sets IDs for which the typography of their children will be left untouched.
+ * @method void set_smart_quotes( bool $on = true ) Enables/disables typographic quotes.
+ * @method void set_smart_dashes( bool $on = true ) Enables/disables replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
+ * @method void set_smart_ellipses( bool $on = true ) Enables/disables replacement of "..." with "…".
+ * @method void set_smart_diacritics( bool $on = true ) Enables/disables replacement "creme brulee" with "crème brûlée".
+ * @method void set_smart_marks( bool $on = true ) Enables/disables replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
+ * @method void set_smart_math( bool $on = true ) Enables/disables proper mathematical symbols.
+ * @method void set_smart_exponents( bool $on = true ) Enables/disables replacement of 2^2 with 2<sup>2</sup>.
+ * @method void set_smart_fractions( bool $on = true ) Enables/disables replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
+ * @method void set_smart_ordinal_suffix( bool $on = true ) Enables/disables replacement of 1st with 1<sup>st</sup>.
+ * @method void set_smart_ordinal_suffix_match_roman_numerals( bool $on = false ) Enables/disables replacement of XXe with XX<sup>e</sup>.
+ * @method void set_smart_area_units( bool $on = true ) Enables/disables replacement of m2 with m³ and m3 with m³.
+ * @method void set_single_character_word_spacing( bool $on = true ) Enables/disables forcing single character words to next line with the insertion of &nbsp;.
+ * @method void set_fraction_spacing( bool $on = true ) Enables/disables fraction spacing.
+ * @method void set_unit_spacing( bool $on = true ) Enables/disables keeping units and values together with the insertion of &nbsp;.
+ * @method void set_numbered_abbreviation_spacing( bool $on = true ) Enables/disables numbered abbreviations like "ISO 9000" together with the insertion of &nbsp;.
+ * @method void set_french_punctuation_spacing( bool $on = false ) Enables/disables extra whitespace before certain punction marks, as is the French custom.
+ * @method void set_dash_spacing( bool $on = true ) Enables/disables wrapping of Em and En dashes are in thin spaces.
+ * @method void set_space_collapse( bool $on = true ) Enables/disables removal of extra whitespace characters.
+ * @method void set_dewidow( bool $on = true ) Enables/disables widow handling.
+ * @method void set_wrap_hard_hyphens( bool $on = true ) Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
+ * @method void set_url_wrap( bool $on = true ) Enables/disables wrapping of urls.
+ * @method void set_email_wrap( bool $on = true ) Enables/disables wrapping of email addresses.
+ * @method void set_style_ampersands( bool $on = true ) Enables/disables wrapping of ampersands in <span class="amp">.
+ * @method void set_style_caps( bool $on = true ) Enables/disables wrapping caps in <span class="caps">.
+ * @method void set_style_initial_quotes( bool $on = true ) Enables/disables wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
+ * @method void set_style_numbers( bool $on = true ) Enables/disables wrapping of numbers in <span class="numbers">.
+ * @method void set_style_hanging_punctuation( bool $on = true ) Enables/disables wrapping of punctuation and wide characters in <span class="pull-*">.
+ * @method void set_hyphenation( bool $on = true ) Enables/disables hyphenation.
+ * @method void set_hyphenation_language( string $lang = 'en-US' ) Sets the hyphenation pattern language.
+ * @method void set_hyphenate_headings( bool $on = true ) Enables/disables hyphenation of titles and headings.
+ * @method void set_hyphenate_all_caps( bool $on = true ) Enables/disables hyphenation of words set completely in capital letters.
+ * @method void set_hyphenate_title_case( bool $on = true ) Enables/disables hyphenation of words starting with a capital letter.
+ * @method void set_hyphenate_compounds( bool $on = true ) Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
+ * @method void set_hyphenation_exceptions( array $exceptions = [] ) Sets custom word hyphenations. Takes an array of words with all hyphenation points marked with a hard hyphen.
  */
 class Settings implements \ArrayAccess, \JsonSerializable {
 
@@ -164,6 +204,246 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	protected $remapped_characters;
 
+	protected const VIRTUAL_PROPERTIES = [
+		[
+			'property' => self::PARSER_ERRORS_IGNORE,
+			'name'     => 'ignore_parser_errors',
+			'default'  => false,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::PARSER_ERRORS_HANDLER,
+			'name'     => 'parser_errors_handler',
+			'default'  => null,
+			'verify'   => 'is_callable',
+		],
+		[
+			'property' => self::IGNORE_CLASSES,
+			'name'     => 'classes_to_ignore',
+			'default'  => [ 'vcard', 'noTypo' ],
+			'verify'   => 'is_array',
+		],
+		[
+			'property' => self::IGNORE_IDS,
+			'name'     => 'ids_to_ignore',
+			'default'  => [],
+			'verify'   => 'is_array',
+		],
+		[
+			'property' => self::SMART_QUOTES,
+			'name'     => 'smart_quotes',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_DASHES,
+			'name'     => 'smart_dashes',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_ELLIPSES,
+			'name'     => 'smart_ellipses',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_DIACRITICS,
+			'name'     => 'smart_diacritics',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_MARKS,
+			'name'     => 'smart_marks',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_MATH,
+			'name'     => 'smart_math',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_EXPONENTS,
+			'name'     => 'smart_exponents',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_FRACTIONS,
+			'name'     => 'smart_fractions',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_ORDINAL_SUFFIX,
+			'name'     => 'smart_ordinal_suffix',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS,
+			'name'     => 'smart_ordinal_suffix_match_roman_numerals',
+			'default'  => false,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_AREA_UNITS,
+			'name'     => 'smart_area_units',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SINGLE_CHARACTER_WORD_SPACING,
+			'name'     => 'single_character_word_spacing',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::FRACTION_SPACING,
+			'name'     => 'fraction_spacing',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::UNIT_SPACING,
+			'name'     => 'unit_spacing',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::NUMBERED_ABBREVIATION_SPACING,
+			'name'     => 'numbered_abbreviation_spacing',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::FRENCH_PUNCTUATION_SPACING,
+			'name'     => 'french_punctuation_spacing',
+			'default'  => false,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::DASH_SPACING,
+			'name'     => 'dash_spacing',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SPACE_COLLAPSE,
+			'name'     => 'space_collapse',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::DEWIDOW,
+			'name'     => 'dewidow',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHEN_HARD_WRAP,
+			'name'     => 'wrap_hard_hyphens',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::URL_WRAP,
+			'name'     => 'url_wrap',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::EMAIL_WRAP,
+			'name'     => 'email_wrap',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::STYLE_AMPERSANDS,
+			'name'     => 'style_ampersands',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::STYLE_CAPS,
+			'name'     => 'style_caps',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::STYLE_INITIAL_QUOTES,
+			'name'     => 'style_initial_quotes',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::STYLE_NUMBERS,
+			'name'     => 'style_numbers',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::STYLE_HANGING_PUNCTUATION,
+			'name'     => 'style_hanging_punctuation',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATION,
+			'name'     => 'hyphenation',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATION_LANGUAGE,
+			'name'     => 'hyphenation_language',
+			'default'  => 'en-US',
+			'verify'   => 'is_string',
+		],
+		[
+			'property' => self::HYPHENATE_HEADINGS,
+			'name'     => 'hyphenate_headings',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATE_ALL_CAPS,
+			'name'     => 'hyphenate_all_caps',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATE_TITLE_CASE,
+			'name'     => 'hyphenate_title_case',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATE_COMPOUNDS,
+			'name'     => 'hyphenate_compounds',
+			'default'  => true,
+			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::HYPHENATION_CUSTOM_EXCEPTIONS,
+			'name'     => 'hyphenation_exceptions',
+			'default'  => [],
+			'verify'   => 'is_array',
+		],
+	];
+
+	/**
+	 * An index of virtual method names to properties.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @var array<string,mixed>
+	 */
+	protected array $virtual_setters = [];
+
 	/**
 	 * Sets up a new Settings object.
 	 *
@@ -178,12 +458,41 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string[] $mapping      Optional. Unicode characters to remap. The default maps the narrow no-break space to the normal NO-BREAK SPACE and the apostrophe to the RIGHT SINGLE QUOTATION MARK.
 	 */
 	public function __construct( bool $set_defaults = true, array $mapping = [ U::NO_BREAK_NARROW_SPACE => U::NO_BREAK_SPACE, U::APOSTROPHE => U::SINGLE_QUOTE_CLOSE ] ) { // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing
+		// Set up virtualized set_* methods.
+		foreach ( self::VIRTUAL_PROPERTIES as $definition ) {
+			$this->virtual_setters[ "set_{$definition['name']}" ] = $definition;
+		}
+
 		if ( $set_defaults ) {
 			$this->set_defaults();
 		}
 
 		// Merge default character mapping with given mapping.
 		$this->unicode_mapping = $mapping;
+	}
+
+	/**
+	 * Provides virtual setter methods.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param  string  $name      The method name.
+	 * @param  mixed[] $arguments The method arguments.
+	 *
+	 * @return mixed
+	 *
+	 * @throws \TypeError Throws an error if a given argument is of an incorrect type.
+	 */
+	public function __call( string $name, array $arguments ) {
+		if ( isset( $this->virtual_setters[ $name ] ) ) {
+			$argument = isset( $arguments[0] ) ? $arguments[0] : $this->virtual_setters[ $name ]['default'];
+
+			if ( ! $this->virtual_setters[ $name ]['verify']( $argument ) ) {
+				throw new \TypeError( "Argument for {$name} should be compatible with {$this->virtual_setters[ $name ]['verify']}." );
+			}
+
+			$this->data[ $this->virtual_setters[ $name ]['property'] ] = $argument;
+		}
 	}
 
 	/**
@@ -438,26 +747,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Enable lenient parser error handling (HTML is "best guess" if enabled).
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_ignore_parser_errors( bool $on = false ): void {
-		$this->data[ self::PARSER_ERRORS_IGNORE ] = $on;
-	}
-
-	/**
-	 * Sets an optional handler for parser errors. Invalid callbacks will be silently ignored.
-	 *
-	 * @since 6.0.0. callable type is enforced via typehinting.
-	 *
-	 * @param callable|null $handler Optional. A callable that takes an array of error strings as its parameter. Default null.
-	 */
-	public function set_parser_errors_handler( callable $handler = null ): void {
-		$this->data[ self::PARSER_ERRORS_HANDLER ] = $handler;
-	}
-
-	/**
 	 * Sets tags for which the typography of their children will be left untouched.
 	 *
 	 * @since 7.0.0 The parameter $tags can now only be passed as an array.
@@ -469,37 +758,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
 
 		$this->data[ self::IGNORE_TAGS ] = array_unique( array_merge( $tags, array_flip( DOM::inappropriate_tags() ) ) );
-	}
-
-	/**
-	 * Sets classes for which the typography of their children will be left untouched.
-	 *
-	 * @since 7.0.0 The parameter $classes can now only be passed as an array.
-	 *
-	 * @param string[] $classes An array of HTML class names.
-	 */
-	public function set_classes_to_ignore( array $classes = [ 'vcard', 'noTypo' ] ): void {
-		$this->data[ self::IGNORE_CLASSES ] = $classes;
-	}
-
-	/**
-	 * Sets IDs for which the typography of their children will be left untouched.
-	 *
-	 * @since 7.0.0 The parameter $ids can now only be passed as an array.
-	 *
-	 * @param string[] $ids An array of HTML IDs.
-	 */
-	public function set_ids_to_ignore( array $ids = [] ): void {
-		$this->data[ self::IGNORE_IDS ] = $ids;
-	}
-
-	/**
-	 * Enables/disables typographic quotes.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_quotes( bool $on = true ): void {
-		$this->data[ self::SMART_QUOTES ] = $on;
 	}
 
 	/**
@@ -627,15 +885,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Enables/disables replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_dashes( bool $on = true ): void {
-		$this->data[ self::SMART_DASHES ] = $on;
-	}
-
-	/**
 	 * Sets the typographical conventions used by smart_dashes.
 	 *
 	 * Allowed values for $style:
@@ -648,24 +897,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ): void {
 		$this->dash_style = $this->get_style( $style, Dashes::class, [ Dash_Style::class, 'get_styled_dashes' ], 'dash' );
-	}
-
-	/**
-	 * Enables/disables replacement of "..." with "…".
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_ellipses( bool $on = true ): void {
-		$this->data[ self::SMART_ELLIPSES ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement "creme brulee" with "crème brûlée".
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_diacritics( bool $on = true ): void {
-		$this->data[ self::SMART_DIACRITICS ] = $on;
 	}
 
 	/**
@@ -776,118 +1007,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Enables/disables replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_marks( bool $on = true ): void {
-		$this->data[ self::SMART_MARKS ] = $on;
-	}
-
-	/**
-	 * Enables/disables proper mathematical symbols.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_math( bool $on = true ): void {
-		$this->data[ self::SMART_MATH ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement of 2^2 with 2<sup>2</sup>
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_exponents( bool $on = true ): void {
-		$this->data[ self::SMART_EXPONENTS ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub>.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_fractions( bool $on = true ): void {
-		$this->data[ self::SMART_FRACTIONS ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement of 1st with 1<sup>st</sup>.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_ordinal_suffix( bool $on = true ): void {
-		$this->data[ self::SMART_ORDINAL_SUFFIX ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement of XXe with XX<sup>e</sup>.
-	 *
-	 * @since 6.5.0
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_smart_ordinal_suffix_match_roman_numerals( bool $on = false ): void {
-		$this->data[ self::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] = $on;
-	}
-
-	/**
-	 * Enables/disables replacement of m2 with m³ and m3 with m³.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_smart_area_units( bool $on = true ): void {
-		$this->data[ self::SMART_AREA_UNITS ] = $on;
-	}
-
-	/**
-	 * Enables/disables forcing single character words to next line with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_single_character_word_spacing( bool $on = true ): void {
-		$this->data[ self::SINGLE_CHARACTER_WORD_SPACING ] = $on;
-	}
-
-	/**
-	 * Enables/disables fraction spacing.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_fraction_spacing( bool $on = true ): void {
-		$this->data[ self::FRACTION_SPACING ] = $on;
-	}
-
-	/**
-	 * Enables/disables keeping units and values together with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_unit_spacing( bool $on = true ): void {
-		$this->data[ self::UNIT_SPACING ] = $on;
-	}
-
-	/**
-	 * Enables/disables numbered abbreviations like "ISO 9000" together with the insertion of &nbsp;.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_numbered_abbreviation_spacing( bool $on = true ): void {
-		$this->data[ self::NUMBERED_ABBREVIATION_SPACING ] = $on;
-	}
-
-	/**
-	 * Enables/disables extra whitespace before certain punction marks, as is the French custom.
-	 *
-	 * @since 6.0.0 The default value is now `false`.`
-	 *
-	 * @param bool $on Optional. Default false.
-	 */
-	public function set_french_punctuation_spacing( bool $on = false ): void {
-		$this->data[ self::FRENCH_PUNCTUATION_SPACING ] = $on;
-	}
-
-	/**
 	 * Sets the list of units to keep together with their values.
 	 *
 	 * @since 7.0.0 The parameter $units can now only be passed as an array.
@@ -918,33 +1037,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$custom_units .= ! empty( $custom_units ) ? '|' : '';
 
 		return $custom_units;
-	}
-
-	/**
-	 * Enables/disables wrapping of Em and En dashes are in thin spaces.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_dash_spacing( bool $on = true ): void {
-		$this->data[ self::DASH_SPACING ] = $on;
-	}
-
-	/**
-	 * Enables/disables removal of extra whitespace characters.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_space_collapse( $on = true ): void {
-		$this->data[ self::SPACE_COLLAPSE ] = $on;
-	}
-
-	/**
-	 * Enables/disables widow handling.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_dewidow( bool $on = true ): void {
-		$this->data[ self::DEWIDOW ] = $on;
 	}
 
 	/**
@@ -981,33 +1073,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_wrap_hard_hyphens( $on = true ): void {
-		$this->data[ self::HYPHEN_HARD_WRAP ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping of urls.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_url_wrap( bool $on = true ): void {
-		$this->data[ self::URL_WRAP ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping of email addresses.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_email_wrap( bool $on = true ): void {
-		$this->data[ self::EMAIL_WRAP ] = $on;
-	}
-
-	/**
 	 * Sets the minimum character requirement after an URL wrapping point.
 	 *
 	 * @param int $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
@@ -1016,51 +1081,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$length = ( $length > 0 ) ? $length : 5;
 
 		$this->data[ self::URL_MIN_AFTER_WRAP ] = $length;
-	}
-
-	/**
-	 * Enables/disables wrapping of ampersands in <span class="amp">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_ampersands( bool $on = true ): void {
-		$this->data[ self::STYLE_AMPERSANDS ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping caps in <span class="caps">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_caps( bool $on = true ): void {
-		$this->data[ self::STYLE_CAPS ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_initial_quotes( bool $on = true ): void {
-		$this->data[ self::STYLE_INITIAL_QUOTES ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping of numbers in <span class="numbers">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_numbers( bool $on = true ): void {
-		$this->data[ self::STYLE_NUMBERS ] = $on;
-	}
-
-	/**
-	 * Enables/disables wrapping of punctuation and wide characters in <span class="pull-*">.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_style_hanging_punctuation( bool $on = true ): void {
-		$this->data[ self::STYLE_HANGING_PUNCTUATION ] = $on;
 	}
 
 	/**
@@ -1073,28 +1093,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_initial_quote_tags( array $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ): void {
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
 		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( $tags ), \CASE_LOWER );
-	}
-
-	/**
-	 * Enables/disables hyphenation.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenation( bool $on = true ): void {
-		$this->data[ self::HYPHENATION ] = $on;
-	}
-
-	/**
-	 * Sets the hyphenation pattern language.
-	 *
-	 * @param string $lang Has to correspond to a filename in 'lang'. Optional. Default 'en-US'.
-	 */
-	public function set_hyphenation_language( string $lang = 'en-US' ): void {
-		if ( isset( $this->data[ self::HYPHENATION_LANGUAGE ] ) && $this->data[ self::HYPHENATION_LANGUAGE ] === $lang ) {
-			return; // Bail out, no need to do anything.
-		}
-
-		$this->data[ self::HYPHENATION_LANGUAGE ] = $lang;
 	}
 
 	/**
@@ -1128,54 +1126,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$length = ( $length > 0 ) ? $length : 2;
 
 		$this->data[ self::HYPHENATION_MIN_AFTER ] = $length;
-	}
-
-	/**
-	 * Enables/disables hyphenation of titles and headings.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_headings( $on = true ): void {
-		$this->data[ self::HYPHENATE_HEADINGS ] = $on;
-	}
-
-	/**
-	 * Enables/disables hyphenation of words set completely in capital letters.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_all_caps( bool $on = true ): void {
-		$this->data[ self::HYPHENATE_ALL_CAPS ] = $on;
-	}
-
-	/**
-	 * Enables/disables hyphenation of words starting with a capital letter.
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_title_case( bool $on = true ): void {
-		$this->data[ self::HYPHENATE_TITLE_CASE ] = $on;
-	}
-
-	/**
-	 * Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
-	 *
-	 * @param bool $on Optional. Default true.
-	 */
-	public function set_hyphenate_compounds( bool $on = true ): void {
-		$this->data[ self::HYPHENATE_COMPOUNDS ] = $on;
-	}
-
-	/**
-	 * Sets custom word hyphenations.
-	 *
-	 * @since 7.0.0 The parameter $exceptions can now only be passed as an array.
-	 *
-	 * @param string[] $exceptions An array of words with all hyphenation points marked with a hard hyphen.
-	 *                             The default is an empty array.
-	 */
-	public function set_hyphenation_exceptions( array $exceptions = [] ): void {
-		$this->data[ self::HYPHENATION_CUSTOM_EXCEPTIONS ] = $exceptions;
 	}
 
 	/**
