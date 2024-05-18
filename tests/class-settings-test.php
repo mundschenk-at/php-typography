@@ -70,7 +70,6 @@ class Settings_Test extends Testcase {
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_set_defaults() {
@@ -88,7 +87,6 @@ class Settings_Test extends Testcase {
 	 * @uses ::set_defaults
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 * @uses PHP_Typography\DOM::inappropriate_tags
 	 */
 	public function test_initialization() {
@@ -356,8 +354,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_tags_to_ignore.
 	 *
 	 * @covers ::set_tags_to_ignore
-	 *
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_tags_to_ignore() {
 		$s              = $this->settings;
@@ -381,20 +377,18 @@ class Settings_Test extends Testcase {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
 
-		$s->set_tags_to_ignore( 'img foo  \	' ); // should not result in an error.
+		$s->set_tags_to_ignore( [ 'img', 'foo', ' ' ] ); // should not result in an error.
 	}
 
 	/**
 	 * Tests set_classes_to_ignore.
 	 *
 	 * @covers ::set_classes_to_ignore
-	 *
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_classes_to_ignore() {
 		$s = $this->settings;
 
-		$s->set_classes_to_ignore( 'foo bar' );
+		$s->set_classes_to_ignore( [ 'foo', 'bar' ] );
 		$this->assertContains( 'foo', $this->settings['ignoreClasses'] );
 		$this->assertContains( 'bar', $this->settings['ignoreClasses'] );
 	}
@@ -403,13 +397,11 @@ class Settings_Test extends Testcase {
 	 * Tests set_ids_to_ignore.
 	 *
 	 * @covers ::set_ids_to_ignore
-	 *
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_ids_to_ignore() {
 		$s = $this->settings;
 
-		$s->set_ids_to_ignore( 'foobar barfoo' );
+		$s->set_ids_to_ignore( [ 'foobar', 'barfoo' ] );
 		$this->assertContains( 'foobar', $this->settings['ignoreIDs'] );
 		$this->assertContains( 'barfoo', $this->settings['ignoreIDs'] );
 	}
@@ -979,11 +971,9 @@ class Settings_Test extends Testcase {
 	 * @covers ::set_units
 	 *
 	 * @uses ::update_unit_pattern
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_set_units() {
 		$units_as_array  = [ 'foo', 'bar', 'xx/yy' ];
-		$units_as_string = implode( ', ', $units_as_array );
 
 		$this->settings->set_units( $units_as_array );
 		foreach ( $units_as_array as $unit ) {
@@ -993,11 +983,6 @@ class Settings_Test extends Testcase {
 		$this->settings->set_units( [] );
 		foreach ( $units_as_array as $unit ) {
 			$this->assertNotContains( $unit, $this->settings[ Settings::UNITS ] );
-		}
-
-		$this->settings->set_units( $units_as_string );
-		foreach ( $units_as_array as $unit ) {
-			$this->assertContains( $unit, $this->settings[ Settings::UNITS ] );
 		}
 	}
 
@@ -1255,7 +1240,6 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_initial_quote_tags() {
 		$tags_as_array  = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
-		$tags_as_string = implode( ', ', $tags_as_array );
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
 		foreach ( $tags_as_array as $tag ) {
@@ -1265,11 +1249,6 @@ class Settings_Test extends Testcase {
 		$this->settings->set_initial_quote_tags( [] );
 		foreach ( $tags_as_array as $tag ) {
 			$this->assertArrayNotHasKey( $tag, $this->settings[ Settings::INITIAL_QUOTE_TAGS ] );
-		}
-
-		$this->settings->set_initial_quote_tags( $tags_as_string );
-		foreach ( $tags_as_array as $tag ) {
-			$this->assertArrayHasKey( $tag, $this->settings[ Settings::INITIAL_QUOTE_TAGS ] );
 		}
 	}
 
@@ -1473,9 +1452,8 @@ class Settings_Test extends Testcase {
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
-	public function test_set_hyphenation_exceptions_array() {
+	public function test_set_hyphenation_exceptions() {
 		$s = $this->settings;
 
 		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
@@ -1490,31 +1468,12 @@ class Settings_Test extends Testcase {
 	}
 
 	/**
-	 * Tests set_hyphenation_exceptions.
-	 *
-	 * @covers ::set_hyphenation_exceptions
-	 *
-	 * @uses PHP_Typography\Hyphenator::__construct
-	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
-	 */
-	public function test_set_hyphenation_exceptions_string() {
-		$s          = $this->settings;
-		$exceptions = 'Hu-go, Fö-ba-ß';
-
-		$s->set_hyphenation_exceptions( $exceptions );
-		$this->assertContainsOnly( 'string', $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
-		$this->assertCount( 2, $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
-	}
-
-	/**
 	 * Tests get_hash.
 	 *
 	 * @covers ::get_hash
 	 * @covers ::jsonSerialize
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
-	 * @uses PHP_Typography\Strings::maybe_split_parameters
 	 */
 	public function test_get_hash() {
 		$s = $this->settings;
