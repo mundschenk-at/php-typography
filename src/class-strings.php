@@ -34,6 +34,7 @@ use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
  *
  * @since 4.2.0
  * @since 7.0.0 The deprecated static methods `mb_str_split`, and `uchr` have been removed.
+ *              The now unused static method `maybe_split_parameters` has also been removed.
  *
  * @phpstan-type String_Functions array{
  *         'strlen'     : callable,
@@ -113,21 +114,5 @@ abstract class Strings {
 		}
 
 		throw new Invalid_Encoding_Exception( "String '$str' uses neither ASCII nor UTF-8 encoding." );
-	}
-
-	/**
-	 * If necessary, split the passed parameters string into an array.
-	 *
-	 * @param  string[]|string $params Parameters.
-	 *
-	 * @return string[]
-	 */
-	public static function maybe_split_parameters( $params ) {
-		if ( ! \is_array( $params ) ) {
-			// We can safely assume an array here, as long as $params convertible to a string.
-			$params = \preg_split( self::RE_PARAMETER_SPLITTING, $params, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
-		}
-
-		return $params;
 	}
 }
