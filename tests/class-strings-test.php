@@ -85,34 +85,4 @@ class Strings_Test extends Testcase {
 
 		$this->assertEmpty( Strings::functions( \mb_convert_encoding( 'Ungültiges Encoding', 'ISO-8859-2' ) ) );
 	}
-
-	/**
-	 * Provide data for testing maybe_split_parameters.
-	 *
-	 * @return array
-	 */
-	public function provide_maybe_split_parameters_data() {
-		return [
-			[ [], [] ],
-			[ '', [] ],
-			[ ',', [] ],
-			[ 'a,b', [ 'a', 'b' ] ],
-			[ 'foo, bar, xxx', [ 'foo', 'bar', 'xxx' ] ],
-			[ [ 'foo', 'bar', 'xxx' ], [ 'foo', 'bar', 'xxx' ] ],
-			[ [ 1, 2, 'drei' ], [ 1, 2, 'drei' ] ],
-		];
-	}
-
-	/**
-	 * Test maybe_split_parameters.
-	 *
-	 * @covers ::maybe_split_parameters
-	 * @dataProvider provide_maybe_split_parameters_data
-	 *
-	 * @param string|array $input  Parameters sring/array.
-	 * @param array        $result Expected output.
-	 */
-	public function test_maybe_split_parameters( $input, $result ) {
-		$this->assertSame( $result, Strings::maybe_split_parameters( $input ) );
-	}
 }
