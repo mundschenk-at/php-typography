@@ -1174,14 +1174,16 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * Retrieves a unique hash value for the current settings.
 	 *
 	 * @since 5.2.0 The new parameter $raw_output has been added.
+	 * @since 7.0.0 The default value of $max_length has been increased to 64.
+	 *              The parameter $raw_output has been renamed to $binary and it now defaults to `false`.
 	 *
-	 * @param int  $max_length Optional. The maximum number of bytes returned (0 for unlimited). Default 16.
-	 * @param bool $raw_output Optional. Whether to return raw binary data for the hash. Default true.
+	 * @param int  $max_length Optional. The maximum number of bytes returned (0 for unlimited). Default 64.
+	 * @param bool $binary     Optional. Whether to return raw binary data for the hash. Default false.
 	 *
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
-	public function get_hash( $max_length = 16, $raw_output = true ) {
-		$hash = \md5( (string) \json_encode( $this ), $raw_output );
+	public function get_hash( $max_length = 64, $binary = false ) {
+		$hash = \hash( 'sha256', (string) \json_encode( $this ), $binary );
 
 		if ( $max_length < \strlen( $hash ) && $max_length > 0 ) {
 			$hash = \substr( $hash, 0, $max_length );
