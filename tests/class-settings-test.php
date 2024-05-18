@@ -289,7 +289,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_ignore_parser_errors.
 	 *
-	 * @covers ::set_ignore_parser_errors
+	 * @uses ::__call
 	 */
 	public function test_set_ignore_parser_errors() {
 		$s = $this->settings;
@@ -304,7 +304,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_parser_errors_handler.
 	 *
-	 * @covers ::set_parser_errors_handler
+	 * @uses ::__call
 	 */
 	public function test_set_parser_errors_handler() {
 		$s = $this->settings;
@@ -325,7 +325,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_parser_errors_handler with an invalid callback.
 	 *
-	 * @covers ::set_parser_errors_handler
+	 * @uses ::__call
 	 */
 	public function test_set_parser_errors_handler_invalid() {
 		$s = $this->settings;
@@ -383,7 +383,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_classes_to_ignore.
 	 *
-	 * @covers ::set_classes_to_ignore
+	 * @uses ::__call
 	 */
 	public function test_set_classes_to_ignore() {
 		$s = $this->settings;
@@ -396,7 +396,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_ids_to_ignore.
 	 *
-	 * @covers ::set_ids_to_ignore
+	 * @uses ::__call
 	 */
 	public function test_set_ids_to_ignore() {
 		$s = $this->settings;
@@ -409,7 +409,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_quotes.
 	 *
-	 * @covers ::set_smart_quotes
+	 * @uses ::__call
 	 */
 	public function test_set_smart_quotes() {
 		$this->settings->set_smart_quotes( true );
@@ -594,7 +594,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Test set_smart_dashes.
 	 *
-	 * @covers ::set_smart_dashes
+	 * @uses ::__call
 	 */
 	public function test_set_smart_dashes() {
 		$this->settings->set_smart_dashes( true );
@@ -685,7 +685,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_ellipses.
 	 *
-	 * @covers ::set_smart_ellipses
+	 * @uses ::__call
 	 */
 	public function test_set_smart_ellipses() {
 		$this->settings->set_smart_ellipses( true );
@@ -698,7 +698,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_diacritics.
 	 *
-	 * @covers ::set_smart_diacritics
+	 * @uses ::__call
 	 */
 	public function test_set_smart_diacritics() {
 		$this->settings->set_smart_diacritics( true );
@@ -812,7 +812,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Test set_smart_marks.
 	 *
-	 * @covers ::set_smart_marks
+	 * @uses ::__call
 	 */
 	public function test_set_smart_marks() {
 		$this->settings->set_smart_marks( true );
@@ -825,7 +825,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Test set_smart_area_units.
 	 *
-	 * @covers ::set_smart_area_units
+	 * @uses ::__call
 	 */
 	public function test_set_smart_area_units() {
 		$this->settings->set_smart_area_units( true );
@@ -838,7 +838,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_math.
 	 *
-	 * @covers ::set_smart_math
+	 * @uses ::__call
 	 */
 	public function test_set_smart_math() {
 		$this->settings->set_smart_math( true );
@@ -851,7 +851,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_exponents.
 	 *
-	 * @covers ::set_smart_exponents
+	 * @uses ::__call
 	 */
 	public function test_set_smart_exponents() {
 		$this->settings->set_smart_exponents( true );
@@ -864,7 +864,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_fractions.
 	 *
-	 * @covers ::set_smart_fractions
+	 * @uses ::__call
 	 */
 	public function test_set_smart_fractions() {
 		$this->settings->set_smart_fractions( true );
@@ -877,7 +877,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_ordinal_suffix.
 	 *
-	 * @covers ::set_smart_ordinal_suffix
+	 * @uses ::__call
 	 */
 	public function test_set_smart_ordinal_suffix() {
 		$this->settings->set_smart_ordinal_suffix( true );
@@ -890,7 +890,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_smart_ordinal_suffix_match_roman_numerals.
 	 *
-	 * @covers ::set_smart_ordinal_suffix_match_roman_numerals
+	 * @uses ::__call
 	 */
 	public function test_set_smart_ordinal_suffix_match_roman_numerals() {
 		$this->settings->set_smart_ordinal_suffix_match_roman_numerals( true );
@@ -903,7 +903,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_single_character_word_spacing.
 	 *
-	 * @covers ::set_single_character_word_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_single_character_word_spacing() {
 		$this->settings->set_single_character_word_spacing( true );
@@ -916,7 +916,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_fraction_spacing.
 	 *
-	 * @covers ::set_fraction_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_fraction_spacing() {
 		$this->settings->set_fraction_spacing( true );
@@ -929,7 +929,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_unit_spacing.
 	 *
-	 * @covers ::set_unit_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_unit_spacing() {
 		$this->settings->set_unit_spacing( true );
@@ -942,7 +942,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_numbered_abbreviation_spacing.
 	 *
-	 * @covers ::set_numbered_abbreviation_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_numbered_abbreviation_spacing() {
 		$this->settings->set_numbered_abbreviation_spacing( true );
@@ -955,7 +955,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_french_punctuation_spacing.
 	 *
-	 * @covers ::set_french_punctuation_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_french_punctuation_spacing() {
 		$this->settings->set_french_punctuation_spacing( true );
@@ -973,7 +973,7 @@ class Settings_Test extends Testcase {
 	 * @uses ::update_unit_pattern
 	 */
 	public function test_set_units() {
-		$units_as_array  = [ 'foo', 'bar', 'xx/yy' ];
+		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
 
 		$this->settings->set_units( $units_as_array );
 		foreach ( $units_as_array as $unit ) {
@@ -1023,7 +1023,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_dash_spacing.
 	 *
-	 * @covers ::set_dash_spacing
+	 * @uses ::__call
 	 */
 	public function test_set_dash_spacing() {
 		$this->settings->set_dash_spacing( true );
@@ -1036,7 +1036,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_space_collapse.
 	 *
-	 * @covers ::set_space_collapse
+	 * @uses ::__call
 	 */
 	public function test_set_space_collapse() {
 		$this->settings->set_space_collapse( true );
@@ -1049,7 +1049,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_dewidow.
 	 *
-	 * @covers ::set_dewidow
+	 * @uses ::__call
 	 */
 	public function test_set_dewidow() {
 		$this->settings->set_dewidow( true );
@@ -1116,7 +1116,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_wrap_hard_hyphens.
 	 *
-	 * @covers ::set_wrap_hard_hyphens
+	 * @uses ::__call
 	 */
 	public function test_set_wrap_hard_hyphens() {
 		$this->settings->set_wrap_hard_hyphens( true );
@@ -1129,7 +1129,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_url_wrap.
 	 *
-	 * @covers ::set_url_wrap
+	 * @uses ::__call
 	 */
 	public function test_set_url_wrap() {
 		$this->settings->set_url_wrap( true );
@@ -1142,7 +1142,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_email_wrap.
 	 *
-	 * @covers ::set_email_wrap
+	 * @uses ::__call
 	 */
 	public function test_set_email_wrap() {
 		$this->settings->set_email_wrap( true );
@@ -1171,7 +1171,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_style_ampersands.
 	 *
-	 * @covers ::set_style_ampersands
+	 * @uses ::__call
 	 */
 	public function test_set_style_ampersands() {
 		$this->settings->set_style_ampersands( true );
@@ -1184,7 +1184,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_style_caps.
 	 *
-	 * @covers ::set_style_caps
+	 * @uses ::__call
 	 */
 	public function test_set_style_caps() {
 		$this->settings->set_style_caps( true );
@@ -1197,7 +1197,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_style_initial_quotes.
 	 *
-	 * @covers ::set_style_initial_quotes
+	 * @uses ::__call
 	 */
 	public function test_set_style_initial_quotes() {
 		$this->settings->set_style_initial_quotes( true );
@@ -1210,7 +1210,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_style_numbers.
 	 *
-	 * @covers ::set_style_numbers
+	 * @uses ::__call
 	 */
 	public function test_set_style_numbers() {
 		$this->settings->set_style_numbers( true );
@@ -1223,7 +1223,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_style_hanging_punctuation.
 	 *
-	 * @covers ::set_style_hanging_punctuation
+	 * @uses ::__call
 	 */
 	public function test_set_style_hanging_punctuation() {
 		$this->settings->set_style_hanging_punctuation( true );
@@ -1239,7 +1239,7 @@ class Settings_Test extends Testcase {
 	 * @covers ::set_initial_quote_tags
 	 */
 	public function test_set_initial_quote_tags() {
-		$tags_as_array  = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
+		$tags_as_array = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div' ];
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
 		foreach ( $tags_as_array as $tag ) {
@@ -1255,7 +1255,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenation.
 	 *
-	 * @covers ::set_hyphenation
+	 * @uses ::__call
 	 */
 	public function test_set_hyphenation() {
 		$this->settings->set_hyphenation( true );
@@ -1282,7 +1282,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenation_language.
 	 *
-	 * @covers ::set_hyphenation_language
+	 * @uses ::__call
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_language
@@ -1310,7 +1310,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenation_language.
 	 *
-	 * @covers ::set_hyphenation_language
+	 * @uses ::__call
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_language
@@ -1396,7 +1396,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenate_headings.
 	 *
-	 * @covers ::set_hyphenate_headings
+	 * @uses ::__call
 	 */
 	public function test_set_hyphenate_headings() {
 		$this->settings->set_hyphenate_headings( true );
@@ -1409,7 +1409,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenate_all_caps.
 	 *
-	 * @covers ::set_hyphenate_all_caps
+	 * @uses ::__call
 	 */
 	public function test_set_hyphenate_all_caps() {
 		$this->settings->set_hyphenate_all_caps( true );
@@ -1422,7 +1422,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenate_title_case.
 	 *
-	 * @covers ::set_hyphenate_title_case
+	 * @uses ::__call
 	 */
 	public function test_set_hyphenate_title_case() {
 		$this->settings->set_hyphenate_title_case( true );
@@ -1435,7 +1435,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenate_compounds.
 	 *
-	 * @covers ::set_hyphenate_compounds
+	 * @uses ::__call
 	 */
 	public function test_set_hyphenate_compounds() {
 		$this->settings->set_hyphenate_compounds( true );
@@ -1448,7 +1448,7 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_hyphenation_exceptions.
 	 *
-	 * @covers ::set_hyphenation_exceptions
+	 * @uses ::__call
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 * @uses PHP_Typography\Hyphenator::set_custom_exceptions
