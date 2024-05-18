@@ -1062,28 +1062,37 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_max_dewidow_length.
 	 *
-	 * @covers ::set_max_dewidow_length
+	 * @uses ::__call
 	 */
 	public function test_set_max_dewidow_length() {
 		$this->settings->set_max_dewidow_length( 10 );
 		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
-
-		$this->settings->set_max_dewidow_length( 1 );
-		$this->assertSame( 5, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
 
 		$this->settings->set_max_dewidow_length( 2 );
 		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
 	}
 
 	/**
+	 * Tests set_max_dewidow_length.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_max_dewidow_length_too_low() {
+		$this->settings->set_max_dewidow_length( 10 );
+		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_max_dewidow_length( 1 );
+		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+	}
+
+	/**
 	 * Tests set_dewidow_word_number.
 	 *
-	 * @covers ::set_dewidow_word_number
+	 * @uses ::__call
 	 */
 	public function test_set_dewidow_word_number() {
-		$this->settings->set_dewidow_word_number( 10 );
-		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
-
 		$this->settings->set_dewidow_word_number( 1 );
 		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
 
@@ -1092,6 +1101,27 @@ class Settings_Test extends Testcase {
 
 		$this->settings->set_dewidow_word_number( 3 );
 		$this->assertSame( 3, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+	}
+
+	/**
+	 * Tests set_dewidow_word_number.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_dewidow_word_number_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_dewidow_word_number( 0 );
+		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+	}
+
+	/**
+	 * Tests set_dewidow_word_number.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_dewidow_word_number_too_high() {
+		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_dewidow_word_number( 4 );
 		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
@@ -1100,18 +1130,28 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_max_dewidow_pull.
 	 *
-	 * @covers ::set_max_dewidow_pull
+	 * @uses ::__call
 	 */
 	public function test_set_max_dewidow_pull() {
 		$this->settings->set_max_dewidow_pull( 10 );
 		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
 
-		$this->settings->set_max_dewidow_pull( 1 );
-		$this->assertSame( 5, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
-
 		$this->settings->set_max_dewidow_pull( 2 );
 		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
 	}
+
+		/**
+	 * Tests set_max_dewidow_pull.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_max_dewidow_pull_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_max_dewidow_pull( 1 );
+		$this->assertSame( 5, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
+	}
+
 
 	/**
 	 * Tests set_wrap_hard_hyphens.
@@ -1155,17 +1195,26 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_min_after_url_wrap.
 	 *
-	 * @covers ::set_min_after_url_wrap
+	 * @uses ::__call
 	 */
 	public function test_set_min_after_url_wrap() {
 		$this->settings->set_min_after_url_wrap( 10 );
 		$this->assertSame( 10, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
 
-		$this->settings->set_min_after_url_wrap( 0 );
-		$this->assertSame( 5, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
-
 		$this->settings->set_min_after_url_wrap( 1 );
 		$this->assertSame( 1, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
+	}
+
+	/**
+	 * Tests set_min_after_url_wrap.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_min_after_url_wrap_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_min_after_url_wrap( 0 );
+		$this->assertSame( 5, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
 	}
 
 	/**
@@ -1346,14 +1395,11 @@ class Settings_Test extends Testcase {
 	/**
 	 * Tests set_min_length_hyphenation.
 	 *
-	 * @covers ::set_min_length_hyphenation
+	 * @uses ::__call
 	 *
 	 * @uses PHP_Typography\Hyphenator::__construct
 	 */
 	public function test_set_min_length_hyphenation() {
-		$this->settings->set_min_length_hyphenation( 1 ); // too low, resets to default 5.
-		$this->assertSame( 5, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
-
 		$this->settings->set_min_length_hyphenation( 2 );
 		$this->assertSame( 2, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
 
@@ -1362,14 +1408,25 @@ class Settings_Test extends Testcase {
 	}
 
 	/**
+	 * Tests set_min_length_hyphenation.
+	 *
+	 * @uses ::__call
+	 *
+	 * @uses PHP_Typography\Hyphenator::__construct
+	 */
+	public function test_set_min_length_hyphenation_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_min_length_hyphenation( 1 );
+		$this->assertSame( 5, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
+	}
+
+	/**
 	 * Tests set_min_before_hyphenation.
 	 *
-	 * @covers ::set_min_before_hyphenation
+	 * @uses ::__call
 	 */
 	public function test_set_min_before_hyphenation() {
-		$this->settings->set_min_before_hyphenation( 0 ); // too low, resets to default 3.
-		$this->assertSame( 3, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
-
 		$this->settings->set_min_before_hyphenation( 1 );
 		$this->assertSame( 1, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
 
@@ -1378,19 +1435,40 @@ class Settings_Test extends Testcase {
 	}
 
 	/**
+	 * Tests set_min_before_hyphenation.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_min_before_hyphenation_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_min_before_hyphenation( 0 ); // too low, resets to default 3.
+		$this->assertSame( 3, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
+	}
+
+	/**
 	 * Tests set_min_after_hyphenation.
 	 *
-	 * @covers ::set_min_after_hyphenation
+	 * @uses ::__call
 	 */
 	public function test_set_min_after_hyphenation() {
-		$this->settings->set_min_after_hyphenation( 0 ); // too low, resets to default 2.
-		$this->assertSame( 2, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
-
 		$this->settings->set_min_after_hyphenation( 1 );
 		$this->assertSame( 1, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
 
 		$this->settings->set_min_after_hyphenation( 66 );
 		$this->assertSame( 66, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
+	}
+
+	/**
+	 * Tests set_min_after_hyphenation.
+	 *
+	 * @uses ::__call
+	 */
+	public function test_set_min_after_hyphenation_too_low() {
+		$this->expect_exception( \OutOfRangeException::class );
+
+		$this->settings->set_min_after_hyphenation( 0 ); // too low, resets to default 2.
+		$this->assertSame( 2, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
 	}
 
 	/**

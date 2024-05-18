@@ -27,6 +27,9 @@
 
 namespace PHP_Typography;
 
+use OutOfRangeException;
+use TypeError;
+
 use PHP_Typography\Settings\Dash_Style;
 use PHP_Typography\Settings\Dashes;
 use PHP_Typography\Settings\Quote_Style;
@@ -68,8 +71,12 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_dash_spacing( bool $on = true ) Enables/disables wrapping of Em and En dashes are in thin spaces.
  * @method void set_space_collapse( bool $on = true ) Enables/disables removal of extra whitespace characters.
  * @method void set_dewidow( bool $on = true ) Enables/disables widow handling.
+ * @method void set_max_dewidow_length( int $length = 5 ) Sets the maximum length of widows that will be protected. The length cannot be less than 2.
+ * @method void set_dewidow_word_number( int $number = 1 ) Sets the maximum number of words considered for dewidowing. Only 1, 2 and 3 are valid arguments.
+ * @method void set_max_dewidow_pull( int $length = 5 ) Sets the maximum length of pulled text to keep widows company. The length cannot be less than 2.
  * @method void set_wrap_hard_hyphens( bool $on = true ) Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
  * @method void set_url_wrap( bool $on = true ) Enables/disables wrapping of urls.
+ * @method void set_min_after_url_wrap( int $length = 5 ) Sets the minimum character requirement after an URL wrapping point. The length cannot be less than 1.
  * @method void set_email_wrap( bool $on = true ) Enables/disables wrapping of email addresses.
  * @method void set_style_ampersands( bool $on = true ) Enables/disables wrapping of ampersands in <span class="amp">.
  * @method void set_style_caps( bool $on = true ) Enables/disables wrapping caps in <span class="caps">.
@@ -78,6 +85,9 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_style_hanging_punctuation( bool $on = true ) Enables/disables wrapping of punctuation and wide characters in <span class="pull-*">.
  * @method void set_hyphenation( bool $on = true ) Enables/disables hyphenation.
  * @method void set_hyphenation_language( string $lang = 'en-US' ) Sets the hyphenation pattern language.
+ * @method void set_min_length_hyphenation( int $length = 5 ) Sets the minimum length of a word that may be hyphenated. The length cannot be less than 2.
+ * @method void set_min_before_hyphenation( int $length = 3 ) Sets the minimum character requirement before a hyphenation point. The length cannot be less than 1.
+ * @method void set_min_after_hyphenation( int $length = 2 ) Sets the minimum character requirement after a hyphenation point. The length cannot be less than 1.
  * @method void set_hyphenate_headings( bool $on = true ) Enables/disables hyphenation of titles and headings.
  * @method void set_hyphenate_all_caps( bool $on = true ) Enables/disables hyphenation of words set completely in capital letters.
  * @method void set_hyphenate_title_case( bool $on = true ) Enables/disables hyphenation of words starting with a capital letter.
@@ -344,6 +354,28 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'verify'   => 'is_bool',
 		],
 		[
+			'property' => self::DEWIDOW_MAX_LENGTH,
+			'name'     => 'max_dewidow_length',
+			'default'  => 5,
+			'verify'   => 'is_int',
+			'min'      => 2,
+		],
+		[
+			'property' => self::DEWIDOW_WORD_NUMBER,
+			'name'     => 'dewidow_word_number',
+			'default'  => 1,
+			'verify'   => 'is_int',
+			'min'      => 1,
+			'max'      => 3,
+		],
+		[
+			'property' => self::DEWIDOW_MAX_PULL,
+			'name'     => 'max_dewidow_pull',
+			'default'  => 5,
+			'verify'   => 'is_int',
+			'min'      => 2,
+		],
+		[
 			'property' => self::HYPHEN_HARD_WRAP,
 			'name'     => 'wrap_hard_hyphens',
 			'default'  => true,
@@ -354,6 +386,13 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'name'     => 'url_wrap',
 			'default'  => true,
 			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::URL_MIN_AFTER_WRAP,
+			'name'     => 'min_after_url_wrap',
+			'default'  => 5,
+			'verify'   => 'is_int',
+			'min'      => 1,
 		],
 		[
 			'property' => self::EMAIL_WRAP,
@@ -402,6 +441,27 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'name'     => 'hyphenation_language',
 			'default'  => 'en-US',
 			'verify'   => 'is_string',
+		],
+		[
+			'property' => self::HYPHENATION_MIN_LENGTH,
+			'name'     => 'min_length_hyphenation',
+			'default'  => 5,
+			'verify'   => 'is_int',
+			'min'      => 2,
+		],
+		[
+			'property' => self::HYPHENATION_MIN_BEFORE,
+			'name'     => 'min_before_hyphenation',
+			'default'  => 3,
+			'verify'   => 'is_int',
+			'min'      => 1,
+		],
+		[
+			'property' => self::HYPHENATION_MIN_AFTER,
+			'name'     => 'min_after_hyphenation',
+			'default'  => 2,
+			'verify'   => 'is_int',
+			'min'      => 1,
 		],
 		[
 			'property' => self::HYPHENATE_HEADINGS,
@@ -481,17 +541,30 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @return mixed
 	 *
-	 * @throws \TypeError Throws an error if a given argument is of an incorrect type.
+	 * @throws TypeError Throws an error if a given argument is of an incorrect type.
+	 * @throws OutOfRangeException Throws an exception if a given integer argument is out of bounds.
 	 */
 	public function __call( string $name, array $arguments ) {
 		if ( isset( $this->virtual_setters[ $name ] ) ) {
-			$argument = isset( $arguments[0] ) ? $arguments[0] : $this->virtual_setters[ $name ]['default'];
+			$def   = $this->virtual_setters[ $name ];
+			$value = isset( $arguments[0] ) ? $arguments[0] : $def['default'];
 
-			if ( ! $this->virtual_setters[ $name ]['verify']( $argument ) ) {
-				throw new \TypeError( "Argument for {$name} should be compatible with {$this->virtual_setters[ $name ]['verify']}." );
+			// Check argument type.
+			if ( ! $def['verify']( $value ) ) {
+				throw new TypeError( "Argument for {$name} should be compatible with {$def['verify']}." );
 			}
 
-			$this->data[ $this->virtual_setters[ $name ]['property'] ] = $argument;
+			// Check argument lower bounds.
+			if ( isset( $def['min'] ) && $value < $def['min'] ) {
+				throw new OutOfRangeException( "Argument for {$name} should not be less than {$def['min']}, {$value} given." );
+			}
+
+			// Check argument upper bounds.
+			if ( isset( $def['max'] ) && $value > $def['max'] ) {
+				throw new OutOfRangeException( "Argument for {$name} should be no more than {$def['max']}, {$value} given." );
+			}
+
+			$this->data[ $def['property'] ] = $value;
 		}
 	}
 
@@ -1040,50 +1113,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Sets the maximum length of widows that will be protected.
-	 *
-	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
-	 */
-	public function set_max_dewidow_length( int $length = 5 ): void {
-		$length = ( $length > 1 ) ? $length : 5;
-
-		$this->data[ self::DEWIDOW_MAX_LENGTH ] = $length;
-	}
-
-	/**
-	 * Sets the maximum number of words considered for dewidowing.
-	 *
-	 * @param int $number Defaults to 1. Only 1, 2 and 3 are valid.
-	 */
-	public function set_dewidow_word_number( int $number = 1 ): void {
-		$number = ( $number > 3 || $number < 1 ) ? 1 : $number;
-
-		$this->data[ self::DEWIDOW_WORD_NUMBER ] = $number;
-	}
-
-	/**
-	 * Sets the maximum length of pulled text to keep widows company.
-	 *
-	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
-	 */
-	public function set_max_dewidow_pull( int $length = 5 ): void {
-		$length = ( $length > 1 ) ? $length : 5;
-
-		$this->data[ self::DEWIDOW_MAX_PULL ] = $length;
-	}
-
-	/**
-	 * Sets the minimum character requirement after an URL wrapping point.
-	 *
-	 * @param int $length Defaults to 5. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_after_url_wrap( int $length = 5 ): void {
-		$length = ( $length > 0 ) ? $length : 5;
-
-		$this->data[ self::URL_MIN_AFTER_WRAP ] = $length;
-	}
-
-	/**
 	 * Sets the list of tags where initial quotes and guillemets should be styled.
 	 *
 	 * @since 7.0.0 The parameter $tags can now only be passed as an array.
@@ -1093,39 +1122,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function set_initial_quote_tags( array $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ): void {
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
 		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( $tags ), \CASE_LOWER );
-	}
-
-	/**
-	 * Sets the minimum length of a word that may be hyphenated.
-	 *
-	 * @param int $length Defaults to 5. Trying to set the value to less than 2 resets the length to the default.
-	 */
-	public function set_min_length_hyphenation( int $length = 5 ): void {
-		$length = ( $length > 1 ) ? $length : 5;
-
-		$this->data[ self::HYPHENATION_MIN_LENGTH ] = $length;
-	}
-
-	/**
-	 * Sets the minimum character requirement before a hyphenation point.
-	 *
-	 * @param int $length Defaults to 3. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_before_hyphenation( $length = 3 ): void {
-		$length = ( $length > 0 ) ? $length : 3;
-
-		$this->data[ self::HYPHENATION_MIN_BEFORE ] = $length;
-	}
-
-	/**
-	 * Sets the minimum character requirement after a hyphenation point.
-	 *
-	 * @param int $length Defaults to 2. Trying to set the value to less than 1 resets the length to the default.
-	 */
-	public function set_min_after_hyphenation( int $length = 2 ): void {
-		$length = ( $length > 0 ) ? $length : 2;
-
-		$this->data[ self::HYPHENATION_MIN_AFTER ] = $length;
 	}
 
 	/**
