@@ -208,7 +208,7 @@ class PHP_Typography_Test extends Testcase {
 			$this->assertContains( $tag, $s['ignoreTags'] );
 		}
 
-		$s->set_tags_to_ignore( 'img foo  \	' ); // Should not result in an error.
+		$s->set_tags_to_ignore( [ 'img', 'foo', ' \ ' ] ); // Should not result in an error.
 		$s->set_smart_quotes( true );
 		$s->set_smart_quotes_primary();
 		$s->set_smart_quotes_secondary();
@@ -228,7 +228,7 @@ class PHP_Typography_Test extends Testcase {
 	public function test_set_classes_to_ignore() {
 		$s = $this->s;
 
-		$s->set_classes_to_ignore( 'foo bar' );
+		$s->set_classes_to_ignore( [ 'foo', 'bar' ] );
 
 		$this->assertContains( 'foo', $s['ignoreClasses'] );
 		$this->assertContains( 'bar', $s['ignoreClasses'] );
@@ -258,7 +258,7 @@ class PHP_Typography_Test extends Testcase {
 	public function test_set_ids_to_ignore() {
 		$s = $this->s;
 
-		$s->set_ids_to_ignore( 'foobar barfoo' );
+		$s->set_ids_to_ignore( [ 'foobar', 'barfoo' ] );
 
 		$this->assertContains( 'foobar', $s['ignoreIDs'] );
 		$this->assertContains( 'barfoo', $s['ignoreIDs'] );
@@ -292,8 +292,8 @@ class PHP_Typography_Test extends Testcase {
 	public function test_complete_ignore() {
 		$s = $this->s;
 
-		$s->set_ids_to_ignore( 'foobar barfoo' );
-		$s->set_classes_to_ignore( 'foo bar' );
+		$s->set_ids_to_ignore( [ 'foobar', 'barfoo' ] );
+		$s->set_classes_to_ignore( [ 'foo', 'bar' ] );
 		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
 
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
@@ -739,7 +739,7 @@ class PHP_Typography_Test extends Testcase {
 	 */
 	public function provide_process_with_title_data() {
 		return [
-			[ 'Really...', 'Real&shy;ly&hellip;', 'Really&hellip;', '' ], // processed.
+			[ 'Really...', 'Real&shy;ly&hellip;', 'Really&hellip;', [] ], // processed.
 			[ 'Really...', 'Really...', true, [ 'h1' ] ], // skipped.
 		];
 	}

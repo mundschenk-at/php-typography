@@ -460,11 +460,13 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets tags for which the typography of their children will be left untouched.
 	 *
-	 * @param string|string[] $tags A comma separated list or an array of tag names.
+	 * @since 7.0.0 The parameter $tags can now only be passed as an array.
+	 *
+	 * @param string[] $tags An array of tag names.
 	 */
-	public function set_tags_to_ignore( $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ): void {
+	public function set_tags_to_ignore( array $tags = [ 'code', 'head', 'kbd', 'object', 'option', 'pre', 'samp', 'script', 'noscript', 'noembed', 'select', 'style', 'textarea', 'title', 'var', 'math' ] ): void {
 		// Ensure that we pass only lower-case tag names to XPath.
-		$tags = array_filter( array_map( 'strtolower', Strings::maybe_split_parameters( $tags ) ), 'ctype_alnum' );
+		$tags = array_filter( array_map( 'strtolower', $tags ), 'ctype_alnum' );
 
 		$this->data[ self::IGNORE_TAGS ] = array_unique( array_merge( $tags, array_flip( DOM::inappropriate_tags() ) ) );
 	}
@@ -472,19 +474,23 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets classes for which the typography of their children will be left untouched.
 	 *
-	 * @param string|string[] $classes A comma separated list or an array of class names.
+	 * @since 7.0.0 The parameter $classes can now only be passed as an array.
+	 *
+	 * @param string[] $classes An array of HTML class names.
 	 */
-	public function set_classes_to_ignore( $classes = [ 'vcard', 'noTypo' ] ): void {
-		$this->data[ self::IGNORE_CLASSES ] = Strings::maybe_split_parameters( $classes );
+	public function set_classes_to_ignore( array $classes = [ 'vcard', 'noTypo' ] ): void {
+		$this->data[ self::IGNORE_CLASSES ] = $classes;
 	}
 
 	/**
 	 * Sets IDs for which the typography of their children will be left untouched.
 	 *
-	 * @param string|string[] $ids A comma separated list or an array of tag names.
+	 * @since 7.0.0 The parameter $ids can now only be passed as an array.
+	 *
+	 * @param string[] $ids An array of HTML IDs.
 	 */
-	public function set_ids_to_ignore( $ids = [] ): void {
-		$this->data[ self::IGNORE_IDS ] = Strings::maybe_split_parameters( $ids );
+	public function set_ids_to_ignore( array $ids = [] ): void {
+		$this->data[ self::IGNORE_IDS ] = $ids;
 	}
 
 	/**
@@ -884,10 +890,12 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets the list of units to keep together with their values.
 	 *
-	 * @param string|string[] $units A comma separated list or an array of units.
+	 * @since 7.0.0 The parameter $units can now only be passed as an array.
+	 *
+	 * @param string[] $units An array of unit names.
 	 */
-	public function set_units( $units = [] ): void {
-		$this->data[ self::UNITS ] = Strings::maybe_split_parameters( $units );
+	public function set_units( array $units = [] ): void {
+		$this->data[ self::UNITS ] = $units;
 		$this->custom_units        = $this->update_unit_pattern( $this->data[ self::UNITS ] );
 	}
 
@@ -1058,14 +1066,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets the list of tags where initial quotes and guillemets should be styled.
 	 *
-	 * @param string|string[] $tags A comma separated list or an array of tag names.
+	 * @since 7.0.0 The parameter $tags can now only be passed as an array.
+	 *
+	 * @param string[] $tags An array of tag names.
 	 */
-	public function set_initial_quote_tags( $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ): void {
-		// Make array if handed a list of tags as a string.
-		if ( ! \is_array( $tags ) ) {
-			$tags = \preg_split( '/[^a-z0-9]+/', $tags, -1, \PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type.
-		}
-
+	public function set_initial_quote_tags( array $tags = [ 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'dd', 'dt' ] ): void {
 		// Store the tag array inverted (with the tagName as its index for faster lookup).
 		$this->data[ self::INITIAL_QUOTE_TAGS ] = \array_change_key_case( \array_flip( $tags ), \CASE_LOWER );
 	}
@@ -1164,11 +1169,13 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets custom word hyphenations.
 	 *
-	 * @param string|string[] $exceptions An array of words with all hyphenation points marked with a hard hyphen (or a string list of such words).
-	 *        In the latter case, only alphanumeric characters and hyphens are recognized. The default is empty.
+	 * @since 7.0.0 The parameter $exceptions can now only be passed as an array.
+	 *
+	 * @param string[] $exceptions An array of words with all hyphenation points marked with a hard hyphen.
+	 *                             The default is an empty array.
 	 */
-	public function set_hyphenation_exceptions( $exceptions = [] ): void {
-		$this->data[ self::HYPHENATION_CUSTOM_EXCEPTIONS ] = Strings::maybe_split_parameters( $exceptions );
+	public function set_hyphenation_exceptions( array $exceptions = [] ): void {
+		$this->data[ self::HYPHENATION_CUSTOM_EXCEPTIONS ] = $exceptions;
 	}
 
 	/**
