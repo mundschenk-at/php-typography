@@ -61,6 +61,7 @@ class Style_Caps_Fix_Test extends Node_Fix_Testcase {
 			[ 'foo 123BAR baz', 'foo <span class="caps">123BAR</span> baz' ],
 			[ 'during WP-CLI commands', 'during <span class="caps">WP-CLI</span> commands' ],
 			[ 'during WP‐CLI commands', 'during <span class="caps">WP‐CLI</span> commands' ], // HYPHEN instead of HYPHEN-MINUS.
+			[ 'UNESCO-Welterbestätten', '<span class="caps">UNESCO</span>-Welterbestätten' ],
 		];
 	}
 

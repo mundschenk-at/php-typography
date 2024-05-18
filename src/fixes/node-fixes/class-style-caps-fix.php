@@ -26,7 +26,6 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\DOM;
 use PHP_Typography\Settings;
 use PHP_Typography\U;
 
@@ -44,30 +43,33 @@ class Style_Caps_Fix extends Simple_Style_Fix {
 
 	// PCRE needs to be compiled with "--enable-unicode-properties", but we already depend on that elsewhere.
 	const REGEX = '/
-		(?<![\w' . self::COMBINING_MARKS . '])  # negative lookbehind assertion
+		(?<![\w' . self::COMBINING_MARKS . '])         # negative lookbehind assertion
 		(
-			(?:                                 # CASE 1: " 9A "
-				[0-9]+                          # starts with at least one number
+			(?:                                        # CASE 1: " 9A "
+				[0-9]+                                 # starts with at least one number
 				(?:[' . self::COMBINING_MARKS . '])*
-						                        # may contain hyphens, underscores, zero width spaces, or soft hyphens,
-				\p{Lu}                          # but must contain at least one capital letter
+						                               # may contain hyphens, underscores, zero width spaces, or soft hyphens,
+				\p{Lu}                                 # but must contain at least one capital letter
 				(?:\p{Lu}|[0-9]|[' . self::COMBINING_MARKS . '])*
-												# may be followed by any number of numbers capital letters, hyphens,
-												# underscores, zero width spaces, or soft hyphens
+												        # may be followed by any number of numbers capital letters, hyphens,
+												        # underscores, zero width spaces, or soft hyphens
 			)
 			|
-			(?:                                 # CASE 2: " A9 "
-				\p{Lu}                          # starts with capital letter
-				(?:\p{Lu}|[0-9])                # must be followed a number or capital letter
+			(?:                                         # CASE 2: " A9 "
+				\p{Lu}                                  # starts with capital letter
+				(?:\p{Lu}|[0-9])                        # must be followed a number or capital letter
 				(?:\p{Lu}|[0-9]|[' . self::COMBINING_MARKS . '])*
-												# may be followed by any number of numbers capital letters, hyphens,
-												# underscores, zero width spaces, or soft hyphens
+												        # may be followed by any number of numbers capital letters, hyphens,
+												        # underscores, zero width spaces, or soft hyphens
 			)
 		)
-		(?![\w' . self::COMBINING_MARKS . '])   # negative lookahead assertion
+		(?![\w' . self::INVISIBLE_COMBINING_MARKS . ']) # negative lookahead assertion: Allow caps at the beginning of a
+		                                                # compound word (important for languages like German)
 	/Sxu';
 
-	private const COMBINING_MARKS = '\-_' . U::HYPHEN . U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE; // Needs to be part of character class.
+	// These constants need to be valid character class fragments.
+	private const INVISIBLE_COMBINING_MARKS = U::SOFT_HYPHEN . U::ZERO_WIDTH_SPACE;
+	private const COMBINING_MARKS           = '\-_' . U::HYPHEN . self::INVISIBLE_COMBINING_MARKS;
 
 	/**
 	 * Creates a new node fix with a class.
