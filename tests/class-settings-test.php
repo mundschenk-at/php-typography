@@ -715,7 +715,8 @@ class Settings_Test extends Testcase {
 	 * Tests set_diacritic_language.
 	 *
 	 * @covers ::set_diacritic_language
-	 * @covers ::update_diacritics_replacement_arrays
+	 *
+	 * @uses ::update_diacritics_replacement_arrays
 	 */
 	public function test_set_diacritic_language() {
 		$this->settings->set_diacritic_language( 'en-US' );
@@ -787,7 +788,8 @@ class Settings_Test extends Testcase {
 	 * Tests set_diacritic_custom_replacements.
 	 *
 	 * @covers ::set_diacritic_custom_replacements
-	 * @covers ::update_diacritics_replacement_arrays
+	 *
+	 * @uses ::update_diacritics_replacement_arrays
 	 *
 	 * @dataProvider provide_set_diacritic_custom_replacements_data
 	 *
@@ -810,6 +812,31 @@ class Settings_Test extends Testcase {
 
 		$this->assertCount( count( $keys ), $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
 		$this->assertCount( count( $values ), $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
+	}
+
+	/**
+	 * Tests update_diacritics_replacement_arrays.
+	 *
+	 * @covers ::update_diacritics_replacement_arrays
+	 *
+	 * @uses ::set_diacritic_custom_replacements
+	 */
+	public function test_update_diacritics_replacement_arrays(): void {
+		$s                 = $this->settings;
+		$custom_diacritics = [
+			'foobar' => 'foobar',
+		];
+
+		// Fake standard diacritics.
+		$s[ Settings::DIACRITIC_WORDS ] = [
+			'foobar' => 'fööbär',
+			'barfoo' => 'bärföö',
+		];
+
+		$s->set_diacritic_custom_replacements( $custom_diacritics );
+
+		$this->assertSame( 'foobar', $s[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements']['foobar'] );
+		$this->assertSame( 'bärföö', $s[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements']['barfoo'] );
 	}
 
 	/**
