@@ -74,9 +74,9 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
-		$this->assert_attribute_empty( 'data', $second_settings );
+		$this->assert_attribute_count( 1, 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assert_attribute_not_empty( 'data', $second_settings );
+		$this->assert_attribute_count( 51, 'data', $second_settings );
 	}
 
 	/**
@@ -93,14 +93,14 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assert_attribute_empty( 'data', $s );
+		$this->assert_attribute_count( 1, 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assert_attribute_not_empty( 'data', $s );
+		$this->assert_attribute_not_count( 1, 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assert_attribute_not_empty( 'data', $second_settings );
+		$this->assert_attribute_count( 51, 'data', $second_settings );
 	}
 
 
@@ -273,18 +273,6 @@ class Settings_Test extends Testcase {
 
 		$this->assertInstanceOf( Dashes::class, $s->dash_style(), 'Dash style is not an instance of Dashes.' );
 	}
-
-	/**
-	 * Tests custom_units.
-	 *
-	 * @covers ::custom_units
-	 */
-	public function test_custom_units() {
-		$s = $this->settings;
-
-		$this->assert_is_string( $s->custom_units(), 'The result of custom_units() is not a string.' );
-	}
-
 
 	/**
 	 * Tests set_ignore_parser_errors.
@@ -966,58 +954,32 @@ class Settings_Test extends Testcase {
 	}
 
 	/**
-	 * Tests set_units.
-	 *
-	 * @covers ::set_units
-	 *
-	 * @uses ::update_unit_pattern
-	 */
-	public function test_set_units() {
-		$units_as_array = [ 'foo', 'bar', 'xx/yy' ];
-
-		$this->settings->set_units( $units_as_array );
-		foreach ( $units_as_array as $unit ) {
-			$this->assertContains( $unit, $this->settings[ Settings::UNITS ] );
-		}
-
-		$this->settings->set_units( [] );
-		foreach ( $units_as_array as $unit ) {
-			$this->assertNotContains( $unit, $this->settings[ Settings::UNITS ] );
-		}
-	}
-
-	/**
 	 * Provides data for testing update_unit_pattern.
 	 *
 	 * @return array
 	 */
-	public function provide_update_unit_pattern_data() {
+	public function provide_set_unit_data() {
 		return [
-			[
-				[ 'km/h', 'T$' ],
-				'km\/h|T\$|',
-			],
-			[
-				[ '¥', 'm[a]', 'n.', 'm^2' ],
-				'¥|m\[a\]|n\.|m\^2|',
-			],
+			[ [ 'foo', 'bar', 'xx/yy' ], 'foo|bar|xx\/yy|' ],
+			[ [ 'km/h', 'T$' ], 'km\/h|T\$|' ],
+			[ [ '¥', 'm[a]', 'n.', 'm^2' ], '¥|m\[a\]|n\.|m\^2|' ],
+			[ [], '' ],
 		];
 	}
 
 	/**
 	 * Tests update_unit_pattern.
 	 *
-	 * @covers ::update_unit_pattern
+	 * @covers ::set_units
 	 *
-	 * @dataProvider provide_update_unit_pattern_data
+	 * @dataProvider provide_set_unit_data
 	 *
 	 * @param  string[] $units An array of units.
 	 * @param  string   $regex The resulting regular expression.
 	 */
-	public function test_update_unit_pattern( array $units, $regex ) {
-		$result = $this->invoke_method( $this->settings, 'update_unit_pattern', [ $units ] );
-
-		$this->assertSame( $regex, $result );
+	public function test_set_unit( array $units, string $regex ): void {
+		$this->settings->set_units( $units );
+		$this->assertSame( $regex, $this->settings[ Settings::CUSTOM_UNITS ] );
 	}
 
 	/**
@@ -1140,7 +1102,7 @@ class Settings_Test extends Testcase {
 		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
 	}
 
-		/**
+	/**
 	 * Tests set_max_dewidow_pull.
 	 *
 	 * @uses ::__call
