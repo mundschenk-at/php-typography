@@ -1032,11 +1032,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			}
 		};
 
-		if ( ! empty( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] ) ) {
-			$parse_rules( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] );
-		}
+		// First parse included diacritic replaments ...
 		if ( ! empty( $this->data[ self::DIACRITIC_WORDS ] ) ) {
 			$parse_rules( $this->data[ self::DIACRITIC_WORDS ] );
+		}
+
+		// ... then custom replacements to allow them to override the standard ones.
+		if ( ! empty( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] ) ) {
+			$parse_rules( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] );
 		}
 
 		$this->data[ self::DIACRITIC_REPLACEMENT_DATA ] = [
