@@ -1022,32 +1022,27 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$patterns     = [];
 		$replacements = [];
 
+		/**
+		 * Parse an array of diacritics rules.
+		 */
+		$parse_rules = function ( array $rules ) use ( &$patterns, &$replacements ): void {
+			foreach ( $rules as $needle => $replacement ) {
+				$patterns[]              = '/\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])' . $needle . '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)/u';
+				$replacements[ $needle ] = $replacement;
+			}
+		};
+
 		if ( ! empty( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] ) ) {
-			$this->parse_diacritics_rules( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ], $patterns, $replacements );
+			$parse_rules( $this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] );
 		}
 		if ( ! empty( $this->data[ self::DIACRITIC_WORDS ] ) ) {
-			$this->parse_diacritics_rules( $this->data[ self::DIACRITIC_WORDS ], $patterns, $replacements );
+			$parse_rules( $this->data[ self::DIACRITIC_WORDS ] );
 		}
 
 		$this->data[ self::DIACRITIC_REPLACEMENT_DATA ] = [
 			'patterns'     => $patterns,
 			'replacements' => $replacements,
 		];
-	}
-
-	/**
-	 * Parse an array of diacritics rules.
-	 *
-	 * @param array<string,string> $diacritics_rules The rules ( $word => $replacement ).
-	 * @param string[]             $patterns         Resulting patterns. Passed by reference.
-	 * @param array<string,string> $replacements     Resulting replacements. Passed by reference.
-	 */
-	private function parse_diacritics_rules( array $diacritics_rules, array &$patterns, array &$replacements ): void {
-
-		foreach ( $diacritics_rules as $needle => $replacement ) {
-			$patterns[]              = '/\b(?<!\w[' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . '])' . $needle . '\b(?![' . U::NO_BREAK_SPACE . U::SOFT_HYPHEN . ']\w)/u';
-			$replacements[ $needle ] = $replacement;
-		}
 	}
 
 	/**

@@ -716,7 +716,6 @@ class Settings_Test extends Testcase {
 	 *
 	 * @covers ::set_diacritic_language
 	 * @covers ::update_diacritics_replacement_arrays
-	 * @covers ::parse_diacritics_rules
 	 */
 	public function test_set_diacritic_language() {
 		$this->settings->set_diacritic_language( 'en-US' );
@@ -789,7 +788,6 @@ class Settings_Test extends Testcase {
 	 *
 	 * @covers ::set_diacritic_custom_replacements
 	 * @covers ::update_diacritics_replacement_arrays
-	 * @covers ::parse_diacritics_rules
 	 *
 	 * @dataProvider provide_set_diacritic_custom_replacements_data
 	 *
