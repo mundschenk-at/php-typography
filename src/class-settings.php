@@ -27,6 +27,7 @@
 
 namespace PHP_Typography;
 
+use BadMethodCallException;
 use OutOfRangeException;
 use TypeError;
 
@@ -207,6 +208,9 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	protected $remapped_characters;
 
+	/**
+	 * Definitions of the properties that use a virtual setter function.
+	 */
 	protected const VIRTUAL_PROPERTIES = [
 		[
 			'property' => self::PARSER_ERRORS_IGNORE,
@@ -536,6 +540,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 *
 	 * @return mixed
 	 *
+	 * @throws BadMethodCallException Throws an exception if an invalid method is called.
 	 * @throws TypeError Throws an error if a given argument is of an incorrect type.
 	 * @throws OutOfRangeException Throws an exception if a given integer argument is out of bounds.
 	 */
@@ -560,6 +565,8 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			}
 
 			$this->data[ $def['property'] ] = $value;
+		} else {
+			throw new BadMethodCallException( "Invalid method {$name} called." );
 		}
 	}
 
