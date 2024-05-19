@@ -96,7 +96,7 @@ class Unit_Spacing_Fix extends Simple_Regex_Replacement_Fix {
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
 		// Update regex with custom units.
-		$this->regex = "/(\d\.?)\s({$settings->custom_units()}" . self::STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
+		$this->regex = "/(\d\.?)\s({$settings[ Settings::CUSTOM_UNITS ]}" . self::STANDARD_UNITS . ')' . self::WORD_BOUNDARY . '/Sxu';
 
 		parent::apply( $textnode, $settings, $is_title );
 	}

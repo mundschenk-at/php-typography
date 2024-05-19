@@ -44,7 +44,7 @@ use PHP_Typography\Settings\Quotes;
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
  *              The deprecated method array_map_assoc has been removed. Most setter methods have been
- *              virtualized via `__call`.
+ *              virtualized via `__call`. The methods update_unit_pattern and custom_unit have been removed.
  *
  * @implements \ArrayAccess<string,mixed>
  *
@@ -123,7 +123,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	const SINGLE_CHARACTER_WORD_SPACING = 'singleCharacterWordSpacing';
 	const FRACTION_SPACING              = 'fractionSpacing';
 	const UNIT_SPACING                  = 'unitSpacing';
-	const UNITS                         = 'units';
+	const CUSTOM_UNITS                  = 'units';
 	const NUMBERED_ABBREVIATION_SPACING = 'numberedAbbreviationSpacing';
 	const FRENCH_PUNCTUATION_SPACING    = 'frenchPunctuationSpacing';
 	const DASH_SPACING                  = 'dashSpacing';
@@ -174,13 +174,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @var Quotes
 	 */
 	protected $secondary_quote_style;
-
-	/**
-	 * A regex pattern for custom units (or the empty string).
-	 *
-	 * @var string
-	 */
-	protected $custom_units = '';
 
 	/**
 	 * A hashmap of settings for the various typographic options.
@@ -525,6 +518,8 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 
 		if ( $set_defaults ) {
 			$this->set_defaults();
+		} else {
+			$this->data[ self::CUSTOM_UNITS ] = '';
 		}
 
 		// Merge default character mapping with given mapping.
@@ -665,7 +660,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 				'primary_quotes'        => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
 				'secondary_quotes'      => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
 				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
-				'custom_units'          => $this->custom_units,
 			]
 		);
 	}
@@ -739,15 +733,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function dash_style(): Dashes {
 		return $this->dash_style;
-	}
-
-	/**
-	 * Retrieves the custom units pattern.
-	 *
-	 * @return string The pattern is suitable for inclusion into a regular expression.
-	 */
-	public function custom_units(): string {
-		return $this->custom_units;
 	}
 
 	/**
@@ -1087,29 +1072,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @param string[] $units An array of unit names.
 	 */
 	public function set_units( array $units = [] ): void {
-		$this->data[ self::UNITS ] = $units;
-		$this->custom_units        = $this->update_unit_pattern( $this->data[ self::UNITS ] );
-	}
+		$this->data[ self::CUSTOM_UNITS ] = '';
 
-	/**
-	 * Update pattern for matching custom units.
-	 *
-	 * @since 6.4.0 Visibility changed to protected, return value added.
-	 *
-	 * @param string[] $units An array of unit names.
-	 *
-	 * @return string
-	 */
-	protected function update_unit_pattern( array $units ) {
-		// Update unit regex pattern.
-		foreach ( $units as $index => $unit ) {
-			$units[ $index ] = \preg_quote( $unit, '/' );
+		foreach ( $units as $unit ) {
+			$this->data[ self::CUSTOM_UNITS ] .= \preg_quote( $unit, '/' ) . '|';
 		}
-
-		$custom_units  = \implode( '|', $units );
-		$custom_units .= ! empty( $custom_units ) ? '|' : '';
-
-		return $custom_units;
 	}
 
 	/**
