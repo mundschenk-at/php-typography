@@ -994,14 +994,11 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	/**
 	 * Sets up custom diacritics replacements.
 	 *
-	 * @param string|array<string,string> $custom_replacements An array formatted [needle=>replacement, needle=>replacement...],
-	 *                                                         or a string formatted `"needle"=>"replacement","needle"=>"replacement",...
+	 * @since 7.0.0 The parameter $units can now only be passed as an array.
+	 *
+	 * @param array<string,string> $custom_replacements An array formatted [needle=>replacement, needle=>replacement...].
 	 */
-	public function set_diacritic_custom_replacements( $custom_replacements = [] ): void {
-		if ( ! \is_array( $custom_replacements ) ) {
-			$custom_replacements = $this->parse_diacritics_replacement_string( $custom_replacements );
-		}
-
+	public function set_diacritic_custom_replacements( array $custom_replacements = [] ): void {
 		$this->data[ self::DIACRITIC_CUSTOM_REPLACEMENTS ] = [];
 		foreach ( $custom_replacements as $key => $replacement ) {
 			$key         = \strip_tags( \trim( $key ) );
@@ -1013,24 +1010,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		}
 
 		$this->update_diacritics_replacement_arrays();
-	}
-
-	/**
-	 * Parses a custom diacritics replacement string into an array.
-	 *
-	 * @param string $custom_replacements A string formatted `"needle"=>"replacement","needle"=>"replacement",...
-	 *
-	 * @return array<string,string>
-	 */
-	private function parse_diacritics_replacement_string( string $custom_replacements ): array {
-		$replacements = [];
-		foreach ( ( \preg_split( '/,/', $custom_replacements, -1, \PREG_SPLIT_NO_EMPTY ) ?: [] ) as $replacement ) { // phpcs:ignore Universal.Operators.DisallowShortTernary -- Ensure array type in case of error.
-			if ( \preg_match( '/(?<kquo>"|\')(?<key>(?:(?!\k<kquo>).)+)\k<kquo>\s*=>\s*(?<rquo>"|\')(?<replacement>(?:(?!\k<rquo>).)+)\k<rquo>/', $replacement, $match ) ) {
-				$replacements[ $match['key'] ] = $match['replacement'];
-			}
-		}
-
-		return $replacements;
 	}
 
 	/**

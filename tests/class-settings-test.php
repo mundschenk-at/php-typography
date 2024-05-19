@@ -741,12 +741,20 @@ class Settings_Test extends Testcase {
 	public function provide_set_diacritic_custom_replacements_data() {
 		return [
 			[
-				'"foo" => "fóò", "bar" => "bâr"' . ", 'ha' => 'hä'",
+				[
+					'foo' => 'fóò',
+					'bar' => 'bâr',
+					'ha'  => 'hä',
+				],
 				[ 'foo', 'bar', 'ha' ],
 				[ 'fóò', 'bâr', 'hä' ],
 			],
 			[
-				'"fo\'o" => "fó\'ò", "bar" => "bâr"' . ", 'h\"a' => 'h\"ä'",
+				[
+					"fo'o" => "fó'ò",
+					'bar'  => 'bâr',
+					'h"a'  => 'h"ä',
+				],
 				[ "fo'o", 'bar', 'h"a' ],
 				[ "fó'ò", 'bâr', 'h"ä' ],
 			],
@@ -773,11 +781,6 @@ class Settings_Test extends Testcase {
 				[],
 				[],
 			],
-			[
-				'foobar',
-				[],
-				[],
-			],
 		];
 	}
 
@@ -785,7 +788,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_diacritic_custom_replacements.
 	 *
 	 * @covers ::set_diacritic_custom_replacements
-	 * @covers ::parse_diacritics_replacement_string
 	 * @covers ::update_diacritics_replacement_arrays
 	 * @covers ::parse_diacritics_rules
 	 *
