@@ -24,6 +24,7 @@
 
 namespace PHP_Typography\Tests;
 
+use BadMethodCallException;
 use PHP_Typography\Settings;
 use PHP_Typography\U;
 
@@ -103,6 +104,20 @@ class Settings_Test extends Testcase {
 		$this->assert_attribute_count( 51, 'data', $second_settings );
 	}
 
+	/**
+	 * Tests __call with invalid method name.
+	 *
+	 * @covers ::__call
+	 *
+	 * @uses ::offsetGet
+	 */
+	public function test___call() {
+		$s = $this->settings;
+
+		$this->expect_exception( BadMethodCallException::class );
+		$this->expect_exception_message_matches( '/^Invalid method .* called\.$/' );
+		$s->foobar();
+	}
 
 	/**
 	 * Tests __get.
