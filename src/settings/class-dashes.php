@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,26 +40,26 @@ interface Dashes {
 	 *
 	 * @return string
 	 */
-	public function interval_dash();
+	public function interval_dash(): string;
 
 	/**
 	 * Retrieves the space character used around interval dashes.
 	 *
 	 * @return string
 	 */
-	public function interval_space();
+	public function interval_space(): string;
 
 	/**
 	 * Retrieves the dash used for parenthetical dashes.
 	 *
 	 * @return string
 	 */
-	public function parenthetical_dash();
+	public function parenthetical_dash(): string;
 
 	/**
 	 * Retrieves the space character used around parenthetical dashes.
 	 *
 	 * @return string
 	 */
-	public function parenthetical_space();
+	public function parenthetical_space(): string;
 }

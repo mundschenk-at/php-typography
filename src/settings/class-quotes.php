@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,12 +40,12 @@ interface Quotes {
 	 *
 	 * @return string
 	 */
-	public function open();
+	public function open(): string;
 
 	/**
 	 * Retrieves the styles closing quote characters.
 	 *
 	 * @return string
 	 */
-	public function close();
+	public function close(): string;
 }
