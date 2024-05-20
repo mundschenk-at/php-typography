@@ -1019,7 +1019,7 @@ class PHP_Typography_Test extends Testcase {
 	 *
 	 * @dataProvider provide_smart_ellipses_data
 	 *
-	 * @param string $input  HTML intput.
+	 * @param string $input  HTML input.
 	 * @param string $result Expected result.
 	 */
 	public function test_smart_ellipses( $input, $result ) {
@@ -1038,7 +1038,7 @@ class PHP_Typography_Test extends Testcase {
 	 *
 	 * @dataProvider provide_smart_ellipses_data
 	 *
-	 * @param string $input  HTML intput.
+	 * @param string $input  HTML input.
 	 * @param string $result Ignored.
 	 */
 	public function test_smart_ellipses_off( $input, $result ) {
@@ -2761,9 +2761,9 @@ class PHP_Typography_Test extends Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
-	 * @param bool   $hyphenate_compunds   Hyphenate compound-words.
+	 * @param bool   $hyphenate_compounds   Hyphenate compound-words.
 	 */
-	public function test_hyphenate_off( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds ) {
+	public function test_hyphenate_off( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compounds ) {
 		$this->s->set_hyphenation( false );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -2772,7 +2772,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_hyphenate_headings( $hyphenate_headings );
 		$this->s->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
-		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
+		$this->s->set_hyphenate_compounds( $hyphenate_compounds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertSame( $html, $this->typo->process( $html, $this->s ) );
@@ -2797,9 +2797,9 @@ class PHP_Typography_Test extends Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
-	 * @param bool   $hyphenate_compunds   Hyphenate compound-words.
+	 * @param bool   $hyphenate_compounds   Hyphenate compound-words.
 	 */
-	public function test_hyphenate( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds ) {
+	public function test_hyphenate( $html, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compounds ) {
 		$this->s->set_hyphenation( true );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -2808,7 +2808,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_hyphenate_headings( $hyphenate_headings );
 		$this->s->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
-		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
+		$this->s->set_hyphenate_compounds( $hyphenate_compounds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
@@ -2849,9 +2849,9 @@ class PHP_Typography_Test extends Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
-	 * @param bool   $hyphenate_compunds   Hyphenate compound-words.
+	 * @param bool   $hyphenate_compounds   Hyphenate compound-words.
 	 */
-	public function test_hyphenate_with_exceptions( $html, $result, $exceptions, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds ) {
+	public function test_hyphenate_with_exceptions( $html, $result, $exceptions, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compounds ) {
 		$this->s->set_hyphenation( true );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -2860,7 +2860,7 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_hyphenate_headings( $hyphenate_headings );
 		$this->s->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
-		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
+		$this->s->set_hyphenate_compounds( $hyphenate_compounds );
 		$this->s->set_hyphenation_exceptions( $exceptions );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );

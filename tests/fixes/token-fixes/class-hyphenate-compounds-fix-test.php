@@ -66,7 +66,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 	public function test_constructor() {
 		$fix = new Token_Fixes\Hyphenate_Compounds_Fix( null, true );
 
-		$this->assert_attribute_same( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targetting COMPOUND_WORDS tokens.' );
+		$this->assert_attribute_same( Token_Fix::COMPOUND_WORDS, 'target', $fix, 'The fixer should be targeting COMPOUND_WORDS tokens.' );
 		$this->assert_attribute_same( true, 'feed_compatible', $fix, 'The fixer should not be feed_compatible.' );
 	}
 
@@ -99,9 +99,9 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
-	 * @param bool   $hyphenate_compunds   Hyphenate compound-words.
+	 * @param bool   $hyphenate_compounds   Hyphenate compound-words.
 	 */
-	public function test_apply( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds ) {
+	public function test_apply( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compounds ) {
 		$this->s->set_hyphenation( true );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -110,7 +110,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_headings( $hyphenate_headings );
 		$this->s->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
-		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
+		$this->s->set_hyphenate_compounds( $hyphenate_compounds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
@@ -133,9 +133,9 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 	 * @param bool   $hyphenate_headings   Hyphenate headings.
 	 * @param bool   $hyphenate_all_caps   Hyphenate words in ALL caps.
 	 * @param bool   $hyphenate_title_case Hyphenate words in Title Case.
-	 * @param bool   $hyphenate_compunds   Hyphenate compound-words.
+	 * @param bool   $hyphenate_compounds   Hyphenate compound-words.
 	 */
-	public function test_apply_off( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compunds ) {
+	public function test_apply_off( $input, $result, $lang, $hyphenate_headings, $hyphenate_all_caps, $hyphenate_title_case, $hyphenate_compounds ) {
 		$this->s->set_hyphenation( false );
 		$this->s->set_hyphenation_language( $lang );
 		$this->s->set_min_length_hyphenation( 2 );
@@ -144,7 +144,7 @@ class Hyphenate_Compounds_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_hyphenate_headings( $hyphenate_headings );
 		$this->s->set_hyphenate_all_caps( $hyphenate_all_caps );
 		$this->s->set_hyphenate_title_case( $hyphenate_title_case );
-		$this->s->set_hyphenate_compounds( $hyphenate_compunds );
+		$this->s->set_hyphenate_compounds( $hyphenate_compounds );
 		$this->s->set_hyphenation_exceptions( [ 'KING-desk' ] );
 
 		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );

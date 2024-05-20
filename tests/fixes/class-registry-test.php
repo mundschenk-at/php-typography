@@ -151,7 +151,7 @@ class Registry_Test extends Testcase {
 		$this->pw_fix->shouldReceive( 'register_token_fix' )->once()->with( $fake_token_fixer );
 
 		$this->r->register_token_fix( $fake_token_fixer );
-		$this->assertTrue( true, 'An error occured during Token_Fix registration.' );
+		$this->assertTrue( true, 'An error occurred during Token_Fix registration.' );
 	}
 
 	/**
