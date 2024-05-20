@@ -46,9 +46,9 @@ jobs:
                 key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                 restore-keys: ${{ runner.os }}-composer-
             - name: Install dependencies
-              run: composer install --prefer-dist
+              run: composer update --prefer-dist
             - name: Run PHPUnit tests
-              run: composer test
+              run: composer run-script test
 
     coverage:
         name: Coverage & SonarCloud (PHP ${{ matrix.php-versions }})
@@ -81,11 +81,11 @@ jobs:
                 key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                 restore-keys: ${{ runner.os }}-composer-
             - name: Install dependencies
-              run: composer install --prefer-dist
+              run: composer update --prefer-dist
             - name: Run PHPUnit tests with coverage generation
               run: |
                   mkdir -p build/logs
-                  composer test -- --coverage-clover build/logs/phpunit.coverage.xml --log-junit=build/logs/phpunit.test-report.xml
+                  composer run-script test -- --coverage-clover build/logs/phpunit.coverage.xml --log-junit=build/logs/phpunit.test-report.xml
             - name: Fix code coverage paths for SonarCloud
               working-directory: ./build/logs/
               run: |
@@ -132,7 +132,7 @@ jobs:
                   restore-keys: ${{ runner.os }}-composer-
 
             - name: Install dependencies
-              run: composer install --prefer-dist
+              run: composer update --prefer-dist
 
             - name: Run PHPCS checks
               run: vendor/bin/phpcs -q src/ --extensions=php --report=checkstyle | cs2pr
@@ -167,20 +167,17 @@ jobs:
                   restore-keys: ${{ runner.os }}-composer-
 
             - name: Install dependencies
-              run: composer install --prefer-dist
+              run: composer update --prefer-dist
 
             - name: Run PHPStan
               run: composer run-script phpstan
 
     spellchecking:
         name: Spellchecking
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: true
-
+        runs-on: ubuntu-22.04
         steps:
-            - name: Checkout Actions Repository
+            - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: typos-action
+            - name: Run typos
               uses: crate-ci/typos@master
