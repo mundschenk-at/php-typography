@@ -98,7 +98,7 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_hyphenate_all_caps( bool $on = true ) Enables/disables hyphenation of words set completely in capital letters.
  * @method void set_hyphenate_title_case( bool $on = true ) Enables/disables hyphenation of words starting with a capital letter.
  * @method void set_hyphenate_compounds( bool $on = true ) Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
- * @method void set_hyphenation_exceptions( array $exceptions = [] ) Sets custom word hyphenations. Takes an array of words with all hyphenation points marked with a hard hyphen.
+ * @method void set_hyphenation_exceptions( string[] $exceptions = [] ) Sets custom word hyphenations. Takes an array of words with all hyphenation points marked with a hard hyphen.
  */
 class Settings implements \ArrayAccess, \JsonSerializable {
 
