@@ -426,8 +426,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_primary.
 	 *
 	 * @covers ::set_smart_quotes_primary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
@@ -463,8 +461,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_primary with an invalid input.
 	 *
 	 * @covers ::set_smart_quotes_primary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
@@ -481,8 +477,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_primary with a Quotes object.
 	 *
 	 * @covers ::set_smart_quotes_primary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 */
 	public function test_set_smart_quotes_primary_to_object() {
 		$s = $this->settings;
@@ -502,8 +496,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_secondary.
 	 *
 	 * @covers ::set_smart_quotes_secondary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
@@ -539,8 +531,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_secondary with an invalid input.
 	 *
 	 * @covers ::set_smart_quotes_secondary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
 	 */
@@ -557,8 +547,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_quotes_secondary with a Quotes object.
 	 *
 	 * @covers ::set_smart_quotes_secondary
-	 * @covers ::get_quote_style
-	 * @covers ::get_style
 	 */
 	public function test_set_smart_quotes_secondary_to_object() {
 		$s = $this->settings;
@@ -611,7 +599,6 @@ class Settings_Test extends Testcase {
 	 * Test set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
@@ -647,7 +634,6 @@ class Settings_Test extends Testcase {
 	 * Test set_smart_dashes_style with a Dashes object.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::get_style
 	 */
 	public function test_set_smart_dashes_style_with_object() {
 		$s = $this->settings;
@@ -672,7 +658,6 @@ class Settings_Test extends Testcase {
 	 * Tests set_smart_dashes_style.
 	 *
 	 * @covers ::set_smart_dashes_style
-	 * @covers ::get_style
 	 *
 	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
 	 */
