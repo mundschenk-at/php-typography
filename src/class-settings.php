@@ -44,8 +44,13 @@ use PHP_Typography\Settings\Quotes;
  * @since 4.0.0
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
- *              The deprecated method array_map_assoc has been removed. Most setter methods have been
- *              virtualized via `__call`. The methods update_unit_pattern and custom_unit have been removed.
+ *              Most setter methods have been virtualized via `__call`.
+ *              Additional removed methods:
+ *                - array_map_assoc (previously deprecated)
+ *                - custom_unit
+ *                - get_style
+ *                - get_quote_style
+ *                - update_unit_pattern
  *
  * @implements \ArrayAccess<string,mixed>
  *
@@ -850,7 +855,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_primary( $style = Quote_Style::DOUBLE_CURLED ): void {
-		$this->primary_quote_style = $this->get_quote_style( $style );
+		$this->primary_quote_style = Quote_Style::get_styled_quotes( $style );
 	}
 
 	/**
@@ -878,20 +883,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_secondary( $style = Quote_Style::SINGLE_CURLED ): void {
-		$this->secondary_quote_style = $this->get_quote_style( $style );
-	}
-
-	/**
-	 * Retrieves a Quotes instance from a given style.
-	 *
-	 * @param  Quotes|string $style A Quotes instance or a quote style constant.
-	 *
-	 * @throws \DomainException Thrown if $style constant is invalid.
-	 *
-	 * @return Quotes
-	 */
-	protected function get_quote_style( $style ): Quotes {
-		return $this->get_style( $style, Quotes::class, [ Quote_Style::class, 'get_styled_quotes' ], 'quote' );
+		$this->secondary_quote_style = Quote_Style::get_styled_quotes( $style );
 	}
 
 	/**
@@ -921,35 +913,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	}
 
 	/**
-	 * Retrieves an object from a given style.
-	 *
-	 * @template T
-	 *
-	 * @param  object|string   $style          A style object instance or a style constant.
-	 * @param  class-string<T> $expected_class A class name.
-	 * @param  callable        $get_style      A function that returns a style object from a given style constant.
-	 * @param  string          $description    Style description for the exception message.
-	 *
-	 * @throws \DomainException Thrown if $style constant is invalid.
-	 *
-	 * @return T An instance of $expected_class.
-	 */
-	protected function get_style( $style, $expected_class, callable $get_style, string $description ) {
-		if ( $style instanceof $expected_class ) {
-			$object = $style;
-		} else {
-			$object = $get_style( $style );
-		}
-
-		if ( ! \is_object( $object ) || ! $object instanceof $expected_class ) {
-			$style = \is_string( $style ) ? $style : \get_class( $style );
-			throw new \DomainException( "Invalid $description style $style." );
-		}
-
-		return $object;
-	}
-
-	/**
 	 * Sets the typographical conventions used by smart_dashes.
 	 *
 	 * Allowed values for $style:
@@ -961,7 +924,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ): void {
-		$this->dash_style = $this->get_style( $style, Dashes::class, [ Dash_Style::class, 'get_styled_dashes' ], 'dash' );
+		$this->dash_style = Dash_Style::get_styled_dashes( $style );
 	}
 
 	/**

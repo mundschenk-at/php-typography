@@ -27,6 +27,7 @@
 namespace PHP_Typography\Settings;
 
 use PHP_Typography\U;
+use PHP_Typography\Exceptions\Invalid_Style_Exception;
 
 /**
  * A factory class for different dash styles.
@@ -55,9 +56,11 @@ abstract class Dash_Style {
 	/**
 	 * Available dash styles.
 	 *
+	 * @since 7.0.0 Now a private constant instead of a private property.
+	 *
 	 * @var array<string,string[]>
 	 */
-	private static $styles = [
+	private const STYLES = [
 		self::TRADITIONAL_US               => [
 			self::PARENTHETICAL       => U::EM_DASH,
 			self::PARENTHETICAL_SPACE => U::THIN_SPACE,
@@ -118,22 +121,27 @@ abstract class Dash_Style {
 	 * Creates a new Dashes object in the given style.
 	 *
 	 * @since 6.5.0 The $settings parameter has been deprecated.
-	 * @since 7.0.0 Deprecated parameter $settings removed.
+	 * @since 7.0.0 Deprecated parameter $settings removed. The $style parameter
+	 *              can optionally now also be a Dashes object.
 	 *
-	 * @param string $style The dash style.
+	 * @param Dashes|string $style The dash style.
 	 *
-	 * @return Dashes|null Returns null in case of an invalid $style parameter.
+	 * @return Dashes
+	 *
+	 * @throws Invalid_Style_Exception An exception is thrown if $style is not a Dashes object nor a valid style.
 	 */
-	public static function get_styled_dashes( $style ) {
-		if ( isset( self::$styles[ $style ] ) ) {
+	public static function get_styled_dashes( $style ): Dashes {
+		if ( $style instanceof Dashes ) {
+			return $style;
+		} elseif ( isset( self::STYLES[ $style ] ) ) {
 			return new Simple_Dashes(
-				self::$styles[ $style ][ self::PARENTHETICAL ],
-				self::$styles[ $style ][ self::PARENTHETICAL_SPACE ],
-				self::$styles[ $style ][ self::INTERVAL ],
-				self::$styles[ $style ][ self::INTERVAL_SPACE ]
+				self::STYLES[ $style ][ self::PARENTHETICAL ],
+				self::STYLES[ $style ][ self::PARENTHETICAL_SPACE ],
+				self::STYLES[ $style ][ self::INTERVAL ],
+				self::STYLES[ $style ][ self::INTERVAL_SPACE ]
 			);
+		} else {
+			throw new Invalid_Style_Exception( "Invalid dash style $style." );
 		}
-
-		return null;
 	}
 }

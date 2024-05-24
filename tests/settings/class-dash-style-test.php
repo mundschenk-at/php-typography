@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ use PHP_Typography\Settings\Dashes;
 use PHP_Typography\Settings\Dash_Style;
 use PHP_Typography\U;
 
+use Mockery as m;
+
 /**
  * Dash_Style unit test.
  *
@@ -45,9 +47,12 @@ class Dash_Style_Test extends Testcase {
 	 * Provide test data for testing get_styled_dashes.
 	 */
 	public function provide_get_styled_dashes_data() {
+		$dash_mock = m::mock( Dashes::class );
+
 		return [
 			[ Dash_Style::TRADITIONAL_US, [ U::EM_DASH, U::THIN_SPACE, U::EN_DASH, U::THIN_SPACE ] ],
 			[ Dash_Style::INTERNATIONAL, [ U::EN_DASH, ' ', U::EN_DASH, U::HAIR_SPACE ] ],
+			[ $dash_mock, $dash_mock ],
 			[ 'foo', null ],
 			[ 123, null ],
 		];
@@ -60,13 +65,15 @@ class Dash_Style_Test extends Testcase {
 	 *
 	 * @dataProvider provide_get_styled_dashes_data
 	 *
-	 * @param  mixed      $style  Style index.
-	 * @param  array|null $result Result array (or null).
+	 * @param  mixed             $style  Style index.
+	 * @param  array|Dashes|null $result Result array (or null).
 	 */
-	public function test_get_styled_dashes( $style, array $result = null ) {
-		$s = $this->createMock( \PHP_Typography\Settings::class );
+	public function test_get_styled_dashes( $style, $result = null ) {
+		if ( null === $result ) {
+			$this->expect_exception_message_matches( "/^Invalid dash style $style.\$/" );
+		}
 
-		$dashes = Dash_Style::get_styled_dashes( $style, $s );
+		$dashes = Dash_Style::get_styled_dashes( $style );
 
 		if ( is_array( $result ) ) {
 			$this->assertInstanceOf( Dashes::class, $dashes );
@@ -74,6 +81,8 @@ class Dash_Style_Test extends Testcase {
 			$this->assertSame( $result[1], $dashes->parenthetical_space() );
 			$this->assertSame( $result[2], $dashes->interval_dash() );
 			$this->assertSame( $result[3], $dashes->interval_space() );
+		} elseif ( $style instanceof Dashes ) {
+			$this->assertSame( $style, $dashes );
 		} else {
 			$this->assertNull( $dashes, 'get_styled_dashes should return null for invalid indices.' );
 		}

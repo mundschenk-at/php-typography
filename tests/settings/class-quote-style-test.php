@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ use PHP_Typography\Settings\Quotes;
 use PHP_Typography\Settings\Quote_Style;
 use PHP_Typography\U;
 
+use Mockery as m;
+
 /**
  * Quote_Style unit test.
  *
@@ -45,6 +47,8 @@ class Quote_Style_Test extends Testcase {
 	 * Provide test data for testing get_styled_quotes.
 	 */
 	public function provide_get_styled_quotes_data() {
+		$quotes_mock = m::mock( Quotes::class );
+
 		return [
 			[ Quote_Style::DOUBLE_CURLED, [ U::DOUBLE_QUOTE_OPEN, U::DOUBLE_QUOTE_CLOSE ] ],
 			[ Quote_Style::DOUBLE_CURLED_REVERSED, [ U::DOUBLE_QUOTE_CLOSE, U::DOUBLE_QUOTE_CLOSE ] ],
@@ -60,6 +64,7 @@ class Quote_Style_Test extends Testcase {
 			[ Quote_Style::SINGLE_GUILLEMETS_REVERSED, [ U::SINGLE_ANGLE_QUOTE_CLOSE, U::SINGLE_ANGLE_QUOTE_OPEN ] ],
 			[ Quote_Style::CORNER_BRACKETS, [ U::LEFT_CORNER_BRACKET, U::RIGHT_CORNER_BRACKET ] ],
 			[ Quote_Style::WHITE_CORNER_BRACKETS, [ U::LEFT_WHITE_CORNER_BRACKET, U::RIGHT_WHITE_CORNER_BRACKET ] ],
+			[ $quotes_mock, $quotes_mock ],
 			[ 'foo', null ],
 			[ 123, null ],
 		];
@@ -72,20 +77,24 @@ class Quote_Style_Test extends Testcase {
 	 *
 	 * @dataProvider provide_get_styled_quotes_data
 	 *
-	 * @param  mixed      $style  Style index.
-	 * @param  array|null $result Result array (or null).
+	 * @param  mixed             $style  Style index.
+	 * @param  array|Quotes|null $result Result array (or null).
 	 */
-	public function test_get_styled_dashes( $style, array $result = null ) {
-		$s = $this->createMock( \PHP_Typography\Settings::class );
+	public function test_get_styled_quotes( $style, $result = null ) {
+		if ( null === $result ) {
+			$this->expect_exception_message_matches( "/^Invalid quote style $style.\$/" );
+		}
 
-		$dashes = Quote_Style::get_styled_quotes( $style, $s );
+		$quotes = Quote_Style::get_styled_quotes( $style );
 
 		if ( is_array( $result ) ) {
-			$this->assertInstanceOf( Quotes::class, $dashes );
-			$this->assertSame( $result[0], $dashes->open() );
-			$this->assertSame( $result[1], $dashes->close() );
+			$this->assertInstanceOf( Quotes::class, $quotes );
+			$this->assertSame( $result[0], $quotes->open() );
+			$this->assertSame( $result[1], $quotes->close() );
+		} elseif ( $style instanceof Quotes ) {
+			$this->assertSame( $style, $quotes );
 		} else {
-			$this->assertNull( $dashes, 'get_styled_quotes should return null for invalid indices.' );
+			$this->assertNull( $quotes, 'get_styled_quotes should return null for invalid indices.' );
 		}
 	}
 
@@ -94,13 +103,11 @@ class Quote_Style_Test extends Testcase {
 	 *
 	 * @covers ::get_styled_quotes
 	 */
-	public function test_get_styled_dashes_french_guillemets() {
-		$s = $this->createMock( \PHP_Typography\Settings::class );
+	public function test_get_styled_quotes_french_guillemets() {
+		$quotes = Quote_Style::get_styled_quotes( Quote_Style::DOUBLE_GUILLEMETS_FRENCH );
 
-		$dashes = Quote_Style::get_styled_quotes( Quote_Style::DOUBLE_GUILLEMETS_FRENCH, $s );
-
-		$this->assertInstanceOf( Quotes::class, $dashes );
-		$this->assertSame( U::GUILLEMET_OPEN, \mb_substr( $dashes->open(), 0, 1 ) );
-		$this->assertSame( U::GUILLEMET_CLOSE, \mb_substr( $dashes->close(), -1 ) );
+		$this->assertInstanceOf( Quotes::class, $quotes );
+		$this->assertSame( U::GUILLEMET_OPEN, \mb_substr( $quotes->open(), 0, 1 ) );
+		$this->assertSame( U::GUILLEMET_CLOSE, \mb_substr( $quotes->close(), -1 ) );
 	}
 }
