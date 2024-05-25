@@ -90,7 +90,7 @@ class Wrap_Emails_Fix extends Abstract_Token_Fix {
 	 * @return Token[]           The fixed set of tokens.
 	 */
 	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::EMAIL_WRAP ] ) ) {
+		if ( empty( $settings->wrap_emails ) ) {
 			return $tokens;
 		}
 

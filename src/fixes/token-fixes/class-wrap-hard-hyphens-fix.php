@@ -79,7 +79,7 @@ class Wrap_Hard_Hyphens_Fix extends Abstract_Token_Fix {
 	 * @return Token[]           The fixed set of tokens.
 	 */
 	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( ! empty( $settings[ Settings::HYPHEN_HARD_WRAP ] ) ) {
+		if ( ! empty( $settings->wrap_hard_hyphens ) ) {
 
 			foreach ( $tokens as $index => $text_token ) {
 				$value = $text_token->value;

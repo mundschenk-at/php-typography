@@ -96,7 +96,7 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_MARKS ] ) ) {
+		if ( empty( $settings->smart_marks ) ) {
 			return;
 		}
 

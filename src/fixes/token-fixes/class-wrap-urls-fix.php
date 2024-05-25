@@ -110,7 +110,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * @return Token[]           The fixed set of tokens.
 	 */
 	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::URL_WRAP ] ) || empty( $settings[ Settings::URL_MIN_AFTER_WRAP ] ) ) {
+		if ( empty( $settings->wrap_urls ) || empty( $settings->min_after_url_wrap ) ) {
 			return $tokens;
 		}
 
@@ -195,7 +195,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 		$path_count = \count( $path_parts );
 		$split_path = '';
 		foreach ( $path_parts as $index => $part ) {
-			if ( 0 === $index || $path_count - $index < $settings[ Settings::URL_MIN_AFTER_WRAP ] ) {
+			if ( 0 === $index || $path_count - $index < $settings->min_after_url_wrap ) {
 				$split_path .= $part;
 			} else {
 				$split_path .= U::ZERO_WIDTH_SPACE . $part;

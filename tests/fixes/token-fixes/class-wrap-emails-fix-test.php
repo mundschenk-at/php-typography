@@ -97,7 +97,7 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply( $input, $result ) {
-		$this->s->set_email_wrap( true );
+		$this->s->set_wrap_emails( true );
 
 		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
 	}
@@ -116,7 +116,7 @@ class Wrap_Emails_Fix_Test extends Token_Fix_Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_apply_off( $input, $result ) {
-		$this->s->set_email_wrap( false );
+		$this->s->set_wrap_emails( false );
 
 		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
 	}

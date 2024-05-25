@@ -153,7 +153,7 @@ class PHP_Typography {
 	 * @return string The processed $html.
 	 */
 	public function process_textnodes( $html, callable $fixer, Settings $settings, $is_title = false, array $body_classes = [] ) {
-		if ( isset( $settings[ Settings::IGNORE_TAGS ] ) && $is_title && ( \in_array( 'h1', $settings[ Settings::IGNORE_TAGS ], true ) || \in_array( 'h2',  $settings[ Settings::IGNORE_TAGS ], true ) ) ) {
+		if ( isset( $settings->tags_to_ignore ) && $is_title && ( \in_array( 'h1', $settings->tags_to_ignore, true ) || \in_array( 'h2',  $settings->tags_to_ignore, true ) ) ) {
 			return $html;
 		}
 
@@ -285,12 +285,12 @@ class PHP_Typography {
 
 		// Handle any parser errors.
 		$errors = $parser->getErrors();
-		if ( isset( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && \is_callable( $settings[ Settings::PARSER_ERRORS_HANDLER ] ) && ! empty( $errors ) ) {
-			$errors = $settings[ Settings::PARSER_ERRORS_HANDLER ]( $errors );
+		if ( isset( $settings->parser_errors_handler ) && \is_callable( $settings->parser_errors_handler ) && ! empty( $errors ) ) {
+			$errors = ( $settings->parser_errors_handler )( $errors );
 		}
 
 		// Return null if there are still unhandled parsing errors.
-		if ( ! empty( $errors ) && ! $settings[ Settings::PARSER_ERRORS_IGNORE ] ) {
+		if ( ! empty( $errors ) && ! $settings->ignore_parser_errors ) {
 			$dom = null;
 		}
 
@@ -329,14 +329,14 @@ class PHP_Typography {
 	public function query_tags_to_ignore( \DOMXPath $xpath, \DOMNode $initial_node, Settings $settings ) {
 		$elements    = [];
 		$query_parts = [];
-		if ( ! empty( $settings[ Settings::IGNORE_TAGS ] ) ) {
-			$query_parts[] = '//' . \implode( ' | //', $settings[ Settings::IGNORE_TAGS ] );
+		if ( ! empty( $settings->tags_to_ignore ) ) {
+			$query_parts[] = '//' . \implode( ' | //', $settings->tags_to_ignore );
 		}
-		if ( ! empty( $settings[ Settings::IGNORE_CLASSES ] ) ) {
-			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings[ Settings::IGNORE_CLASSES ] ) . " ')]";
+		if ( ! empty( $settings->classes_to_ignore ) ) {
+			$query_parts[] = "//*[contains(concat(' ', @class, ' '), ' " . \implode( " ') or contains(concat(' ', @class, ' '), ' ", $settings->classes_to_ignore ) . " ')]";
 		}
-		if ( ! empty( $settings[ Settings::IGNORE_IDS ] ) ) {
-			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings[ Settings::IGNORE_IDS ] ) . '\']';
+		if ( ! empty( $settings->ids_to_ignore ) ) {
+			$query_parts[] = '//*[@id=\'' . \implode( '\' or @id=\'', $settings->ids_to_ignore ) . '\']';
 		}
 
 		if ( ! empty( $query_parts ) ) {

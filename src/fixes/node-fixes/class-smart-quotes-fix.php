@@ -98,7 +98,7 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_QUOTES ] ) ) {
+		if ( ! $settings->smart_quotes ) {
 			return;
 		}
 
@@ -131,8 +131,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Handle exceptions first.
-		if ( ! empty( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ] ) ) {
-			$node_data = \str_replace( $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['patterns'], $settings[ Settings::SMART_QUOTES_EXCEPTIONS ]['replacements'], $node_data );
+		if ( ! empty( $settings->smart_quotes_exceptions ) ) {
+			$node_data = \str_replace( $settings->smart_quotes_exceptions['patterns'], $settings->smart_quotes_exceptions['replacements'], $node_data );
 		}
 
 		// Before primes, handle quoted numbers (and quotes ending in numbers).

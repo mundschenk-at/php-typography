@@ -58,7 +58,7 @@ class Smart_Area_Units_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_AREA_UNITS ] ) ) {
+		if ( empty( $settings->smart_area_units ) ) {
 			return;
 		}
 

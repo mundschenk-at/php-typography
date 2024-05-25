@@ -89,7 +89,7 @@ abstract class Simple_Regex_Replacement_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ $this->settings_switch ] ) ) {
+		if ( empty( $settings->{ $this->settings_switch } ) ) {
 			return;
 		}
 

@@ -54,10 +54,75 @@ use PHP_Typography\Settings\Quotes;
  *
  * @implements \ArrayAccess<string,mixed>
  *
- * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
- * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
+ * General attributes:
+ * @property-read string[] $tags_to_ignore An array of tags to ignore.
+ * @property-read string[] $classes_to_ignore An array of HTML classes to ignore.
+ * @property-read string[] $ids_to_ignore An array of HTML IDs to ignore.
+ *
+ * Smart characters:
+ * @property-read bool $smart_quotes Whether typographic quotes are enabled.
+ * @property-read array{patterns: string[], replacements: string[]} $smart_quotes_exceptions The specific search & replace patterns for non-standard smart quotes.
+ * @property-read bool $smart_dashes Whether replacement of "a--a" with En Dash " -- " and "---" with Em Dash is enabled.
+ * @property-read bool $smart_ellipses Whether replacement of "..." with "…" is enabled.
+ * @property-read bool $smart_diacritics Whether replacement replacement "creme brulee" with "crème brûlée" is enabled.
+ * @property-read array{patterns: string[], replacements: string[]} $diacritic_combined The specific search & replace patterns for "smart diacritics" (combined from the diacritic language and any custom replacements).
+ * @property-read array{patterns: string[], replacements: string[]} $diacritic_words The search & replace patterns read from the diacritic language file.
+ * @property-read array{patterns: string[], replacements: string[]} $diacritic_custom_replacements The custom search & replace patterns for "smart diacritics".
+ * @property-read bool $smart_marks Whether replacement of (r) (c) (tm) (sm) (p) (R) (C) (TM) (SM) (P) with ® © ™ ℠ ℗ is enabled.
+ * @property-read bool $smart_math Whether proper mathematical symbols are enabled.
+ * @property-read bool $smart_exponents Whether replacement of 2^2 with 2<sup>2</sup> is enabled.
+ * @property-read bool $smart_fractions Whether replacement of 1/4 with <sup>1</sup>&#8260;<sub>4</sub> is enabled.
+ * @property-read bool $smart_ordinal_suffix Whether replacement of 1st with 1<sup>st</sup> is enabled.
+ * @property-read bool $smart_ordinal_suffix_match_roman_numerals Whether replacement of XXe with XX<sup>e</sup> is enabled.
+ * @property-read bool $smart_area_units Whether replacement of m2 with m³ and m3 with m³ is enabled.
+ *
+ * Smart spacing:
+ * @property-read bool $single_character_word_spacing Whether single character words are forced to the next line with the insertion of &nbsp;.
+ * @property-read bool $fraction_spacing Whether fraction spacing is enabled.
+ * @property-read bool $unit_spacing Whether units and values are kept together with the insertion of &nbsp;.
+ * @property-read string $custom_units A regex pattern for custom units (or the empty string).
+ * @property-read bool $numbered_abbreviation_spacing Whether numbered abbreviations like "ISO 9000" are kept together with the insertion of &nbsp;.
+ * @property-read bool $french_punctuation_spacing Whether extra whitespace before certain punction marks according to the French custom is enabled.
+ * @property-read bool $dash_spacing Whether wrapping of Em and En dashes are in thin spaces is enabled.
+ * @property-read bool $space_collapse Whether extra whitespace characters should be removed.
+ * @property-read bool $dewidow Whether widow handling is enabled.
+ * @property-read int $max_dewidow_length The maximum length of widows that will be protected.
+ * @property-read int $dewidow_word_number The maximum number of words considered for dewidowing.
+ * @property-read int $max_dewidow_pull The maximum length of pulled text to keep widows company.
+ * @property-read bool $wrap_hard_hyphens Whether wrapping at internal hard hyphens with the insertion of a zero-width-space is enabled.
+ * @property-read bool $wrap_urls Whether wrapping of URLs is enabled.
+ * @property-read int $min_after_url_wrap The minimum number of characters required after an URL wrapping point.
+ * @property-read bool $wrap_emails wrapping of email addresses is enabled.
+ *
+ * Characters styling:
+ * @property-read bool $style_ampersands Whether wrapping of ampersands in <span class="amp"> is enabled.
+ * @property-read bool $style_caps Whether wrapping caps in <span class="caps"> is enabled.
+ * @property-read bool $style_initial_quotes Whether wrapping of initial quotes in <span class="quo"> or <span class="dquo"> is enabled.
+ * @property-read array<string,int> $initial_quote_tags The inverted list of tags where initial quotes and guillemets should be styled (with lower-case tags as keys).
+ * @property-read bool $style_numbers Whether wrapping of numbers in <span class="numbers"> is enabled.
+ * @property-read bool $style_hanging_punctuation Whether wrapping of punctuation and wide characters in <span class="pull-*"> is enabled.
+ *
+ * Hyphenation:
+ * @property-read bool $hyphenation Whether hyphenation is enabled.
+ * @property-read string $hyphenation_language The hyphenation pattern language.
+ * @property-read int<2,max> $min_length_hyphenation The minimum length of a word that may be hyphenated.
+ * @property-read int<1,max> $min_before_hyphenation The minimum character requirement before a hyphenation point.
+ * @property-read int<1,max> $min_after_hyphenation The minimum character requirement after a hyphenation point.
+ * @property-read string[] $hyphenation_exceptions A list of custom hyphenations (hyphenation points marked by hard hyphens).
+ * @property-read bool $hyphenate_headings Whether hyphenation of titles and headings is enabled.
+ * @property-read bool $hyphenate_all_caps Whether hyphenation of words set completely in capital letters is enabled.
+ * @property-read bool $hyphenate_title_case Whether hyphenation of words starting with a capital letter is enabled.
+ * @property-read bool $hyphenate_compounds Whether hyphenation of compound words (e.g. "editor-in-chief") is enabled.
+ *
+ * Parser error handling:
+ * @property-read bool $ignore_parser_errors Whether lenient parser error handling (output "best guess" HTML) is enabled.
+ * @property-read ?callable $parser_errors_handler An optional handler for parser errors. The callable takes an array of error strings as its parameter.
+ *
+ * Setters for general attributes:
  * @method void set_classes_to_ignore( string[] $classes = ['vcard','noTypo'] )  Sets classes for which the typography of their children will be left untouched.
  * @method void set_ids_to_ignore( string[] $ids = [] ) Sets IDs for which the typography of their children will be left untouched.
+ *
+ * Setters for smart characters:
  * @method void set_smart_quotes( bool $on = true ) Enables/disables typographic quotes.
  * @method void set_smart_dashes( bool $on = true ) Enables/disables replacement of "a--a" with En Dash " -- " and "---" with Em Dash.
  * @method void set_smart_ellipses( bool $on = true ) Enables/disables replacement of "..." with "…".
@@ -69,6 +134,8 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_smart_ordinal_suffix( bool $on = true ) Enables/disables replacement of 1st with 1<sup>st</sup>.
  * @method void set_smart_ordinal_suffix_match_roman_numerals( bool $on = false ) Enables/disables replacement of XXe with XX<sup>e</sup>.
  * @method void set_smart_area_units( bool $on = true ) Enables/disables replacement of m2 with m³ and m3 with m³.
+ *
+ * Setters for smart spacing:
  * @method void set_single_character_word_spacing( bool $on = true ) Enables/disables forcing single character words to next line with the insertion of &nbsp;.
  * @method void set_fraction_spacing( bool $on = true ) Enables/disables fraction spacing.
  * @method void set_unit_spacing( bool $on = true ) Enables/disables keeping units and values together with the insertion of &nbsp;.
@@ -81,14 +148,18 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_dewidow_word_number( int $number = 1 ) Sets the maximum number of words considered for dewidowing. Only 1, 2 and 3 are valid arguments.
  * @method void set_max_dewidow_pull( int $length = 5 ) Sets the maximum length of pulled text to keep widows company. The length cannot be less than 2.
  * @method void set_wrap_hard_hyphens( bool $on = true ) Enables/disables wrapping at internal hard hyphens with the insertion of a zero-width-space.
- * @method void set_url_wrap( bool $on = true ) Enables/disables wrapping of urls.
+ * @method void set_wrap_urls( bool $on = true ) Enables/disables wrapping of URLs.
  * @method void set_min_after_url_wrap( int $length = 5 ) Sets the minimum character requirement after an URL wrapping point. The length cannot be less than 1.
- * @method void set_email_wrap( bool $on = true ) Enables/disables wrapping of email addresses.
+ * @method void set_wrap_emails( bool $on = true ) Enables/disables wrapping of email addresses.
+ *
+ * Setters for character styling:
  * @method void set_style_ampersands( bool $on = true ) Enables/disables wrapping of ampersands in <span class="amp">.
  * @method void set_style_caps( bool $on = true ) Enables/disables wrapping caps in <span class="caps">.
  * @method void set_style_initial_quotes( bool $on = true ) Enables/disables wrapping of initial quotes in <span class="quo"> or <span class="dquo">.
  * @method void set_style_numbers( bool $on = true ) Enables/disables wrapping of numbers in <span class="numbers">.
  * @method void set_style_hanging_punctuation( bool $on = true ) Enables/disables wrapping of punctuation and wide characters in <span class="pull-*">.
+ *
+ * Setters for hyphenation:
  * @method void set_hyphenation( bool $on = true ) Enables/disables hyphenation.
  * @method void set_hyphenation_language( string $lang = 'en-US' ) Sets the hyphenation pattern language.
  * @method void set_min_length_hyphenation( int $length = 5 ) Sets the minimum length of a word that may be hyphenated. The length cannot be less than 2.
@@ -99,6 +170,10 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_hyphenate_title_case( bool $on = true ) Enables/disables hyphenation of words starting with a capital letter.
  * @method void set_hyphenate_compounds( bool $on = true ) Enables/disables hyphenation of compound words (e.g. "editor-in-chief").
  * @method void set_hyphenation_exceptions( string[] $exceptions = [] ) Sets custom word hyphenations. Takes an array of words with all hyphenation points marked with a hard hyphen.
+ *
+ * Setters for parser error handling:
+ * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
+ * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
  */
 class Settings implements \ArrayAccess, \JsonSerializable {
 
@@ -113,16 +188,16 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	const SMART_DASHES                        = 'smartDashes';
 	const SMART_ELLIPSES                      = 'smartEllipses';
 	const SMART_DIACRITICS                    = 'smartDiacritics';
-	const DIACRITIC_LANGUAGE                  = 'diacriticLanguage';
-	const DIACRITIC_WORDS                     = 'diacriticWords';
+	const DIACRITIC_LANGUAGE                  = 'diacriticLanguage'; // public for defaults only.
+	const DIACRITIC_WORDS                     = 'diacriticWords'; // public for testing.
 	const DIACRITIC_REPLACEMENT_DATA          = 'diacriticReplacement';
-	const DIACRITIC_CUSTOM_REPLACEMENTS       = 'diacriticCustomReplacements';
+	const DIACRITIC_CUSTOM_REPLACEMENTS       = 'diacriticCustomReplacements'; // public for testing.
 	const SMART_MARKS                         = 'smartMarks';
+	const SMART_MATH                          = 'smartMath';
+	const SMART_EXPONENTS                     = 'smartExponents';
+	const SMART_FRACTIONS                     = 'smartFractions';
 	const SMART_ORDINAL_SUFFIX                = 'smartOrdinalSuffix';
 	const SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS = 'smartOrdinalSuffixRomanNumerals';
-	const SMART_MATH                          = 'smartMath';
-	const SMART_FRACTIONS                     = 'smartFractions';
-	const SMART_EXPONENTS                     = 'smartExponents';
 	const SMART_AREA_UNITS                    = 'smartAreaVolumeUnits';
 
 	// Smart spacing.
@@ -133,6 +208,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	const NUMBERED_ABBREVIATION_SPACING = 'numberedAbbreviationSpacing';
 	const FRENCH_PUNCTUATION_SPACING    = 'frenchPunctuationSpacing';
 	const DASH_SPACING                  = 'dashSpacing';
+	const SPACE_COLLAPSE                = 'spaceCollapse';
 	const DEWIDOW                       = 'dewidow';
 	const DEWIDOW_MAX_LENGTH            = 'dewidowMaxLength';
 	const DEWIDOW_MAX_PULL              = 'dewidowMaxPull';
@@ -141,7 +217,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	const URL_WRAP                      = 'urlWrap';
 	const URL_MIN_AFTER_WRAP            = 'urlMinAfterWrap';
 	const EMAIL_WRAP                    = 'emailWrap';
-	const SPACE_COLLAPSE                = 'spaceCollapse';
 
 	// Character styling.
 	const STYLE_AMPERSANDS          = 'styleAmpersands';
@@ -230,6 +305,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'verify'   => 'is_callable',
 		],
 		[
+			'property' => self::IGNORE_TAGS,
+			'name'     => 'tags_to_ignore',
+		],
+		[
 			'property' => self::IGNORE_CLASSES,
 			'name'     => 'classes_to_ignore',
 			'default'  => [ 'vcard', 'noTypo' ],
@@ -248,6 +327,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'verify'   => 'is_bool',
 		],
 		[
+			'property' => self::SMART_QUOTES_EXCEPTIONS,
+			'name'     => 'smart_quotes_exceptions',
+		],
+		[
 			'property' => self::SMART_DASHES,
 			'name'     => 'smart_dashes',
 			'default'  => true,
@@ -264,6 +347,18 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'name'     => 'smart_diacritics',
 			'default'  => true,
 			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::DIACRITIC_REPLACEMENT_DATA,
+			'name'     => 'diacritic_combined',
+		],
+		[
+			'property' => self::DIACRITIC_WORDS,
+			'name'     => 'diacritic_words',
+		],
+		[
+			'property' => self::DIACRITIC_CUSTOM_REPLACEMENTS,
+			'name'     => 'diacritic_custom_replacements',
 		],
 		[
 			'property' => self::SMART_MARKS,
@@ -326,6 +421,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'verify'   => 'is_bool',
 		],
 		[
+			'property' => self::CUSTOM_UNITS,
+			'name'     => 'custom_units',
+		],
+		[
 			'property' => self::NUMBERED_ABBREVIATION_SPACING,
 			'name'     => 'numbered_abbreviation_spacing',
 			'default'  => true,
@@ -385,7 +484,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		],
 		[
 			'property' => self::URL_WRAP,
-			'name'     => 'url_wrap',
+			'name'     => 'wrap_urls',
 			'default'  => true,
 			'verify'   => 'is_bool',
 		],
@@ -398,7 +497,7 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		],
 		[
 			'property' => self::EMAIL_WRAP,
-			'name'     => 'email_wrap',
+			'name'     => 'wrap_emails',
 			'default'  => true,
 			'verify'   => 'is_bool',
 		],
@@ -419,6 +518,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'name'     => 'style_initial_quotes',
 			'default'  => true,
 			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::INITIAL_QUOTE_TAGS,
+			'name'     => 'initial_quote_tags',
 		],
 		[
 			'property' => self::STYLE_NUMBERS,
@@ -466,6 +569,12 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'min'      => 1,
 		],
 		[
+			'property' => self::HYPHENATION_CUSTOM_EXCEPTIONS,
+			'name'     => 'hyphenation_exceptions',
+			'default'  => [],
+			'verify'   => 'is_array',
+		],
+		[
 			'property' => self::HYPHENATE_HEADINGS,
 			'name'     => 'hyphenate_headings',
 			'default'  => true,
@@ -489,12 +598,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 			'default'  => true,
 			'verify'   => 'is_bool',
 		],
-		[
-			'property' => self::HYPHENATION_CUSTOM_EXCEPTIONS,
-			'name'     => 'hyphenation_exceptions',
-			'default'  => [],
-			'verify'   => 'is_array',
-		],
 	];
 
 	/**
@@ -505,6 +608,15 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @var array<string,mixed>
 	 */
 	protected array $virtual_setters = [];
+
+	/**
+	 * An index of virtual property names data array indices.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @var array<string,string>
+	 */
+	protected array $virtual_properties = [];
 
 	/**
 	 * Sets up a new Settings object.
@@ -522,7 +634,14 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	public function __construct( bool $set_defaults = true, array $mapping = [ U::NO_BREAK_NARROW_SPACE => U::NO_BREAK_SPACE, U::APOSTROPHE => U::SINGLE_QUOTE_CLOSE ] ) { // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing
 		// Set up virtualized set_* methods.
 		foreach ( self::VIRTUAL_PROPERTIES as $definition ) {
-			$this->virtual_setters[ "set_{$definition['name']}" ] = $definition;
+			// Add virtual setter method if none is defined.
+			$setter = "set_{$definition['name']}";
+			if ( isset( $definition['verify'] ) && ! \method_exists( $this, $setter ) ) {
+				$this->virtual_setters[ $setter ] = $definition;
+			}
+
+			// Add virtual read-only properties.
+			$this->virtual_properties[ $definition['name'] ] = $definition['property'];
 		}
 
 		if ( $set_defaults ) {
@@ -583,6 +702,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return mixed
 	 */
 	public function &__get( $key ) {
+		if ( isset( $this->virtual_properties[ $key ] ) ) {
+			return $this->data[ $this->virtual_properties[ $key ] ];
+		}
+
 		return $this->data[ $key ];
 	}
 
@@ -604,6 +727,10 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 * @return bool
 	 */
 	public function __isset( $key ) {
+		if ( isset( $this->virtual_properties[ $key ] ) ) {
+			return isset( $this->data[ $this->virtual_properties[ $key ] ] );
+		}
+
 		return isset( $this->data[ $key ] );
 	}
 
@@ -787,8 +914,8 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 		$this->set_max_dewidow_pull();
 		$this->set_dewidow_word_number();
 		$this->set_wrap_hard_hyphens();
-		$this->set_url_wrap();
-		$this->set_email_wrap();
+		$this->set_wrap_urls();
+		$this->set_wrap_emails();
 		$this->set_min_after_url_wrap();
 		$this->set_space_collapse();
 

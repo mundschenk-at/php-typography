@@ -136,7 +136,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_DASHES ] ) ) {
+		if ( empty( $settings->smart_dashes ) ) {
 			return;
 		}
 

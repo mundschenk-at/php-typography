@@ -50,20 +50,20 @@ class Smart_Diacritics_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_DIACRITICS ] ) ) {
+		if ( empty( $settings->smart_diacritics ) || empty( $settings->diacritic_combined ) ) {
 			return; // abort.
 		}
 
+		// FIXME: Add proper initialization and move condition upwards.
 		if (
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ] ) &&
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'] ) &&
-			! empty( $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'] )
+			! empty( $settings->diacritic_combined['patterns'] ) &&
+			! empty( $settings->diacritic_combined['replacements'] )
 		) {
 
 			// Uses "word" => "replacement" pairs from an array to make fast preg_* replacements.
-			$replacements   = $settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'];
+			$replacements   = $settings->diacritic_combined['replacements'];
 			$textnode->data = (string) \preg_replace_callback(
-				$settings[ Settings::DIACRITIC_REPLACEMENT_DATA ]['patterns'],
+				$settings->diacritic_combined['patterns'],
 				function ( $matching ) use ( $replacements ) {
 					if ( isset( $replacements[ $matching[0] ] ) ) {
 						return $replacements[ $matching[0] ];

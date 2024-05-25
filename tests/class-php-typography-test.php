@@ -195,17 +195,17 @@ class PHP_Typography_Test extends Testcase {
 
 		// Inspect settings.
 		foreach ( $tags_to_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 
 		// Auto-close tag and something else.
 		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
-		$this->assertContains( 'foo', $s['ignoreTags'] );
+		$this->assertContains( 'foo', $s->tags_to_ignore );
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 
 		$s->set_tags_to_ignore( [ 'img', 'foo', ' \ ' ] ); // Should not result in an error.
@@ -230,8 +230,8 @@ class PHP_Typography_Test extends Testcase {
 
 		$s->set_classes_to_ignore( [ 'foo', 'bar' ] );
 
-		$this->assertContains( 'foo', $s['ignoreClasses'] );
-		$this->assertContains( 'bar', $s['ignoreClasses'] );
+		$this->assertContains( 'foo', $s->classes_to_ignore );
+		$this->assertContains( 'bar', $s->classes_to_ignore );
 
 		$html = '<p><span class="foo">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p class="bar">"This" should also be ignored. <span>And "this".</span></p>
@@ -260,8 +260,8 @@ class PHP_Typography_Test extends Testcase {
 
 		$s->set_ids_to_ignore( [ 'foobar', 'barfoo' ] );
 
-		$this->assertContains( 'foobar', $s['ignoreIDs'] );
-		$this->assertContains( 'barfoo', $s['ignoreIDs'] );
+		$this->assertContains( 'foobar', $s->ids_to_ignore );
+		$this->assertContains( 'barfoo', $s->ids_to_ignore );
 
 		$html = '<p><span id="foobar">Ignore this "quote",</span><span class="other"> but not "this" one.</span></p>
 				 <p id="barfoo">"This" should also be ignored. <span>And "this".</span></p>
@@ -1130,14 +1130,14 @@ class PHP_Typography_Test extends Testcase {
 	 * @param string $unset_replacement Replacement to unset.
 	 */
 	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset_replacement ) {
-
-		$this->s->set_smart_diacritics( true );
-		$this->s->set_diacritic_language( $lang );
 		$s = $this->s;
 
-		$replacements = $s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
-		unset( $replacements['replacements'][ $unset_replacement ] );
-		$s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
+		$s->set_smart_diacritics( true );
+		$s->set_diacritic_language( $lang );
+
+		$settings_data = $this->get_value( $s, 'data' );
+		unset( $settings_data[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'] );
+		$this->set_value( $s, 'data', $settings_data );
 
 		$this->assertSame( $this->clean_html( $html ), $this->clean_html( $this->typo->process( $html, $s, false ) ) );
 	}
@@ -2290,7 +2290,7 @@ class PHP_Typography_Test extends Testcase {
 	 * @param int    $min_after Minimum number of characters after URL wrapping.
 	 */
 	public function test_wrap_urls( $input, $result, $min_after ) {
-		$this->s->set_url_wrap( true );
+		$this->s->set_wrap_urls( true );
 		$this->s->set_min_after_url_wrap( $min_after );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $input, $this->s ) ) );
@@ -2312,7 +2312,7 @@ class PHP_Typography_Test extends Testcase {
 	 * @param int    $min_after  Minimum number of characters after URL wrapping.
 	 */
 	public function test_wrap_urls_off( $html, $result, $min_after ) {
-		$this->s->set_url_wrap( false );
+		$this->s->set_wrap_urls( false );
 		$this->s->set_min_after_url_wrap( $min_after );
 
 		$this->assertSame( $html, $this->typo->process( $html, $this->s ) );
@@ -2345,7 +2345,7 @@ class PHP_Typography_Test extends Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_wrap_emails( $html, $result ) {
-		$this->s->set_email_wrap( true );
+		$this->s->set_wrap_emails( true );
 
 		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $this->s ) ) );
 	}
@@ -2365,7 +2365,7 @@ class PHP_Typography_Test extends Testcase {
 	 * @param string $result Expected result.
 	 */
 	public function test_wrap_emails_off( $html, $result ) {
-		$this->s->set_email_wrap( false );
+		$this->s->set_wrap_emails( false );
 
 		$this->assertSame( $html, $this->typo->process( $html, $this->s ) );
 	}
@@ -2942,8 +2942,10 @@ class PHP_Typography_Test extends Testcase {
 		$this->s->set_hyphenate_title_case( true );
 		$s = $this->s;
 
-		$s['hyphenationPatternExceptions'] = [];
-		unset( $s['hyphenationExceptions'] );
+		$data                                 = $this->get_value( $s, 'data' );
+		$data['hyphenationPatternExceptions'] = [];
+		unset( $data['hyphenationExceptions'] );
+		$this->set_value( $s, 'data', $data );
 
 		$this->assertSame(
 			'A few words to hy&shy;phen&shy;ate, like KINGdesk. Re&shy;al&shy;ly, there should be more hy&shy;phen&shy;ation here!',
