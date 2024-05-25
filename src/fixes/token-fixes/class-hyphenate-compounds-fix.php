@@ -66,7 +66,7 @@ class Hyphenate_Compounds_Fix extends Hyphenate_Fix {
 	 * @return Token[]           The fixed set of tokens.
 	 */
 	public function apply( array $tokens, \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::HYPHENATE_COMPOUNDS ] ) ) {
+		if ( empty( $settings->hyphenate_compounds ) ) {
 			return $tokens; // abort.
 		}
 

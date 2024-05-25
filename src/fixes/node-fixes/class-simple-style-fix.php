@@ -91,7 +91,7 @@ abstract class Simple_Style_Fix extends Classes_Dependent_Fix {
 	 * @return void
 	 */
 	protected function apply_internal( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ $this->settings_switch ] ) ) {
+		if ( empty( $settings->{ $this->settings_switch } ) ) {
 			return;
 		}
 

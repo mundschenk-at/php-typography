@@ -51,7 +51,7 @@ class Smart_Ellipses_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_ELLIPSES ] ) ) {
+		if ( empty( $settings->smart_ellipses ) ) {
 			return;
 		}
 

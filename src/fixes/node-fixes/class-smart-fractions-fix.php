@@ -140,20 +140,20 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SMART_FRACTIONS ] ) && empty( $settings[ Settings::FRACTION_SPACING ] ) ) {
+		if ( empty( $settings->smart_fractions ) && empty( $settings->fraction_spacing ) ) {
 			return;
 		}
 
 		// Cache textnode content.
 		$node_data = $textnode->data;
 
-		if ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
+		if ( ! empty( $settings->fraction_spacing ) && ! empty( $settings->smart_fractions ) ) {
 			$node_data = (string) \preg_replace( self::SPACING, '$1' . U::NO_BREAK_NARROW_SPACE . '$2', $node_data );
-		} elseif ( ! empty( $settings[ Settings::FRACTION_SPACING ] ) && empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
+		} elseif ( ! empty( $settings->fraction_spacing ) && empty( $settings->smart_fractions ) ) {
 			$node_data = (string) \preg_replace( self::SPACING, '$1' . U::NO_BREAK_SPACE . '$2', $node_data );
 		}
 
-		if ( ! empty( $settings[ Settings::SMART_FRACTIONS ] ) ) {
+		if ( ! empty( $settings->smart_fractions ) ) {
 			$node_data = (string) \preg_replace(
 				[
 					// Escape sequences we don't want fractionified.

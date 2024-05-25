@@ -64,7 +64,7 @@ class Single_Character_Word_Spacing_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SINGLE_CHARACTER_WORD_SPACING ] ) ) {
+		if ( empty( $settings->single_character_word_spacing ) ) {
 			return;
 		}
 

@@ -109,7 +109,7 @@ class Dash_Spacing_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::DASH_SPACING ] ) ) {
+		if ( empty( $settings->dash_spacing ) ) {
 			return;
 		}
 

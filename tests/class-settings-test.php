@@ -129,7 +129,7 @@ class Settings_Test extends Testcase {
 	public function test___get() {
 		$s = $this->settings;
 
-		$s['new_key'] = 42;
+		$s->new_key = 42;
 		$this->assertEquals( 42, $s->new_key ); // @phpstan-ignore-line
 	}
 
@@ -185,7 +185,7 @@ class Settings_Test extends Testcase {
 	 * @uses ::offsetGet
 	 * @uses ::offsetExists
 	 */
-	public function test_offsetSet() {
+	/*public function test_offsetSet() {
 		$s = $this->settings;
 
 		// A key has to be used.
@@ -196,7 +196,7 @@ class Settings_Test extends Testcase {
 		$this->assertFalse( isset( $s['new_key'] ) );
 		$s['new_key'] = 42;
 		$this->assertEquals( 42, $s['new_key'] );
-	}
+	}*/
 
 	/**
 	 * Tests offsetExists.
@@ -205,13 +205,14 @@ class Settings_Test extends Testcase {
 	 *
 	 * @uses ::offsetSet
 	 */
+	/*
 	public function test_offsetExists() {
 		$s = $this->settings;
 
 		$this->assertFalse( isset( $s['new_key'] ) );
 		$s['new_key'] = 42;
 		$this->assertTrue( isset( $s['new_key'] ) );
-	}
+	}*/
 
 	/**
 	 * Tests offsetUnset.
@@ -222,6 +223,7 @@ class Settings_Test extends Testcase {
 	 * @uses ::offsetGet
 	 * @uses ::offsetExists
 	 */
+	/*
 	public function test_offsetUnset() {
 		$s = $this->settings;
 
@@ -230,7 +232,7 @@ class Settings_Test extends Testcase {
 
 		unset( $s['new_key'] );
 		$this->assertFalse( isset( $s['new_key'] ) );
-	}
+	}*/
 
 	/**
 	 * Tests offsetGet.
@@ -239,13 +241,14 @@ class Settings_Test extends Testcase {
 	 *
 	 * @uses ::offsetSet
 	 */
+	/*
 	public function test_offsetGet() {
 		$s = $this->settings;
 		$this->assertNull( $s['new_key'] );
 
 		$s['new_key'] = 42;
 		$this->assertEquals( 42, $s['new_key'] );
-	}
+	}*/
 
 	/**
 	 * Tests primary_quote_style.
@@ -298,10 +301,10 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$s->set_ignore_parser_errors( true );
-		$this->assertTrue( $s[ Settings::PARSER_ERRORS_IGNORE ] );
+		$this->assertTrue( $s->ignore_parser_errors );
 
 		$s->set_ignore_parser_errors( false );
-		$this->assertFalse( $s[ Settings::PARSER_ERRORS_IGNORE ] );
+		$this->assertFalse( $s->ignore_parser_errors );
 	}
 
 	/**
@@ -313,7 +316,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// Default: no handler.
-		$this->assertEmpty( $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assertEmpty( $s->parser_errors_handler );
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
@@ -321,8 +324,8 @@ class Settings_Test extends Testcase {
 				return [];
 			}
 		);
-		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
-		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
+		$this->assert_is_callable( $s->parser_errors_handler );
+		$old_handler = $s->parser_errors_handler;
 	}
 
 	/**
@@ -334,7 +337,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// Default: no handler.
-		$this->assertEmpty( $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assertEmpty( $s->parser_errors_handler );
 
 		// Valid handler.
 		$s->set_parser_errors_handler(
@@ -342,15 +345,15 @@ class Settings_Test extends Testcase {
 				return [];
 			}
 		);
-		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
-		$old_handler = $s[ Settings::PARSER_ERRORS_HANDLER ];
+		$this->assert_is_callable( $s->parser_errors_handler );
+		$old_handler = $s->parser_errors_handler;
 
 		$this->expect_exception( \TypeError::class );
 
 		// Invalid handler, previous handler not changed.
 		$s->set_parser_errors_handler( 'foobar' );
-		$this->assert_is_callable( $s[ Settings::PARSER_ERRORS_HANDLER ] );
-		$this->assertSame( $old_handler, $s[ Settings::PARSER_ERRORS_HANDLER ] );
+		$this->assert_is_callable( $s->parser_errors_handler );
+		$this->assertSame( $old_handler, $s->parser_errors_handler );
 	}
 
 	/**
@@ -366,18 +369,18 @@ class Settings_Test extends Testcase {
 		// Default tags.
 		$s->set_tags_to_ignore( $tags_to_ignore );
 		foreach ( $tags_to_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 
 		// Auto-close tag and something else.
 		$s->set_tags_to_ignore( [ 'img', 'foo' ] );
-		$this->assertContains( 'foo', $s['ignoreTags'] );
+		$this->assertContains( 'foo', $s->tags_to_ignore );
 
 		foreach ( $always_ignore as $tag ) {
-			$this->assertContains( $tag, $s['ignoreTags'] );
+			$this->assertContains( $tag, $s->tags_to_ignore );
 		}
 
 		$s->set_tags_to_ignore( [ 'img', 'foo', ' ' ] ); // should not result in an error.
@@ -392,8 +395,8 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$s->set_classes_to_ignore( [ 'foo', 'bar' ] );
-		$this->assertContains( 'foo', $this->settings['ignoreClasses'] );
-		$this->assertContains( 'bar', $this->settings['ignoreClasses'] );
+		$this->assertContains( 'foo', $s->classes_to_ignore );
+		$this->assertContains( 'bar', $s->classes_to_ignore );
 	}
 
 	/**
@@ -405,8 +408,8 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$s->set_ids_to_ignore( [ 'foobar', 'barfoo' ] );
-		$this->assertContains( 'foobar', $this->settings['ignoreIDs'] );
-		$this->assertContains( 'barfoo', $this->settings['ignoreIDs'] );
+		$this->assertContains( 'foobar', $s->ids_to_ignore );
+		$this->assertContains( 'barfoo', $s->ids_to_ignore );
 	}
 
 	/**
@@ -416,10 +419,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_quotes() {
 		$this->settings->set_smart_quotes( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_QUOTES ] );
+		$this->assertTrue( $this->settings->smart_quotes );
 
 		$this->settings->set_smart_quotes( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_QUOTES ] );
+		$this->assertFalse( $this->settings->smart_quotes );
 	}
 
 	/**
@@ -570,13 +573,13 @@ class Settings_Test extends Testcase {
 	public function test_set_smart_quotes_exceptions() {
 		$this->settings->set_smart_quotes_exceptions();
 
-		$exceptions = $this->settings[ Settings::SMART_QUOTES_EXCEPTIONS ];
+		$exceptions = $this->settings->smart_quotes_exceptions;
 		$this->assertCount( 2, $exceptions );
 		$this->assertGreaterThan( 1, count( $exceptions['patterns'] ) );
 		$this->assertEquals( count( $exceptions['patterns'] ), count( $exceptions['replacements'] ) );
 
 		$this->settings->set_smart_quotes_exceptions( [ 'Yfoo' => 'Xfoo' ] );
-		$exceptions = $this->settings[ Settings::SMART_QUOTES_EXCEPTIONS ];
+		$exceptions = $this->settings->smart_quotes_exceptions;
 		$this->assertCount( 2, $exceptions );
 		$this->assertEquals( [ 'Yfoo' ], $exceptions['patterns'] );
 		$this->assertEquals( [ 'Xfoo' ], $exceptions['replacements'] );
@@ -589,10 +592,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_dashes() {
 		$this->settings->set_smart_dashes( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_DASHES ] );
+		$this->assertTrue( $this->settings->smart_dashes );
 
 		$this->settings->set_smart_dashes( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_DASHES ] );
+		$this->assertFalse( $this->settings->smart_dashes );
 	}
 
 	/**
@@ -677,10 +680,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_ellipses() {
 		$this->settings->set_smart_ellipses( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_ELLIPSES ] );
+		$this->assertTrue( $this->settings->smart_ellipses );
 
 		$this->settings->set_smart_ellipses( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_ELLIPSES ] );
+		$this->assertFalse( $this->settings->smart_ellipses );
 	}
 
 	/**
@@ -690,10 +693,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_diacritics() {
 		$this->settings->set_smart_diacritics( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_DIACRITICS ] );
+		$this->assertTrue( $this->settings->smart_diacritics );
 
 		$this->settings->set_smart_diacritics( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_DIACRITICS ] );
+		$this->assertFalse( $this->settings->smart_diacritics );
 	}
 
 	/**
@@ -705,19 +708,19 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_diacritic_language() {
 		$this->settings->set_diacritic_language( 'en-US' );
-		$this->assertGreaterThan( 0, count( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
+		$this->assertGreaterThan( 0, count( $this->settings->diacritic_words ) );
 
 		$this->settings->set_diacritic_language( 'foobar' );
-		$this->assertFalse( isset( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
+		$this->assertFalse( isset( $this->settings->diacritic_words ) );
 
 		$this->settings->set_diacritic_language( 'de-DE' );
-		$this->assertTrue( isset( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
-		$this->assertGreaterThan( 0, count( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
+		$this->assertTrue( isset( $this->settings->diacritic_words ) );
+		$this->assertGreaterThan( 0, count( $this->settings->diacritic_words ) );
 
 		// Nothing changed since the last call.
 		$this->settings->set_diacritic_language( 'de-DE' );
-		$this->assertTrue( isset( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
-		$this->assertGreaterThan( 0, count( $this->settings[ Settings::DIACRITIC_WORDS ] ) );
+		$this->assertTrue( isset( $this->settings->diacritic_words ) );
+		$this->assertGreaterThan( 0, count( $this->settings->diacritic_words ) );
 	}
 
 	/**
@@ -788,15 +791,15 @@ class Settings_Test extends Testcase {
 		$s->set_diacritic_custom_replacements( $input );
 
 		foreach ( $keys as $key ) {
-			$this->assertArrayHasKey( $key, $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
+			$this->assertArrayHasKey( $key, $s->diacritic_custom_replacements );
 		}
 
 		foreach ( $values as $value ) {
-			$this->assertContains( $value, $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
+			$this->assertContains( $value, $s->diacritic_custom_replacements );
 		}
 
-		$this->assertCount( count( $keys ), $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
-		$this->assertCount( count( $values ), $s[ Settings::DIACRITIC_CUSTOM_REPLACEMENTS ] );
+		$this->assertCount( count( $keys ), $s->diacritic_custom_replacements );
+		$this->assertCount( count( $values ), $s->diacritic_custom_replacements );
 	}
 
 	/**
@@ -813,15 +816,17 @@ class Settings_Test extends Testcase {
 		];
 
 		// Fake standard diacritics.
-		$s[ Settings::DIACRITIC_WORDS ] = [
+		$settings_data                              = $this->get_value( $s, 'data' );
+		$settings_data[ Settings::DIACRITIC_WORDS ] = [
 			'foobar' => 'fööbär',
 			'barfoo' => 'bärföö',
 		];
+		$this->set_value( $s, 'data', $settings_data );
 
 		$s->set_diacritic_custom_replacements( $custom_diacritics );
 
-		$this->assertSame( 'foobar', $s[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements']['foobar'] );
-		$this->assertSame( 'bärföö', $s[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements']['barfoo'] );
+		$this->assertSame( 'foobar', $s->diacritic_combined['replacements']['foobar'] );
+		$this->assertSame( 'bärföö', $s->diacritic_combined['replacements']['barfoo'] );
 	}
 
 	/**
@@ -831,10 +836,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_marks() {
 		$this->settings->set_smart_marks( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_MARKS ] );
+		$this->assertTrue( $this->settings->smart_marks );
 
 		$this->settings->set_smart_marks( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_MARKS ] );
+		$this->assertFalse( $this->settings->smart_marks );
 	}
 
 	/**
@@ -844,10 +849,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_area_units() {
 		$this->settings->set_smart_area_units( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_AREA_UNITS ] );
+		$this->assertTrue( $this->settings->smart_area_units );
 
 		$this->settings->set_smart_area_units( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_AREA_UNITS ] );
+		$this->assertFalse( $this->settings->smart_area_units );
 	}
 
 	/**
@@ -857,10 +862,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_math() {
 		$this->settings->set_smart_math( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_MATH ] );
+		$this->assertTrue( $this->settings->smart_math );
 
 		$this->settings->set_smart_math( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_MATH ] );
+		$this->assertFalse( $this->settings->smart_math );
 	}
 
 	/**
@@ -870,10 +875,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_exponents() {
 		$this->settings->set_smart_exponents( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_EXPONENTS ] );
+		$this->assertTrue( $this->settings->smart_exponents );
 
 		$this->settings->set_smart_exponents( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_EXPONENTS ] );
+		$this->assertFalse( $this->settings->smart_exponents );
 	}
 
 	/**
@@ -883,10 +888,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_fractions() {
 		$this->settings->set_smart_fractions( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_FRACTIONS ] );
+		$this->assertTrue( $this->settings->smart_fractions );
 
 		$this->settings->set_smart_fractions( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_FRACTIONS ] );
+		$this->assertFalse( $this->settings->smart_fractions );
 	}
 
 	/**
@@ -896,10 +901,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_ordinal_suffix() {
 		$this->settings->set_smart_ordinal_suffix( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_ORDINAL_SUFFIX ] );
+		$this->assertTrue( $this->settings->smart_ordinal_suffix );
 
 		$this->settings->set_smart_ordinal_suffix( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_ORDINAL_SUFFIX ] );
+		$this->assertFalse( $this->settings->smart_ordinal_suffix );
 	}
 
 	/**
@@ -909,10 +914,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_smart_ordinal_suffix_match_roman_numerals() {
 		$this->settings->set_smart_ordinal_suffix_match_roman_numerals( true );
-		$this->assertTrue( $this->settings[ Settings::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] );
+		$this->assertTrue( $this->settings->smart_ordinal_suffix_match_roman_numerals );
 
 		$this->settings->set_smart_ordinal_suffix_match_roman_numerals( false );
-		$this->assertFalse( $this->settings[ Settings::SMART_ORDINAL_SUFFIX_ROMAN_NUMERALS ] );
+		$this->assertFalse( $this->settings->smart_ordinal_suffix_match_roman_numerals );
 	}
 
 	/**
@@ -922,10 +927,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_single_character_word_spacing() {
 		$this->settings->set_single_character_word_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::SINGLE_CHARACTER_WORD_SPACING ] );
+		$this->assertTrue( $this->settings->single_character_word_spacing );
 
 		$this->settings->set_single_character_word_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::SINGLE_CHARACTER_WORD_SPACING ] );
+		$this->assertFalse( $this->settings->single_character_word_spacing );
 	}
 
 	/**
@@ -935,10 +940,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_fraction_spacing() {
 		$this->settings->set_fraction_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::FRACTION_SPACING ] );
+		$this->assertTrue( $this->settings->fraction_spacing );
 
 		$this->settings->set_fraction_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::FRACTION_SPACING ] );
+		$this->assertFalse( $this->settings->fraction_spacing );
 	}
 
 	/**
@@ -948,10 +953,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_unit_spacing() {
 		$this->settings->set_unit_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::UNIT_SPACING ] );
+		$this->assertTrue( $this->settings->unit_spacing );
 
 		$this->settings->set_unit_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::UNIT_SPACING ] );
+		$this->assertFalse( $this->settings->unit_spacing );
 	}
 
 	/**
@@ -961,10 +966,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_numbered_abbreviation_spacing() {
 		$this->settings->set_numbered_abbreviation_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::NUMBERED_ABBREVIATION_SPACING ] );
+		$this->assertTrue( $this->settings->numbered_abbreviation_spacing );
 
 		$this->settings->set_numbered_abbreviation_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::NUMBERED_ABBREVIATION_SPACING ] );
+		$this->assertFalse( $this->settings->numbered_abbreviation_spacing );
 	}
 
 	/**
@@ -974,10 +979,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_french_punctuation_spacing() {
 		$this->settings->set_french_punctuation_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::FRENCH_PUNCTUATION_SPACING ] );
+		$this->assertTrue( $this->settings->french_punctuation_spacing );
 
 		$this->settings->set_french_punctuation_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::FRENCH_PUNCTUATION_SPACING ] );
+		$this->assertFalse( $this->settings->french_punctuation_spacing );
 	}
 
 	/**
@@ -1004,9 +1009,9 @@ class Settings_Test extends Testcase {
 	 * @param  string[] $units An array of units.
 	 * @param  string   $regex The resulting regular expression.
 	 */
-	public function test_set_unit( array $units, string $regex ): void {
+	public function test_set_units( array $units, string $regex ): void {
 		$this->settings->set_units( $units );
-		$this->assertSame( $regex, $this->settings[ Settings::CUSTOM_UNITS ] );
+		$this->assertSame( $regex, $this->settings->custom_units );
 	}
 
 	/**
@@ -1016,10 +1021,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_dash_spacing() {
 		$this->settings->set_dash_spacing( true );
-		$this->assertTrue( $this->settings[ Settings::DASH_SPACING ] );
+		$this->assertTrue( $this->settings->dash_spacing );
 
 		$this->settings->set_dash_spacing( false );
-		$this->assertFalse( $this->settings[ Settings::DASH_SPACING ] );
+		$this->assertFalse( $this->settings->dash_spacing );
 	}
 
 	/**
@@ -1029,10 +1034,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_space_collapse() {
 		$this->settings->set_space_collapse( true );
-		$this->assertTrue( $this->settings[ Settings::SPACE_COLLAPSE ] );
+		$this->assertTrue( $this->settings->space_collapse );
 
 		$this->settings->set_space_collapse( false );
-		$this->assertFalse( $this->settings[ Settings::SPACE_COLLAPSE ] );
+		$this->assertFalse( $this->settings->space_collapse );
 	}
 
 	/**
@@ -1042,10 +1047,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_dewidow() {
 		$this->settings->set_dewidow( true );
-		$this->assertTrue( $this->settings[ Settings::DEWIDOW ] );
+		$this->assertTrue( $this->settings->dewidow );
 
 		$this->settings->set_dewidow( false );
-		$this->assertFalse( $this->settings[ Settings::DEWIDOW ] );
+		$this->assertFalse( $this->settings->dewidow );
 	}
 
 	/**
@@ -1055,10 +1060,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_max_dewidow_length() {
 		$this->settings->set_max_dewidow_length( 10 );
-		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+		$this->assertSame( 10, $this->settings->max_dewidow_length );
 
 		$this->settings->set_max_dewidow_length( 2 );
-		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+		$this->assertSame( 2, $this->settings->max_dewidow_length );
 	}
 
 	/**
@@ -1068,12 +1073,12 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_max_dewidow_length_too_low() {
 		$this->settings->set_max_dewidow_length( 10 );
-		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+		$this->assertSame( 10, $this->settings->max_dewidow_length );
 
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_max_dewidow_length( 1 );
-		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_LENGTH ] );
+		$this->assertSame( 10, $this->settings->max_dewidow_length );
 	}
 
 	/**
@@ -1083,13 +1088,13 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_dewidow_word_number() {
 		$this->settings->set_dewidow_word_number( 1 );
-		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+		$this->assertSame( 1, $this->settings->dewidow_word_number );
 
 		$this->settings->set_dewidow_word_number( 2 );
-		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+		$this->assertSame( 2, $this->settings->dewidow_word_number );
 
 		$this->settings->set_dewidow_word_number( 3 );
-		$this->assertSame( 3, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+		$this->assertSame( 3, $this->settings->dewidow_word_number );
 	}
 
 	/**
@@ -1101,7 +1106,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_dewidow_word_number( 0 );
-		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+		$this->assertSame( 1, $this->settings->dewidow_word_number );
 	}
 
 	/**
@@ -1113,7 +1118,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_dewidow_word_number( 4 );
-		$this->assertSame( 1, $this->settings[ Settings::DEWIDOW_WORD_NUMBER ] );
+		$this->assertSame( 1, $this->settings->dewidow_word_number );
 	}
 
 	/**
@@ -1123,10 +1128,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_max_dewidow_pull() {
 		$this->settings->set_max_dewidow_pull( 10 );
-		$this->assertSame( 10, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
+		$this->assertSame( 10, $this->settings->max_dewidow_pull );
 
 		$this->settings->set_max_dewidow_pull( 2 );
-		$this->assertSame( 2, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
+		$this->assertSame( 2, $this->settings->max_dewidow_pull );
 	}
 
 	/**
@@ -1138,7 +1143,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_max_dewidow_pull( 1 );
-		$this->assertSame( 5, $this->settings[ Settings::DEWIDOW_MAX_PULL ] );
+		$this->assertSame( 5, $this->settings->max_dewidow_pull );
 	}
 
 
@@ -1149,36 +1154,36 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_wrap_hard_hyphens() {
 		$this->settings->set_wrap_hard_hyphens( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHEN_HARD_WRAP ] );
+		$this->assertTrue( $this->settings->wrap_hard_hyphens );
 
 		$this->settings->set_wrap_hard_hyphens( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHEN_HARD_WRAP ] );
+		$this->assertFalse( $this->settings->wrap_hard_hyphens );
 	}
 
 	/**
-	 * Tests set_url_wrap.
+	 * Tests set_wrap_urls.
 	 *
 	 * @uses ::__call
 	 */
-	public function test_set_url_wrap() {
-		$this->settings->set_url_wrap( true );
-		$this->assertTrue( $this->settings[ Settings::URL_WRAP ] );
+	public function test_set_wrap_urls() {
+		$this->settings->set_wrap_urls( true );
+		$this->assertTrue( $this->settings->wrap_urls );
 
-		$this->settings->set_url_wrap( false );
-		$this->assertFalse( $this->settings[ Settings::URL_WRAP ] );
+		$this->settings->set_wrap_urls( false );
+		$this->assertFalse( $this->settings->wrap_urls );
 	}
 
 	/**
-	 * Tests set_email_wrap.
+	 * Tests set_wrap_emails.
 	 *
 	 * @uses ::__call
 	 */
-	public function test_set_email_wrap() {
-		$this->settings->set_email_wrap( true );
-		$this->assertTrue( $this->settings[ Settings::EMAIL_WRAP ] );
+	public function test_set_wrap_emails() {
+		$this->settings->set_wrap_emails( true );
+		$this->assertTrue( $this->settings->wrap_emails );
 
-		$this->settings->set_email_wrap( false );
-		$this->assertFalse( $this->settings[ Settings::EMAIL_WRAP ] );
+		$this->settings->set_wrap_emails( false );
+		$this->assertFalse( $this->settings->wrap_emails );
 	}
 
 	/**
@@ -1188,10 +1193,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_min_after_url_wrap() {
 		$this->settings->set_min_after_url_wrap( 10 );
-		$this->assertSame( 10, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
+		$this->assertSame( 10, $this->settings->min_after_url_wrap );
 
 		$this->settings->set_min_after_url_wrap( 1 );
-		$this->assertSame( 1, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
+		$this->assertSame( 1, $this->settings->min_after_url_wrap );
 	}
 
 	/**
@@ -1203,7 +1208,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_min_after_url_wrap( 0 );
-		$this->assertSame( 5, $this->settings[ Settings::URL_MIN_AFTER_WRAP ] );
+		$this->assertSame( 5, $this->settings->min_after_url_wrap );
 	}
 
 	/**
@@ -1213,10 +1218,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_style_ampersands() {
 		$this->settings->set_style_ampersands( true );
-		$this->assertTrue( $this->settings[ Settings::STYLE_AMPERSANDS ] );
+		$this->assertTrue( $this->settings->style_ampersands );
 
 		$this->settings->set_style_ampersands( false );
-		$this->assertFalse( $this->settings[ Settings::STYLE_AMPERSANDS ] );
+		$this->assertFalse( $this->settings->style_ampersands );
 	}
 
 	/**
@@ -1226,10 +1231,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_style_caps() {
 		$this->settings->set_style_caps( true );
-		$this->assertTrue( $this->settings[ Settings::STYLE_CAPS ] );
+		$this->assertTrue( $this->settings->style_caps );
 
 		$this->settings->set_style_caps( false );
-		$this->assertFalse( $this->settings[ Settings::STYLE_CAPS ] );
+		$this->assertFalse( $this->settings->style_caps );
 	}
 
 	/**
@@ -1239,10 +1244,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_style_initial_quotes() {
 		$this->settings->set_style_initial_quotes( true );
-		$this->assertTrue( $this->settings[ Settings::STYLE_INITIAL_QUOTES ] );
+		$this->assertTrue( $this->settings->style_initial_quotes );
 
 		$this->settings->set_style_initial_quotes( false );
-		$this->assertFalse( $this->settings[ Settings::STYLE_INITIAL_QUOTES ] );
+		$this->assertFalse( $this->settings->style_initial_quotes );
 	}
 
 	/**
@@ -1252,10 +1257,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_style_numbers() {
 		$this->settings->set_style_numbers( true );
-		$this->assertTrue( $this->settings[ Settings::STYLE_NUMBERS ] );
+		$this->assertTrue( $this->settings->style_numbers );
 
 		$this->settings->set_style_numbers( false );
-		$this->assertFalse( $this->settings[ Settings::STYLE_NUMBERS ] );
+		$this->assertFalse( $this->settings->style_numbers );
 	}
 
 	/**
@@ -1265,10 +1270,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_style_hanging_punctuation() {
 		$this->settings->set_style_hanging_punctuation( true );
-		$this->assertTrue( $this->settings[ Settings::STYLE_HANGING_PUNCTUATION ] );
+		$this->assertTrue( $this->settings->style_hanging_punctuation );
 
 		$this->settings->set_style_hanging_punctuation( false );
-		$this->assertFalse( $this->settings[ Settings::STYLE_HANGING_PUNCTUATION ] );
+		$this->assertFalse( $this->settings->style_hanging_punctuation );
 	}
 
 	/**
@@ -1281,12 +1286,12 @@ class Settings_Test extends Testcase {
 
 		$this->settings->set_initial_quote_tags( $tags_as_array );
 		foreach ( $tags_as_array as $tag ) {
-			$this->assertArrayHasKey( $tag, $this->settings[ Settings::INITIAL_QUOTE_TAGS ] );
+			$this->assertArrayHasKey( $tag, $this->settings->initial_quote_tags );
 		}
 
 		$this->settings->set_initial_quote_tags( [] );
 		foreach ( $tags_as_array as $tag ) {
-			$this->assertArrayNotHasKey( $tag, $this->settings[ Settings::INITIAL_QUOTE_TAGS ] );
+			$this->assertArrayNotHasKey( $tag, $this->settings->initial_quote_tags );
 		}
 	}
 
@@ -1297,10 +1302,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_hyphenation() {
 		$this->settings->set_hyphenation( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHENATION ] );
+		$this->assertTrue( $this->settings->hyphenation );
 
 		$this->settings->set_hyphenation( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHENATION ] );
+		$this->assertFalse( $this->settings->hyphenation );
 	}
 
 	/**
@@ -1333,15 +1338,13 @@ class Settings_Test extends Testcase {
 	public function test_set_hyphenation_language( $lang, $success ) {
 		$s = $this->settings;
 
-		$s['hyphenationExceptions'] = []; // necessary for full coverage.
-
 		$s->set_hyphenation_language( $lang );
 
 		// If the hyphenator object has not instantiated yet, hyphenLanguage will be set nonetheless.
 		if ( $success || ! isset( $s->hyphenator ) ) {
-			$this->assertSame( $lang, $s[ Settings::HYPHENATION_LANGUAGE ] );
+			$this->assertSame( $lang, $s->hyphenation_language );
 		} else {
-			$this->assertFalse( isset( $s[ Settings::HYPHENATION_LANGUAGE ] ) );
+			$this->assertFalse( isset( $s->hyphenation_language ) );
 		}
 	}
 
@@ -1362,20 +1365,18 @@ class Settings_Test extends Testcase {
 	public function test_set_hyphenation_language_again( $lang, $success ) {
 		$s = $this->settings;
 
-		$s['hyphenationExceptions'] = []; // necessary for full coverage.
-
 		for ( $i = 0; $i < 2; ++$i ) {
 			$s->set_hyphenation_language( $lang );
 
 			// If the hyphenator object has not instantiated yet, hyphenLanguage will be set nonetheless.
 			if ( $success ) {
-				$this->assertSame( $lang, $s[ Settings::HYPHENATION_LANGUAGE ], "Round $i, success" );
+				$this->assertSame( $lang, $s->hyphenation_language, "Round $i, success" );
 			} elseif ( ! isset( $s->hyphenator ) ) {
-				$this->assertSame( $lang, $s[ Settings::HYPHENATION_LANGUAGE ], "Round $i, no hyphenator" );
+				$this->assertSame( $lang, $s->hyphenation_language, "Round $i, no hyphenator" );
 				// Clear hyphenation language if there was no hypehnator object.
-				unset( $s[ Settings::HYPHENATION_LANGUAGE ] );
+				unset( $s->hyphenation_language );
 			} else {
-				$this->assertFalse( isset( $s[ Settings::HYPHENATION_LANGUAGE ] ), "Round $i, unsuccessful" );
+				$this->assertFalse( isset( $s->hyphenation_language ), "Round $i, unsuccessful" );
 			}
 		}
 	}
@@ -1390,10 +1391,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_min_length_hyphenation() {
 		$this->settings->set_min_length_hyphenation( 2 );
-		$this->assertSame( 2, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
+		$this->assertSame( 2, $this->settings->min_length_hyphenation );
 
 		$this->settings->set_min_length_hyphenation( 66 );
-		$this->assertSame( 66, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
+		$this->assertSame( 66, $this->settings->min_length_hyphenation );
 	}
 
 	/**
@@ -1407,7 +1408,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_min_length_hyphenation( 1 );
-		$this->assertSame( 5, $this->settings[ Settings::HYPHENATION_MIN_LENGTH ] );
+		$this->assertSame( 5, $this->settings->min_length_hyphenation );
 	}
 
 	/**
@@ -1417,10 +1418,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_min_before_hyphenation() {
 		$this->settings->set_min_before_hyphenation( 1 );
-		$this->assertSame( 1, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
+		$this->assertSame( 1, $this->settings->min_before_hyphenation );
 
 		$this->settings->set_min_before_hyphenation( 66 );
-		$this->assertSame( 66, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
+		$this->assertSame( 66, $this->settings->min_before_hyphenation );
 	}
 
 	/**
@@ -1432,7 +1433,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_min_before_hyphenation( 0 ); // too low, resets to default 3.
-		$this->assertSame( 3, $this->settings[ Settings::HYPHENATION_MIN_BEFORE ] );
+		$this->assertSame( 3, $this->settings->min_before_hyphenation );
 	}
 
 	/**
@@ -1442,10 +1443,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_min_after_hyphenation() {
 		$this->settings->set_min_after_hyphenation( 1 );
-		$this->assertSame( 1, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
+		$this->assertSame( 1, $this->settings->min_after_hyphenation );
 
 		$this->settings->set_min_after_hyphenation( 66 );
-		$this->assertSame( 66, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
+		$this->assertSame( 66, $this->settings->min_after_hyphenation );
 	}
 
 	/**
@@ -1457,7 +1458,7 @@ class Settings_Test extends Testcase {
 		$this->expect_exception( \OutOfRangeException::class );
 
 		$this->settings->set_min_after_hyphenation( 0 ); // too low, resets to default 2.
-		$this->assertSame( 2, $this->settings[ Settings::HYPHENATION_MIN_AFTER ] );
+		$this->assertSame( 2, $this->settings->min_after_hyphenation );
 	}
 
 	/**
@@ -1467,10 +1468,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_hyphenate_headings() {
 		$this->settings->set_hyphenate_headings( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHENATE_HEADINGS ] );
+		$this->assertTrue( $this->settings->hyphenate_headings );
 
 		$this->settings->set_hyphenate_headings( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHENATE_HEADINGS ] );
+		$this->assertFalse( $this->settings->hyphenate_headings );
 	}
 
 	/**
@@ -1480,10 +1481,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_hyphenate_all_caps() {
 		$this->settings->set_hyphenate_all_caps( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHENATE_ALL_CAPS ] );
+		$this->assertTrue( $this->settings->hyphenate_all_caps );
 
 		$this->settings->set_hyphenate_all_caps( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHENATE_ALL_CAPS ] );
+		$this->assertFalse( $this->settings->hyphenate_all_caps );
 	}
 
 	/**
@@ -1493,10 +1494,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_hyphenate_title_case() {
 		$this->settings->set_hyphenate_title_case( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHENATE_TITLE_CASE ] );
+		$this->assertTrue( $this->settings->hyphenate_title_case );
 
 		$this->settings->set_hyphenate_title_case( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHENATE_TITLE_CASE ] );
+		$this->assertFalse( $this->settings->hyphenate_title_case );
 	}
 
 	/**
@@ -1506,10 +1507,10 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_hyphenate_compounds() {
 		$this->settings->set_hyphenate_compounds( true );
-		$this->assertTrue( $this->settings[ Settings::HYPHENATE_COMPOUNDS ] );
+		$this->assertTrue( $this->settings->hyphenate_compounds );
 
 		$this->settings->set_hyphenate_compounds( false );
-		$this->assertFalse( $this->settings[ Settings::HYPHENATE_COMPOUNDS ] );
+		$this->assertFalse( $this->settings->hyphenate_compounds );
 	}
 
 	/**
@@ -1525,13 +1526,13 @@ class Settings_Test extends Testcase {
 
 		$exceptions = [ 'Hu-go', 'Fö-ba-ß' ];
 		$s->set_hyphenation_exceptions( $exceptions );
-		$this->assertContainsOnly( 'string', $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
-		$this->assertCount( 2, $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
+		$this->assertContainsOnly( 'string', $s->hyphenation_exceptions );
+		$this->assertCount( 2, $s->hyphenation_exceptions );
 
 		$exceptions = [ 'bar-foo' ];
 		$s->set_hyphenation_exceptions( $exceptions );
-		$this->assertContainsOnly( 'string', $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
-		$this->assertCount( 1, $s[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] );
+		$this->assertContainsOnly( 'string', $s->hyphenation_exceptions );
+		$this->assertCount( 1, $s->hyphenation_exceptions );
 	}
 
 	/**

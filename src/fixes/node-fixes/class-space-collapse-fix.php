@@ -59,7 +59,7 @@ class Space_Collapse_Fix extends Abstract_Node_Fix {
 	 * @return void
 	 */
 	public function apply( \DOMText $textnode, Settings $settings, $is_title ) {
-		if ( empty( $settings[ Settings::SPACE_COLLAPSE ] ) ) {
+		if ( empty( $settings->space_collapse ) ) {
 			return;
 		}
 

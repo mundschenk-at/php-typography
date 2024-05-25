@@ -92,13 +92,14 @@ class Smart_Diacritics_Fix_Test extends Node_Fix_Testcase {
 	 * @param string $unset_replacement Replacement to unset.
 	 */
 	public function test_smart_diacritics_error_in_pattern( $html, $lang, $unset_replacement ) {
+		$s = $this->s;
 
-		$this->s->set_smart_diacritics( true );
-		$this->s->set_diacritic_language( $lang );
+		$s->set_smart_diacritics( true );
+		$s->set_diacritic_language( $lang );
 
-		$replacements = $this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ];
-		unset( $replacements['replacements'][ $unset_replacement ] );
-		$this->s[ Settings::DIACRITIC_REPLACEMENT_DATA ] = $replacements;
+		$settings_data = $this->get_value( $s, 'data' );
+		unset( $settings_data[ Settings::DIACRITIC_REPLACEMENT_DATA ]['replacements'] );
+		$this->set_value( $s, 'data', $settings_data );
 
 		$this->assertFixResultSame( $html, $html );
 	}

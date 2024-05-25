@@ -103,7 +103,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 * @param int    $min_after Minimum number of characters after URL wrapping.
 	 */
 	public function test_apply( $input, $result, $min_after ) {
-		$this->s->set_url_wrap( true );
+		$this->s->set_wrap_urls( true );
 		$this->s->set_min_after_url_wrap( $min_after );
 
 		$this->assertFixResultSame( $input, $result, false, $this->getTextnode( 'foo', $input ) );
@@ -124,7 +124,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 * @param int    $min_after Minimum number of characters after URL wrapping.
 	 */
 	public function test_apply_off( $input, $result, $min_after ) {
-		$this->s->set_url_wrap( false );
+		$this->s->set_wrap_urls( false );
 		$this->s->set_min_after_url_wrap( $min_after );
 
 		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
