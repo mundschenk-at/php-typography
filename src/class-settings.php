@@ -44,15 +44,19 @@ use PHP_Typography\Settings\Quotes;
  * @since 4.0.0
  * @since 6.5.0 The protected property $no_break_narrow_space has been deprecated.
  * @since 7.0.0 Deprecated properties and methods relating to $no_break_narrow_space have been removed.
- *              Most setter methods have been virtualized via `__call`.
+ *              Most setter methods have been virtualized via `__call`. The class no longer allows array
+ *              access.
+ *
  *              Additional removed methods:
  *                - array_map_assoc (previously deprecated)
  *                - custom_unit
  *                - get_style
  *                - get_quote_style
  *                - update_unit_pattern
- *
- * @implements \ArrayAccess<string,mixed>
+ *                - offsetSet
+ *                - offsetExists
+ *                - offsetUnset
+ *                - offsetGet
  *
  * General attributes:
  * @property-read string[] $tags_to_ignore An array of tags to ignore.
@@ -175,7 +179,7 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
  * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
  */
-class Settings implements \ArrayAccess, \JsonSerializable {
+class Settings implements \JsonSerializable {
 
 	// General attributes.
 	const IGNORE_TAGS    = 'ignoreTags';
@@ -741,48 +745,6 @@ class Settings implements \ArrayAccess, \JsonSerializable {
 	 */
 	public function __unset( $key ): void {
 		unset( $this->data[ $key ] );
-	}
-
-	/**
-	 * Changes a named setting (array syntax).
-	 *
-	 * @param string $offset The settings key.
-	 * @param mixed  $value  The settings value.
-	 */
-	public function offsetSet( $offset, $value ): void {
-		if ( ! empty( $offset ) ) {
-			$this->data[ $offset ] = $value;
-		}
-	}
-
-	/**
-	 * Checks if a named setting exists (array syntax).
-	 *
-	 * @param string $offset The settings key.
-	 */
-	public function offsetExists( $offset ): bool {
-		return isset( $this->data[ $offset ] );
-	}
-
-	/**
-	 * Unsets a named setting (array syntax).
-	 *
-	 * @param string $offset The settings key.
-	 */
-	public function offsetUnset( $offset ): void {
-		unset( $this->data[ $offset ] );
-	}
-
-	/**
-	 * Provides access to named settings (array syntax).
-	 *
-	 * @param string $offset The settings key.
-	 *
-	 * @return mixed
-	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet( $offset ) {
-		return isset( $this->data[ $offset ] ) ? $this->data[ $offset ] : null;
 	}
 
 	/**
