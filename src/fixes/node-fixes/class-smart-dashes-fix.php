@@ -141,7 +141,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$s = $settings->dash_style();
+		$s = $settings->dash_style;
 
 		// Cache textnode content.
 		$node_data = $textnode->data;
