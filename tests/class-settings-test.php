@@ -108,8 +108,6 @@ class Settings_Test extends Testcase {
 	 * Tests __call with invalid method name.
 	 *
 	 * @covers ::__call
-	 *
-	 * @uses ::offsetGet
 	 */
 	public function test___call() {
 		$s = $this->settings;
@@ -123,8 +121,6 @@ class Settings_Test extends Testcase {
 	 * Tests __get.
 	 *
 	 * @covers ::__get
-	 *
-	 * @uses ::offsetGet
 	 */
 	public function test___get() {
 		$s = $this->settings;
@@ -153,13 +149,21 @@ class Settings_Test extends Testcase {
 	 * Tests __isset.
 	 *
 	 * @covers ::__isset
+	 *
+	 * @uses ::__call
 	 */
 	public function test___isset() {
 		$s = $this->settings;
 
+		// Random key.
 		$this->assertFalse( isset( $s->new_key ) );
 		$s->new_key = 42; // @phpstan-ignore-line
 		$this->assertTrue( isset( $s->new_key ) );
+
+		// Virtual property.
+		$this->assertFalse( isset( $s->classes_to_ignore ) );
+		$s->set_classes_to_ignore( [ 'foo' ] );
+		$this->assertTrue( isset( $s->classes_to_ignore ) );
 	}
 
 	/**
@@ -176,79 +180,6 @@ class Settings_Test extends Testcase {
 		unset( $s->new_key );
 		$this->assertFalse( isset( $s->new_key ) );
 	}
-
-	/**
-	 * Tests offsetSet.
-	 *
-	 * @covers ::offsetSet
-	 *
-	 * @uses ::offsetGet
-	 * @uses ::offsetExists
-	 */
-	/*public function test_offsetSet() {
-		$s = $this->settings;
-
-		// A key has to be used.
-		$this->assertFalse( isset( $s[0] ) );
-		$s[] = 666;
-		$this->assertFalse( isset( $s[0] ) );
-
-		$this->assertFalse( isset( $s['new_key'] ) );
-		$s['new_key'] = 42;
-		$this->assertEquals( 42, $s['new_key'] );
-	}*/
-
-	/**
-	 * Tests offsetExists.
-	 *
-	 * @covers ::offsetExists
-	 *
-	 * @uses ::offsetSet
-	 */
-	/*
-	public function test_offsetExists() {
-		$s = $this->settings;
-
-		$this->assertFalse( isset( $s['new_key'] ) );
-		$s['new_key'] = 42;
-		$this->assertTrue( isset( $s['new_key'] ) );
-	}*/
-
-	/**
-	 * Tests offsetUnset.
-	 *
-	 * @covers ::offsetUnset
-	 *
-	 * @uses ::offsetSet
-	 * @uses ::offsetGet
-	 * @uses ::offsetExists
-	 */
-	/*
-	public function test_offsetUnset() {
-		$s = $this->settings;
-
-		$s['new_key'] = 42;
-		$this->assertTrue( isset( $s['new_key'] ) );
-
-		unset( $s['new_key'] );
-		$this->assertFalse( isset( $s['new_key'] ) );
-	}*/
-
-	/**
-	 * Tests offsetGet.
-	 *
-	 * @covers ::offsetGet
-	 *
-	 * @uses ::offsetSet
-	 */
-	/*
-	public function test_offsetGet() {
-		$s = $this->settings;
-		$this->assertNull( $s['new_key'] );
-
-		$s['new_key'] = 42;
-		$this->assertEquals( 42, $s['new_key'] );
-	}*/
 
 	/**
 	 * Tests primary_quote_style.
