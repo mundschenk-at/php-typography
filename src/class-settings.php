@@ -50,6 +50,7 @@ use PHP_Typography\Settings\Quotes;
  *              Additional removed methods:
  *                - array_map_assoc (previously deprecated)
  *                - custom_unit
+ *                - dash_style
  *                - get_style
  *                - get_quote_style
  *                - offsetExists
@@ -71,6 +72,7 @@ use PHP_Typography\Settings\Quotes;
  * @property-read Quotes $primary_quote_style The primary (double) quote style.
  * @property-read Quotes $secondary_quote_style The secondary (single) quote style.
  * @property-read bool $smart_dashes Whether replacement of "a--a" with En Dash " -- " and "---" with Em Dash is enabled.
+ * @property-read Dashes $dash_style The dash style.
  * @property-read bool $smart_ellipses Whether replacement of "..." with "…" is enabled.
  * @property-read bool $smart_diacritics Whether replacement replacement "creme brulee" with "crème brûlée" is enabled.
  * @property-read array{patterns: string[], replacements: string[]} $diacritic_combined The specific search & replace patterns for "smart diacritics" (combined from the diacritic language and any custom replacements).
@@ -196,6 +198,7 @@ class Settings implements \JsonSerializable {
 	const SMART_QUOTES_PRIMARY_STYLE          = 'smartQuotesPrimaryStyle';
 	const SMART_QUOTES_SECONDARY_STYLE        = 'smartQuotesSecondaryStyle';
 	const SMART_DASHES                        = 'smartDashes';
+	const SMART_DASHES_STYLE                  = 'smartDashesStyle';
 	const SMART_ELLIPSES                      = 'smartEllipses';
 	const SMART_DIACRITICS                    = 'smartDiacritics';
 	const DIACRITIC_LANGUAGE                  = 'diacriticLanguage'; // public for defaults only.
@@ -258,13 +261,6 @@ class Settings implements \JsonSerializable {
 	 * @var mixed[]
 	 */
 	protected $data = [];
-
-	/**
-	 * The current dash style.
-	 *
-	 * @var Dashes
-	 */
-	protected $dash_style;
 
 	/**
 	 * The Unicode character mapping (some characters still have compatibility issues).
@@ -339,6 +335,10 @@ class Settings implements \JsonSerializable {
 			'name'     => 'smart_dashes',
 			'default'  => true,
 			'verify'   => 'is_bool',
+		],
+		[
+			'property' => self::SMART_DASHES_STYLE,
+			'name'     => 'dash_style',
 		],
 		[
 			'property' => self::SMART_ELLIPSES,
@@ -756,6 +756,7 @@ class Settings implements \JsonSerializable {
 	public function jsonSerialize() {
 		$primary_quote_style   = $this->data[ self::SMART_QUOTES_PRIMARY_STYLE ];
 		$secondary_quote_style = $this->data[ self::SMART_QUOTES_SECONDARY_STYLE ];
+		$dash_style            = $this->data[ self::SMART_DASHES_STYLE ];
 
 		return \array_merge(
 			$this->data,
@@ -763,7 +764,7 @@ class Settings implements \JsonSerializable {
 				'unicode_mapping'       => $this->unicode_mapping,
 				'primary_quotes'        => "{$primary_quote_style->open()}|{$primary_quote_style->close()}",
 				'secondary_quotes'      => "{$secondary_quote_style->open()}|{$secondary_quote_style->close()}",
-				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
+				'dash_style'            => "{$dash_style->interval_dash()}|{$dash_style->interval_space()}|{$dash_style->parenthetical_dash()}|{$dash_style->parenthetical_space()}",
 			]
 		);
 	}
@@ -810,15 +811,6 @@ class Settings implements \JsonSerializable {
 		}
 
 		return $native_array ? $data : $data[0]; // @phpstan-ignore-line -- Ignore generics/array clash
-	}
-
-	/**
-	 * Retrieves the dash style.
-	 *
-	 * @return Dashes
-	 */
-	public function dash_style(): Dashes {
-		return $this->dash_style;
 	}
 
 	/**
@@ -998,7 +990,7 @@ class Settings implements \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_dashes_style( $style = Dash_Style::TRADITIONAL_US ): void {
-		$this->dash_style = Dash_Style::get_styled_dashes( $style );
+		$this->data[ self::SMART_DASHES_STYLE ] = Dash_Style::get_styled_dashes( $style );
 	}
 
 	/**

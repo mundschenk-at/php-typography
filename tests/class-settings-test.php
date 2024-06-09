@@ -77,7 +77,7 @@ class Settings_Test extends Testcase {
 		$second_settings = new \PHP_Typography\Settings( false );
 		$this->assert_attribute_count( 1, 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assert_attribute_count( 53, 'data', $second_settings );
+		$this->assert_attribute_count( 54, 'data', $second_settings );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Settings_Test extends Testcase {
 		$this->assert_attribute_not_count( 1, 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assert_attribute_count( 53, 'data', $second_settings );
+		$this->assert_attribute_count( 54, 'data', $second_settings );
 	}
 
 	/**
@@ -179,20 +179,6 @@ class Settings_Test extends Testcase {
 
 		unset( $s->new_key );
 		$this->assertFalse( isset( $s->new_key ) );
-	}
-
-	/**
-	 * Tests dash_style.
-	 *
-	 * @covers ::dash_style
-	 *
-	 * @uses ::set_smart_dashes_style
-	 */
-	public function test_dash_style() {
-		$s = $this->settings;
-		$s->set_smart_dashes_style();
-
-		$this->assertInstanceOf( Dashes::class, $s->dash_style(), 'Dash style is not an instance of Dashes.' );
 	}
 
 	/**
@@ -512,7 +498,7 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		$s->set_smart_dashes_style( 'traditionalUS' );
-		$dashes = $s->dash_style();
+		$dashes = $s->dash_style;
 
 		$this->assertSame( U::EM_DASH, $dashes->parenthetical_dash() );
 		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
@@ -520,7 +506,7 @@ class Settings_Test extends Testcase {
 		$this->assertSame( U::THIN_SPACE, $dashes->interval_space() );
 
 		$s->set_smart_dashes_style( 'international' );
-		$dashes = $s->dash_style();
+		$dashes = $s->dash_style;
 
 		$this->assertSame( U::EN_DASH, $dashes->parenthetical_dash() );
 		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
@@ -528,7 +514,7 @@ class Settings_Test extends Testcase {
 		$this->assertSame( U::HAIR_SPACE, $dashes->interval_space() );
 
 		$s->set_smart_dashes_style( 'internationalNoHairSpaces' );
-		$dashes = $s->dash_style();
+		$dashes = $s->dash_style;
 
 		$this->assertSame( U::EN_DASH, $dashes->parenthetical_dash() );
 		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
@@ -552,7 +538,7 @@ class Settings_Test extends Testcase {
 		$fake_dashes->method( 'interval_space' )->willReturn( 'd' );
 
 		$s->set_smart_dashes_style( $fake_dashes );
-		$dashes = $s->dash_style();
+		$dashes = $s->dash_style;
 
 		$this->assertSame( 'a', $dashes->parenthetical_dash() );
 		$this->assertSame( 'b', $dashes->parenthetical_space() );
