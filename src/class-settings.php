@@ -52,11 +52,13 @@ use PHP_Typography\Settings\Quotes;
  *                - custom_unit
  *                - get_style
  *                - get_quote_style
- *                - update_unit_pattern
- *                - offsetSet
  *                - offsetExists
- *                - offsetUnset
  *                - offsetGet
+ *                - offsetSet
+ *                - offsetUnset
+ *                - primary_quote_style
+ *                - secondary_quote_style
+ *                - update_unit_pattern
  *
  * General attributes:
  * @property-read string[] $tags_to_ignore An array of tags to ignore.
@@ -66,6 +68,8 @@ use PHP_Typography\Settings\Quotes;
  * Smart characters:
  * @property-read bool $smart_quotes Whether typographic quotes are enabled.
  * @property-read array{patterns: string[], replacements: string[]} $smart_quotes_exceptions The specific search & replace patterns for non-standard smart quotes.
+ * @property-read Quotes $primary_quote_style The primary (double) quote style.
+ * @property-read Quotes $secondary_quote_style The secondary (single) quote style.
  * @property-read bool $smart_dashes Whether replacement of "a--a" with En Dash " -- " and "---" with Em Dash is enabled.
  * @property-read bool $smart_ellipses Whether replacement of "..." with "…" is enabled.
  * @property-read bool $smart_diacritics Whether replacement replacement "creme brulee" with "crème brûlée" is enabled.
@@ -189,6 +193,8 @@ class Settings implements \JsonSerializable {
 	// Smart characters.
 	const SMART_QUOTES                        = 'smartQuotes';
 	const SMART_QUOTES_EXCEPTIONS             = 'smartQuotesExceptions';
+	const SMART_QUOTES_PRIMARY_STYLE          = 'smartQuotesPrimaryStyle';
+	const SMART_QUOTES_SECONDARY_STYLE        = 'smartQuotesSecondaryStyle';
 	const SMART_DASHES                        = 'smartDashes';
 	const SMART_ELLIPSES                      = 'smartEllipses';
 	const SMART_DIACRITICS                    = 'smartDiacritics';
@@ -245,20 +251,6 @@ class Settings implements \JsonSerializable {
 	// Parser error handling.
 	const PARSER_ERRORS_IGNORE  = 'parserErrorsIgnore';
 	const PARSER_ERRORS_HANDLER = 'parserErrorsHandler';
-
-	/**
-	 * Primary quote style.
-	 *
-	 * @var Quotes
-	 */
-	protected $primary_quote_style;
-
-	/**
-	 * Secondary quote style.
-	 *
-	 * @var Quotes
-	 */
-	protected $secondary_quote_style;
 
 	/**
 	 * A hashmap of settings for the various typographic options.
@@ -333,6 +325,14 @@ class Settings implements \JsonSerializable {
 		[
 			'property' => self::SMART_QUOTES_EXCEPTIONS,
 			'name'     => 'smart_quotes_exceptions',
+		],
+		[
+			'property' => self::SMART_QUOTES_PRIMARY_STYLE,
+			'name'     => 'primary_quote_style',
+		],
+		[
+			'property' => self::SMART_QUOTES_SECONDARY_STYLE,
+			'name'     => 'secondary_quote_style',
 		],
 		[
 			'property' => self::SMART_DASHES,
@@ -754,12 +754,15 @@ class Settings implements \JsonSerializable {
 	 */
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
+		$primary_quote_style   = $this->data[ self::SMART_QUOTES_PRIMARY_STYLE ];
+		$secondary_quote_style = $this->data[ self::SMART_QUOTES_SECONDARY_STYLE ];
+
 		return \array_merge(
 			$this->data,
 			[
 				'unicode_mapping'       => $this->unicode_mapping,
-				'primary_quotes'        => "{$this->primary_quote_style->open()}|{$this->primary_quote_style->close()}",
-				'secondary_quotes'      => "{$this->secondary_quote_style->open()}|{$this->secondary_quote_style->close()}",
+				'primary_quotes'        => "{$primary_quote_style->open()}|{$primary_quote_style->close()}",
+				'secondary_quotes'      => "{$secondary_quote_style->open()}|{$secondary_quote_style->close()}",
 				'dash_style'            => "{$this->dash_style->interval_dash()}|{$this->dash_style->interval_space()}|{$this->dash_style->parenthetical_dash()}|{$this->dash_style->parenthetical_space()}",
 			]
 		);
@@ -807,24 +810,6 @@ class Settings implements \JsonSerializable {
 		}
 
 		return $native_array ? $data : $data[0]; // @phpstan-ignore-line -- Ignore generics/array clash
-	}
-
-	/**
-	 * Retrieves the primary (double) quote style.
-	 *
-	 * @return Quotes
-	 */
-	public function primary_quote_style(): Quotes {
-		return $this->primary_quote_style;
-	}
-
-	/**
-	 * Retrieves the secondary (single) quote style.
-	 *
-	 * @return Quotes
-	 */
-	public function secondary_quote_style(): Quotes {
-		return $this->secondary_quote_style;
 	}
 
 	/**
@@ -944,7 +929,7 @@ class Settings implements \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_primary( $style = Quote_Style::DOUBLE_CURLED ): void {
-		$this->primary_quote_style = Quote_Style::get_styled_quotes( $style );
+		$this->data[ self::SMART_QUOTES_PRIMARY_STYLE ] = Quote_Style::get_styled_quotes( $style );
 	}
 
 	/**
@@ -972,7 +957,7 @@ class Settings implements \JsonSerializable {
 	 * @throws \DomainException Thrown if $style constant is invalid.
 	 */
 	public function set_smart_quotes_secondary( $style = Quote_Style::SINGLE_CURLED ): void {
-		$this->secondary_quote_style = Quote_Style::get_styled_quotes( $style );
+		$this->data[ self::SMART_QUOTES_SECONDARY_STYLE ] = Quote_Style::get_styled_quotes( $style );
 	}
 
 	/**

@@ -115,8 +115,8 @@ class Smart_Quotes_Fix extends Abstract_Node_Fix {
 		}
 
 		// Various special characters and regular expressions.
-		$double = $settings->primary_quote_style();
-		$single = $settings->secondary_quote_style();
+		$double = $settings->primary_quote_style;
+		$single = $settings->secondary_quote_style;
 
 		// Mark quotes to ensure proper removal of replaced adjacent characters.
 		$double_open  = RE::ESCAPE_MARKER . $double->open() . RE::ESCAPE_MARKER;
