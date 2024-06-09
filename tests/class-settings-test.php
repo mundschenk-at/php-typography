@@ -77,7 +77,7 @@ class Settings_Test extends Testcase {
 		$second_settings = new \PHP_Typography\Settings( false );
 		$this->assert_attribute_count( 1, 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assert_attribute_count( 51, 'data', $second_settings );
+		$this->assert_attribute_count( 53, 'data', $second_settings );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Settings_Test extends Testcase {
 		$this->assert_attribute_not_count( 1, 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assert_attribute_count( 51, 'data', $second_settings );
+		$this->assert_attribute_count( 53, 'data', $second_settings );
 	}
 
 	/**
@@ -179,34 +179,6 @@ class Settings_Test extends Testcase {
 
 		unset( $s->new_key );
 		$this->assertFalse( isset( $s->new_key ) );
-	}
-
-	/**
-	 * Tests primary_quote_style.
-	 *
-	 * @covers ::primary_quote_style
-	 *
-	 * @uses ::set_smart_quotes_primary
-	 */
-	public function test_primary_quote_style() {
-		$s = $this->settings;
-		$s->set_smart_quotes_primary();
-
-		$this->assertInstanceOf( Quotes::class, $s->primary_quote_style(), 'Primary quote style is not an instance of Quotes.' );
-	}
-
-	/**
-	 * Tests secondary_quote_style.
-	 *
-	 * @covers ::secondary_quote_style
-	 *
-	 * @uses ::set_smart_quotes_secondary
-	 */
-	public function test_secondary_quote_style() {
-		$s = $this->settings;
-		$s->set_smart_quotes_secondary();
-
-		$this->assertInstanceOf( Quotes::class, $s->secondary_quote_style(), 'Secondary quote style is not an instance of Quotes.' );
 	}
 
 	/**
@@ -387,7 +359,7 @@ class Settings_Test extends Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_primary( $style );
 
-			$this->assert_smart_quotes_style( $style, $s->primary_quote_style()->open(), $s->primary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->primary_quote_style->open(), $s->primary_quote_style->close() );
 		}
 	}
 
@@ -422,8 +394,8 @@ class Settings_Test extends Testcase {
 
 		$s->set_smart_quotes_primary( $fake_quotes );
 
-		$this->assertSame( 'x', $s->primary_quote_style()->open() );
-		$this->assertSame( 'y', $s->primary_quote_style()->close() );
+		$this->assertSame( 'x', $s->primary_quote_style->open() );
+		$this->assertSame( 'y', $s->primary_quote_style->close() );
 	}
 
 	/**
@@ -457,7 +429,7 @@ class Settings_Test extends Testcase {
 		foreach ( $quote_styles as $style ) {
 			$s->set_smart_quotes_secondary( $style );
 
-			$this->assert_smart_quotes_style( $style, $s->secondary_quote_style()->open(), $s->secondary_quote_style()->close() );
+			$this->assert_smart_quotes_style( $style, $s->secondary_quote_style->open(), $s->secondary_quote_style->close() );
 		}
 	}
 
@@ -492,8 +464,8 @@ class Settings_Test extends Testcase {
 
 		$s->set_smart_quotes_secondary( $fake_quotes );
 
-		$this->assertSame( 'xx', $s->secondary_quote_style()->open() );
-		$this->assertSame( 'yy', $s->secondary_quote_style()->close() );
+		$this->assertSame( 'xx', $s->secondary_quote_style->open() );
+		$this->assertSame( 'yy', $s->secondary_quote_style->close() );
 	}
 
 	/**
