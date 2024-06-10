@@ -33,7 +33,7 @@ namespace PHP_Typography\Settings;
  *
  * @since 5.0.0
  */
-final class Simple_Dashes implements Dashes {
+final class Simple_Dashes extends Dashes {
 
 	/**
 	 * The dash character used for parenthetical dashes.
