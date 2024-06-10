@@ -27,39 +27,57 @@
 namespace PHP_Typography\Settings;
 
 /**
- * An interface encapsulating different dash styles.
+ * An abstract class encapsulating different dash styles.
  *
  * @author Peter Putzer <github@mundschenk.at>
  *
  * @since 5.0.0
+ * @since 7.0.0 Changed into an abstract class.
  */
-interface Dashes {
+abstract class Dashes implements \JsonSerializable {
 
 	/**
 	 * Retrieves the dash used for interval dashes.
 	 *
 	 * @return string
 	 */
-	public function interval_dash(): string;
+	abstract public function interval_dash(): string;
 
 	/**
 	 * Retrieves the space character used around interval dashes.
 	 *
 	 * @return string
 	 */
-	public function interval_space(): string;
+	abstract public function interval_space(): string;
 
 	/**
 	 * Retrieves the dash used for parenthetical dashes.
 	 *
 	 * @return string
 	 */
-	public function parenthetical_dash(): string;
+	abstract public function parenthetical_dash(): string;
 
 	/**
 	 * Retrieves the space character used around parenthetical dashes.
 	 *
 	 * @return string
 	 */
-	public function parenthetical_space(): string;
+	abstract public function parenthetical_space(): string;
+
+	/**
+	 * Provides a JSON serialization of the settings.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @return mixed
+	 */
+	#[\ReturnTypeWillChange]
+	public function jsonSerialize() {
+		return [
+			'interval_dash'       => $this->interval_dash(),
+			'interval_space'      => $this->interval_space(),
+			'parenthetical_dash'  => $this->parenthetical_dash(),
+			'parenthetical_space' => $this->parenthetical_space(),
+		];
+	}
 }

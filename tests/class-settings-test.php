@@ -75,9 +75,9 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
-		$this->assert_attribute_count( 1, 'data', $second_settings );
+		$this->assert_attribute_count( 2, 'data', $second_settings );
 		$second_settings->set_defaults();
-		$this->assert_attribute_count( 54, 'data', $second_settings );
+		$this->assert_attribute_count( 55, 'data', $second_settings );
 	}
 
 	/**
@@ -94,14 +94,14 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assert_attribute_count( 1, 'data', $s );
+		$this->assert_attribute_count( 2, 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assert_attribute_not_count( 1, 'data', $s );
+		$this->assert_attribute_not_count( 2, 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
-		$this->assert_attribute_count( 54, 'data', $second_settings );
+		$this->assert_attribute_count( 55, 'data', $second_settings );
 	}
 
 	/**
@@ -1428,9 +1428,10 @@ class Settings_Test extends Testcase {
 	 * Tests get_hash.
 	 *
 	 * @covers ::get_hash
-	 * @covers ::jsonSerialize
 	 *
 	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
+	 * @uses PHP_Typography\Settings\Dashes::jsonSerialize
+	 * @uses PHP_Typography\Settings\Quotes::jsonSerialize
 	 */
 	public function test_get_hash() {
 		$s = $this->settings;
@@ -1487,15 +1488,20 @@ class Settings_Test extends Testcase {
 			'r' => 'z',
 		];
 
-		$s = new Settings( false, $mapping );
-		$this->assert_attribute_same( $mapping, 'unicode_mapping', $s );
+		$s    = new Settings( false, $mapping );
+		$data = $this->get_value( $s, 'data' );
+
+		$this->assertArrayHasKey( Settings::UNICODE_CHARACTER_MAPPING, $data );
+		$this->assertSame( $mapping, $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
 
 		$s->remap_character( 'a', 'a' );
-		$this->assert_attribute_same( [ 'r' => 'z' ], 'unicode_mapping', $s );
+		$data = $this->get_value( $s, 'data' );
+		$this->assertSame( [ 'r' => 'z' ], $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
 
 		$s->remap_character( U::NO_BREAK_NARROW_SPACE, 'x' );
-		$this->assert_attribute_count( 2, 'unicode_mapping', $s );
-		$this->assert_attribute_contains( 'x', 'unicode_mapping', $s );
+		$data = $this->get_value( $s, 'data' );
+		$this->assertCount( 2, $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
+		$this->assertContains( 'x', $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
 	}
 
 

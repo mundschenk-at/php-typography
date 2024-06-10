@@ -33,7 +33,7 @@ namespace PHP_Typography\Settings;
  *
  * @since 5.0.0
  */
-final class Simple_Quotes implements Quotes {
+final class Simple_Quotes extends Quotes {
 
 	/**
 	 * Opening quote character(s).

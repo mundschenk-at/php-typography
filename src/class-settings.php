@@ -47,12 +47,17 @@ use PHP_Typography\Settings\Quotes;
  *              Most setter methods have been virtualized via `__call`. The class no longer allows array
  *              access.
  *
+ *              Removed properties:
+ *                - `$remapped_characters`
+ *                - `$unicode_mapping`
+ *
  *              Additional removed methods:
- *                - array_map_assoc (previously deprecated)
+ *                - `array_map_assoc` (previously deprecated)
  *                - custom_unit
  *                - dash_style
  *                - get_style
  *                - get_quote_style
+ *                - jsonSerialize
  *                - offsetExists
  *                - offsetGet
  *                - offsetSet
@@ -184,8 +189,10 @@ use PHP_Typography\Settings\Quotes;
  * Setters for parser error handling:
  * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
  * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
+ *
+ * @phpstan-type Property_Definition array{property:string, name:string, default?:mixed, verify?:callable-string}
  */
-class Settings implements \JsonSerializable {
+class Settings {
 
 	// General attributes.
 	const IGNORE_TAGS    = 'ignoreTags';
@@ -255,33 +262,20 @@ class Settings implements \JsonSerializable {
 	const PARSER_ERRORS_IGNORE  = 'parserErrorsIgnore';
 	const PARSER_ERRORS_HANDLER = 'parserErrorsHandler';
 
+	// Unicode character remapping (some characters still have compatibility issues).
+	const UNICODE_CHARACTER_MAPPING = 'unicodeCharacterMapping';
+
 	/**
 	 * A hashmap of settings for the various typographic options.
 	 *
-	 * @var mixed[]
+	 * @var array<string,mixed>
 	 */
 	protected $data = [];
 
 	/**
-	 * The Unicode character mapping (some characters still have compatibility issues).
-	 *
-	 * @since 6.5.0
-	 *
-	 * @var string[]
-	 */
-	protected $unicode_mapping;
-
-	/**
-	 * An array containing just remapped characters (for optimization).
-	 *
-	 * @since 6.5.0
-	 *
-	 * @var string[]
-	 */
-	protected $remapped_characters;
-
-	/**
 	 * Definitions of the properties that use a virtual setter function.
+	 *
+	 * @var array<Property_Definition>
 	 */
 	protected const VIRTUAL_PROPERTIES = [
 		[
@@ -609,7 +603,7 @@ class Settings implements \JsonSerializable {
 	 *
 	 * @since 7.0.0
 	 *
-	 * @var array<string,mixed>
+	 * @var array<string,array{property:string, name:string, default:mixed, verify:callable-string}>
 	 */
 	protected array $virtual_setters = [];
 
@@ -655,7 +649,7 @@ class Settings implements \JsonSerializable {
 		}
 
 		// Merge default character mapping with given mapping.
-		$this->unicode_mapping = $mapping;
+		$this->data[ self::UNICODE_CHARACTER_MAPPING ] = $mapping;
 	}
 
 	/**
@@ -748,28 +742,6 @@ class Settings implements \JsonSerializable {
 	}
 
 	/**
-	 * Provides a JSON serialization of the settings.
-	 *
-	 * @return mixed
-	 */
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize() {
-		$primary_quote_style   = $this->data[ self::SMART_QUOTES_PRIMARY_STYLE ];
-		$secondary_quote_style = $this->data[ self::SMART_QUOTES_SECONDARY_STYLE ];
-		$dash_style            = $this->data[ self::SMART_DASHES_STYLE ];
-
-		return \array_merge(
-			$this->data,
-			[
-				'unicode_mapping'       => $this->unicode_mapping,
-				'primary_quotes'        => "{$primary_quote_style->open()}|{$primary_quote_style->close()}",
-				'secondary_quotes'      => "{$secondary_quote_style->open()}|{$secondary_quote_style->close()}",
-				'dash_style'            => "{$dash_style->interval_dash()}|{$dash_style->interval_space()}|{$dash_style->parenthetical_dash()}|{$dash_style->parenthetical_space()}",
-			]
-		);
-	}
-
-	/**
 	 * Remaps a unicode character to another one.
 	 *
 	 * @since 6.5.0
@@ -779,9 +751,9 @@ class Settings implements \JsonSerializable {
 	 */
 	public function remap_character( string $char, string $new_char ): void {
 		if ( $char !== $new_char ) {
-			$this->unicode_mapping[ $char ] = $new_char;
+			$this->data[ self::UNICODE_CHARACTER_MAPPING ][ $char ] = $new_char;
 		} else {
-			unset( $this->unicode_mapping[ $char ] );
+			unset( $this->data[ self::UNICODE_CHARACTER_MAPPING ][ $char ] );
 		}
 	}
 
@@ -799,7 +771,7 @@ class Settings implements \JsonSerializable {
 	public function apply_character_mapping( $input ) {
 
 		// Nothing for us to do.
-		if ( empty( $input ) || empty( $this->unicode_mapping ) ) {
+		if ( empty( $input ) || empty( $this->data[ self::UNICODE_CHARACTER_MAPPING ] ) ) {
 			return $input;
 		}
 
@@ -807,7 +779,7 @@ class Settings implements \JsonSerializable {
 		$data         = (array) $input;
 
 		foreach ( $data as $key => $string ) {
-			$data[ $key ] = \strtr( $string, $this->unicode_mapping );
+			$data[ $key ] = \strtr( $string, $this->data[ self::UNICODE_CHARACTER_MAPPING ] );
 		}
 
 		return $native_array ? $data : $data[0]; // @phpstan-ignore-line -- Ignore generics/array clash
@@ -1117,7 +1089,7 @@ class Settings implements \JsonSerializable {
 	 * @return string A binary hash value for the current settings limited to $max_length.
 	 */
 	public function get_hash( int $max_length = 64, bool $binary = false ): string {
-		$hash = \hash( 'sha256', (string) \json_encode( $this ), $binary );
+		$hash = \hash( 'sha256', (string) \json_encode( $this->data ), $binary );
 
 		if ( $max_length < \strlen( $hash ) && $max_length > 0 ) {
 			$hash = \substr( $hash, 0, $max_length );
