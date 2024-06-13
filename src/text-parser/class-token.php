@@ -138,7 +138,7 @@ final class Token {
 	 * @throws \BadMethodCallException The Token class is immutable.
 	 */
 	public function __set( $id, $val ) {
-		throw new \BadMethodCallException( 'Object of class Text_Parser\Token is immutable.' );
+		throw new \BadMethodCallException( "Object of class Text_Parser\Token is immutable. Cannot set property '$id' to '$val'." );
 	}
 
 	/**
@@ -150,7 +150,7 @@ final class Token {
 	 * @throws \BadMethodCallException The Token class is immutable.
 	 */
 	public function __unset( $id ) {
-		throw new \BadMethodCallException( 'Object of class Text_Parser\Token is immutable.' );
+		throw new \BadMethodCallException( "Object of class Text_Parser\Token is immutable. Cannot unset property '$id'." );
 	}
 
 	/**
