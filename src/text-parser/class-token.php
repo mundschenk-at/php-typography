@@ -119,13 +119,9 @@ final class Token {
 	public function __get( $property ) {
 		switch ( $property ) {
 			case 'type':
-				return $this->type;
-
 			case 'value':
-				return $this->value;
-
 			case 'mutable':
-				return $this->mutable;
+				return $this->{ $property };
 
 			default:
 				return null;
