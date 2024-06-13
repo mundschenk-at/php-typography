@@ -28,6 +28,8 @@
 namespace PHP_Typography\Bin;
 
 use PHP_Typography\U;
+use PHP_Typography\Exceptions\Invalid_File_Exception;
+use PHP_Typography\Exceptions\Invalid_Path_Exception;
 
 /**
  *  Convert LaTeX hyphenation pattern files to JSON.
@@ -381,11 +383,12 @@ class Pattern_Converter {
 	 * @param string[] $exceptions Extracted hyphenation exception lines. Passed by reference.
 	 * @param string[] $comments   Extracted comments lines. Passed by reference.
 	 *
-	 * @throws \RuntimeException Thrown when file does not exist or is not readable.
+	 * @throws Invalid_Path_Exception Thrown when file does not exist.
+	 * @throws Invalid_File_Exception Thrown when file exists, but is not readable.
 	 */
 	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ): void {
 		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
-			throw new \RuntimeException( "Error: unknown pattern file '{$url}'\n" );
+			throw new Invalid_Path_Exception( "Error: unknown pattern file '{$url}'\n" );
 		}
 
 		// Status indicators.
@@ -401,7 +404,7 @@ class Pattern_Converter {
 			// Read the next line.
 			$line = $file->fgets();
 			if ( ! \is_string( $line ) ) {
-				throw new \RuntimeException( "Error reading file '{$url}'\n" );
+				throw new Invalid_File_Exception( "Error reading file '{$url}'\n" );
 			}
 
 			// Calculate current line number (instead of calling `SplFileObject::current`).
