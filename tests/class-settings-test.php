@@ -75,7 +75,7 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_set_defaults() {
 		$second_settings = new \PHP_Typography\Settings( false );
-		$this->assert_attribute_count( 2, 'data', $second_settings );
+		$this->assert_attribute_count( 5, 'data', $second_settings );
 		$second_settings->set_defaults();
 		$this->assert_attribute_count( 55, 'data', $second_settings );
 	}
@@ -94,11 +94,11 @@ class Settings_Test extends Testcase {
 		$s = $this->settings;
 
 		// No defaults.
-		$this->assert_attribute_count( 2, 'data', $s );
+		$this->assert_attribute_count( 5, 'data', $s );
 
 		// After set_defaults().
 		$s->set_defaults();
-		$this->assert_attribute_not_count( 2, 'data', $s );
+		$this->assert_attribute_count( 55, 'data', $s );
 
 		$second_settings = new \PHP_Typography\Settings( true );
 		$this->assert_attribute_count( 55, 'data', $second_settings );
@@ -340,6 +340,7 @@ class Settings_Test extends Testcase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
+			'noneAtAll',
 		];
 
 		foreach ( $quote_styles as $style ) {
@@ -410,6 +411,7 @@ class Settings_Test extends Testcase {
 			'singleGuillemetsReversed',
 			'cornerBrackets',
 			'whiteCornerBracket',
+			'noneAtAll',
 		];
 
 		foreach ( $quote_styles as $style ) {
@@ -519,6 +521,14 @@ class Settings_Test extends Testcase {
 		$this->assertSame( U::EN_DASH, $dashes->parenthetical_dash() );
 		$this->assertSame( U::EN_DASH, $dashes->interval_dash() );
 		$this->assertSame( ' ', $dashes->parenthetical_space() );
+		$this->assertSame( '', $dashes->interval_space() );
+
+		$s->set_smart_dashes_style( 'noneAtAll' );
+		$dashes = $s->dash_style;
+
+		$this->assertSame( '', $dashes->parenthetical_dash() );
+		$this->assertSame( '', $dashes->interval_dash() );
+		$this->assertSame( '', $dashes->parenthetical_space() );
 		$this->assertSame( '', $dashes->interval_space() );
 	}
 
@@ -1435,11 +1445,6 @@ class Settings_Test extends Testcase {
 	 */
 	public function test_get_hash() {
 		$s = $this->settings;
-
-		// Finish initialization.
-		$s->set_smart_quotes_primary();
-		$s->set_smart_quotes_secondary();
-		$s->set_smart_dashes_style();
 
 		$s->set_smart_quotes( true );
 		$hash1 = $s->get_hash( 10 );

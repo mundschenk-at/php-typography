@@ -242,6 +242,11 @@ abstract class Testcase extends \Mundschenk\PHPUnit_Cross_Version\TestCase {
 				$this->assertSame( U::RIGHT_WHITE_CORNER_BRACKET, $close, "Closing quote $close did not match quote style $style." );
 				break;
 
+			case 'noneAtAll':
+				$this->assertSame( '', $open, "Opening quote $open did not match quote style $style." );
+				$this->assertSame( '', $close, "Closing quote $close did not match quote style $style." );
+				break;
+
 			default:
 				$this->assertTrue( false, "Invalid quote style $style." );
 		}

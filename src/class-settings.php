@@ -619,12 +619,8 @@ class Settings {
 	/**
 	 * Sets up a new Settings object.
 	 *
-	 * @since 6.0.0 If $set_defaults is `false`, the settings object is not fully
-	 *              initialized unless `set_smart_quotes_primary`,
-	 *              `set_smart_quotes_secondary`, `set_smart_dashes_style` and
-	 *              `set_true_no_break_narrow_space` are called explicitly.
-	 * @since 6.5.0 A (partial) character mapping can be given to remap certain
-	 *              characters.
+	 * @since 6.5.0 A (partial) character mapping can be given to remap certain characters.
+	 * @since 7.0.0 The object is no fully initialized again even when `$set_defaults` is `false`.
 	 *
 	 * @param bool     $set_defaults Optional. If true, set default values for various properties. Default true.
 	 * @param string[] $mapping      Optional. Unicode characters to remap. The default maps the narrow no-break space to the normal NO-BREAK SPACE and the apostrophe to the RIGHT SINGLE QUOTATION MARK.
@@ -646,6 +642,12 @@ class Settings {
 			$this->set_defaults();
 		} else {
 			$this->data[ self::CUSTOM_UNITS ] = '';
+
+			$null_quotes                                      = Quote_Style::get_styled_quotes( Quote_Style::NONE );
+			$this->data[ self::SMART_QUOTES_PRIMARY_STYLE ]   = $null_quotes;
+			$this->data[ self::SMART_QUOTES_SECONDARY_STYLE ] = $null_quotes;
+
+			$this->data[ self::SMART_DASHES_STYLE ] = Dash_Style::get_styled_dashes( Dash_Style::NONE );
 		}
 
 		// Merge default character mapping with given mapping.

@@ -54,6 +54,7 @@ abstract class Quote_Style {
 	const SINGLE_GUILLEMETS_REVERSED = 'singleGuillemetsReversed';
 	const CORNER_BRACKETS            = 'cornerBrackets';
 	const WHITE_CORNER_BRACKETS      = 'whiteCornerBracket';
+	const NONE                       = 'noneAtAll';
 
 	/**
 	 * Available quote styles.
@@ -122,6 +123,10 @@ abstract class Quote_Style {
 		self::WHITE_CORNER_BRACKETS      => [
 			self::OPEN  => U::LEFT_WHITE_CORNER_BRACKET,
 			self::CLOSE => U::RIGHT_WHITE_CORNER_BRACKET,
+		],
+		self::NONE                       => [
+			self::OPEN  => '',
+			self::CLOSE => '',
 		],
 	];
 
