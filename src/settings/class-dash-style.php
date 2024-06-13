@@ -54,6 +54,13 @@ abstract class Dash_Style {
 	const INTERNATIONAL_NO_HAIR_SPACES = 'internationalNoHairSpaces';
 
 	/**
+	 * Empty dash style.
+	 *
+	 * @since 7.0.0
+	 */
+	const NONE = 'noneAtAll';
+
+	/**
 	 * Available dash styles.
 	 *
 	 * @since 7.0.0 Now a private constant instead of a private property.
@@ -77,6 +84,12 @@ abstract class Dash_Style {
 			self::PARENTHETICAL       => U::EN_DASH,
 			self::PARENTHETICAL_SPACE => ' ',
 			self::INTERVAL            => U::EN_DASH,
+			self::INTERVAL_SPACE      => '',
+		],
+		self::NONE                         => [
+			self::PARENTHETICAL       => '',
+			self::PARENTHETICAL_SPACE => '',
+			self::INTERVAL            => '',
 			self::INTERVAL_SPACE      => '',
 		],
 	];
