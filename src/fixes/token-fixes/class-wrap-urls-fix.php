@@ -184,15 +184,19 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * Splits the given URL path.
 	 *
 	 * @since  6.7.0
+	 * @since  7.0.0 Method is now protected to allow for unit testing.
 	 *
 	 * @param  string   $path     A URL path.
 	 * @param  Settings $settings The settings to apply.
 	 *
 	 * @return string             The hyphenated domain name.
 	 */
-	private function split_path( string $path, Settings $settings ): string {
+	protected function split_path( string $path, Settings $settings ): string {
+
+		$str_split = Strings::functions( $path )['str_split'];
+
 		// Break up the URL path to individual characters.
-		$path_parts = \str_split( $path, 1 ); // TODO: Does not work with non-ASCII paths.
+		$path_parts = $str_split( $path, 1 );
 		$path_count = \count( $path_parts );
 		$split_path = '';
 

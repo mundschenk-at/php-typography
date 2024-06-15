@@ -27,6 +27,8 @@ namespace PHP_Typography\Tests\Fixes\Token_Fixes;
 use PHP_Typography\Fixes\Token_Fix;
 use PHP_Typography\Fixes\Token_Fixes;
 
+use Mockery as m;
+
 /**
  * Wrap_URLs_Fix unit test.
  *
@@ -55,7 +57,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	protected function set_up() {
 		parent::set_up();
 
-		$this->fix = new Token_Fixes\Wrap_URLs_Fix();
+		$this->fix = m::mock( Token_Fixes\Wrap_URLs_Fix::class, [] )->shouldAllowMockingProtectedMethods()->makePartial();
 	}
 
 	/**
@@ -75,7 +77,7 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 *
 	 * @return array
 	 */
-	public function provide_wrap_urls_data() {
+	public function provide_wrap_urls_data(): array {
 		return [
 			[ 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ],
 			[ 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ],
@@ -90,8 +92,8 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 *
 	 * @covers ::apply
 	 * @covers ::split_domain
-	 * @covers ::split_path
 	 *
+	 * @uses ::split_path
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
 	 *
@@ -127,5 +129,40 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 		$this->s->set_min_after_url_wrap( $min_after );
 
 		$this->assertFixResultSame( $input, $input, false, $this->getTextnode( 'foo', $input ) );
+	}
+
+	/**
+
+	/**
+	 * Provide data for testing split_path.
+	 *
+	 * @return array
+	 */
+	public function provide_split_path_data(): array {
+		return [
+			[ '', '', 2 ],
+			[ '/', '/', 2 ],
+			[ '/some/long/path/', '/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ],
+			[ '/Γεια/Καληνύχτα/', '/&#8203;&Gamma;&#8203;&epsilon;&#8203;&iota;&#8203;&alpha;&#8203;/&#8203;&Kappa;&#8203;&alpha;&#8203;&lambda;&#8203;&eta;&#8203;&nu;&#8203;&#973;&chi;&tau;&alpha;/', 5 ],
+		];
+	}
+
+	/**
+	 * Test split_path.
+	 *
+	 * @covers ::split_path
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 *
+	 * @dataProvider provide_split_path_data
+	 *
+	 * @param string $input     HTML input.
+	 * @param string $result    Expected result.
+	 * @param int    $min_after Minimum number of characters after URL wrapping.
+	 */
+	public function test_split_path( $input, $result, $min_after ) {
+		$this->s->set_min_after_url_wrap( $min_after );
+		$this->assertSame( $result, $this->clean_html( $this->fix->split_path( $input, $this->s ) ) );
 	}
 }
