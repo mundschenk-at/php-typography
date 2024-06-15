@@ -94,6 +94,7 @@ use Mockery as m;
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Ampersands_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Caps_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Style_Numbers_Fix
+ * @uses PHP_Typography\Fixes\Node_Fixes\Unicode_Remapping_Fix
  * @uses PHP_Typography\Fixes\Node_Fixes\Unit_Spacing_Fix
  */
 class PHP_Typography_Test extends Testcase {

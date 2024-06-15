@@ -1508,40 +1508,4 @@ class Settings_Test extends Testcase {
 		$this->assertCount( 2, $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
 		$this->assertContains( 'x', $data[ Settings::UNICODE_CHARACTER_MAPPING ] );
 	}
-
-
-	/**
-	 * Provides data for testing apply_character_mapping.
-	 *
-	 * @return array
-	 */
-	public function provide_apply_character_mapping_data() {
-		return [
-			[ 'foobar', 'foobAz' ],
-			[ [ 'foobar' ], [ 'foobAz' ] ],
-			[ [ 'foobar', 'fugazi' ], [ 'foobAz', 'fugAzi' ] ],
-			[ '', '' ],
-		];
-	}
-
-	/**
-	 * Tests apply_character_mapping.
-	 *
-	 * @covers ::apply_character_mapping
-	 *
-	 * @dataProvider provide_apply_character_mapping_data
-	 *
-	 * @param  string|string[] $input  The input.
-	 * @param  string|string[] $result The expected result.
-	 */
-	public function test_apply_character_mapping( $input, $result ) {
-		$mapping = [
-			'a' => 'A',
-			'r' => 'z',
-		];
-
-		$s = new Settings( false, $mapping );
-
-		$this->assertSame( $result, $s->apply_character_mapping( $input ) );
-	}
 }
