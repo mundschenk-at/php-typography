@@ -89,7 +89,7 @@ class Registry {
 	 *
 	 * @return Node_Fix[][]
 	 */
-	public function get_node_fixes() {
+	public function get_node_fixes(): array {
 		return $this->node_fixes;
 	}
 
