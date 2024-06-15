@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ use Mockery as m;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class Default_Registry_Test extends \PHP_Typography\Tests\Testcase {
+class Default_Registry_Test extends Testcase {
 
 	/**
 	 * Tests constructor.
