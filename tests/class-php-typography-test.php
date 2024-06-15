@@ -27,14 +27,11 @@ namespace PHP_Typography\Tests;
 use PHP_Typography\DOM;
 use PHP_Typography\PHP_Typography;
 use PHP_Typography\Settings;
-use PHP_Typography\Strings;
 use PHP_Typography\U;
 
 use PHP_Typography\Settings\Quote_Style;
 
 use PHP_Typography\Fixes\Default_Registry;
-use PHP_Typography\Fixes\Node_Fix;
-use PHP_Typography\Fixes\Token_Fix;
 use PHP_Typography\Fixes\Registry;
 
 use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;

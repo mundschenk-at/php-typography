@@ -26,9 +26,7 @@
 
 namespace PHP_Typography\Fixes\Node_Fixes;
 
-use PHP_Typography\DOM;
 use PHP_Typography\Settings;
-use PHP_Typography\U;
 
 /**
  * Applies smart area units (if enabled).

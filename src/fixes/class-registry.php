@@ -32,7 +32,6 @@ use PHP_Typography\Hyphenator\Cache;
 
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
-use PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
 
 /**
  * Manages the fixes used by PHP_Typography.

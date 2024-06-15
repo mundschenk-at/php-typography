@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2019 Peter Putzer.
+ *  Copyright 2019-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes;
-use PHP_Typography\Settings;
 
 /**
  * Smart_Area_Units_Fix unit test.

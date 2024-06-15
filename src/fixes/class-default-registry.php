@@ -26,13 +26,10 @@
 
 namespace PHP_Typography\Fixes;
 
-use PHP_Typography\Settings;
+use PHP_Typography\Hyphenator\Cache;
 
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
-
-use PHP_Typography\Hyphenator\Cache;
-
 
 /**
  * A registry implementation containing the default fixes for PHP_Typography.

@@ -26,7 +26,6 @@ namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes;
 use PHP_Typography\RE;
-use PHP_Typography\Settings;
 use PHP_Typography\U;
 
 /**

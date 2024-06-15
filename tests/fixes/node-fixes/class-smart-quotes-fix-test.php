@@ -25,9 +25,7 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes\Smart_Quotes_Fix;
-use PHP_Typography\Settings;
 use PHP_Typography\Settings\Quote_Style;
-use PHP_Typography\Strings;
 
 /**
  * Smart_Quotes_Fix unit test.
