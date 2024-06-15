@@ -104,7 +104,7 @@ class Default_Registry extends Registry {
 		/**
 		 * Also register the token fixes.
 		 *
-		 *  @var Token_Fix $fix A token fix class.
+		 *  @var class-string<Token_Fix> $fix A token fix class.
 		 */
 		foreach ( self::get_default_token_fixes() as $fix => $params ) {
 			$arguments = [];
@@ -128,7 +128,7 @@ class Default_Registry extends Registry {
 	 *     }
 	 * }
 	 */
-	protected static function get_default_node_fixes() {
+	protected static function get_default_node_fixes(): array {
 		return [
 			self::CHARACTERS         => [
 				// Nodify anything that requires adjacent text awareness here.
@@ -194,9 +194,9 @@ class Default_Registry extends Registry {
 	/**
 	 * Returns a configuration array for the default token fixes.
 	 *
-	 * @return array<class-string,mixed[]>
+	 * @return array<class-string<Token_Fix>,mixed[]>
 	 */
-	protected static function get_default_token_fixes() {
+	protected static function get_default_token_fixes(): array {
 		return [
 			Token_Fixes\Wrap_Hard_Hyphens_Fix::class   => [],
 			Token_Fixes\Smart_Dashes_Hyphen_Fix::class => [],
