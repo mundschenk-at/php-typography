@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2020 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,9 +26,7 @@ namespace PHP_Typography\Tests\Settings;
 
 use PHP_Typography\Tests\Testcase;
 
-use PHP_Typography\Settings\Quotes;
 use PHP_Typography\Settings\Simple_Quotes;
-use PHP_Typography\U;
 
 /**
  * Simple_Quotes unit test.

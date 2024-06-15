@@ -27,7 +27,6 @@
 
 namespace PHP_Typography;
 
-use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
 use PHP_Typography\Text_Parser\Token;
 
 /**

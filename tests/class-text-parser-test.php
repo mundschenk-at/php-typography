@@ -25,8 +25,9 @@
 namespace PHP_Typography\Tests;
 
 use PHP_Typography\Exceptions\Invalid_Encoding_Exception;
-use PHP_Typography\Text_Parser\Token;
+
 use PHP_Typography\Text_Parser;
+use PHP_Typography\Text_Parser\Token;
 
 /**
  * Unit test for \PHP_Typography\Text_Parser class.

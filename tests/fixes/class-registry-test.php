@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2022 Peter Putzer.
+ *  Copyright 2017-2024 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,14 +24,12 @@
 
 namespace PHP_Typography\Tests\Fixes;
 
-use PHP_Typography\Fixes\Registry;
-use PHP_Typography\Hyphenator\Cache as Hyphenator_Cache;
 use PHP_Typography\Settings;
+
 use PHP_Typography\Fixes\Node_Fix;
 use PHP_Typography\Fixes\Token_Fix;
+use PHP_Typography\Fixes\Registry;
 use PHP_Typography\Fixes\Node_Fixes\Process_Words_Fix;
-use PHP_Typography\Strings;
-use PHP_Typography\U;
 
 use PHP_Typography\Tests\Testcase;
 

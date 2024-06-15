@@ -24,7 +24,6 @@
 
 namespace PHP_Typography\Tests;
 
-use PHP_Typography\Strings;
 use PHP_Typography\U;
 use PHP_Typography\Text_Parser\Token;
 

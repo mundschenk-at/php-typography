@@ -25,7 +25,6 @@
 namespace PHP_Typography\Tests\Fixes\Node_Fixes;
 
 use PHP_Typography\Fixes\Node_Fixes\French_Punctuation_Spacing_Fix;
-use PHP_Typography\Settings;
 
 /**
  * French_Punctuation_Spacing_Fix unit test.
