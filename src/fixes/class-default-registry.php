@@ -188,6 +188,10 @@ class Default_Registry extends Registry {
 					'classes' => [ 'push-single', 'push-double', 'pull-single', 'pull-double' ],
 				],
 			],
+
+			self::POST_PROCESSING    => [
+				Node_Fixes\Unicode_Remapping_Fix::class => [],
+			],
 		];
 	}
 

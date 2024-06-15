@@ -52,6 +52,7 @@ use PHP_Typography\Settings\Quotes;
  *                - `$unicode_mapping`
  *
  *              Additional removed methods:
+ *                - `apply_character_mapping`
  *                - `array_map_assoc` (previously deprecated)
  *                - custom_unit
  *                - dash_style
@@ -132,6 +133,9 @@ use PHP_Typography\Settings\Quotes;
  * Parser error handling:
  * @property-read bool $ignore_parser_errors Whether lenient parser error handling (output "best guess" HTML) is enabled.
  * @property-read ?callable $parser_errors_handler An optional handler for parser errors. The callable takes an array of error strings as its parameter.
+ *
+ * Post-processing:
+ * @property-read array<string,string> $unicode_character_mapping The Unicode character mapping (as some characters still have compatibility issues).
  *
  * Setters for general attributes:
  * @method void set_classes_to_ignore( string[] $classes = ['vcard','noTypo'] )  Sets classes for which the typography of their children will be left untouched.
@@ -262,7 +266,7 @@ class Settings {
 	const PARSER_ERRORS_IGNORE  = 'parserErrorsIgnore';
 	const PARSER_ERRORS_HANDLER = 'parserErrorsHandler';
 
-	// Unicode character remapping (some characters still have compatibility issues).
+	// Post-processing.
 	const UNICODE_CHARACTER_MAPPING = 'unicodeCharacterMapping';
 
 	/**
@@ -596,6 +600,10 @@ class Settings {
 			'default'  => true,
 			'verify'   => 'is_bool',
 		],
+		[
+			'property' => self::UNICODE_CHARACTER_MAPPING,
+			'name'     => 'unicode_character_mapping',
+		],
 	];
 
 	/**
@@ -757,34 +765,6 @@ class Settings {
 		} else {
 			unset( $this->data[ self::UNICODE_CHARACTER_MAPPING ][ $char ] );
 		}
-	}
-
-	/**
-	 * Remaps one or more strings.
-	 *
-	 * @since 6.5.0
-	 *
-	 * @template T of string|string[]
-	 *
-	 * @param  T $input The input string(s).
-	 *
-	 * @return T
-	 */
-	public function apply_character_mapping( $input ) {
-
-		// Nothing for us to do.
-		if ( empty( $input ) || empty( $this->data[ self::UNICODE_CHARACTER_MAPPING ] ) ) {
-			return $input;
-		}
-
-		$native_array = \is_array( $input );
-		$data         = (array) $input;
-
-		foreach ( $data as $key => $string ) {
-			$data[ $key ] = \strtr( $string, $this->data[ self::UNICODE_CHARACTER_MAPPING ] );
-		}
-
-		return $native_array ? $data : $data[0]; // @phpstan-ignore-line -- Ignore generics/array clash
 	}
 
 	/**
