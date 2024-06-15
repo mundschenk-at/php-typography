@@ -91,8 +91,8 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
-	 * @covers ::split_domain
 	 *
+	 * @uses ::split_domain
 	 * @uses ::split_path
 	 * @uses PHP_Typography\Text_Parser
 	 * @uses PHP_Typography\Text_Parser\Token
@@ -132,6 +132,36 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	}
 
 	/**
+	 * Provide data for testing split_domain.
+	 *
+	 * @return array
+	 */
+	public function provide_split_domain_data(): array {
+		return [
+			[ '', '' ],
+			[ 'example.org', 'example&#8203;.org' ],
+			[ 'my-example.org', 'my&#8203;-example&#8203;.org' ],
+			[ 'some.example.org', 'some&#8203;.example&#8203;.org' ],
+			[ 'καληνύχτα.gr', '&kappa;&alpha;&lambda;&eta;&nu;&#973;&chi;&tau;&alpha;&#8203;.gr' ],
+		];
+	}
+
+	/**
+	 * Test split_domain.
+	 *
+	 * @covers ::split_domain
+	 *
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 *
+	 * @dataProvider provide_split_domain_data
+	 *
+	 * @param string $input  HTML input.
+	 * @param string $result Expected result.
+	 */
+	public function test_split_domain( $input, $result ) {
+		$this->assertSame( $result, $this->clean_html( $this->fix->split_domain( $input, $this->s ) ) );
+	}
 
 	/**
 	 * Provide data for testing split_path.

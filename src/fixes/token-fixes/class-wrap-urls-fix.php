@@ -142,13 +142,14 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * Splits the given domain name.
 	 *
 	 * @since  6.7.0
+	 * @since  7.0.0 Method is now protected to allow for unit testing.
 	 *
 	 * @param  string   $domain   A domain/host name.
 	 * @param  Settings $settings The settings to apply.
 	 *
 	 * @return string             The hyphenated domain name.
 	 */
-	private function split_domain( string $domain, Settings $settings ): string {
+	protected function split_domain( string $domain, Settings $settings ): string {
 		$domain_parts = \preg_split( self::WRAP_URLS_DOMAIN_PARTS, $domain, -1, PREG_SPLIT_DELIM_CAPTURE );
 		if ( false === $domain_parts ) {
 			// Should not happen.
