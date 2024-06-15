@@ -43,13 +43,15 @@ use PHP_Typography\Fixes\Token_Fixes\Hyphenate_Fix;
  */
 class Registry {
 
+	const PRE_PROCESSING     = 01;
 	const CHARACTERS         = 10;
 	const SPACING_PRE_WORDS  = 20;
 	const PROCESS_WORDS      = 30;
 	const SPACING_POST_WORDS = 40;
 	const HTML_INSERTION     = 50;
+	const POST_PROCESSING    = 99;
 
-	const GROUPS = [ self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION ];
+	const GROUPS = [ self::PRE_PROCESSING, self::CHARACTERS, self::SPACING_PRE_WORDS, self::PROCESS_WORDS, self::SPACING_POST_WORDS, self::HTML_INSERTION, self::POST_PROCESSING ];
 
 	/**
 	 * An array of Node_Fix implementations indexed by groups.
@@ -57,11 +59,13 @@ class Registry {
 	 * @var array<int,Node_Fix[]>
 	 */
 	private $node_fixes = [
+		self::PRE_PROCESSING     => [],
 		self::CHARACTERS         => [],
 		self::SPACING_PRE_WORDS  => [],
 		self::PROCESS_WORDS      => [],
 		self::SPACING_POST_WORDS => [],
 		self::HTML_INSERTION     => [],
+		self::POST_PROCESSING    => [],
 	];
 
 	/**
