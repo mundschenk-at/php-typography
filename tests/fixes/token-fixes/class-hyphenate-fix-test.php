@@ -197,7 +197,7 @@ class Hyphenate_Fix_Test extends Token_Fix_Testcase {
 		$h = $this->fix->get_hyphenator( $s );
 		$this->assertInstanceOf( \PHP_Typography\Hyphenator::class, $h );
 
-		$settings_data                                            = $this->get_value( $s, 'data' );
+		$settings_data = $this->get_value( $s, 'data' );
 		$settings_data[ Settings::HYPHENATION_CUSTOM_EXCEPTIONS ] = [ 'bar-foo' ];
 		$this->set_value( $s, 'data', $settings_data );
 
