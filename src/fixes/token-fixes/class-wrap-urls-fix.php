@@ -62,7 +62,7 @@ class Wrap_URLs_Fix extends Hyphenate_Fix {
 	 * @param Cache|null $cache           Optional. Default null.
 	 * @param bool       $feed_compatible Optional. Default false.
 	 */
-	public function __construct( Cache $cache = null, $feed_compatible = false ) {
+	public function __construct( ?Cache $cache = null, $feed_compatible = false ) {
 		parent::__construct( $cache, Token_Fix::OTHER, $feed_compatible );
 
 		// Combined URL pattern.

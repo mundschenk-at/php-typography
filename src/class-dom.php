@@ -395,7 +395,7 @@ abstract class DOM {
 	 *
 	 * @return DOMText|null The first child of type DOMText, the element itself if it is of type DOMText or null.
 	 */
-	public static function get_first_textnode( DOMNode $node = null, bool $recursive = false ): ?DOMText {
+	public static function get_first_textnode( ?DOMNode $node = null, bool $recursive = false ): ?DOMText {
 		/**
 		 * We only allow textnodes in our `is_acceptable` callable.
 		 *
@@ -432,7 +432,7 @@ abstract class DOM {
 	 *
 	 * @return DOMNode|null The last acceptable child node, the element itself if it is acceptable or null.
 	 */
-	public static function get_last_acceptable_node( callable $is_acceptable, DOMNode $node = null, bool $recursive = false ): ?DOMNode {
+	public static function get_last_acceptable_node( callable $is_acceptable, ?DOMNode $node = null, bool $recursive = false ): ?DOMNode {
 		return self::get_edge_node( $is_acceptable, [ __CLASS__, __FUNCTION__ ], $node, $recursive, true );
 	}
 

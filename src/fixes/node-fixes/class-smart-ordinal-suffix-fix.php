@@ -96,7 +96,7 @@ class Smart_Ordinal_Suffix_Fix extends Abstract_Node_Fix {
 	 * @param string|null $css_class       Optional. Default null.
 	 * @param bool        $feed_compatible Optional. Default false.
 	 */
-	public function __construct( $css_class = null, $feed_compatible = false ) {
+	public function __construct( ?string $css_class = null, $feed_compatible = false ) {
 		parent::__construct( $feed_compatible );
 
 		$ordinal_class     = empty( $css_class ) ? '' : ' class="' . $css_class . '"';
