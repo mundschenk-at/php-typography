@@ -64,7 +64,7 @@ class Default_Registry extends Registry {
 	 * @param Cache|null $cache       Optional. A hyphenatation cache instance to use. Default null.
 	 * @param string[]   $css_classes Optional. An array of CSS classes to use. Defaults to null (i.e. use the predefined classes).
 	 */
-	public function __construct( Cache $cache = null, array $css_classes = [] ) {
+	public function __construct( ?Cache $cache = null, array $css_classes = [] ) {
 		parent::__construct();
 
 		if ( empty( $css_classes ) ) {

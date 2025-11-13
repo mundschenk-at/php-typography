@@ -82,7 +82,7 @@ class PHP_Typography {
 	 * @param Registry|null $registry Optional. A fix registry instance. Default null,
 	 *                                meaning the default fixes are used.
 	 */
-	public function __construct( Registry $registry = null ) {
+	public function __construct( ?Registry $registry = null ) {
 		$this->registry              = $registry;
 		$this->update_registry_cache = ! empty( $registry );
 	}

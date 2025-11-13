@@ -70,7 +70,7 @@ class Hyphenate_Fix extends Abstract_Token_Fix {
 	 * @param int        $target          Optional. Default Token_Fix::WORDS.
 	 * @param bool       $feed_compatible Optional. Default false.
 	 */
-	public function __construct( Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
+	public function __construct( ?Cache $cache = null, $target = Token_Fix::WORDS, $feed_compatible = false ) {
 		parent::__construct( $target, $feed_compatible );
 
 		if ( null === $cache ) {
