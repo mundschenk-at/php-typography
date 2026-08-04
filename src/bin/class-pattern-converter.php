@@ -196,7 +196,7 @@ class Pattern_Converter {
 	}
 
 	/**
-	 * Try to match squences of TeX hyphenation exceptions.
+	 * Try to match sequences of TeX hyphenation exceptions.
 	 *
 	 * @param string   $line A line from the TeX pattern file.
 	 * @param string[] $exceptions {
