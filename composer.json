@@ -26,17 +26,17 @@
     },
     "require-dev": {
         "ext-curl": "*",
-        "phpunit/phpunit": "9.*|10.*",
+        "phpunit/phpunit": "9.*|10.*|11.*|12.*|13.*",
         "brain/monkey": "^2.2.0",
-        "squizlabs/php_codesniffer": "^3",
+        "squizlabs/php_codesniffer": "^3|^4",
         "wp-coding-standards/wpcs": "^3",
         "phpcompatibility/php-compatibility": "^9.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan": "^2",
         "phpbench/phpbench": "^0.17||^1.0@dev",
         "mikey179/vfsstream": "~1",
-        "mundschenk-at/phpunit-cross-version": "dev-master",
-        "phpstan/phpstan-mockery": "^1.1",
+        "mundschenk-at/phpunit-cross-version": "dev-main",
+        "phpstan/phpstan-mockery": "^2",
         "phpstan/extension-installer": "^1.2"
     },
 
