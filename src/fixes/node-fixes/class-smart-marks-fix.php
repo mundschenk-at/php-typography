@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2024 Peter Putzer.
+ *  Copyright 2017-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ class Smart_Marks_Fix extends Abstract_Node_Fix {
 		// Replace marks.
 		$node_data = \str_replace( $this->marks, $this->replacements, $node_data );
 
-		// Un-escape escaped sequences & resetore textnode content.
+		// Un-escape escaped sequences & restore textnode content.
 		$textnode->data = \str_replace( RE::ESCAPE_MARKER, '', $node_data );
 	}
 }

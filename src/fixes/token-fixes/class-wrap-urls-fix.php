@@ -45,7 +45,7 @@ use PHP_Typography\U;
  */
 class Wrap_URLs_Fix extends Hyphenate_Fix {
 	// Valid URL schemes.
-	const URL_SCHEME = '(?:https?|ftps?|file|nfs|feed|itms|itpc)';
+	const URL_SCHEME = '(?:https?|ftps?|file|nfs|feed|itms|itpc)'; // # spellchecker:disable-line
 
 	const WRAP_URLS_DOMAIN_PARTS = '#(\-|\.)#';
 
