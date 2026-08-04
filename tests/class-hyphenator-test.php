@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2016-2024 Peter Putzer.
+ *  Copyright 2016-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -633,10 +633,8 @@ class Hyphenator_Test extends Testcase {
 		// Unset some internal stuff.
 		$ref  = new \ReflectionClass( Hyphenator::class );
 		$prop = $ref->getProperty( 'pattern_exceptions' );
-		$prop->setAccessible( true );
 		$prop->setValue( $this->h, [] );
 		$prop = $ref->getProperty( 'merged_exception_patterns' );
-		$prop->setAccessible( true );
 		$prop->setValue( $this->h, null );
 
 		// Again, no punctuation due to the fake tokenization.
