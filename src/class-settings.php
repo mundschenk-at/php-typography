@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2024 Peter Putzer.
+ *  Copyright 2014-2026 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -194,7 +194,7 @@ use PHP_Typography\Settings\Quotes;
  * @method void set_ignore_parser_errors( bool $on = false ) Enable lenient parser error handling (HTML is "best guess" if enabled).
  * @method void set_parser_errors_handler( callable $handler = null ) Sets an optional handler for parser errors. The callable takes an array of error strings as its parameter. Invalid callbacks will be silently ignored.
  *
- * @phpstan-type Property_Definition array{property:string, name:string, default?:mixed, verify?:callable-string}
+ * @phpstan-type Property_Definition array{property:string, name:string, default?:mixed, verify?:callable-string, ...}
  */
 class Settings {
 
@@ -611,7 +611,7 @@ class Settings {
 	 *
 	 * @since 7.0.0
 	 *
-	 * @var array<string,array{property:string, name:string, default:mixed, verify:callable-string}>
+	 * @var array<string,array{property:string, name:string, default:mixed, verify:callable-string,...}>
 	 */
 	protected array $virtual_setters = [];
 

@@ -42,8 +42,10 @@ abstract class File_Operations {
 	 * @param  string $url Required.
 	 *
 	 * @return int
+	 *
+	 * @phpstan-param non-empty-string $url
 	 */
-	public static function get_http_response_code( $url ) {
+	public static function get_http_response_code( string $url ) {
 
 		$curl = curl_init();
 		curl_setopt_array(

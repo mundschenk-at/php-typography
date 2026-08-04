@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2024 Peter Putzer.
+ *  Copyright 2014-2026 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -342,6 +342,11 @@ class PHP_Typography {
 		if ( ! empty( $query_parts ) ) {
 			$ignore_query = \implode( ' | ', $query_parts );
 
+			/**
+			 * No DOMNamespaceNodes here.
+			 *
+			 * @phpstan-var \DOMNodeList<\DOMNode> $nodelist
+			 */
 			$nodelist = $xpath->query( $ignore_query, $initial_node );
 			if ( false !== $nodelist ) {
 				$elements = DOM::nodelist_to_array( $nodelist );
