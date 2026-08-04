@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2024 Peter Putzer.
+ *  Copyright 2015-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -81,9 +81,26 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 		return [
 			[ 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ],
 			[ 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ],
+			[ 'http://someone@example.org/',         'http://&#8203;someone@&#8203;example&#8203;.org/', 2 ],
+			[ 'foo@example.org',                     'foo@example.org',                             2 ], // this is an e-mail address, not a URL.
+			[ 'www.example.org/',                    'www&#8203;.example&#8203;.org/',              2 ],
 			[ 'https://my-example.org',              'https://&#8203;my&#8203;-example&#8203;.org', 2 ],
-			[ 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ],
-			[ 'https://example.org:8080/',           'https://&#8203;example&#8203;.org:8080/',     2 ],
+			[ 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/some&#8203;/long&#8203;/path/', 5 ],
+			[ 'https://example.org:8080/',           'https://&#8203;example&#8203;.org&#8203;:8080/',     2 ],
+			[ 'https://example.org:443/some/long/path/', 'https://&#8203;example&#8203;.org&#8203;:443/some&#8203;/long/path/', 10 ],
+			[ 'https://10.0.0.1:443/some/long/path/', 'https://&#8203;10.0.0.1&#8203;:443/some&#8203;/long&#8203;/path/', 3 ],
+			[ 'https://10.0.0.1:443/some/long/path/#with-a-fragment', 'https://&#8203;10.0.0.1&#8203;:443/some&#8203;/long/path/&#8203;#with-a-fragment', 10 ],
+			[ 'https://καληνύχτα.gr',                'https://&#8203;&kappa;&alpha;&lambda;&eta;&nu;&#973;&chi;&tau;&alpha;&#8203;.gr', 2 ],
+			[ 'https://καληνύχτα.gr/Γεια/Καληνύχτα', 'https://&#8203;&kappa;&alpha;&lambda;&eta;&nu;&#973;&chi;&tau;&alpha;&#8203;.gr/&Gamma;&epsilon;&iota;&alpha;&#8203;/&Kappa;&alpha;&lambda;&eta;&nu;&#973;&chi;&tau;&alpha;', 5 ],
+			[ 'https://[2001:db8::1]/',              'https://&#8203;[2001:db8::1]/', 2 ],
+			[ 'https://[2001:db8::1]/with/path',     'https://&#8203;[2001:db8::1]/with&#8203;/path', 2 ],
+			[ 'https://example.org:8080/my/own/path?with=query#frag', 'https://&#8203;example&#8203;.org&#8203;:8080/my&#8203;/own/path&#8203;?with=query&#8203;#frag', 5 ],
+			[ 'https://example.org:8080/my/own/path2?with=query', 'https://&#8203;example&#8203;.org&#8203;:8080/my&#8203;/own&#8203;/path2&#8203;?with=query', 5 ],
+			[ 'http://example.org/#frag',            'http://&#8203;example&#8203;.org/&#8203;#frag', 2 ],
+			[ 'http://JP納豆.例.jp',                  'http://&#8203;JP納豆&#8203;.例&#8203;.jp', 2 ],
+			[ 'ftp://kärnten.at',                    'ftp://&#8203;k&auml;rnten&#8203;.at', 2 ],
+			[ ' ',                                    ' ', 2 ],
+			[ '/a',                                   '/a', 1 ],
 		];
 	}
 
@@ -91,6 +108,8 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 	 * Test apply.
 	 *
 	 * @covers ::apply
+	 * @covers ::is_email_address
+	 * @covers ::wrap_iri
 	 *
 	 * @uses ::split_domain
 	 * @uses ::split_path
@@ -172,8 +191,8 @@ class Wrap_URLs_Fix_Test extends Token_Fix_Testcase {
 		return [
 			[ '', '', 2 ],
 			[ '/', '/', 2 ],
-			[ '/some/long/path/', '/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ],
-			[ '/Γεια/Καληνύχτα/', '/&#8203;&Gamma;&#8203;&epsilon;&#8203;&iota;&#8203;&alpha;&#8203;/&#8203;&Kappa;&#8203;&alpha;&#8203;&lambda;&#8203;&eta;&#8203;&nu;&#8203;&#973;&chi;&tau;&alpha;/', 5 ],
+			[ '/some/long/path/', '/some&#8203;/long&#8203;/path/', 5 ],
+			[ '/Γεια/Καληνύχτα/', '/&Gamma;&epsilon;&iota;&alpha;&#8203;/&Kappa;&alpha;&lambda;&eta;&nu;&#973;&chi;&tau;&alpha;/', 5 ],
 		];
 	}
 

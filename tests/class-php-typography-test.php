@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2024 Peter Putzer.
+ *  Copyright 2015-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -2268,8 +2268,8 @@ class PHP_Typography_Test extends Testcase {
 			[ 'https://example.org/',                'https://&#8203;example&#8203;.org/',          2 ],
 			[ 'http://example.org/',                 'http://&#8203;example&#8203;.org/',           2 ],
 			[ 'https://my-example.org',              'https://&#8203;my&#8203;-example&#8203;.org', 2 ],
-			[ 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/&#8203;s&#8203;o&#8203;m&#8203;e&#8203;/&#8203;l&#8203;o&#8203;n&#8203;g&#8203;/&#8203;path/', 5 ],
-			[ 'https://example.org:8080/',           'https://&#8203;example&#8203;.org:8080/',     2 ],
+			[ 'https://example.org/some/long/path/', 'https://&#8203;example&#8203;.org/some&#8203;/long&#8203;/path/', 5 ],
+			[ 'https://example.org:8080/',           'https://&#8203;example&#8203;.org&#8203;:8080/',     2 ],
 		];
 	}
 
