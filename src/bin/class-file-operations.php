@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2019 Peter Putzer.
+ *  Copyright 2017-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,9 +54,6 @@ abstract class File_Operations {
 			]
 		);
 		curl_exec( $curl );
-		$response_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-		curl_close( $curl );
-
-		return $response_code;
+		return curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 	}
 }
