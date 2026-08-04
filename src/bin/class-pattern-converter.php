@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2024 Peter Putzer.
+ *  Copyright 2015-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,21 +45,21 @@ class Pattern_Converter {
 	 *
 	 * @var string[]
 	 */
-	protected $urls;
+	protected array $urls;
 
 	/**
 	 * Human-readable language name.
 	 *
 	 * @var string
 	 */
-	protected $language;
+	protected string $language;
 
 	/**
 	 * A word character class in PCRE2 syntax.
 	 *
 	 * @var string
 	 */
-	protected $word_class;
+	protected string $word_class;
 
 	/**
 	 * Creates a new converter object.
@@ -67,7 +67,7 @@ class Pattern_Converter {
 	 * @param string|string[] $urls     The TeX pattern file URL(s).
 	 * @param string          $language A human-readable language name.
 	 */
-	public function __construct( $urls, $language ) {
+	public function __construct( $urls, string $language ) {
 		$this->urls     = (array) $urls;
 		$this->language = $language;
 
@@ -109,7 +109,7 @@ class Pattern_Converter {
 	 * @param string $pattern TeX hyphenation pattern.
 	 * @return string
 	 */
-	protected function get_segment( $pattern ) {
+	protected function get_segment( string $pattern ) {
 		return (string) \preg_replace( '/[0-9]/', '', \str_replace( '.', '_', $pattern ) );
 	}
 
@@ -122,7 +122,7 @@ class Pattern_Converter {
 	 *
 	 * @return string
 	 */
-	protected function get_sequence( $pattern ) {
+	protected function get_sequence( string $pattern ) {
 		$characters = \mb_str_split( \str_replace( '.', '_', $pattern ) );
 		$result     = [];
 
@@ -210,7 +210,7 @@ class Pattern_Converter {
 	 *
 	 * @return bool
 	 */
-	protected function match_exceptions( $line, array &$exceptions, $line_no = 0 ) {
+	protected function match_exceptions( string $line, array &$exceptions, int $line_no = 0 ) {
 		$continue_reading_exceptions = true;
 
 		if ( \preg_match( "/^\s*({$this->word_class}+)\s*}\s*(?:%.*)?$/u", $line, $matches ) ) {
@@ -248,7 +248,7 @@ class Pattern_Converter {
 	 *
 	 * @return bool Whether the parser should stay in "reading patterns" mode.
 	 */
-	protected function match_patterns( $line, array &$patterns, $line_no = 0 ) {
+	protected function match_patterns( string $line, array &$patterns, int $line_no = 0 ) {
 		$continue_reading_patterns = true;
 
 		if ( \preg_match( "/^\s*({$this->word_class}+)\s*\}\s*(?:%.*)?$/u", $line, $matches ) ) {
@@ -327,7 +327,7 @@ class Pattern_Converter {
 	 *
 	 * @return string
 	 */
-	protected function expand_macros( $line, array $macros ) {
+	protected function expand_macros( string $line, array $macros ) {
 		if ( 0 < \preg_match_all( '/\\\(?<name>\w+)\{(?<arg>[^\}]+)\}/u', $line, $matches, \PREG_SET_ORDER ) ) {
 			foreach ( $matches as $m ) {
 				if ( ! empty( $macros[ $m['name'] ] ) ) {
@@ -348,7 +348,7 @@ class Pattern_Converter {
 	 *
 	 * @return array<int, string>
 	 */
-	private static function split_at_whitespace( $line ) {
+	private static function split_at_whitespace( string $line ) {
 		return \preg_split( '/\s+/Su', $line, -1, PREG_SPLIT_NO_EMPTY ) ?: []; // phpcs:ignore Universal.Operators.DisallowShortTernary -- We can safely assume an array here, as long as $line convertible to a string.
 	}
 
@@ -386,8 +386,10 @@ class Pattern_Converter {
 	 * @throws Invalid_Path_Exception Thrown when file does not exist.
 	 * @throws Invalid_File_Exception Thrown when file exists, but is not readable.
 	 */
-	protected function convert_single_file( $url, &$patterns, &$exceptions, &$comments ): void {
-		if ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
+	protected function convert_single_file( string $url, array &$patterns, array &$exceptions, array &$comments ): void {
+		if ( empty( $url ) ) {
+			throw new Invalid_Path_Exception( "Error: empty pattern file URL'\n" );
+		} elseif ( ! \file_exists( $url ) && 404 === File_Operations::get_http_response_code( $url ) ) {
 			throw new Invalid_Path_Exception( "Error: unknown pattern file '{$url}'\n" );
 		}
 
