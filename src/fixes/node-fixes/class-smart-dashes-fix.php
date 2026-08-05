@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2024 Peter Putzer.
+ *  Copyright 2014-2026 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify modify
@@ -62,7 +62,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 	// Date handling.
 	const DATE_YYYY_MM_DD = '/
 		(
-			(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+			(?<=\s|\A|[' . U::NO_BREAK_SPACE . '])
 			[12][0-9]{3}
 		)
 		[\-' . U::EN_DASH . ']
@@ -72,7 +72,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		[\-' . U::EN_DASH . "]
 			(
 				(?:[0][1-9]|[12][0-9]|[3][0-1])
-				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+				(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|[" . U::NO_BREAK_SPACE . '])
 		)
 	/xu';
 
@@ -80,7 +80,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		(?:
 			(?:
 				(
-					(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+					(?<=\s|\A|[' . U::NO_BREAK_SPACE . '])
 					(?:[0]?[1-9]|[1][0-2])
 				)
 				[\-' . U::EN_DASH . ']
@@ -91,7 +91,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 			|
 			(?:
 				(
-					(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+					(?<=\s|\A|[' . U::NO_BREAK_SPACE . '])
 					(?:[0]?[1-9]|[12][0-9]|[3][0-1])
 				)
 				[\-' . U::EN_DASH . ']
@@ -103,13 +103,13 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 		[\-' . U::EN_DASH . "]
 		(
 			[12][0-9]{3}
-			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|[" . U::NO_BREAK_SPACE . '])
 		)
 	/xu';
 
 	const DATE_YYYY_MM = '/
 		(
-			(?<=\s|\A|' . U::NO_BREAK_SPACE . ')
+			(?<=\s|\A|[' . U::NO_BREAK_SPACE . '])
 			[12][0-9]{3}
 		)
 		[\-' . U::EN_DASH . "]
@@ -119,7 +119,7 @@ class Smart_Dashes_Fix extends Abstract_Node_Fix {
 				|
 				(?:[0][0-9][1-9]|[1-2][0-9]{2}|[3][0-5][0-9]|[3][6][0-6])
 			)
-			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|" . U::NO_BREAK_SPACE . ')
+			(?=\s|\Z|\)|\]|\.|\,|\?|\;|\:|\'|\"|\!|[" . U::NO_BREAK_SPACE . '])
 		)
 	/xu';
 
