@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2024 Peter Putzer.
+ *  Copyright 2017-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,12 +46,12 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 
 	const FRACTION_MATCHING = '/
 		# lookbehind assertion: makes sure we are not messing up a url
-		(?<=\A|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . ')
+		(?<=\A|\s|[' . U::NO_BREAK_SPACE . U::NO_BREAK_NARROW_SPACE . '])
 
 		(\d+)
 
 		# strip out any zero-width spaces inserted by wrap_hard_hyphens
-		(?:\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
+		(?:\s?\/\s?[' . U::ZERO_WIDTH_SPACE . ']?)
 
 		(
 			# lookahead assertion: do not make fractions from x:x if x > 1
@@ -74,7 +74,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			(?:\<sup\>(?:st|nd|rd|th)<\/sup\>)? # spellchecker:disable-line
 
 			# makes sure we are not messing up a url
-			(?:\Z|\s|' . U::NO_BREAK_SPACE . '|' . U::NO_BREAK_NARROW_SPACE . '|\.|,|\!|\?|\)|\;|\:|\'|")
+			(?:\Z|\s|[' . U::NO_BREAK_SPACE . U::NO_BREAK_NARROW_SPACE . ']|\.|,|\!|\?|\)|\;|\:|\'|")
 		)
 		/Sxu';
 
@@ -83,7 +83,7 @@ class Smart_Fractions_Fix extends Abstract_Node_Fix {
 			( \b (?: 0?[1-9] | 1[0-2] ) )
 
 			# capture any zero-width spaces inserted by wrap_hard_hyphens
-			(\s?\/\s?' . U::ZERO_WIDTH_SPACE . '?)
+			(\s?\/\s?[' . U::ZERO_WIDTH_SPACE . ']?)
 
 			# handle 4-decimal years
 			( [12][0-9]{3}\b )

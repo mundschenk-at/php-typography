@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2024 Peter Putzer.
+ *  Copyright 2017-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ class Smart_Maths_Fix extends Abstract_Node_Fix {
 
 	// Revert fractions to basic slash.
 	const REVERT_FRACTION = "/
-		(?<=\s|\A|\'|\"|" . U::NO_BREAK_SPACE . ')
+		(?<=\s|\A|\'|\"|[" . U::NO_BREAK_SPACE . '])
 		(
 			\d+
 		)
