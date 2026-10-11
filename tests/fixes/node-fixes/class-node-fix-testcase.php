@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2017-2024 Peter Putzer.
+ *  Copyright 2017-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -106,6 +106,6 @@ abstract class Node_Fix_Testcase extends Testcase {
 		}
 
 		$this->fix->apply( $node, $this->s, $is_title );
-		$this->assertSame( $this->clean_html( $result ), $this->clean_html( str_replace( [ RE::ESCAPED_HTML_OPEN, RE::ESCAPED_HTML_CLOSE ], [ '<', '>' ], $node->data ) ) );
+		$this->assertSame( $this->clean_html( $result ), $this->clean_html( RE::unescape_tags( $node->data ) ) );
 	}
 }
