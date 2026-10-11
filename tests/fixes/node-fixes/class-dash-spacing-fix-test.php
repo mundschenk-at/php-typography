@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2024 Peter Putzer.
+ *  Copyright 2015-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ use PHP_Typography\Fixes\Node_Fixes\Dash_Spacing_Fix;
  *
  * @uses ::__construct
  * @uses PHP_Typography\DOM
+ * @uses PHP_Typography\RE::unescape_tags
  * @uses PHP_Typography\Settings
  * @uses PHP_Typography\Settings\Dash_Style
  * @uses PHP_Typography\Settings\Quote_Style
