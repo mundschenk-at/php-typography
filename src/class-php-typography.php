@@ -212,8 +212,9 @@ class PHP_Typography {
 				continue;
 			}
 
-			// Store original content.
-			$original = $textnode->data;
+			// Escape and store original content.
+			$original       = RE::escape_content( $textnode->data );
+			$textnode->data = $original;
 
 			// Apply fixes.
 			$fixer( $textnode, $settings, $is_title );

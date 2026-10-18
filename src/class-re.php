@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2024 Peter Putzer.
+ *  Copyright 2014-2026 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -95,6 +95,10 @@ abstract class RE {
 	const ESCAPED_HTML_OPEN  = '_B_E_G_I_N_H_T_M_L_';
 	const ESCAPED_HTML_CLOSE = '_E_N_D_H_T_M_L_';
 
+	// Escaped version of the HTML tag markers.
+	const ESCAPED_ESCAPED_HTML_OPEN  = '__B__E__G__I__N__H__T__M__L__';
+	const ESCAPED_ESCAPED_HTML_CLOSE = '__E__N__D__H__T__M__L__';
+
 	/**
 	 * A pattern matching top-level domains.
 	 *
@@ -161,13 +165,26 @@ abstract class RE {
 	}
 
 	/**
-	 * Replace tag escape markers with < and >.
+	 * Replace tag escape markers with < and > (and escaped tag escape markers with their normal equivalent).
 	 *
 	 * @param  string $tags A string containing escaped HTML markup.
 	 *
 	 * @return string
 	 */
 	public static function unescape_tags( $tags ) {
-		return str_replace( [ self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE ], [ '<', '>' ], $tags );
+		return str_replace( [ self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE, self::ESCAPED_ESCAPED_HTML_OPEN, self::ESCAPED_ESCAPED_HTML_CLOSE ], [ '<', '>', self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE ], $tags );
+	}
+
+	/**
+	 * Replaces the tag escape marker with an escaped version of itself.
+	 *
+	 * @since 7.0.1
+	 *
+	 * @param  string $content A string containing an HTML escape marker.
+	 *
+	 * @return string
+	 */
+	public static function escape_content( string $content ): string {
+		return str_replace( [ self::ESCAPED_HTML_OPEN, self::ESCAPED_HTML_CLOSE ], [ self::ESCAPED_ESCAPED_HTML_OPEN, self::ESCAPED_ESCAPED_HTML_CLOSE ], $content );
 	}
 }

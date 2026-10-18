@@ -569,6 +569,50 @@ class PHP_Typography_Test extends Testcase {
 	}
 
 	/**
+	 * Provide data for testing the complete processing.
+	 *
+	 * @return array
+	 */
+	public function provide_process_with_minimal_settings_data() {
+		return [
+			[ '123 _B_E_G_I_N_H_T_M_L_hr/_E_N_D_H_T_M_L_ BAR', '123 _B_E_G_I_N_H_T_M_L_hr/_E_N_D_H_T_M_L_ <span class="caps">BAR</span>', false ],
+			[ '-- _B_E_G_I_N_H_T_M_L_img src="x" onerror=alert(1)_E_N_D_H_T_M_L_', '-- _B_E_G_I_N_H_T_M_L_img src=x onerror=alert(1)_E_N_D_H_T_M_L_', true ],
+		];
+	}
+
+
+	/**
+	 * Test process with minimal settings.
+	 *
+	 * @covers ::process
+	 *
+	 * @uses ::process_textnodes
+	 * @uses PHP_Typography\Hyphenator
+	 * @uses PHP_Typography\Hyphenator\Trie_Node
+	 * @uses PHP_Typography\Text_Parser
+	 * @uses PHP_Typography\Text_Parser\Token
+	 * @uses PHP_Typography\Settings\Dash_Style::get_styled_dashes
+	 * @uses PHP_Typography\Settings\Quote_Style::get_styled_quotes
+	 *
+	 * @dataProvider provide_process_with_minimal_settings_data
+	 *
+	 * @param string $html   HTML input.
+	 * @param string $result Entity-escaped output.
+	 */
+	public function test_process_with_minimal_settings( string $html, string $result ) {
+		$s = $this->s;
+		$s->set_style_caps();
+		$s->set_dash_spacing();
+		$s->set_space_collapse();
+		$s->set_smart_math();
+		$s->set_smart_math();
+		$s->set_smart_marks();
+		$s->set_smart_quotes( true );
+
+		$this->assertSame( $result, $this->clean_html( $this->typo->process( $html, $s ) ) );
+	}
+
+	/**
 	 * Test process_textnodes.
 	 *
 	 * @covers ::process_textnodes
