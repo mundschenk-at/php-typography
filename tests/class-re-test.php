@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2015-2020 Peter Putzer.
+ *  Copyright 2015-2026 Peter Putzer.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -97,5 +97,37 @@ class RE_Test extends Testcase {
 		// Multiple applications should not matter.
 		$this->assertSame( $escaped, RE::escape_tags( $escaped ) );
 		$this->assertSame( $tags, RE::unescape_tags( $tags ) );
+	}
+
+	/**
+	 * Provides data for testing escape_content.
+	 *
+	 * @return array<string,string[]> The test data tuples.
+	 */
+	public function provide_escape_content_data(): array {
+		return [
+			'Empty string'        => [ '', '' ],
+			'No escape marker'    => [ 'Some valid string <with> <tags>', 'Some valid string <with> <tags>' ],
+			'Begin marker'        => [ 'Some valid _B_E_G_I_N_H_T_M_L_string <with> <tags>', 'Some valid __B__E__G__I__N__H__T__M__L__string <with> <tags>' ],
+			'End marker'          => [ 'Some valid string_E_N_D_H_T_M_L_ <with> <tags>', 'Some valid string__E__N__D__H__T__M__L__ <with> <tags>' ],
+			'Both makers'         => [ 'Some valid _B_E_G_I_N_H_T_M_L_string_E_N_D_H_T_M_L_ <with> <tags>', 'Some valid __B__E__G__I__N__H__T__M__L__string__E__N__D__H__T__M__L__ <with> <tags>' ],
+			'Multiple markers'    => [ 'Some _B_E_G_I_N_H_T_M_L_ valid _B_E_G_I_N_H_T_M_L_string_E_N_D_H_T_M_L_ <with> <tags>', 'Some __B__E__G__I__N__H__T__M__L__ valid __B__E__G__I__N__H__T__M__L__string__E__N__D__H__T__M__L__ <with> <tags>' ],
+		];
+	}
+
+	/**
+	 * Tests escape_content.
+	 *
+	 * @covers ::escape_content
+	 *
+	 * @dataProvider provide_escape_content_data
+	 *
+	 * @param  string $input  The input content.
+	 * @param  string $result The expected result.
+	 *
+	 * @return void
+	 */
+	public function test_escape_content( string $input, string $result ): void {
+		$this->assertSame( $result, RE::escape_content( $input ) );
 	}
 }
