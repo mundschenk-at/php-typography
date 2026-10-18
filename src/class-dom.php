@@ -2,7 +2,7 @@
 /**
  *  This file is part of PHP-Typography.
  *
- *  Copyright 2014-2024 Peter Putzer.
+ *  Copyright 2014-2026 Peter Putzer.
  *  Copyright 2009-2011 KINGdesk, LLC.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -284,14 +284,8 @@ abstract class DOM {
 
 		if ( null !== $adjacent_node ) {
 			if ( $adjacent_node instanceof DOMElement ) {
-				switch ( $adjacent_node->tagName ) {
-					case 'br':
-						$character = ' ';
-						break;
-					case 'sub':
-					case 'sup':
-					default:
-						$character = '';
+				if ( 'br' === $adjacent_node->tagName ) {
+					$character = ' ';
 				}
 			} elseif ( $adjacent_node instanceof DOMText ) {
 				$node_data = $adjacent_node->data;
